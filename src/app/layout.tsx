@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { KFSProvider } from "../context/KFSContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,9 +13,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+export const viewport: Viewport = {
+  themeColor: "#0A1128",
+};
+
 export const metadata: Metadata = {
-  title: "KFS - Creative Workspace",
-  description: "A creative digital space powered by Next.js, React, and Tailwind CSS.",
+  title: "KFS OS",
+  description: "Business Operating System by Kreatek.",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
@@ -27,7 +33,9 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <KFSProvider>{children}</KFSProvider>
+      </body>
     </html>
   );
 }
