@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KFS OS - Kreatek Flow Systems</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-purple">
+    <!-- Main Desktop Workspace -->
+    <div id="desktop">
+        <!-- Live Cybernetic Gradient Background -->
+        <div id="desktop-bg"></div>
+        <div id="desktop-grid-overlay"></div>
+
+        <!-- Desktop Shortcuts Grid -->
+        <div id="desktop-icons">
+            <div class="shortcut" data-app="terminal">
+                <div class="shortcut-icon icon-terminal">
+                    <!-- SVG Terminal Icon -->
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="4 17 10 11 4 5"></polyline>
+                        <line x1="12" y1="19" x2="20" y2="19"></line>
+                    </svg>
+                </div>
+                <span class="shortcut-label">KFS Terminal</span>
+            </div>
+            
+            <div class="shortcut" data-app="editor">
+                <div class="shortcut-icon icon-editor">
+                    <!-- SVG Editor Icon -->
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                        <polyline points="14 2 14 8 20 8"></polyline>
+                        <line x1="16" y1="13" x2="8" y2="13"></line>
+                        <line x1="16" y1="17" x2="8" y2="17"></line>
+                        <polyline points="10 9 9 9 8 9"></polyline>
+                    </svg>
+                </div>
+                <span class="shortcut-label">FlowEdit</span>
+            </div>
+
+            <div class="shortcut" data-app="explorer">
+                <div class="shortcut-icon icon-explorer">
+                    <!-- SVG Explorer Icon -->
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                    </svg>
+                </div>
+                <span class="shortcut-label">File Explorer</span>
+            </div>
+
+            <div class="shortcut" data-app="settings">
+                <div class="shortcut-icon icon-settings">
+                    <!-- SVG Settings Icon -->
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    </svg>
+                </div>
+                <span class="shortcut-label">Settings</span>
+            </div>
+        </div>
+
+        <!-- Draggable Windows Container -->
+        <div id="windows-container">
+            
+            <!-- APPLICATION: KFS TERMINAL -->
+            <div class="window active-window" id="win-terminal" style="top: 80px; left: 120px; width: 620px; height: 420px; display: none;">
+                <div class="window-header">
+                    <div class="window-title">
+                        <svg class="win-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="4 17 10 11 4 5"></polyline>
+                            <line x1="12" y1="19" x2="20" y2="19"></line>
+                        </svg>
+                        <span>kfs_terminal.sys [KFS OS v1.0]</span>
+                    </div>
+                    <div class="window-controls">
+                        <button class="win-btn btn-minimize" data-app="terminal">—</button>
+                        <button class="win-btn btn-maximize" data-app="terminal">🗖</button>
+                        <button class="win-btn btn-close" data-app="terminal">×</button>
+                    </div>
+                </div>
+                <div class="window-body terminal-body">
+                    <div class="terminal-output" id="terminal-log">
+                        <div class="terminal-line system-msg">Kreatek Flow Systems [Version 1.0.254]</div>
+                        <div class="terminal-line system-msg">Initializing core drivers... OK</div>
+                        <div class="terminal-line system-msg">Type 'help' to view available commands.</div>
+                        <div class="terminal-line">&nbsp;</div>
+                    </div>
+                    <div class="terminal-input-line">
+                        <span class="terminal-prompt">kfs@kreatek-flow:~#</span>
+                        <input type="text" id="terminal-input" autocomplete="off" autofocus>
+                    </div>
+                </div>
+            </div>
+
+            <!-- APPLICATION: FLOWEDIT TEXT EDITOR -->
+            <div class="window" id="win-editor" style="top: 120px; left: 240px; width: 580px; height: 400px; display: none;">
+                <div class="window-header">
+                    <div class="window-title">
+                        <svg class="win-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                        </svg>
+                        <span>FlowEdit - Untitled.txt</span>
+                    </div>
+                    <div class="window-controls">
+                        <button class="win-btn btn-minimize" data-app="editor">—</button>
+                        <button class="win-btn btn-maximize" data-app="editor">🗖</button>
+                        <button class="win-btn btn-close" data-app="editor">×</button>
+                    </div>
+                </div>
+                <div class="window-body editor-body">
+                    <div class="editor-toolbar">
+                        <button class="editor-btn" id="editor-btn-clear">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            Clear
+                        </button>
+                        <button class="editor-btn editor-btn-primary" id="editor-btn-save">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                            Download Notes
+                        </button>
+                    </div>
+                    <textarea class="editor-textarea" id="editor-text" placeholder="Start typing notes here... FlowEdit automatically captures Kreatek flow states."></textarea>
+                </div>
+            </div>
+
+            <!-- APPLICATION: FILE EXPLORER -->
+            <div class="window" id="win-explorer" style="top: 160px; left: 160px; width: 660px; height: 440px; display: none;">
+                <div class="window-header">
+                    <div class="window-title">
+                        <svg class="win-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+                        </svg>
+                        <span>File Explorer - Root (/)</span>
+                    </div>
+                    <div class="window-controls">
+                        <button class="win-btn btn-minimize" data-app="explorer">—</button>
+                        <button class="win-btn btn-maximize" data-app="explorer">🗖</button>
+                        <button class="win-btn btn-close" data-app="explorer">×</button>
+                    </div>
+                </div>
+                <div class="window-body explorer-body">
+                    <!-- Left Sidebar -->
+                    <div class="explorer-sidebar">
+                        <div class="sidebar-item active" data-dir="root">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                            <span>Quick Access</span>
+                        </div>
+                        <div class="sidebar-group-title">System Nodes</div>
+                        <div class="sidebar-item" data-dir="system">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+                            <span>Core System</span>
+                        </div>
+                        <div class="sidebar-item" data-dir="documents">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                            <span>User Docs</span>
+                        </div>
+                        <div class="sidebar-item" data-dir="network">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="16" y="16" width="6" height="6" rx="1"></rect><rect x="2" y="16" width="6" height="6" rx="1"></rect><rect x="9" y="2" width="6" height="6" rx="1"></rect><path d="M12 8v8M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"></path></svg>
+                            <span>Network Node</span>
+                        </div>
+                    </div>
+                    <!-- Right Files Grid -->
+                    <div class="explorer-main">
+                        <div class="explorer-breadcrumbs">
+                            <span class="breadcrumb-item">kfs_os</span>
+                            <span class="breadcrumb-separator">/</span>
+                            <span class="breadcrumb-item active" id="explorer-current-path">root</span>
+                        </div>
+                        <div class="explorer-grid" id="explorer-files-view">
+                            <!-- Files loaded dynamically via app.js -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- APPLICATION: SETTINGS -->
+            <div class="window" id="win-settings" style="top: 200px; left: 200px; width: 600px; height: 420px; display: none;">
+                <div class="window-header">
+                    <div class="window-title">
+                        <svg class="win-title-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                        <span>System Control Center</span>
+                    </div>
+                    <div class="window-controls">
+                        <button class="win-btn btn-minimize" data-app="settings">—</button>
+                        <button class="win-btn btn-maximize" data-app="settings">🗖</button>
+                        <button class="win-btn btn-close" data-app="settings">×</button>
+                    </div>
+                </div>
+                <div class="window-body settings-body">
+                    <!-- Sidebar menu -->
+                    <div class="settings-sidebar">
+                        <div class="settings-menu-item active" data-tab="tab-personalization">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+                            <span>Aesthetics</span>
+                        </div>
+                        <div class="settings-menu-item" data-tab="tab-system">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect><rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect><line x1="6" y1="6" x2="6.01" y2="6"></line><line x1="6" y1="18" x2="6.01" y2="18"></line></svg>
+                            <span>Specs</span>
+                        </div>
+                    </div>
+                    <!-- Settings content -->
+                    <div class="settings-content">
+                        <!-- Personalization Tab -->
+                        <div class="settings-tab active" id="tab-personalization">
+                            <h3>Personalization</h3>
+                            
+                            <div class="setting-section">
+                                <label>Wallpaper Aesthetics</label>
+                                <div class="wallpaper-options">
+                                    <button class="wp-opt active" data-theme="purple" style="background: linear-gradient(135deg, #0f172a, #1e1b4b, #3b0764);">
+                                        Deep Purple
+                                    </button>
+                                    <button class="wp-opt" data-theme="blue" style="background: linear-gradient(135deg, #0b1528, #072f54, #0f172a);">
+                                        Abyssal Blue
+                                    </button>
+                                    <button class="wp-opt" data-theme="emerald" style="background: linear-gradient(135deg, #061f18, #022c22, #0f172a);">
+                                        Cyber Emerald
+                                    </button>
+                                    <button class="wp-opt" data-theme="sunset" style="background: linear-gradient(135deg, #18080f, #310a20, #0f172a);">
+                                        Neon Sunset
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="setting-section">
+                                <label>OS Accent Palette</label>
+                                <div class="accent-options">
+                                    <button class="accent-opt active" data-accent="purple" style="background-color: #a855f7;"></button>
+                                    <button class="accent-opt" data-accent="blue" style="background-color: #3b82f6;"></button>
+                                    <button class="accent-opt" data-accent="emerald" style="background-color: #10b981;"></button>
+                                    <button class="accent-opt" data-accent="rose" style="background-color: #f43f5e;"></button>
+                                </div>
+                            </div>
+
+                            <div class="setting-section">
+                                <label>Glassmorphism Blur Strength</label>
+                                <input type="range" min="5" max="30" value="16" class="settings-slider" id="blur-slider">
+                                <span class="slider-val" id="blur-slider-val">16px</span>
+                            </div>
+                        </div>
+
+                        <!-- System Specs Tab -->
+                        <div class="settings-tab" id="tab-system">
+                            <h3>System Diagnostics</h3>
+                            <div class="spec-list">
+                                <div class="spec-item">
+                                    <span class="spec-label">System Shell:</span>
+                                    <span class="spec-val">Kreatek Flow Systems (KFS OS)</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Core Version:</span>
+                                    <span class="spec-val">v1.0.254 (Stable-Build)</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Flow Core Processor:</span>
+                                    <span class="spec-val">Kreatek Flow Engine Core x16</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Integrated Memory:</span>
+                                    <span class="spec-val">32.0 GB Virtual RAM</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Graphics Architecture:</span>
+                                    <span class="spec-val">HTML Canvas / WebGL Composite</span>
+                                </div>
+                                <div class="spec-item">
+                                    <span class="spec-label">Host Browser:</span>
+                                    <span class="spec-val" id="browser-info">Detecting...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Start Menu Panel -->
+        <div id="start-menu">
+            <div class="start-header">
+                <div class="user-profile">
+                    <div class="avatar">K</div>
+                    <div class="user-details">
+                        <span class="user-name">KFS Administrator</span>
+                        <span class="user-role">Node Controller</span>
+                    </div>
+                </div>
+            </div>
+            <div class="start-apps-grid">
+                <div class="start-app-item" data-app="terminal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                    <span>Terminal</span>
+                </div>
+                <div class="start-app-item" data-app="editor">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line></svg>
+                    <span>FlowEdit</span>
+                </div>
+                <div class="start-app-item" data-app="explorer">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                    <span>File Explorer</span>
+                </div>
+                <div class="start-app-item" data-app="settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <span>Settings</span>
+                </div>
+            </div>
+            <div class="start-footer">
+                <div class="sys-uptime">
+                    <span>Uptime:</span>
+                    <span id="uptime-counter">00:00:00</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Taskbar Panel -->
+        <div id="taskbar">
+            <!-- Start button -->
+            <button id="btn-start" class="taskbar-btn" title="KFS Start Menu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="start-icon">
+                    <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+                    <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+                    <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+                    <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+                </svg>
+            </button>
+
+            <div class="taskbar-separator"></div>
+
+            <!-- Taskbar Open Apps Pinned items -->
+            <div id="taskbar-apps">
+                <button class="taskbar-btn app-pin" data-app="terminal" id="taskbar-terminal" title="KFS Terminal">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg>
+                    <span class="app-indicator"></span>
+                </button>
+                <button class="taskbar-btn app-pin" data-app="editor" id="taskbar-editor" title="FlowEdit Editor">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line></svg>
+                    <span class="app-indicator"></span>
+                </button>
+                <button class="taskbar-btn app-pin" data-app="explorer" id="taskbar-explorer" title="File Explorer">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                    <span class="app-indicator"></span>
+                </button>
+                <button class="taskbar-btn app-pin" data-app="settings" id="taskbar-settings" title="System Settings">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <span class="app-indicator"></span>
+                </button>
+            </div>
+
+            <div class="taskbar-separator"></div>
+
+            <!-- Calendar & Status Area -->
+            <div id="system-tray">
+                <!-- Status icons -->
+                <div class="tray-icon" title="Virtual Connection: Connected">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"></path><path d="M1.42 9a16 16 0 0 1 21.16 0"></path><path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path><line x1="12" y1="20" x2="12.01" y2="20" stroke-width="3"></line></svg>
+                </div>
+                <div class="tray-icon" title="Audio Systems Active">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                </div>
+                
+                <div class="taskbar-separator"></div>
+
+                <!-- Clock / Date widget -->
+                <div id="clock-widget">
+                    <div id="tray-time">20:48</div>
+                    <div id="tray-date">05/31/2026</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core OS Execution Logic -->
+    <script src="app.js"></script>
+</body>
+</html>
