@@ -1631,7 +1631,24 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   const [isFetchingBarcode, setIsFetchingBarcode] = useState(false);
   const [newVendedor, setNewVendedor] = useState({ name: "", email: "", password: "", avatar: "" });
   const [newExpense, setNewExpense] = useState({ description: "", amountUSD: "" });
-  const { createVale, payVale, queryGlobalBarcode } = useKFS();
+  const [smsInput, setSmsInput] = useState("");
+  const { createVale, payVale, queryGlobalBarcode, smsConciliator } = useKFS();
+
+  const handleManualSmsConciliation = () => {
+    if (!smsInput.trim()) return;
+    const result = smsConciliator(smsInput);
+    if (result.matched) {
+      playPremiumChime();
+      showToast(`¡Conciliación Exitosa! Orden auto-aprobada por SMS. Ref: ${result.reference}`, "success");
+      setSmsInput("");
+    } else {
+      if (result.error) {
+        showToast(result.error, "error");
+      } else {
+        showToast(`SMS leído (Ref: ${result.reference || "Desconocida"}, Bs. ${result.amount || 0}), pero no coincide con ninguna orden online pendiente.`, "error");
+      }
+    }
+  };
 
   const shieldMargin = (productId: string, newPrice: number) => {
     setDb((prev: any) => ({
@@ -2159,28 +2176,67 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2 text-orange-600">
               <Clock className="text-orange-500" /> Órdenes Online por Validar ({myOrders.length})
             </h3>
-            <div className="space-y-4">
-              {myOrders.map((order: any) => {
-                const product = db.products.find((p: any) => p.id === order.productId);
-                return (
-                  <div key={order.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-white rounded-2xl border border-orange-100 shadow-sm gap-4">
-                    <div>
-                      <span className="bg-orange-100 text-orange-700 text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-wider mb-2 inline-block">Pendiente</span>
-                      <h4 className="font-bold text-[#0A1128]">{product?.name || "Producto Desconocido"}</h4>
-                      <p className="text-sm text-gray-500 font-mono mt-1">Ref: <span className="font-bold text-gray-900">{order.paymentReference}</span> | Método: {order.paymentMethod}</p>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Columna Izquierda: Lista de Órdenes */}
+              <div className="lg:col-span-2 space-y-4">
+                {myOrders.map((order: any) => {
+                  const product = db.products.find((p: any) => p.id === order.productId);
+                  return (
+                    <div key={order.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-white rounded-2xl border border-orange-100 shadow-sm gap-4 animate-fade-in">
+                      <div>
+                        <span className="bg-orange-100 text-orange-700 text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-wider mb-2 inline-block">Pendiente</span>
+                        <h4 className="font-bold text-[#0A1128]">{product?.name || "Producto Desconocido"}</h4>
+                        <p className="text-sm text-gray-500 font-mono mt-1">Ref: <span className="font-bold text-gray-900">{order.paymentReference}</span> | Método: {order.paymentMethod}</p>
+                      </div>
+                      <div className="flex items-center gap-4 w-full md:w-auto">
+                        <div className="text-right flex-1 md:flex-none">
+                          <p className="font-black text-lg text-green-600">{formatUSD(order.amountUSD)}</p>
+                        </div>
+                        <div className="flex gap-2">
+                          <button onClick={() => rejectOrder(order.id)} className="p-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition-colors cursor-pointer" title="Rechazar y devolver stock"><X size={20} /></button>
+                          <button onClick={() => approveOrder(order.id)} className="p-2 bg-green-100 text-green-600 rounded-xl hover:bg-green-200 transition-colors cursor-pointer" title="Aprobar Pago"><CheckCircle size={20} /></button>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-4 w-full md:w-auto">
-                      <div className="text-right flex-1 md:flex-none">
-                        <p className="font-black text-lg text-green-600">{formatUSD(order.amountUSD)}</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <button onClick={() => rejectOrder(order.id)} className="p-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition-colors cursor-pointer" title="Rechazar y devolver stock"><X size={20} /></button>
-                        <button onClick={() => approveOrder(order.id)} className="p-2 bg-green-100 text-green-600 rounded-xl hover:bg-green-200 transition-colors cursor-pointer" title="Aprobar Pago"><CheckCircle size={20} /></button>
-                      </div>
+                  );
+                })}
+              </div>
+
+              {/* Columna Derecha: Conciliador SMS Real */}
+              <div className="bg-[#0A1128] border border-[#C5A184]/20 rounded-3xl p-6 text-[#F8F9FA] relative overflow-hidden shadow-xl flex flex-col justify-between text-left">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#C5A184]/5 rounded-full blur-2xl pointer-events-none"></div>
+                <div>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2.5 rounded-xl bg-[#C5A184]/15 text-[#C5A184]">
+                      <Bell size={20} className="animate-pulse" />
+                    </div>
+                    <div>
+                      <h4 className="font-black text-sm tracking-wide">CONCILIADOR SMS</h4>
+                      <p className="text-[9px] text-[#C5A184] font-mono uppercase tracking-widest">Tecnología Inteligente KFS</p>
                     </div>
                   </div>
-                );
-              })}
+                  
+                  <p className="text-[11px] text-gray-300 mb-4 leading-relaxed">
+                    Pega el SMS de Pago Móvil o Zelle. El motor KFS extraerá la referencia y el monto para conciliar y liberar la orden al instante sin intervención manual.
+                  </p>
+                  
+                  <textarea 
+                    placeholder="Pega el mensaje de texto bancario recibido aquí..."
+                    value={smsInput}
+                    onChange={(e) => setSmsInput(e.target.value)}
+                    className="w-full h-24 bg-black/40 border border-white/10 rounded-xl p-3 text-xs font-mono text-gray-200 focus:outline-none focus:border-[#C5A184] placeholder:text-gray-600 resize-none leading-relaxed"
+                  />
+                </div>
+                
+                <button 
+                  type="button" 
+                  onClick={handleManualSmsConciliation}
+                  className="w-full mt-4 py-3 rounded-xl font-black text-xs text-[#0A1128] bg-[#C5A184] hover:bg-[#b08e72] transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  ⚡ Conciliar SMS Real
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -2613,7 +2669,24 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
   const [checkoutProduct, setCheckoutProduct] = useState<any>(null);
   const [receiptTx, setReceiptTx] = useState<any>(null);
   const [scannedGlobalProduct, setScannedGlobalProduct] = useState<any>(null);
-  const { queryGlobalBarcode } = useKFS();
+  const [smsInput, setSmsInput] = useState("");
+  const { queryGlobalBarcode, smsConciliator } = useKFS();
+
+  const handleManualSmsConciliation = () => {
+    if (!smsInput.trim()) return;
+    const result = smsConciliator(smsInput);
+    if (result.matched) {
+      playPremiumChime();
+      showToast(`¡Conciliación Exitosa! Orden auto-aprobada por SMS. Ref: ${result.reference}`, "success");
+      setSmsInput("");
+    } else {
+      if (result.error) {
+        showToast(result.error, "error");
+      } else {
+        showToast(`SMS leído (Ref: ${result.reference || "Desconocida"}, Bs. ${result.amount || 0}), pero no coincide con ninguna orden online pendiente.`, "error");
+      }
+    }
+  };
   
   const [newProd, setNewProd] = useState({ name: "", price: "", stock: "", imgUrl: "", category: "Alimentos", barcode: "" });
   const [isFetchingBarcode, setIsFetchingBarcode] = useState(false);
@@ -2817,28 +2890,66 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
             <h3 className="font-black text-xl text-[#0A1128] mb-4 flex items-center gap-2 text-orange-600">
               <Clock className="text-orange-500" /> Órdenes Online ({myOrders.length})
             </h3>
-            <div className="space-y-3">
-              {myOrders.map((order: any) => {
-                const product = db.products.find((p: any) => p.id === order.productId);
-                return (
-                  <div key={order.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white rounded-xl border border-orange-100 shadow-sm gap-3">
-                    <div>
-                      <span className="bg-orange-100 text-orange-700 text-[9px] font-black px-2 py-1 rounded-full uppercase tracking-wider mb-1 inline-block">Validación Pendiente</span>
-                      <h4 className="font-bold text-sm text-[#0A1128]">{product?.name || "Producto Desconocido"}</h4>
-                      <p className="text-xs text-gray-500 font-mono mt-0.5">Ref: <span className="font-bold text-gray-900">{order.paymentReference}</span> | {order.paymentMethod}</p>
+            
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Columna Izquierda: Lista de Órdenes */}
+              <div className="lg:col-span-2 space-y-3">
+                {myOrders.map((order: any) => {
+                  const product = db.products.find((p: any) => p.id === order.productId);
+                  return (
+                    <div key={order.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white rounded-xl border border-orange-100 shadow-sm gap-3 animate-fade-in">
+                      <div>
+                        <span className="bg-orange-100 text-orange-700 text-[9px] font-black px-2 py-1 rounded-full uppercase tracking-wider mb-1 inline-block">Validación Pendiente</span>
+                        <h4 className="font-bold text-sm text-[#0A1128]">{product?.name || "Producto Desconocido"}</h4>
+                        <p className="text-xs text-gray-500 font-mono mt-0.5">Ref: <span className="font-bold text-gray-900">{order.paymentReference}</span> | {order.paymentMethod}</p>
+                      </div>
+                      <div className="flex items-center gap-3 w-full md:w-auto mt-2 md:mt-0">
+                        <div className="text-right flex-1 md:flex-none">
+                          <p className="font-black text-base text-green-600">{formatUSD(order.amountUSD)}</p>
+                        </div>
+                        <div className="flex gap-1.5">
+                          <button onClick={() => rejectOrder(order.id)} className="p-1.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors cursor-pointer" title="Rechazar"><X size={18} /></button>
+                          <button onClick={() => approveOrder(order.id)} className="p-1.5 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors cursor-pointer" title="Aprobar Pago"><CheckCircle size={18} /></button>
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3 w-full md:w-auto mt-2 md:mt-0">
-                      <div className="text-right flex-1 md:flex-none">
-                        <p className="font-black text-base text-green-600">{formatUSD(order.amountUSD)}</p>
-                      </div>
-                      <div className="flex gap-1.5">
-                        <button onClick={() => rejectOrder(order.id)} className="p-1.5 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors cursor-pointer" title="Rechazar"><X size={18} /></button>
-                        <button onClick={() => approveOrder(order.id)} className="p-1.5 bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition-colors cursor-pointer" title="Aprobar Pago"><CheckCircle size={18} /></button>
-                      </div>
+                  );
+                })}
+              </div>
+
+              {/* Columna Derecha: Conciliador SMS Real */}
+              <div className="bg-[#0A1128] border border-[#C5A184]/20 rounded-3xl p-5 text-[#F8F9FA] relative overflow-hidden shadow-xl flex flex-col justify-between text-left">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-[#C5A184]/5 rounded-full blur-2xl pointer-events-none"></div>
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="p-2 rounded-lg bg-[#C5A184]/15 text-[#C5A184]">
+                      <Bell size={16} className="animate-pulse" />
+                    </div>
+                    <div>
+                      <h4 className="font-black text-xs tracking-wide">CONCILIADOR SMS</h4>
                     </div>
                   </div>
-                );
-              })}
+                  
+                  <p className="text-[10px] text-gray-400 mb-3 leading-relaxed">
+                    Pega el SMS de notificación del Pago Móvil recibido para conciliar y auto-aprobar la orden del cliente de inmediato.
+                  </p>
+                  
+                  <textarea 
+                    placeholder="Pega el SMS recibido..."
+                    value={smsInput}
+                    onChange={(e) => setSmsInput(e.target.value)}
+                    className="w-full h-20 bg-black/40 border border-white/10 rounded-xl p-2.5 text-xs font-mono text-gray-200 focus:outline-none focus:border-[#C5A184] placeholder:text-gray-600 resize-none leading-relaxed"
+                  />
+                </div>
+                
+                <button 
+                  type="button" 
+                  onClick={handleManualSmsConciliation}
+                  className="w-full mt-3 py-2.5 rounded-xl font-black text-xs text-[#0A1128] bg-[#C5A184] hover:bg-[#b08e72] transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
+                >
+                  ⚡ Conciliar SMS
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -3387,7 +3498,7 @@ export default function Home() {
           registerCrmExpress={registerCrmExpress}
         />
       )}
-      <SMSConciliatorSimulator />
+      {null}
     </div>
   );
 }
