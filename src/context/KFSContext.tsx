@@ -3,6 +3,34 @@
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { supabase, isSupabaseConfigured } from "./supabase";
 
+const VENEZUELAN_PRODUCTS_CATALOG: Record<string, { name: string; imgUrl: string; category: string; brand: string }> = {
+  "7591006000016": { name: "Harina PAN Blanca (1kg)", imgUrl: "https://images.unsplash.com/photo-1608686207856-001b95cf60ca?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
+  "7591005000574": { name: "Margarina Mavesa Común (500g)", imgUrl: "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
+  "7591005001151": { name: "Mayonesa Mavesa Tradicional (445g)", imgUrl: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
+  "7591001000219": { name: "Malta Polar Botella (250ml)", imgUrl: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500&auto=format&fit=crop&q=60", category: "Bebidas", brand: "Cervecería Polar" },
+  "7591001000110": { name: "Cerveza Polar Pilsen (Tercio 295ml)", imgUrl: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=500&auto=format&fit=crop&q=60", category: "Bebidas", brand: "Cervecería Polar" },
+  "7591395000147": { name: "Pirulin Original (Lata 190g)", imgUrl: "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?w=500&auto=format&fit=crop&q=60", category: "Dulces", brand: "Nucita Venezolana" },
+  "7591016205722": { name: "Galleta Savoy Cocosette (50g)", imgUrl: "https://images.unsplash.com/photo-1559622214-f8a98509ef74?w=500&auto=format&fit=crop&q=60", category: "Dulces", brand: "Nestlé Savoy" },
+  "7591016205708": { name: "Galleta Savoy Susy (50g)", imgUrl: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&auto=format&fit=crop&q=60", category: "Dulces", brand: "Nestlé Savoy" },
+  "7591016035251": { name: "Chocolate Savoy de Leche (130g)", imgUrl: "https://images.unsplash.com/photo-1548907040-4d42b521e5e4?w=500&auto=format&fit=crop&q=60", category: "Dulces", brand: "Nestlé Savoy" },
+  "7591016035404": { name: "Bombón Savoy Toronto (Bolsa 36u)", imgUrl: "https://images.unsplash.com/photo-1581798459219-318e76c1fd75?w=500&auto=format&fit=crop&q=60", category: "Dulces", brand: "Nestlé Savoy" },
+  "7591005001229": { name: "Queso Fundido Rikesa Cheddar (300g)", imgUrl: "https://images.unsplash.com/photo-1589415082482-f6cbb779cc47?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
+  "7591041000675": { name: "Queso Fundido Cheez Whiz (300g)", imgUrl: "https://images.unsplash.com/photo-1589415082482-f6cbb779cc47?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Kraft" },
+  "7591005002042": { name: "Toddy Chocolate en Polvo (400g)", imgUrl: "https://images.unsplash.com/photo-1541658016709-82535e94bc69?w=500&auto=format&fit=crop&q=60", category: "Bebidas", brand: "Alimentos Polar" },
+  "7591018000547": { name: "Salsa de Tomate Pampero (397g)", imgUrl: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Pampero" },
+  "7591642000678": { name: "Arroz Mary Dorado Extra (1kg)", imgUrl: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Mary" },
+  "7591024001019": { name: "Café Molido Fama de América (250g)", imgUrl: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Fama de América" },
+  "7591006001044": { name: "Pasta Primor Spaghetti (1kg)", imgUrl: "https://images.unsplash.com/photo-1621961404018-8199342e7bc9?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
+  "7591060000120": { name: "Diablitos Underwood Jamón (115g)", imgUrl: "https://images.unsplash.com/photo-1534482421-64566f976cfa?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Diablitos Underwood" },
+  "7591021000107": { name: "Atún Margarita en Aceite (140g)", imgUrl: "https://images.unsplash.com/photo-1544860707-c352cc5a92e3?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
+  "759104101405": { name: "Salsa Inglesa Kraft (150ml)", imgUrl: "https://images.unsplash.com/photo-1589415082482-f6cbb779cc47?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Kraft" },
+  "7591005000758": { name: "Vinagre Blanco Mavesa (1L)", imgUrl: "https://images.unsplash.com/photo-1589415082482-f6cbb779cc47?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
+  "7591005002905": { name: "Detergente Polvo Las Llaves (1kg)", imgUrl: "https://images.unsplash.com/photo-1583947215259-38e31be8751f?w=500&auto=format&fit=crop&q=60", category: "Limpieza", brand: "Alimentos Polar" },
+  "7591005001601": { name: "Jabón Azul Las Llaves Bebé (250g)", imgUrl: "https://images.unsplash.com/photo-1607006342411-92fc0a41f845?w=500&auto=format&fit=crop&q=60", category: "Limpieza", brand: "Alimentos Polar" },
+  "7591142100014": { name: "Harina de Trigo Robin Hood (1kg)", imgUrl: "https://images.unsplash.com/photo-1608686207856-001b95cf60ca?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Monaca" },
+  "7591736000454": { name: "Suavizante Ensueño Floral (1L)", imgUrl: "https://images.unsplash.com/photo-1583947215259-38e31be8751f?w=500&auto=format&fit=crop&q=60", category: "Limpieza", brand: "Corimon" }
+};
+
 const MOCK_BCV_RATES = {
   USD: 36.45,
   EUR: 39.20
@@ -66,6 +94,7 @@ interface KFSContextType {
   payVale: (valeId: string, amount: number) => void;
   registerPosTerminal: (posData: any) => void;
   deletePosTerminal: (posId: string) => void;
+  queryGlobalBarcode: (barcode: string) => Promise<any>;
 }
 
 const KFSContext = createContext<KFSContextType | undefined>(undefined);
@@ -786,6 +815,47 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast("Terminal POS retirado contablemente.");
   };
 
+  const queryGlobalBarcode = async (barcode: string) => {
+    if (!barcode) return null;
+    
+    // 1. Catálogo local de alta velocidad (Garantía de Offline-First)
+    if (VENEZUELAN_PRODUCTS_CATALOG[barcode]) {
+      console.log("[KFS Offline Catalog] Encontrado localmente:", VENEZUELAN_PRODUCTS_CATALOG[barcode]);
+      return {
+        barcode,
+        ...VENEZUELAN_PRODUCTS_CATALOG[barcode],
+        source: "local_venezuela"
+      };
+    }
+    
+    // 2. Consulta en la base de datos de Supabase Cloud
+    if (isSupabaseConfigured && networkState === "online") {
+      try {
+        const { data, error } = await supabase
+          .from("kfs_global_products_catalog")
+          .select("*")
+          .eq("barcode", barcode)
+          .single();
+        
+        if (data && !error) {
+          console.log("[KFS Supabase Catalog] Encontrado en la nube:", data);
+          return {
+            barcode: data.barcode,
+            name: data.name,
+            imgUrl: data.image_url,
+            category: data.category,
+            brand: data.brand,
+            source: "supabase_cloud"
+          };
+        }
+      } catch (err) {
+        console.warn("[KFS Supabase Catalog] Error consultando Supabase:", err);
+      }
+    }
+    
+    return null;
+  };
+
   return (
     <KFSContext.Provider value={{
       isClient, isBooting, view, setView, currentUser, setCurrentUser,
@@ -793,7 +863,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       handleLogin, logout, registerClient, registerPromotora, approvePromotora, rejectPromotora, settlePromotoraEarnings,
       addProduct, addExpense, processPurchase, submitOnlineOrder, approveOrder, rejectOrder, generateZReport,
       networkState, setNetworkState, smsConciliator, registerCrmExpress,
-      ghostTrapLocked, setGhostTrapLocked, createVale, payVale, registerPosTerminal, deletePosTerminal
+      ghostTrapLocked, setGhostTrapLocked, createVale, payVale, registerPosTerminal, deletePosTerminal,
+      queryGlobalBarcode
     }}>
       {children}
     </KFSContext.Provider>

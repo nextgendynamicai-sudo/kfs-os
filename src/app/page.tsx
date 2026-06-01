@@ -1631,7 +1631,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   const [isFetchingBarcode, setIsFetchingBarcode] = useState(false);
   const [newVendedor, setNewVendedor] = useState({ name: "", email: "", password: "", avatar: "" });
   const [newExpense, setNewExpense] = useState({ description: "", amountUSD: "" });
-  const { createVale, payVale } = useKFS();
+  const { createVale, payVale, queryGlobalBarcode } = useKFS();
 
   const shieldMargin = (productId: string, newPrice: number) => {
     setDb((prev: any) => ({
@@ -1645,6 +1645,21 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
     if (!barcode) return;
     setIsFetchingBarcode(true);
     try {
+      // 1. Consultar el Catálogo Nacional de Venezuela (Garantía offline-first)
+      const globalProd = await queryGlobalBarcode(barcode);
+      if (globalProd) {
+        setNewProd(prev => ({
+          ...prev,
+          name: globalProd.name,
+          imgUrl: globalProd.imgUrl,
+          category: globalProd.category || prev.category
+        }));
+        showToast(`¡Producto encontrado en Catálogo Venezolano! (${globalProd.brand})`, "success");
+        setIsFetchingBarcode(false);
+        return;
+      }
+
+      // 2. Fallback a Open Food Facts global
       const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
       const data = await res.json();
       if (data.status === 1 && data.product) {
@@ -1659,7 +1674,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
       }
     } catch (e) {
       console.error(e);
-      showToast("Error conectando con OpenFoodFacts.");
+      showToast("Error consultando base de datos. Complete manualmente.");
     }
     setIsFetchingBarcode(false);
   };
@@ -2597,6 +2612,8 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
   const videoRef = useRef<HTMLVideoElement>(null);
   const [checkoutProduct, setCheckoutProduct] = useState<any>(null);
   const [receiptTx, setReceiptTx] = useState<any>(null);
+  const [scannedGlobalProduct, setScannedGlobalProduct] = useState<any>(null);
+  const { queryGlobalBarcode } = useKFS();
   
   const [newProd, setNewProd] = useState({ name: "", price: "", stock: "", imgUrl: "", category: "Alimentos", barcode: "" });
   const [isFetchingBarcode, setIsFetchingBarcode] = useState(false);
@@ -2605,6 +2622,21 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
     if (!barcode) return;
     setIsFetchingBarcode(true);
     try {
+      // 1. Consultar el Catálogo Nacional de Venezuela (Garantía offline-first)
+      const globalProd = await queryGlobalBarcode(barcode);
+      if (globalProd) {
+        setNewProd(prev => ({
+          ...prev,
+          name: globalProd.name,
+          imgUrl: globalProd.imgUrl,
+          category: globalProd.category || prev.category
+        }));
+        showToast(`¡Producto encontrado en Catálogo Venezolano! (${globalProd.brand})`, "success");
+        setIsFetchingBarcode(false);
+        return;
+      }
+
+      // 2. Fallback a Open Food Facts global
       const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
       const data = await res.json();
       if (data.status === 1 && data.product) {
@@ -2619,7 +2651,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
       }
     } catch (e) {
       console.error(e);
-      showToast("Error conectando con OpenFoodFacts.");
+      showToast("Error consultando base de datos. Complete manualmente.");
     }
     setIsFetchingBarcode(false);
   };
@@ -2674,7 +2706,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
       return;
     }
 
-    // 1. Try to find by ID or Barcode locally
+    // 1. Buscar por ID o código de barras localmente
     let prod = db.products.find((p: any) => p.id === prodIdOrBarcode || p.barcode === prodIdOrBarcode);
     
     if (prod) {
@@ -2683,15 +2715,40 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
       return;
     }
 
-    // 2. If not found locally, check OpenFoodFacts
+    // 2. Consulta en el Catálogo Nacional de Venezuela (Garantía offline-first)
+    const globalProd = await queryGlobalBarcode(prodIdOrBarcode);
+    if (globalProd) {
+      playPremiumChime();
+      setScannedGlobalProduct({
+        barcode: prodIdOrBarcode,
+        name: globalProd.name,
+        imgUrl: globalProd.imgUrl,
+        category: globalProd.category || "Alimentos",
+        brand: globalProd.brand || "Venezuela",
+        source: globalProd.source
+      });
+      setShowScanner(false);
+      return;
+    }
+
+    // 3. Fallback a Open Food Facts global
     try {
       const res = await fetch(`https://world.openfoodfacts.org/api/v0/product/${prodIdOrBarcode}.json`);
       const data = await res.json();
       if (data.status === 1 && data.product) {
         const productName = data.product.product_name || data.product.product_name_es || "Producto Desconocido";
-        showToast(`Se detectó: ${productName}. NO está en inventario. Avise al dueño para agregarlo.`, "success");
+        const imgUrl = data.product.image_url || "";
+        playPremiumChime();
+        setScannedGlobalProduct({
+          barcode: prodIdOrBarcode,
+          name: productName,
+          imgUrl: imgUrl,
+          category: "Alimentos",
+          brand: "Importado / Global",
+          source: "openfoodfacts"
+        });
       } else {
-        showToast("Producto no encontrado ni en inventario ni en red global.");
+        showToast("Producto no encontrado en las bases de datos.");
       }
     } catch (e) {
       showToast("Producto no reconocido y error de red.");
@@ -2883,6 +2940,88 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
                 <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-[#0A1128] bg-[#C5A184] shadow-lg cursor-pointer">Publicar</button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Producto Detectado en Catálogo Global / Nacional */}
+      {scannedGlobalProduct && (
+        <div className="fixed inset-0 bg-[#0A1128]/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fade-in text-left">
+          <div className="bg-[#0A1128] border border-[#C5A184]/30 rounded-[2.5rem] w-full max-w-lg p-8 shadow-2xl relative overflow-hidden">
+            {/* Efecto de brillo de fondo */}
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[#C5A184]/5 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 rounded-2xl bg-[#C5A184]/10 text-[#C5A184]">
+                <Package size={28} />
+              </div>
+              <div>
+                <h3 className="text-2xl font-black text-[#F8F9FA]">Producto Detectado</h3>
+                <p className="text-xs text-[#C5A184] font-bold tracking-widest uppercase animate-pulse">
+                  {scannedGlobalProduct.source === "local_venezuela" || scannedGlobalProduct.source === "supabase_cloud"
+                    ? "Catálogo Nacional de Venezuela"
+                    : "Base de Datos Global (OpenFoodFacts)"}
+                </p>
+              </div>
+            </div>
+
+            <p className="text-gray-300 text-sm mb-6 leading-relaxed">
+              El artículo escaneado está registrado en la base de datos central, pero <span className="text-[#C5A184] font-bold">no existe aún en tu inventario local</span>. Puedes agregarlo instantáneamente.
+            </p>
+
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-5 mb-8 flex gap-4 items-center">
+              {scannedGlobalProduct.imgUrl ? (
+                <img 
+                  src={scannedGlobalProduct.imgUrl} 
+                  alt={scannedGlobalProduct.name} 
+                  className="w-20 h-20 object-cover rounded-xl border border-white/10 shadow-lg flex-shrink-0 bg-white/10 animate-fade-in" 
+                />
+              ) : (
+                <div className="w-20 h-20 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 text-[#C5A184]">
+                  <Camera size={28} />
+                </div>
+              )}
+              <div className="overflow-hidden">
+                <p className="text-[#F8F9FA] font-black text-lg truncate" title={scannedGlobalProduct.name}>
+                  {scannedGlobalProduct.name}
+                </p>
+                <p className="text-gray-400 text-xs mt-1">
+                  Marca: <span className="text-gray-300 font-semibold">{scannedGlobalProduct.brand}</span> • Categoría: <span className="text-gray-300 font-semibold">{scannedGlobalProduct.category}</span>
+                </p>
+                <p className="text-[#C5A184] font-mono text-xs mt-2 bg-[#C5A184]/10 border border-[#C5A184]/20 rounded px-2.5 py-1 inline-block">
+                  {scannedGlobalProduct.barcode}
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-3">
+              <button 
+                type="button" 
+                onClick={() => setScannedGlobalProduct(null)} 
+                className="w-1/3 py-3.5 rounded-xl border border-white/10 text-white hover:bg-white/5 font-bold cursor-pointer transition-colors"
+              >
+                Ignorar
+              </button>
+              <button 
+                type="button" 
+                onClick={() => {
+                  setNewProd({
+                    name: scannedGlobalProduct.name,
+                    price: "",
+                    stock: "20",
+                    imgUrl: scannedGlobalProduct.imgUrl || "",
+                    category: scannedGlobalProduct.category || "Alimentos",
+                    barcode: scannedGlobalProduct.barcode
+                  });
+                  setScannedGlobalProduct(null);
+                  setShowAddModal(true);
+                }} 
+                className="w-2/3 py-3.5 rounded-xl font-black text-[#0A1128] bg-[#C5A184] hover:bg-[#b08e72] shadow-xl cursor-pointer transition-colors flex items-center justify-center gap-2"
+              >
+                <CheckCircle size={18} />
+                Registrar en Inventario
+              </button>
+            </div>
           </div>
         </div>
       )}
