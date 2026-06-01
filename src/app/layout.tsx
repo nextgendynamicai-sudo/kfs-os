@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "KFS OS - Kreatek Flow Systems",
-  description: "KFS OS is a premium, highly interactive Browser Operating System (BOS) featuring a glassmorphic desktop environment, dynamic window management, and custom applications built with Next.js, React, Tailwind CSS, and Shadcn UI.",
+  title: "KFS - Creative Workspace",
+  description: "A creative digital space powered by Next.js, React, and Tailwind CSS.",
 };
 
 export default function RootLayout({
