@@ -473,7 +473,7 @@ export default function Home() {
 
   return (
     <div 
-      className={`relative w-full h-full flex flex-col overflow-hidden theme-${wallpaper}`}
+      className={`relative w-screen h-screen flex flex-col overflow-hidden theme-${wallpaper}`}
       style={{
         "--accent-rgb": accentColors[accent].rgb,
         "--accent-hex": accentColors[accent].hex,
@@ -1042,8 +1042,8 @@ export default function Home() {
       </div>
 
       {/* Cybernetic Gradient Wallpaper Layer */}
-      <div className="absolute inset-0 bg-slate-950 z-0">
-        <div className="absolute inset-0 z-0" id="desktop-wallpaper" />
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <div className={`absolute inset-0 z-0 theme-${wallpaper}`} id="desktop-wallpaper" />
         <div className="absolute inset-0 bg-transparent bg-[radial-gradient(rgba(255,255,255,0.035)_1px,transparent_1px)] bg-[size:32px_32px] z-1" />
       </div>
     </div>
