@@ -140,6 +140,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   const ghostTrapActive = useRef(true);
+  const isRemoteUpdate = useRef(false);
 
   // Hydration and Boot timer
   useEffect(() => {
@@ -190,7 +191,23 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
             }
           })
           .catch((err: any) => console.log("Supabase initial sync bypass:", err))
-          .finally(() => setIsDataLoaded(true));
+          .finally(() => {
+            setIsDataLoaded(true);
+            
+            // Subscribe to real-time updates
+            if (isSupabaseConfigured) {
+              const channel = supabase.channel('public:kfs_store_states');
+              channel
+                .on('postgres_changes', { event: '*', schema: 'public', table: 'kfs_store_states', filter: `id=eq.${syncId}` }, (payload: any) => {
+                  if (payload.new && payload.new.db_state) {
+                    isRemoteUpdate.current = true; // Flag remote update to prevent circular save
+                    setDb(payload.new.db_state);
+                    console.log("[Supabase Realtime] Estado sincronizado en tiempo real desde la nube.");
+                  }
+                })
+                .subscribe();
+            }
+          });
       } else {
         setIsDataLoaded(true);
       }
@@ -209,6 +226,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     if (!isClient || !isDataLoaded) return;
     try {
       localStorage.setItem("kfs_os_db_v2", JSON.stringify(db));
+      
+      if (isRemoteUpdate.current) {
+        // Skip cloud push for remote updates to prevent infinite loop
+        isRemoteUpdate.current = false;
+        return;
+      }
       
       if (isSupabaseConfigured && networkState === "online") {
         const syncId = "kfs-general-db-v2";
