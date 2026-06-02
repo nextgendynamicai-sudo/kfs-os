@@ -22,22 +22,24 @@ const KREATEK_COLORS = {
 // ==========================================
 
 const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnline = false }: any) => {
-  const { db } = useKFS();
+  const { db, rates } = useKFS();
   const [paymentMethod, setPaymentMethod] = useState("cash_bs");
   const [applyIva, setApplyIva] = useState(false);
   const [paymentReference, setPaymentReference] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [customerName, setCustomerName] = useState("");
   
   const [isProcessingPos, setIsProcessingPos] = useState(false);
   const [posStep, setPosStep] = useState(0);
 
-  const isForeign = ['zelle', 'cash_usd', 'cash_eur', 'binance'].includes(paymentMethod);
+  const isForeign = ['zelle', 'cash_usd', 'cash_eur', 'binance', 'nfc_web'].includes(paymentMethod);
   const price = product.priceUSD;
   const iva = applyIva ? price * 0.16 : 0;
   const igtf = isForeign ? (price + iva) * 0.03 : 0;
   const total = price + iva + igtf;
+  const totalBs = total * (rates?.USD || 36.45);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (isOnline && !paymentReference) {
       alert("Debes ingresar el número de referencia del pago para validar tu orden.");
       return;
@@ -58,6 +60,34 @@ const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnline = fal
       }
     }
 
+    if (paymentMethod === "nfc_web") {
+      setIsProcessingPos(true);
+      setPosStep(3); // Esperando tarjeta NFC
+      if ('NDEFReader' in window) {
+        try {
+          const ndef = new (window as any).NDEFReader();
+          await ndef.scan();
+          ndef.onreading = (event: any) => {
+            setPosStep(4);
+            setTimeout(() => {
+              onConfirm(paymentMethod, applyIva, `NFC-${Math.floor(100000 + Math.random() * 900000)}`, customerPhone, customerName);
+            }, 1500);
+          };
+          ndef.onerror = () => {
+            alert("Error de lectura NFC. Acerque la tarjeta nuevamente.");
+            setIsProcessingPos(false);
+          };
+        } catch (error) {
+          alert("Error iniciando NFC: " + error);
+          setIsProcessingPos(false);
+        }
+      } else {
+        alert("El pago por contacto (NFC) no está soportado en este dispositivo o navegador (requiere Chrome en Android con HTTPS).");
+        setIsProcessingPos(false);
+      }
+      return;
+    }
+
     if (paymentMethod === "pos_integrated") {
       setIsProcessingPos(true);
       setPosStep(1);
@@ -66,13 +96,13 @@ const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnline = fal
       setTimeout(() => {
         setPosStep(4);
         setTimeout(() => {
-          onConfirm(paymentMethod, applyIva, `POS-${Math.floor(100000 + Math.random() * 900000)}`, customerPhone);
+          onConfirm(paymentMethod, applyIva, `POS-${Math.floor(100000 + Math.random() * 900000)}`, customerPhone, customerName);
         }, 1000);
       }, 3600);
       return;
     }
 
-    onConfirm(paymentMethod, applyIva, paymentReference, customerPhone);
+    onConfirm(paymentMethod, applyIva, paymentReference, customerPhone, customerName);
   };
 
   if (isProcessingPos) {
@@ -83,27 +113,31 @@ const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnline = fal
           
           <div className="flex justify-center">
             <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center animate-spin border-4 border-[#C5A184]/10 border-t-[#C5A184]">
-              <QrCode size={32} className="text-[#C5A184] animate-pulse" />
+              {paymentMethod === "nfc_web" ? <CreditCard size={32} className="text-[#C5A184] animate-pulse" /> : <QrCode size={32} className="text-[#C5A184] animate-pulse" />}
             </div>
           </div>
 
           <h3 className="text-xl font-black uppercase tracking-widest text-[#C5A184]">
-            Enlace Pinpad POS
+            {paymentMethod === "nfc_web" ? "Acerca tu Tarjeta (NFC)" : "Enlace Pinpad POS"}
           </h3>
 
           <div className="bg-black/60 p-5 rounded-2xl border border-white/5 text-left font-mono text-[10px] text-gray-400 space-y-2 leading-relaxed">
-            <p className={`${posStep >= 1 ? "text-green-400 font-bold" : "opacity-30"}`}>
-              &gt; [IoT Edge] Abriendo socket local con puerto POS...
-            </p>
-            <p className={`${posStep >= 2 ? "text-green-400 font-bold" : "opacity-30"}`}>
-              &gt; [COM-RS232] Transmitiendo cobro SPDH por {formatUSD(total)} (Bs. {(total * 36.45).toFixed(2)})
-            </p>
+            {paymentMethod !== "nfc_web" && (
+              <>
+                <p className={`${posStep >= 1 ? "text-green-400 font-bold" : "opacity-30"}`}>
+                  &gt; [IoT Edge] Abriendo socket local con puerto POS...
+                </p>
+                <p className={`${posStep >= 2 ? "text-green-400 font-bold" : "opacity-30"}`}>
+                  &gt; [COM-RS232] Transmitiendo cobro SPDH por {formatUSD(total)} (Bs. {totalBs.toFixed(2)})
+                </p>
+              </>
+            )}
             <p className={`${posStep >= 3 ? "text-amber-400 font-bold animate-pulse" : "opacity-30"}`}>
-              &gt; [Pinpad] Esperando tarjeta y clave bancaria del cliente...
+              &gt; {paymentMethod === "nfc_web" ? "[WebNFC] Escaneando frecuencia 13.56 MHz (Contactless)..." : "[Pinpad] Esperando tarjeta y clave bancaria del cliente..."}
             </p>
             {posStep >= 4 && (
               <p className="text-green-400 font-black animate-bounce pt-1">
-                &gt; [Banco] ¡Cobro aprobado con éxito! Código: POS-{Math.floor(100000 + Math.random() * 900000)}
+                &gt; [Banco] ¡Cobro aprobado con éxito! Código: {paymentMethod === "nfc_web" ? "NFC-" : "POS-"}{Math.floor(100000 + Math.random() * 900000)}
               </p>
             )}
           </div>
@@ -132,6 +166,7 @@ const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnline = fal
               {!isOnline && (
                 <>
                   <option value="pos_integrated">⚡ Tarjeta (POS Integrado KFS)</option>
+                  <option value="nfc_web">💳 Tarjeta (NFC Contactless)</option>
                   <option value="cash_usd">Efectivo (USD)</option>
                   <option value="cash_eur">Efectivo (EUR)</option>
                   <option value="vale_credit">🎫 Vale / Crédito de Tienda</option>
@@ -149,11 +184,16 @@ const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnline = fal
           )}
 
           <div>
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 block">Nombre del Cliente</label>
+            <input type="text" placeholder="Ej: Juan Pérez" value={customerName} onChange={e => setCustomerName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C5A184]" />
+          </div>
+
+          <div>
             <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 block">
-              {isOnline ? "Tu Teléfono de Contacto" : "Teléfono del Cliente (CRM)"}
+              {isOnline ? "Tu Teléfono de Contacto" : "Teléfono del Cliente (WhatsApp)"}
             </label>
             <input type="text" placeholder="Ej: 04141234567" value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C5A184]" />
-            <p className="text-[10px] text-gray-400 mt-1">Opcional. {isOnline ? "Para que el comercio te contacte y sumar puntos." : "Para enviar recibo por WhatsApp y añadir a clientes frecuentes."}</p>
+            <p className="text-[10px] text-gray-400 mt-1">Opcional. {isOnline ? "Para que el comercio te contacte." : "Para enviar el recibo electrónico por WhatsApp."}</p>
           </div>
           
           <label className="flex items-center gap-3 p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
@@ -304,7 +344,7 @@ const ReceiptModal = ({ tx, product, onClose, formatUSD }: any) => {
             
             {tx.customerPhone ? (
               <a 
-                href={`https://wa.me/${tx.customerPhone.replace(/[^0-9]/g, '')}?text=¡Gracias por tu compra en ${product?.clientName}!%0A%0A*Recibo KFS: ${tx.receiptNumber}*%0AProducto: ${product?.name}%0ATotal: ${formatUSD(tx.amountUSD)}%0A%0ARecibo Digital Oficial KFS.`}
+                href={`https://wa.me/58${tx.customerPhone.replace(/^0+/, '').replace(/[^0-9]/g, '')}?text=Hola ${tx.customerName || 'Cliente'}, ¡Gracias por tu compra en ${product?.clientName}!%0A%0A*Recibo KFS: ${tx.receiptNumber}*%0AProducto: ${product?.name}%0AIVA: ${formatUSD(tx.ivaUSD)}%0AIGTF: ${formatUSD(tx.igtfUSD)}%0ATotal Pagado: ${formatUSD(tx.amountUSD)}%0A%0ARecibo Digital Oficial KFS.`}
                 target="_blank"
                 rel="noreferrer"
                 className="py-3 rounded-xl font-black text-xs text-[#0A1128] bg-green-500 hover:bg-green-600 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
@@ -1252,6 +1292,10 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
 
 // CoreDashboard
 const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePromotoraEarnings, showToast, formatUSD, formatEUR, currentUser, logout }: any) => {
+  const [searchPromotora, setSearchPromotora] = useState("");
+  const [searchClient, setSearchClient] = useState("");
+  const [searchVendedor, setSearchVendedor] = useState("");
+
   useEffect(() => {
     const handleGlobalSale = (e: any) => {
       showToast(`⚡ KFS Network: Venta reportada de ${e.detail.name} por ${formatUSD(e.detail.priceUSD)}`, "success");
@@ -1348,7 +1392,13 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
         </div>
 
         <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
-          <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><Shield className="text-[#C5A184]"/> Control y Gobernanza de Promotoras</h3>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><Shield className="text-[#C5A184]"/> Control y Gobernanza de Promotoras</h3>
+            <div className="relative w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+              <input type="text" placeholder="Buscar promotora..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchPromotora} onChange={e => setSearchPromotora(e.target.value)} />
+            </div>
+          </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
@@ -1362,7 +1412,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                 </tr>
               </thead>
               <tbody>
-                {db.promotoras.map((p: any) => (
+                {db.promotoras.filter((p: any) => p.name.toLowerCase().includes(searchPromotora.toLowerCase()) || p.email.toLowerCase().includes(searchPromotora.toLowerCase())).map((p: any) => (
                   <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
                     <td className="py-4 px-4 font-bold text-[#0A1128]">{p.name}</td>
                     <td className="py-4 px-4 text-gray-500"><span className="text-xs font-mono block">{p.email}</span><span className="text-xs font-mono">P: {p.password}</span></td>
@@ -1403,7 +1453,13 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
         </div>
 
         <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
-          <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><DollarSign className="text-red-500"/> Estado de Cobranza Diaria (BOS)</h3>
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><DollarSign className="text-red-500"/> Estado de Cobranza Diaria (BOS)</h3>
+            <div className="relative w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+              <input type="text" placeholder="Buscar comercio..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchClient} onChange={e => setSearchClient(e.target.value)} />
+            </div>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
               <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black">
@@ -1416,7 +1472,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                 </tr>
               </thead>
               <tbody>
-                {db.clients.map((c: any) => (
+                {db.clients.filter((c: any) => c.company.toLowerCase().includes(searchClient.toLowerCase()) || c.name.toLowerCase().includes(searchClient.toLowerCase())).map((c: any) => (
                   <tr key={c.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
                     <td className="py-4 px-4 font-bold text-[#0A1128]">{c.company}</td>
                     <td className="py-4 px-4 text-gray-500 font-mono">{c.phone}</td>
@@ -1471,7 +1527,13 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
           </div>
 
           <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
-            <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><UserCheck className="text-[#C5A184]"/> Fuerza Laboral (Vendedores)</h3>
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><UserCheck className="text-[#C5A184]"/> Fuerza Laboral (Vendedores)</h3>
+              <div className="relative w-48">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                <input type="text" placeholder="Buscar vendedor..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchVendedor} onChange={e => setSearchVendedor(e.target.value)} />
+              </div>
+            </div>
             <div className="overflow-x-auto max-h-96">
               <table className="w-full text-sm text-left">
                 <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black sticky top-0">
@@ -1482,7 +1544,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                   </tr>
                 </thead>
                 <tbody>
-                  {(db.vendedores || []).map((vend: any) => {
+                  {(db.vendedores || []).filter((v: any) => v.name.toLowerCase().includes(searchVendedor.toLowerCase()) || v.email.toLowerCase().includes(searchVendedor.toLowerCase())).map((vend: any) => {
                     const client = db.clients.find((c: any) => c.id === vend.clientId);
                     return (
                       <tr key={vend.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
@@ -1549,7 +1611,9 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 // Promotora Dashboard
 const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settlePromotoraEarnings, formatUSD, formatEUR, logout }: any) => {
   const [showRegister, setShowRegister] = useState(false);
+  const [searchClient, setSearchClient] = useState("");
   const myClients = db.clients.filter((c: any) => c.promotoraId === currentUser.id);
+  const filteredClients = myClients.filter((c: any) => c.company.toLowerCase().includes(searchClient.toLowerCase()) || c.name.toLowerCase().includes(searchClient.toLowerCase()));
   const myPromotoraData = db.promotoras.find((p: any) => p.id === currentUser?.id) || currentUser;
 
   return (
@@ -1584,7 +1648,13 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
           <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 relative overflow-hidden">
             <div className="flex justify-between items-center mb-8 border-b border-gray-100 pb-4">
               <h3 className="text-xl font-black text-[#0A1128]">Mis Comercios Activados</h3>
-              <button onClick={() => setShowRegister(true)} className="bg-[#0A1128] text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors shadow-md cursor-pointer">+ Nuevo Setup</button>
+              <div className="flex gap-4">
+                <div className="relative w-48">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                  <input type="text" placeholder="Buscar comercio..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchClient} onChange={e => setSearchClient(e.target.value)} />
+                </div>
+                <button onClick={() => setShowRegister(true)} className="bg-[#0A1128] text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors shadow-md cursor-pointer">+ Nuevo Setup</button>
+              </div>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left">
@@ -1598,8 +1668,8 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
                   </tr>
                 </thead>
                 <tbody>
-                  {myClients.map((c: any) => (
-                    <tr key={c.id} className="border-b border-gray-50 hover:bg-gray-50/50">
+                  {filteredClients.map((c: any) => (
+                    <tr key={c.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
                       <td className="py-4 px-4 font-bold text-[#0A1128]">{c.company}</td>
                       <td className="py-4 px-4 text-gray-500">{c.name}<br/><span className="text-xs font-mono">{c.phone}</span></td>
                       <td className="py-4 px-4 font-bold text-[#C5A184]">{(c.kfsFeePercentage || 0.03) * 100}%</td>
@@ -1626,13 +1696,14 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   const [showAddModal, setShowAddModal] = useState(false);
   const [showAddVendedor, setShowAddVendedor] = useState(false);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
+  const [searchVendedor, setSearchVendedor] = useState("");
   
   const [newProd, setNewProd] = useState({ name: "", price: "", cost: "", stock: "", imgUrl: "", category: "Alimentos", barcode: "" });
   const [isFetchingBarcode, setIsFetchingBarcode] = useState(false);
   const [newVendedor, setNewVendedor] = useState({ name: "", email: "", password: "", avatar: "" });
   const [newExpense, setNewExpense] = useState({ description: "", amountUSD: "" });
   const [smsInput, setSmsInput] = useState("");
-  const { createVale, payVale, queryGlobalBarcode, smsConciliator } = useKFS();
+  const { createVale, payVale, queryGlobalBarcode, smsConciliator, rates } = useKFS();
 
   const handleManualSmsConciliation = () => {
     if (!smsInput.trim()) return;
@@ -1824,10 +1895,16 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
           <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
             <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2"><Users className="text-[#C5A184]"/> Control de Empleados</h3>
-            <button onClick={() => setShowAddVendedor(true)} className="text-sm font-bold text-white bg-[#0A1128] px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors cursor-pointer">+ Añadir Vendedor</button>
+            <div className="flex gap-4">
+              <div className="relative w-48">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                <input type="text" placeholder="Buscar vendedor..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchVendedor} onChange={e => setSearchVendedor(e.target.value)} />
+              </div>
+              <button onClick={() => setShowAddVendedor(true)} className="text-sm font-bold text-white bg-[#0A1128] px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors cursor-pointer">+ Añadir Vendedor</button>
+            </div>
           </div>
           <div className="space-y-3">
-            {myVendedores.map((v: any) => (
+            {myVendedores.filter((v: any) => v.name.toLowerCase().includes(searchVendedor.toLowerCase()) || v.email.toLowerCase().includes(searchVendedor.toLowerCase())).map((v: any) => (
               <div key={v.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border border-gray-100">
                 <div className="flex items-center gap-3">
                   {v.avatar ? (
@@ -2371,8 +2448,11 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                       </div>
                     )}
 
-                    <div className="flex justify-between items-center pt-1 border-t border-gray-100">
-                      <p className="text-[#0A1128] font-black text-sm">{formatUSD(p.priceUSD)}</p>
+                    <div className="flex justify-between items-center pt-1 border-t border-gray-100 mt-2">
+                      <div>
+                        <p className="text-[#0A1128] font-black text-sm">{formatUSD(p.priceUSD)}</p>
+                        <p className="text-[10px] font-bold text-gray-500">Bs. {(p.priceUSD * (rates?.USD || 36.45)).toFixed(2)}</p>
+                      </div>
                       <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${p.stock && p.stock > 0 ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
                         {p.stock && p.stock > 0 ? `${p.stock} unids` : "Agotado"}
                       </span>
@@ -2673,7 +2753,8 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
   const [receiptTx, setReceiptTx] = useState<any>(null);
   const [scannedGlobalProduct, setScannedGlobalProduct] = useState<any>(null);
   const [smsInput, setSmsInput] = useState("");
-  const { queryGlobalBarcode, smsConciliator } = useKFS();
+  const [searchProduct, setSearchProduct] = useState("");
+  const { queryGlobalBarcode, smsConciliator, rates } = useKFS();
 
   const handleManualSmsConciliation = () => {
     if (!smsInput.trim()) return;
@@ -2961,17 +3042,26 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
         )}
 
         <div className="bg-white p-6 rounded-3xl border border-gray-100">
-          <h3 className="font-black text-[#0A1128] text-lg mb-4 flex items-center gap-2"><Package size={20} className="text-[#C5A184]"/> Catálogo de {currentUser.company}</h3>
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
+            <h3 className="font-black text-[#0A1128] text-lg flex items-center gap-2"><Package size={20} className="text-[#C5A184]"/> Catálogo de {currentUser.company}</h3>
+            <div className="relative w-full md:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+              <input type="text" placeholder="Buscar producto o barcode..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchProduct} onChange={e => setSearchProduct(e.target.value)} />
+            </div>
+          </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {myProducts.map((p: any) => (
+            {myProducts.filter((p: any) => p.name.toLowerCase().includes(searchProduct.toLowerCase()) || (p.barcode && p.barcode.includes(searchProduct))).map((p: any) => (
               <div key={p.id} className="border border-gray-100 rounded-2xl p-3 flex flex-col justify-between bg-gray-50/50">
                 <div className="h-28 bg-gray-200 rounded-lg overflow-hidden mb-2">
                   <img src={p.image} className="w-full h-full object-cover" alt={p.name} />
                 </div>
                 <div>
                   <h4 className="font-bold text-xs truncate text-gray-900">{p.name}</h4>
-                  <div className="flex justify-between items-center">
-                    <p className="text-xs font-black text-[#C5A184]">{formatUSD(p.priceUSD)}</p>
+                  <div className="flex justify-between items-center mt-1">
+                    <div>
+                      <p className="text-xs font-black text-[#C5A184]">{formatUSD(p.priceUSD)}</p>
+                      <p className="text-[10px] font-bold text-gray-500">Bs. {(p.priceUSD * (rates?.USD || 36.45)).toFixed(2)}</p>
+                    </div>
                     <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${p.stock && p.stock > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
                       {p.stock && p.stock > 0 ? `${p.stock} u.` : "Agotado"}
                     </span>
@@ -2982,7 +3072,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
                 </button>
               </div>
             ))}
-            {myProducts.length === 0 && <p className="col-span-full text-center text-xs text-gray-400 py-6 font-bold">Sin productos. Use subir producto para poblar el inventario.</p>}
+            {myProducts.filter((p: any) => p.name.toLowerCase().includes(searchProduct.toLowerCase()) || (p.barcode && p.barcode.includes(searchProduct))).length === 0 && <p className="col-span-full text-center text-xs text-gray-400 py-6 font-bold">Sin resultados o sin productos cargados.</p>}
           </div>
         </div>
       </div>
@@ -3151,6 +3241,7 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
   const [searchQuery, setSearchQuery] = useState("");
   const [checkoutProduct, setCheckoutProduct] = useState<any>(null);
   const [receiptTx, setReceiptTx] = useState<any>(null);
+  const { rates } = useKFS();
   const [activeStoreId, setActiveStoreId] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
@@ -3256,8 +3347,11 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
                     </div>
                     <div className="p-4">
                       <h4 className="font-bold text-sm text-[#0A1128] truncate mb-1">{p.name}</h4>
-                      <div className="flex justify-between items-center">
-                        <p className="text-[#C5A184] font-black text-sm">{formatUSD(p.priceUSD)}</p>
+                      <div className="flex justify-between items-center mt-2">
+                        <div>
+                          <p className="text-[#C5A184] font-black text-sm">{formatUSD(p.priceUSD)}</p>
+                          <p className="text-[10px] font-bold text-gray-500">Bs. {(p.priceUSD * (rates?.USD || 36.45)).toFixed(2)}</p>
+                        </div>
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${p.stock && p.stock > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
                           {p.stock && p.stock > 0 ? `${p.stock} disp.` : "Agotado"}
                         </span>

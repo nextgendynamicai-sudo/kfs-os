@@ -48,6 +48,7 @@ const initialDB = {
   vales: [], // { id, recipientName, type, amountUSD, surchargePct, totalDueUSD, dueDate, status, timestamp }
   posTerminals: [], // { id, name, status, assignedVendedorId, type, connectionInfo, transactionsCount, totalAmountUSD, clientId }
   zReports: [], // { id, vendedorId, clientId, totalUSD, bs, usd, zelle, date }
+  buyers: [], // { id, clientId, name, phone, createdAt }
   kreatekCore: {
     totalTransactions: 0,
     earningsEUR: 0, // gross
@@ -349,7 +350,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast("Egreso registrado contablemente.");
   };
 
-  const processPurchase = (product: any, paymentMethod: string = "cash", applyIva: boolean = false, customerPhone: string = "") => {
+  const processPurchase = (product: any, paymentMethod: string = "cash", applyIva: boolean = false, customerPhone: string = "", customerName: string = "") => {
     if (product.stock !== undefined && product.stock <= 0) {
       showToast("Producto agotado", "error");
       return null;
@@ -411,21 +412,31 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         receiptNumber,
         kreatekFeeEUR: kreatekTotalFeeEUR,
         customerPhone,
+        customerName,
         vendedorId: currentUser?.role === 'vendedor' ? currentUser.id : null,
         clientId: product.clientId,
         timestamp: new Date().toISOString()
       };
 
-      // Handle CRM
+      // Handle CRM and Buyers
       let updatedCrm = prev.crm || [];
+      let updatedBuyers = prev.buyers || [];
+
       if (customerPhone) {
         const existing = updatedCrm.find((c: any) => c.phone === customerPhone);
         if (existing) {
           updatedCrm = updatedCrm.map((c: any) => c.phone === customerPhone ? {
-            ...c, totalSpent: c.totalSpent + totalUSD, purchasesCount: c.purchasesCount + 1, lastPurchase: new Date().toISOString()
+            ...c, name: customerName || c.name, totalSpent: c.totalSpent + totalUSD, purchasesCount: c.purchasesCount + 1, lastPurchase: new Date().toISOString()
           } : c);
         } else {
-          updatedCrm = [...updatedCrm, { id: `crm${Date.now()}`, phone: customerPhone, totalSpent: totalUSD, purchasesCount: 1, lastPurchase: new Date().toISOString() }];
+          updatedCrm = [...updatedCrm, { id: `crm${Date.now()}`, name: customerName, phone: customerPhone, totalSpent: totalUSD, purchasesCount: 1, lastPurchase: new Date().toISOString() }];
+        }
+
+        if (customerName) {
+          const existingBuyer = updatedBuyers.find((b: any) => b.phone === customerPhone && b.clientId === product.clientId);
+          if (!existingBuyer) {
+            updatedBuyers = [...updatedBuyers, { id: `b-${Date.now()}`, clientId: product.clientId, name: customerName, phone: customerPhone, createdAt: new Date().toISOString() }];
+          }
         }
       }
 
@@ -468,6 +479,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         crm: updatedCrm,
         vales: updatedVales,
         posTerminals: updatedPosTerminals,
+        buyers: updatedBuyers,
         transactions: [...prev.transactions, transactionObj],
         kreatekCore: {
           totalTransactions: (prev.kreatekCore.totalTransactions || 0) + 1,
