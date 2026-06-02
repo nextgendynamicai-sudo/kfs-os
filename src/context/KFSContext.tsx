@@ -99,6 +99,7 @@ interface KFSContextType {
   queryGlobalBarcode: (barcode: string) => Promise<any>;
   toggleLoyaltyProgram: (clientId: string, isActive: boolean) => void;
   triggerGhostTrap: (vendedorId: string, amount: number, method: string) => void;
+  updateStoreSettings: (clientId: string, settings: any) => void;
 }
 
 const KFSContext = createContext<KFSContextType | undefined>(undefined);
@@ -355,7 +356,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
   const addProduct = (productData: any) => {
     setDb((prev: any) => ({ ...prev, products: [...prev.products, { ...productData, id: `prod${Date.now()}` }] }));
-    showToast("Producto sincronizado con el Marketplace.");
+    showToast("Producto sincronizado con Flow Express.");
   };
 
   const addExpense = (expenseData: any) => {
@@ -929,6 +930,16 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     return null;
   };
 
+  const updateStoreSettings = (clientId: string, settings: any) => {
+    setDb((prev: any) => ({
+      ...prev,
+      clients: prev.clients.map((c: any) => 
+        c.id === clientId ? { ...c, storeSettings: { ...(c.storeSettings || {}), ...settings } } : c
+      )
+    }));
+    showToast("Configuración de tienda actualizada exitosamente.");
+  };
+
   return (
     <KFSContext.Provider value={{
       isClient, isBooting, view, setView, currentUser, setCurrentUser,
@@ -937,7 +948,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       addProduct, addExpense, processPurchase, submitOnlineOrder, approveOrder, rejectOrder, generateZReport,
       networkState, setNetworkState, smsConciliator, registerCrmExpress,
       ghostTrapLocked, setGhostTrapLocked, createVale, payVale, registerPosTerminal, deletePosTerminal,
-      queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap
+      queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings
     }}>
       {children}
     </KFSContext.Provider>

@@ -590,7 +590,7 @@ const SMSConciliatorSimulator = () => {
             <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3">
               <span className="text-[10px] font-black text-[#C5A184] uppercase tracking-widest block font-mono">Órdenes Pendientes</span>
               {pendingOrders.length === 0 ? (
-                <p className="text-xs text-gray-400 font-bold">No hay órdenes online pendientes. Crea una en el Marketplace para probar el auto-llenado.</p>
+                <p className="text-xs text-gray-400 font-bold">No hay órdenes online pendientes. Crea una en Flow Express para probar el auto-llenado.</p>
               ) : (
                 <div className="space-y-2 max-h-32 overflow-y-auto pr-1">
                   {pendingOrders.map((o: any) => (
@@ -1312,7 +1312,7 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
           </div>
 
           <div className="grid grid-cols-2 gap-2 mb-8">
-            <button onClick={() => setActiveTab("marketplace")} className={`py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "marketplace" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Market</button>
+            <button onClick={() => setActiveTab("marketplace")} className={`py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "marketplace" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Flow Exp.</button>
             <button onClick={() => setActiveTab("dueño")} className={`py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "dueño" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Dueño</button>
             <button onClick={() => setActiveTab("vendedor")} className={`py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "vendedor" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Vendedor</button>
             <button onClick={() => setActiveTab("promotora")} className={`py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "promotora" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Promotora</button>
@@ -1321,7 +1321,7 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
 
           {activeTab === "marketplace" && (
             <button onClick={() => handleLogin("marketplace", "")} className="w-full py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-lg text-[#0A1128] bg-[#C5A184] cursor-pointer">
-              <ShoppingCart size={20} /> Entrar al Marketplace Público
+              <ShoppingCart size={20} /> Entrar a Flow Express
             </button>
           )}
 
@@ -1720,6 +1720,8 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settlePromotoraEarnings, formatUSD, formatEUR, logout }: any) => {
   const [showRegister, setShowRegister] = useState(false);
   const [searchClient, setSearchClient] = useState("");
+  const [customizingClient, setCustomizingClient] = useState<any>(null);
+  const { updateStoreSettings } = useKFS();
   const myClients = db.clients.filter((c: any) => c.promotoraId === currentUser.id);
   const filteredClients = myClients.filter((c: any) => c.company.toLowerCase().includes(searchClient.toLowerCase()) || c.name.toLowerCase().includes(searchClient.toLowerCase()));
   const myPromotoraData = db.promotoras.find((p: any) => p.id === currentUser?.id) || currentUser;
@@ -1771,7 +1773,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
                     <th className="py-4 px-4">Nodo Comercial</th>
                     <th className="py-4 px-4">Contacto</th>
                     <th className="py-4 px-4">Tarifa BOS</th>
-                    <th className="py-4 px-4">Facturación Diaria</th>
+                    <th className="py-4 px-4 text-center">Tienda</th>
                     <th className="py-4 px-4 text-right">Deuda KFS</th>
                   </tr>
                 </thead>
@@ -1781,7 +1783,11 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
                       <td className="py-4 px-4 font-bold text-[#0A1128]">{c.company}</td>
                       <td className="py-4 px-4 text-gray-500">{c.name}<br/><span className="text-xs font-mono">{c.phone}</span></td>
                       <td className="py-4 px-4 font-bold text-[#C5A184]">{(c.kfsFeePercentage || 0.03) * 100}%</td>
-                      <td className="py-4 px-4 font-black text-green-600">{formatUSD(c.salesUSD || 0)}</td>
+                      <td className="py-4 px-4 text-center">
+                        <button onClick={() => setCustomizingClient(c)} className="bg-gray-100 hover:bg-gray-200 text-[#0A1128] px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1 mx-auto">
+                          <Palette size={14} /> Diseño
+                        </button>
+                      </td>
                       <td className="py-4 px-4 font-black text-red-500 text-right">{formatUSD(c.kfsFeesOwedUSD || 0)}</td>
                     </tr>
                   ))}
@@ -1795,6 +1801,77 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
             <RegisterClientForm onRegister={(data: any) => { registerClient(data, currentUser.id, data.kfsFeePercentage); setShowRegister(false); }} onCancel={() => setShowRegister(false)} standalone={false} />
           </div>
         )}
+      </div>
+
+      {customizingClient && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-[2rem] w-full max-w-lg relative p-2 shadow-2xl">
+            <button onClick={() => setCustomizingClient(null)} className="absolute top-4 right-4 text-gray-400 hover:text-[#0A1128] transition-colors cursor-pointer z-10">
+              <X size={24} />
+            </button>
+            <StorefrontCustomizer client={customizingClient} updateStoreSettings={(id: string, settings: any) => {
+              updateStoreSettings(id, settings);
+              setCustomizingClient(null);
+            }} />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, updateStoreSettings: any }) => {
+  const [settings, setSettings] = useState(client.storeSettings || {
+    profilePicUrl: "",
+    themeColor: "#C5A184",
+    typography: "font-sans",
+    layoutType: "grid"
+  });
+
+  const handleSave = () => {
+    updateStoreSettings(client.id, settings);
+  };
+
+  return (
+    <div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-4 h-full">
+      <h4 className="font-black text-[#0A1128] text-lg flex items-center gap-2"><Palette className="text-[#C5A184]"/> Personalizar Tienda</h4>
+      <p className="text-xs text-gray-500">Ajusta la apariencia visual de tu vitrina pública en Flow Express.</p>
+      
+      <div className="space-y-4 pt-4">
+        <div>
+          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Logo / Foto de Perfil (URL)</label>
+          <input type="text" value={settings.profilePicUrl} onChange={e => setSettings({...settings, profilePicUrl: e.target.value})} placeholder="https://..." className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" />
+        </div>
+        
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Color Principal</label>
+            <div className="flex items-center gap-2">
+              <input type="color" value={settings.themeColor} onChange={e => setSettings({...settings, themeColor: e.target.value})} className="h-10 w-10 rounded cursor-pointer border-0 p-0" />
+              <input type="text" value={settings.themeColor} onChange={e => setSettings({...settings, themeColor: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none font-mono" />
+            </div>
+          </div>
+          <div>
+            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Tipografía</label>
+            <select value={settings.typography} onChange={e => setSettings({...settings, typography: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none">
+              <option value="font-sans">Moderna (Sans)</option>
+              <option value="font-serif">Clásica (Serif)</option>
+              <option value="font-mono">Técnica (Mono)</option>
+            </select>
+          </div>
+        </div>
+
+        <div>
+          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Disposición (Layout)</label>
+          <select value={settings.layoutType} onChange={e => setSettings({...settings, layoutType: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none">
+            <option value="grid">Grilla de Tarjetas (Recomendado)</option>
+            <option value="list">Lista Compacta</option>
+          </select>
+        </div>
+
+        <button onClick={handleSave} className="w-full mt-4 bg-[#0A1128] text-white py-3 rounded-xl font-bold hover:bg-gray-800 transition-colors">
+          Guardar Diseño
+        </button>
       </div>
     </div>
   );
@@ -1811,7 +1888,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   const [newVendedor, setNewVendedor] = useState({ name: "", email: "", password: "", avatar: "" });
   const [newExpense, setNewExpense] = useState({ description: "", amountUSD: "" });
   const [smsInput, setSmsInput] = useState("");
-  const { createVale, payVale, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram } = useKFS();
+  const { createVale, payVale, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings } = useKFS();
 
   const handleManualSmsConciliation = () => {
     if (!smsInput.trim()) return;
@@ -1834,7 +1911,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
       ...prev,
       products: prev.products.map((p: any) => p.id === productId ? { ...p, priceUSD: parseFloat(newPrice.toFixed(2)) } : p)
     }));
-    showToast("Margen blindado con éxito en el canal POS y Marketplace.", "success");
+    showToast("Margen blindado con éxito en el canal POS y Flow Express.", "success");
   };
 
   const handleBarcodeSearch = async (barcode: string) => {
@@ -1997,6 +2074,8 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             </div>
           <DollarSign size={200} className="absolute -right-10 -bottom-20 text-white/5" />
         </div>
+
+        <StorefrontCustomizer client={currentUser} updateStoreSettings={updateStoreSettings} />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
           <button onClick={() => setShowAddModal(true)} className="bg-white border border-gray-100 p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-5 hover:border-[#C5A184]/50 transition-all cursor-pointer">
@@ -2566,7 +2645,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         )}
 
         <div>
-          <h3 className="font-black text-xl text-[#0A1128] mb-6 pl-2">Inventario en Marketplace</h3>
+          <h3 className="font-black text-xl text-[#0A1128] mb-6 pl-2">Inventario en Flow Express</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {myProducts.map((p: any) => {
               const hasCost = p.costUSD !== undefined && p.costUSD > 0;
@@ -3446,15 +3525,26 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
 
   const categories = ["All", "Alimentos", "Ropa y Calzado", "Tecnología", "Salud y Belleza", "Hogar", "Servicios"];
 
+  const settings = activeStore?.storeSettings || {};
+  const themeColor = settings.themeColor || "#C5A184";
+  const typography = settings.typography || "font-sans";
+  const layoutType = settings.layoutType || "grid";
+  const profilePicUrl = settings.profilePicUrl || "";
+
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 font-sans">
-      <Navbar title={activeStore ? `Mall: ${activeStore.company}` : "Marketplace Global"} showBack={true} onBack={logout} />
+    <div className={`min-h-screen bg-gray-50 pb-20 ${activeStore ? typography : "font-sans"}`}>
+      <Navbar title={activeStore ? `Mall: ${activeStore.company}` : "Flow Express Global"} showBack={true} onBack={logout} />
       
       <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
-          <div>
-            <h2 className="text-2xl font-black text-[#0A1128]">{activeStore ? activeStore.company : "Centros Comerciales KFS"}</h2>
-            <p className="text-xs text-gray-500 mt-1">{activeStore ? "Catálogo exclusivo de este negocio." : "Explora nuestras tiendas destacadas y descubre sus productos."}</p>
+          <div className="flex items-center gap-4">
+            {activeStore && profilePicUrl && (
+              <img src={profilePicUrl} alt="Store Logo" className="w-16 h-16 rounded-full object-cover border-2 shadow-sm" style={{ borderColor: themeColor }} />
+            )}
+            <div>
+              <h2 className="text-2xl font-black text-[#0A1128]">{activeStore ? activeStore.company : "Centros Comerciales KFS"}</h2>
+              <p className="text-xs text-gray-500 mt-1">{activeStore ? "Catálogo exclusivo de este negocio." : "Explora nuestras tiendas destacadas y descubre sus productos."}</p>
+            </div>
           </div>
           
           <div className="relative w-full sm:w-80">
@@ -3510,40 +3600,43 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
                 <button 
                   key={cat} 
                   onClick={() => setSelectedCategory(cat)}
-                  className={`whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold transition-all ${selectedCategory === cat ? "bg-[#0A1128] text-white shadow-md" : "bg-white text-gray-500 border border-gray-200 hover:bg-gray-50"}`}
+                  style={selectedCategory === cat ? { backgroundColor: themeColor, color: '#fff' } : {}}
+                  className={`whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold transition-all ${selectedCategory === cat ? "shadow-md" : "bg-white text-gray-500 border border-gray-200 hover:bg-gray-50"}`}
                 >
                   {cat === "All" ? "Todos los Productos" : cat}
                 </button>
               ))}
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className={`grid gap-6 ${layoutType === 'list' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-2 md:grid-cols-4'}`}>
               {filteredProducts.map((p: any) => (
-                <div key={p.id} className="bg-white rounded-[1.5rem] shadow-sm overflow-hidden border border-gray-100 flex flex-col justify-between transition-transform duration-200 hover:-translate-y-1">
-                  <div>
-                    <div className="h-44 bg-gray-100 w-full overflow-hidden relative">
+                <div key={p.id} className={`bg-white rounded-[1.5rem] shadow-sm overflow-hidden border border-gray-100 flex ${layoutType === 'list' ? 'flex-row items-center h-32' : 'flex-col justify-between'} transition-transform duration-200 hover:-translate-y-1`}>
+                  <div className={layoutType === 'list' ? 'flex flex-row w-full h-full' : 'w-full'}>
+                    <div className={`${layoutType === 'list' ? 'w-32 h-full' : 'h-44 w-full'} bg-gray-100 overflow-hidden relative shrink-0`}>
                       <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
                       <span className="absolute bottom-2 left-2 text-[8px] bg-[#0A1128]/80 text-[#C5A184] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border border-[#C5A184]/20 backdrop-blur-sm">
                         {p.category || "General"}
                       </span>
                     </div>
-                    <div className="p-4">
-                      <h4 className="font-bold text-sm text-[#0A1128] truncate mb-1">{p.name}</h4>
-                      <div className="flex justify-between items-center mt-2">
-                        <div>
-                          <p className="text-[#C5A184] font-black text-sm">{formatUSD(p.priceUSD)}</p>
-                          <p className="text-[10px] font-bold text-gray-500">Bs. {(p.priceUSD * (rates?.USD || 36.45)).toFixed(2)}</p>
+                    <div className={`p-4 flex flex-col justify-between ${layoutType === 'list' ? 'w-full' : ''}`}>
+                      <div>
+                        <h4 className="font-bold text-sm text-[#0A1128] truncate mb-1">{p.name}</h4>
+                        <div className="flex justify-between items-center mt-2">
+                          <div>
+                            <p className="font-black text-sm" style={{ color: themeColor }}>{formatUSD(p.priceUSD)}</p>
+                            <p className="text-[10px] font-bold text-gray-500">Bs. {(p.priceUSD * (rates?.USD || 36.45)).toFixed(2)}</p>
+                          </div>
+                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${p.stock && p.stock > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                            {p.stock && p.stock > 0 ? `${p.stock} disp.` : "Agotado"}
+                          </span>
                         </div>
-                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${p.stock && p.stock > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-                          {p.stock && p.stock > 0 ? `${p.stock} disp.` : "Agotado"}
-                        </span>
+                      </div>
+                      <div className={layoutType === 'list' ? 'mt-2' : 'mt-4'}>
+                        <button disabled={p.stock !== undefined && p.stock <= 0} onClick={() => setCheckoutProduct(p)} style={p.stock > 0 ? { backgroundColor: themeColor } : {}} className="w-full py-2 disabled:bg-gray-400 text-white font-black rounded-xl text-xs flex items-center justify-center gap-1 cursor-pointer disabled:cursor-not-allowed shadow-md hover:brightness-90 transition-all">
+                          <ShoppingCart size={14} /> {p.stock !== undefined && p.stock <= 0 ? "Agotado" : "Comprar"}
+                        </button>
                       </div>
                     </div>
-                  </div>
-                  <div className="p-4 pt-0">
-                    <button disabled={p.stock !== undefined && p.stock <= 0} onClick={() => setCheckoutProduct(p)} className="w-full py-2.5 bg-[#0A1128] hover:bg-gray-800 disabled:bg-gray-400 text-white font-black rounded-xl text-xs flex items-center justify-center gap-1 cursor-pointer disabled:cursor-not-allowed">
-                      <ShoppingCart size={14} /> {p.stock !== undefined && p.stock <= 0 ? "Agotado" : "Comprar"}
-                    </button>
                   </div>
                 </div>
               ))}
