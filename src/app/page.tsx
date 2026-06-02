@@ -1736,8 +1736,11 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const url = URL.createObjectURL(file);
-      setNewProd({ ...newProd, imgUrl: url });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewProd(prev => ({ ...prev, imgUrl: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -2735,8 +2738,11 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const url = URL.createObjectURL(file);
-      setNewProd({ ...newProd, imgUrl: url });
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNewProd(prev => ({ ...prev, imgUrl: reader.result as string }));
+      };
+      reader.readAsDataURL(file);
     }
   };
 
