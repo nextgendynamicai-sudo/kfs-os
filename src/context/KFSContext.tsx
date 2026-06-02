@@ -179,8 +179,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
             updated_at: new Date().toISOString()
           })
           .then(({ error }: any) => {
-            if (error) console.error("Error al sincronizar con Supabase:", error);
-            else console.log("[Supabase Cloud] Estado sincronizado asíncronamente.");
+            if (error) {
+              console.warn("[KFS Cloud] Aviso: Sincronización asíncrona omitida. Verifique que haya ejecutado 'supabase_setup.sql' en su proyecto (tabla kfs_store_states no encontrada o sin RLS).", error.message || error.code || "");
+            } else {
+              console.log("[Supabase Cloud] Estado sincronizado asíncronamente.");
+            }
           });
       }
     } catch (error) {
