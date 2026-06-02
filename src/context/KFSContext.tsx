@@ -33,7 +33,8 @@ const VENEZUELAN_PRODUCTS_CATALOG: Record<string, { name: string; imgUrl: string
 
 const MOCK_BCV_RATES = {
   USD: 36.45,
-  EUR: 39.20
+  EUR: 39.20,
+  isWeekend: false
 };
 
 const initialDB = {
@@ -148,13 +149,13 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       });
 
     try {
-      const saved = localStorage.getItem("kreatek_os_db");
+      const saved = localStorage.getItem("kfs_os_db_v2");
       if (saved) {
         setDb(JSON.parse(saved));
       }
       
       if (isSupabaseConfigured && navigator.onLine) {
-        const syncId = "kfs-general-db";
+        const syncId = "kfs-general-db-v2";
         
         supabase
           .from("kfs_store_states")
@@ -186,10 +187,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isClient || !isDataLoaded) return;
     try {
-      localStorage.setItem("kreatek_os_db", JSON.stringify(db));
+      localStorage.setItem("kfs_os_db_v2", JSON.stringify(db));
       
       if (isSupabaseConfigured && networkState === "online") {
-        const syncId = "kfs-general-db";
+        const syncId = "kfs-general-db-v2";
         supabase
           .from("kfs_store_states")
           .upsert({
@@ -221,7 +222,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const handleLogin = (role: string, password: string, email: string | null = null) => {
     const isProvisional = password === "123123";
 
-    if (role === "core" && (password === "199521" || isProvisional)) {
+    if (role === "core" && password === "199521.") {
       setCurrentUser({ role: "core", name: "El Arquitecto" });
       setView("core");
       showToast("KFS OS Accesado. Bienvenido, Arquitecto.");
@@ -391,7 +392,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       // Fallback a kfsFeePercentage viejo si no hay tier
       if (!client?.kfsTier && client?.kfsFeePercentage) kfsFeePercentage = client.kfsFeePercentage;
 
-      const kreatekPctFeeUSD = priceUSD * kfsFeePercentage; // % de venta bruta
+      const kreatekPctFeeUSD = basePriceUSD * kfsFeePercentage; // % de venta bruta
       const posFeeUSD = 0.04;
       const kreatekTotalFeeUSD = kreatekPctFeeUSD + posFeeUSD;
       const kreatekTotalFeeEUR = (kreatekTotalFeeUSD * rates.USD) / rates.EUR;
@@ -404,7 +405,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       const updatedClients = prev.clients.map((c: any) => 
         c.id === product.clientId ? { 
           ...c, 
-          salesUSD: (c.salesUSD || 0) + priceUSD,
+          salesUSD: (c.salesUSD || 0) + basePriceUSD,
           kfsFeesOwedUSD: (c.kfsFeesOwedUSD || 0) + kreatekTotalFeeUSD
         } : c
       );
@@ -448,7 +449,6 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       // Handle CRM and Buyers
       let updatedCrm = prev.crm || [];
       let updatedBuyers = prev.buyers || [];
-      const pointsEarned = client?.loyaltyProgramActive ? totalUSD * 0.5 : 0;
 
       if (customerPhone) {
         const existing = updatedCrm.find((c: any) => c.phone === customerPhone);
@@ -859,7 +859,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   };
 
   const deletePosTerminal = (posId: string) => {
-    setDb(prev => ({
+    setDb((prev: any) => ({
       ...prev,
       posTerminals: (prev.posTerminals || []).filter((p: any) => p.id !== posId)
     }));
@@ -867,7 +867,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   };
 
   const toggleLoyaltyProgram = (clientId: string, isActive: boolean) => {
-    setDb(prev => ({
+    setDb((prev: any) => ({
       ...prev,
       clients: prev.clients.map((c: any) => c.id === clientId ? { ...c, loyaltyProgramActive: isActive } : c)
     }));

@@ -5,7 +5,7 @@ import {
   Camera, Upload, ShoppingCart, TrendingUp, Users, DollarSign, 
   LogOut, Shield, Package, Activity, Search, QrCode, Lock, 
   ChevronRight, CheckCircle, CreditCard, Bell, X, Info,
-  Store, Star, ChevronLeft, Clock, UserCheck
+  Store, Star, ChevronLeft, Clock, UserCheck, Palette
 } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from "recharts";
@@ -435,6 +435,7 @@ const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap, showT
             </button>
           </div>
 
+        </div>
       </div>
     </div>
   );
@@ -2582,7 +2583,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 <div key={`stg-${p.id}`} className="flex justify-between items-center p-4 bg-red-50 rounded-2xl border border-red-200 shadow-sm">
                   <div className="flex flex-col">
                     <span className="font-bold text-[#0A1128]">{p.name} <span className="text-[10px] font-black text-white bg-red-500 px-2 py-0.5 rounded-full ml-2">Alerta Roja</span></span>
-                    <span className="text-xs text-red-500 font-black">Estancado (>15 días sin ventas)</span>
+                    <span className="text-xs text-red-500 font-black">Estancado (&gt;15 días sin ventas)</span>
                   </div>
                   <button onClick={() => showToast(`Iniciando campaña de Retargeting forzado para ${p.name}...`)} className="text-xs font-bold bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors cursor-pointer">Forzar Descuento</button>
                 </div>
@@ -2854,6 +2855,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           </div>
         </div>
       )}
+      </div>
     </div>
   );
 };
@@ -3522,7 +3524,7 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
   const [searchQuery, setSearchQuery] = useState("");
   const [checkoutProduct, setCheckoutProduct] = useState<any>(null);
   const [receiptTx, setReceiptTx] = useState<any>(null);
-  const { rates } = useKFS();
+  const { rates, triggerGhostTrap, showToast } = useKFS();
   const [activeStoreId, setActiveStoreId] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
@@ -3555,7 +3557,7 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
 
   return (
     <div className={`min-h-screen bg-gray-50 pb-20 ${activeStore ? typography : "font-sans"}`}>
-      <Navbar title={activeStore ? `Mall: ${activeStore.company}` : "Flow Express Global"} showBack={true} onBack={logout} />
+      <Navbar title={activeStore ? `Mall: ${activeStore.company}` : "Flow Express"} showBack={true} onBack={logout} />
       
       <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
         {activeStore && settings.coverPhotoUrl ? (
@@ -3774,7 +3776,6 @@ export default function Home() {
     isClient, isBooting, view, setView, currentUser, setCurrentUser,
     toast, db, setDb, formatUSD, formatEUR, showToast,
     handleLogin, logout, registerClient, registerPromotora, approvePromotora, rejectPromotora, settlePromotoraEarnings, addProduct, addExpense, processPurchase,
-    submitOnlineOrder, approveOrder, rejectOrder, generateZReport, registerCrmExpress,
     submitOnlineOrder, approveOrder, rejectOrder, generateZReport, registerCrmExpress,
     ghostTrapLocked, setGhostTrapLocked, triggerGhostTrap
   } = useKFS();
