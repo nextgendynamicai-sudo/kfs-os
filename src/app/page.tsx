@@ -1823,6 +1823,8 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
 const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, updateStoreSettings: any }) => {
   const [settings, setSettings] = useState(client.storeSettings || {
     profilePicUrl: "",
+    coverPhotoUrl: "",
+    bioText: "",
     themeColor: "#C5A184",
     typography: "font-sans",
     layoutType: "grid"
@@ -1838,9 +1840,20 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
       <p className="text-xs text-gray-500">Ajusta la apariencia visual de tu vitrina pública en Flow Express.</p>
       
       <div className="space-y-4 pt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Logo / Foto de Perfil (URL)</label>
+            <input type="text" value={settings.profilePicUrl} onChange={e => setSettings({...settings, profilePicUrl: e.target.value})} placeholder="https://..." className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" />
+          </div>
+          <div>
+            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Banner Portada (URL)</label>
+            <input type="text" value={settings.coverPhotoUrl} onChange={e => setSettings({...settings, coverPhotoUrl: e.target.value})} placeholder="https://..." className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" />
+          </div>
+        </div>
+
         <div>
-          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Logo / Foto de Perfil (URL)</label>
-          <input type="text" value={settings.profilePicUrl} onChange={e => setSettings({...settings, profilePicUrl: e.target.value})} placeholder="https://..." className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" />
+          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Biografía o Eslogan (Max 150 char)</label>
+          <textarea maxLength={150} value={settings.bioText} onChange={e => setSettings({...settings, bioText: e.target.value})} placeholder="Los mejores productos..." className="w-full h-16 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] resize-none" />
         </div>
         
         <div className="grid grid-cols-2 gap-4">
@@ -1888,7 +1901,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   const [newVendedor, setNewVendedor] = useState({ name: "", email: "", password: "", avatar: "" });
   const [newExpense, setNewExpense] = useState({ description: "", amountUSD: "" });
   const [smsInput, setSmsInput] = useState("");
-  const { createVale, payVale, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings } = useKFS();
+  const { createVale, payVale, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, toggleProductFeatured } = useKFS();
 
   const handleManualSmsConciliation = () => {
     if (!smsInput.trim()) return;
@@ -2662,6 +2675,13 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                         ⚠️ Margen Vulnerado
                       </span>
                     )}
+                    <button 
+                      onClick={() => toggleProductFeatured(p.id, !p.isFeatured)} 
+                      className="absolute top-2 right-2 bg-white/80 backdrop-blur-sm p-1.5 rounded-full hover:bg-white transition-colors shadow-sm cursor-pointer"
+                      title={p.isFeatured ? "Quitar de Destacados" : "Marcar como Estrella"}
+                    >
+                      <Star size={16} className={p.isFeatured ? "fill-yellow-400 text-yellow-500" : "text-gray-400"} />
+                    </button>
                   </div>
                   <div className="p-4 space-y-3">
                     <div>
@@ -3523,6 +3543,8 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
     (p.name?.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
+  const featuredProducts = storeProducts.filter((p: any) => p.isFeatured);
+
   const categories = ["All", "Alimentos", "Ropa y Calzado", "Tecnología", "Salud y Belleza", "Hogar", "Servicios"];
 
   const settings = activeStore?.storeSettings || {};
@@ -3536,28 +3558,55 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
       <Navbar title={activeStore ? `Mall: ${activeStore.company}` : "Flow Express Global"} showBack={true} onBack={logout} />
       
       <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
-        <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
-          <div className="flex items-center gap-4">
-            {activeStore && profilePicUrl && (
-              <img src={profilePicUrl} alt="Store Logo" className="w-16 h-16 rounded-full object-cover border-2 shadow-sm" style={{ borderColor: themeColor }} />
-            )}
-            <div>
-              <h2 className="text-2xl font-black text-[#0A1128]">{activeStore ? activeStore.company : "Centros Comerciales KFS"}</h2>
-              <p className="text-xs text-gray-500 mt-1">{activeStore ? "Catálogo exclusivo de este negocio." : "Explora nuestras tiendas destacadas y descubre sus productos."}</p>
+        {activeStore && settings.coverPhotoUrl ? (
+          <div className="relative rounded-3xl overflow-hidden shadow-sm mb-8 border border-gray-100">
+            <div className="h-48 w-full bg-gray-200">
+              <img src={settings.coverPhotoUrl} alt="Cover" className="w-full h-full object-cover" />
+            </div>
+            <div className="bg-white p-6 pt-12 relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div className="absolute -top-12 left-6">
+                <img src={profilePicUrl || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=200&auto=format&fit=crop&q=60"} alt="Store Logo" className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md bg-white" style={{ borderColor: themeColor }} />
+              </div>
+              <div className="mt-2 sm:mt-0 sm:ml-28">
+                <h2 className="text-3xl font-black text-[#0A1128]">{activeStore.company}</h2>
+                <p className="text-sm text-gray-500 mt-1 max-w-xl">{settings.bioText || "Catálogo exclusivo de este negocio."}</p>
+              </div>
+              <div className="relative w-full sm:w-80 shrink-0">
+                <Search className="absolute left-3 top-3 text-gray-400" size={18} />
+                <input 
+                  type="text" 
+                  placeholder="Buscar en esta tienda..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#C5A184] text-gray-900"
+                />
+              </div>
             </div>
           </div>
-          
-          <div className="relative w-full sm:w-80">
-            <Search className="absolute left-3 top-3 text-gray-400" size={18} />
-            <input 
-              type="text" 
-              placeholder={activeStore ? "Buscar en esta tienda..." : "Buscar comercio..."} 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#C5A184] text-gray-900"
-            />
+        ) : (
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-6 rounded-3xl border border-gray-100 shadow-sm">
+            <div className="flex items-center gap-4">
+              {activeStore && profilePicUrl && (
+                <img src={profilePicUrl} alt="Store Logo" className="w-16 h-16 rounded-full object-cover border-2 shadow-sm" style={{ borderColor: themeColor }} />
+              )}
+              <div>
+                <h2 className="text-2xl font-black text-[#0A1128]">{activeStore ? activeStore.company : "Centros Comerciales KFS"}</h2>
+                <p className="text-xs text-gray-500 mt-1">{activeStore ? (settings.bioText || "Catálogo exclusivo de este negocio.") : "Explora nuestras tiendas destacadas y descubre sus productos."}</p>
+              </div>
+            </div>
+            
+            <div className="relative w-full sm:w-80">
+              <Search className="absolute left-3 top-3 text-gray-400" size={18} />
+              <input 
+                type="text" 
+                placeholder={activeStore ? "Buscar en esta tienda..." : "Buscar comercio..."} 
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#C5A184] text-gray-900"
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         {!activeStoreId ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
@@ -3607,6 +3656,45 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
                 </button>
               ))}
             </div>
+
+            {featuredProducts.length > 0 && selectedCategory === "All" && searchQuery === "" && (
+              <div className="mb-8">
+                <h3 className="text-lg font-black text-[#0A1128] mb-4 flex items-center gap-2">
+                  <Star className="text-yellow-500 fill-yellow-500" /> Productos Estrella
+                </h3>
+                <div className={`grid gap-6 ${layoutType === 'list' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-2 md:grid-cols-4'}`}>
+                  {featuredProducts.map((p: any) => (
+                    <div key={p.id} className={`bg-gradient-to-br from-yellow-50 to-white rounded-[1.5rem] shadow-sm overflow-hidden border border-yellow-200 flex ${layoutType === 'list' ? 'flex-row items-center h-32' : 'flex-col justify-between'} transition-transform duration-200 hover:-translate-y-1 relative`}>
+                      <div className="absolute top-0 right-0 w-16 h-16 bg-yellow-400/20 rounded-bl-[100%] z-0 pointer-events-none"></div>
+                      <div className={`relative z-10 ${layoutType === 'list' ? 'flex flex-row w-full h-full' : 'w-full'}`}>
+                        <div className={`${layoutType === 'list' ? 'w-32 h-full' : 'h-44 w-full'} bg-gray-100 overflow-hidden relative shrink-0`}>
+                          <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                          <span className="absolute bottom-2 left-2 text-[8px] bg-yellow-500 text-white font-black uppercase tracking-wider px-2 py-0.5 rounded-full shadow-md">
+                            Destacado
+                          </span>
+                        </div>
+                        <div className={`p-4 flex flex-col justify-between ${layoutType === 'list' ? 'w-full' : ''}`}>
+                          <div>
+                            <h4 className="font-bold text-sm text-[#0A1128] truncate mb-1">{p.name}</h4>
+                            <div className="flex justify-between items-center mt-2">
+                              <div>
+                                <p className="font-black text-sm" style={{ color: themeColor }}>{formatUSD(p.priceUSD)}</p>
+                                <p className="text-[10px] font-bold text-gray-500">Bs. {(p.priceUSD * (rates?.USD || 36.45)).toFixed(2)}</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div className={layoutType === 'list' ? 'mt-2' : 'mt-4'}>
+                            <button disabled={p.stock !== undefined && p.stock <= 0} onClick={() => setCheckoutProduct(p)} style={p.stock > 0 ? { backgroundColor: themeColor } : {}} className="w-full py-2 disabled:bg-gray-400 text-white font-black rounded-xl text-xs flex items-center justify-center gap-1 cursor-pointer disabled:cursor-not-allowed shadow-md hover:brightness-90 transition-all">
+                              <ShoppingCart size={14} /> {p.stock !== undefined && p.stock <= 0 ? "Agotado" : "Comprar"}
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className={`grid gap-6 ${layoutType === 'list' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-2 md:grid-cols-4'}`}>
               {filteredProducts.map((p: any) => (

@@ -100,6 +100,7 @@ interface KFSContextType {
   toggleLoyaltyProgram: (clientId: string, isActive: boolean) => void;
   triggerGhostTrap: (vendedorId: string, amount: number, method: string) => void;
   updateStoreSettings: (clientId: string, settings: any) => void;
+  toggleProductFeatured: (productId: string, isFeatured: boolean) => void;
 }
 
 const KFSContext = createContext<KFSContextType | undefined>(undefined);
@@ -940,6 +941,16 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast("Configuración de tienda actualizada exitosamente.");
   };
 
+  const toggleProductFeatured = (productId: string, isFeatured: boolean) => {
+    setDb((prev: any) => ({
+      ...prev,
+      products: prev.products.map((p: any) => 
+        p.id === productId ? { ...p, isFeatured } : p
+      )
+    }));
+    showToast(isFeatured ? "Producto marcado como Estrella ⭐" : "Producto quitado de Destacados");
+  };
+
   return (
     <KFSContext.Provider value={{
       isClient, isBooting, view, setView, currentUser, setCurrentUser,
@@ -948,7 +959,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       addProduct, addExpense, processPurchase, submitOnlineOrder, approveOrder, rejectOrder, generateZReport,
       networkState, setNetworkState, smsConciliator, registerCrmExpress,
       ghostTrapLocked, setGhostTrapLocked, createVale, payVale, registerPosTerminal, deletePosTerminal,
-      queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings
+      queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings, toggleProductFeatured
     }}>
       {children}
     </KFSContext.Provider>
