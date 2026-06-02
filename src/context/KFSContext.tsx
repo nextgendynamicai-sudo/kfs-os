@@ -358,7 +358,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast("Egreso registrado contablemente.");
   };
 
-  const processPurchase = (product: any, paymentMethod: string = "cash", applyIva: boolean = false, customerPhone: string = "", customerName: string = "") => {
+  const processPurchase = (product: any, paymentMethod: string = "cash", applyIva: boolean = false, customerPhone: string = "", customerName: string = "", customerRif: string = "") => {
     if (product.stock !== undefined && product.stock <= 0) {
       showToast("Producto agotado", "error");
       return null;

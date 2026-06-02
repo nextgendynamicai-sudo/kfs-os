@@ -28,6 +28,7 @@ const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnline = fal
   const [paymentReference, setPaymentReference] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerName, setCustomerName] = useState("");
+  const [customerRif, setCustomerRif] = useState("");
   
   const [splitMethod1, setSplitMethod1] = useState("cash_usd");
   const [splitAmount1, setSplitAmount1] = useState("");
@@ -74,7 +75,7 @@ const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnline = fal
           ndef.onreading = (event: any) => {
             setPosStep(4);
             setTimeout(() => {
-              onConfirm(paymentMethod, applyIva, `NFC-${Math.floor(100000 + Math.random() * 900000)}`, customerPhone, customerName);
+              onConfirm(paymentMethod, applyIva, `NFC-${Math.floor(100000 + Math.random() * 900000)}`, customerPhone, customerName, customerRif);
             }, 1500);
           };
           ndef.onerror = () => {
@@ -100,13 +101,13 @@ const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnline = fal
       setTimeout(() => {
         setPosStep(4);
         setTimeout(() => {
-          onConfirm(paymentMethod, applyIva, `POS-${Math.floor(100000 + Math.random() * 900000)}`, customerPhone, customerName);
+          onConfirm(paymentMethod, applyIva, `POS-${Math.floor(100000 + Math.random() * 900000)}`, customerPhone, customerName, customerRif);
         }, 1000);
       }, 3600);
       return;
     }
 
-    onConfirm(paymentMethod, applyIva, paymentReference, customerPhone, customerName);
+    onConfirm(paymentMethod, applyIva, paymentReference, customerPhone, customerName, customerRif);
   };
 
   if (isProcessingPos) {
@@ -183,18 +184,18 @@ const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnline = fal
           {paymentMethod === "split_currency" && (
             <div className="bg-red-50/50 p-4 rounded-xl border border-red-100 space-y-3">
               <label className="text-[10px] font-black text-red-900 uppercase tracking-widest block">Fraccionar Pago (El sistema exige el cálculo exacto)</label>
-              <div className="flex gap-2">
-                <select value={splitMethod1} onChange={e => setSplitMethod1(e.target.value)} className="w-1/2 bg-white border border-red-200 rounded-lg px-2 py-2 text-xs font-bold text-red-900 focus:outline-none">
+              <div className="flex flex-col sm:flex-row gap-2">
+                <select value={splitMethod1} onChange={e => setSplitMethod1(e.target.value)} className="w-full sm:w-1/2 bg-white border border-red-200 rounded-lg px-2 py-2 text-xs font-bold text-red-900 focus:outline-none">
                   <option value="cash_usd">Efectivo (USD)</option>
                   <option value="zelle">Zelle</option>
                 </select>
-                <input type="number" step="0.01" placeholder="Monto USD recibido" value={splitAmount1} onChange={e => setSplitAmount1(e.target.value)} className="w-1/2 bg-white border border-red-200 rounded-lg px-2 py-2 text-xs font-bold text-red-900 focus:outline-none focus:ring-1 focus:ring-red-500" />
+                <input type="number" step="0.01" placeholder="Monto USD recibido" value={splitAmount1} onChange={e => setSplitAmount1(e.target.value)} className="w-full sm:w-1/2 bg-white border border-red-200 rounded-lg px-2 py-2 text-xs font-bold text-red-900 focus:outline-none focus:ring-1 focus:ring-red-500" />
               </div>
-              <div className="flex gap-2">
-                <select value={splitMethod2} onChange={e => setSplitMethod2(e.target.value)} className="w-1/2 bg-white border border-red-200 rounded-lg px-2 py-2 text-xs font-bold text-red-900 focus:outline-none">
+              <div className="flex flex-col sm:flex-row gap-2">
+                <select value={splitMethod2} onChange={e => setSplitMethod2(e.target.value)} className="w-full sm:w-1/2 bg-white border border-red-200 rounded-lg px-2 py-2 text-xs font-bold text-red-900 focus:outline-none">
                   <option value="cash_bs">Pago Móvil (Bs Oficial)</option>
                 </select>
-                <div className="w-1/2 bg-white border border-red-200 rounded-lg px-2 py-2 text-xs font-black text-red-900 flex items-center justify-between">
+                <div className="w-full sm:w-1/2 bg-white border border-red-200 rounded-lg px-2 py-2 text-xs font-black text-red-900 flex items-center justify-between">
                   <span>Faltante Bs:</span>
                   <span>{((total - (parseFloat(splitAmount1) || 0)) > 0 ? (total - (parseFloat(splitAmount1) || 0)) * (rates?.USD || 36.45) : 0).toFixed(2)}</span>
                 </div>
@@ -228,6 +229,19 @@ const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnline = fal
             <span className="font-bold text-[#0A1128]">Generar Factura Fiscal (IVA 16%)</span>
           </label>
 
+          {applyIva && (
+            <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100 space-y-4 animate-fade-in">
+              <label className="text-[10px] font-black text-amber-900 uppercase tracking-widest block flex items-center gap-2">
+                <Shield size={12} className="text-amber-600" />
+                Datos Fiscales Obligatorios (SENIAT)
+              </label>
+              <div>
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 block">RIF / Cédula</label>
+                <input required type="text" placeholder="Ej: V-12345678, J-98765432-1" value={customerRif} onChange={e => setCustomerRif(e.target.value.toUpperCase())} className="w-full bg-white border border-amber-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+              </div>
+            </div>
+          )}
+
           <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-2">
             <div className="flex justify-between text-sm font-bold text-gray-600"><span>Subtotal:</span> <span>{formatUSD(price)}</span></div>
             {applyIva && <div className="flex justify-between text-sm font-bold text-gray-600"><span>IVA (16%):</span> <span className="text-red-500">+{formatUSD(iva)}</span></div>}
@@ -235,13 +249,13 @@ const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnline = fal
             <div className="flex justify-between text-lg font-black text-[#0A1128] pt-2 border-t border-gray-200 mt-2"><span>Total a Pagar:</span> <span>{formatUSD(total)}</span></div>
           </div>
 
-          <div className="flex gap-3 pt-4">
-            <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 cursor-pointer">Cancelar</button>
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+            <button type="button" onClick={onCancel} className="w-full sm:w-1/3 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 cursor-pointer">Cancelar</button>
             <button 
-              disabled={paymentMethod === 'split_currency' && ((parseFloat(splitAmount1) || 0) <= 0 || (parseFloat(splitAmount1) || 0) > total)}
+              disabled={(paymentMethod === 'split_currency' && ((parseFloat(splitAmount1) || 0) <= 0 || (parseFloat(splitAmount1) || 0) > total)) || (applyIva && !customerRif)}
               onClick={handleConfirm} 
-              className="w-2/3 py-3 rounded-xl font-black text-[#0A1128] bg-[#C5A184] shadow-lg hover:scale-[1.02] active:scale-95 transition-transform cursor-pointer disabled:opacity-50 disabled:bg-gray-400 disabled:cursor-not-allowed">
-              {isOnline ? "Enviar Pago a Revisión" : "Cobrar Cliente"}
+              className="w-full sm:w-2/3 py-3 rounded-xl font-black text-[#0A1128] bg-[#C5A184] shadow-lg hover:scale-[1.02] active:scale-95 transition-transform cursor-pointer disabled:opacity-50 disabled:bg-gray-400 disabled:cursor-not-allowed">
+              {isOnline ? "Enviar Pago a Revisión" : applyIva ? "Emitir Factura Fiscal" : "Cobrar Cliente"}
             </button>
           </div>
         </div>
@@ -294,7 +308,7 @@ const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap, showT
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
             </span>
-            <span className="text-[8px] font-mono font-black text-green-400 tracking-widest">WebUSB ESC/POS DIRECTA</span>
+            <span className="text-[8px] font-mono font-black text-green-400 tracking-widest">{tx.isFiscal ? "TFHKA / Fiscal Link Activo" : "WebUSB ESC/POS DIRECTA"}</span>
           </div>
 
           <div className="h-4"></div>
@@ -341,7 +355,7 @@ const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap, showT
             {/* Financial Ledger Details */}
             <div className="space-y-1 text-[11px] font-bold text-gray-700 border-b border-dashed border-gray-300 pb-3">
               <div className="flex justify-between"><span>PRODUCTO:</span> <span className="text-gray-900 font-black uppercase text-right truncate max-w-[130px]">{product?.name}</span></div>
-              <div className="flex justify-between"><span>SUBTOTAL:</span> <span className="text-gray-900">{formatUSD(tx.subtotalUSD)}</span></div>
+              <div className="flex justify-between"><span>{tx.isFiscal ? "BASE IMPONIBLE:" : "SUBTOTAL:"}</span> <span className="text-gray-900">{formatUSD(tx.baseUSD || tx.amountUSD)}</span></div>
               {tx.ivaUSD > 0 && <div className="flex justify-between"><span>IVA (16%):</span> <span className="text-gray-900 font-black">+{formatUSD(tx.ivaUSD)}</span></div>}
               {tx.igtfUSD > 0 && <div className="flex justify-between"><span>IGTF (3%):</span> <span className="text-gray-900 font-black">+{formatUSD(tx.igtfUSD)}</span></div>}
               <div className="flex justify-between"><span>METODO:</span> <span className="text-gray-900 uppercase">{tx.paymentMethod.replace('_', ' ')}</span></div>
@@ -369,7 +383,7 @@ const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap, showT
 
         {/* Tactile Hardware Drawer Base */}
         <div className="w-full bg-[#151924] rounded-b-[2.5rem] border border-white/10 p-5 shadow-2xl flex flex-col gap-3 z-10 -mt-1">
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <button 
               onClick={playCashDrawerSound} 
               className="py-3 rounded-xl font-black text-xs text-[#C5A184] bg-white/5 border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
@@ -379,7 +393,7 @@ const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap, showT
             
             {tx.customerPhone ? (
               <a 
-                href={`https://wa.me/58${tx.customerPhone.replace(/^0+/, '').replace(/[^0-9]/g, '')}?text=Hola ${tx.customerName || 'Cliente'}, ¡Gracias por tu compra en ${product?.clientName}!%0A%0A*Recibo KFS: ${tx.receiptNumber}*%0AProducto: ${product?.name}%0AIVA: ${formatUSD(tx.ivaUSD)}%0AIGTF: ${formatUSD(tx.igtfUSD)}%0ATotal Pagado: ${formatUSD(tx.amountUSD)}${tx.kfsPointsEarned > 0 ? `%0A%0A🎁 ¡Felicidades! Acumulaste +${tx.kfsPointsEarned.toFixed(1)} KFS Points con esta compra.` : ''}%0A%0ARecibo Digital Oficial KFS.`}
+                href={`https://wa.me/58${tx.customerPhone.replace(/^0+/, '').replace(/[^0-9]/g, '')}?text=Hola ${tx.customerName || 'Cliente'}, ¡Gracias por tu compra en ${product?.clientName}!%0A%0A*Recibo KFS: ${tx.receiptNumber}*${tx.isFiscal ? `%0A*Factura Fiscal / Control: 00-${Math.floor(10000 + Math.random() * 89999)}*` : ''}%0AProducto: ${product?.name}%0A${tx.isFiscal ? `Base Imponible: ${formatUSD(tx.baseUSD)}%0A` : ''}IVA: ${formatUSD(tx.ivaUSD)}%0AIGTF: ${formatUSD(tx.igtfUSD)}%0ATotal Pagado: ${formatUSD(tx.amountUSD)}${tx.kfsPointsEarned > 0 ? `%0A%0A🎁 ¡Felicidades! Acumulaste +${tx.kfsPointsEarned.toFixed(1)} KFS Points con esta compra.` : ''}%0A%0ARecibo Digital Oficial KFS.`}
                 target="_blank"
                 rel="noreferrer"
                 className="py-3 rounded-xl font-black text-xs text-[#0A1128] bg-green-500 hover:bg-green-600 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
@@ -393,7 +407,7 @@ const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap, showT
             )}
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row gap-2 mt-2">
             <button 
               onClick={() => {
                 showToast("Procesando anulación...", "error");
@@ -402,18 +416,18 @@ const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap, showT
                   window.location.reload();
                 }, 1500);
               }}
-              className="w-1/3 py-4 bg-red-900/50 hover:bg-red-800 text-red-100 font-black rounded-2xl text-xs hover:scale-[1.01] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer border border-red-500/20"
+              className="w-full sm:w-1/3 py-4 bg-red-900/50 hover:bg-red-800 text-red-100 font-black rounded-2xl text-xs hover:scale-[1.01] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer border border-red-500/20"
             >
               Anular
             </button>
             <button 
               onClick={handleTearPaper}
               disabled={isPrinting}
-              className="w-2/3 py-4 bg-[#C5A184] hover:bg-[#b08d70] disabled:bg-gray-700 text-[#0A1128] font-black rounded-2xl text-xs hover:scale-[1.01] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full sm:w-2/3 py-4 bg-[#C5A184] hover:bg-[#b08d70] disabled:bg-gray-700 text-[#0A1128] font-black rounded-2xl text-xs hover:scale-[1.01] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
             ✂️ Rasgar Recibo y Volver
-          </button>
-        </div>
+            </button>
+          </div>
 
       </div>
     </div>
@@ -1650,9 +1664,14 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
         <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><Lock className="text-[#C5A184]"/> Auditoría de Cierre (Reportes Z Globales)</h3>
-            <button onClick={() => window.print()} className="bg-[#0A1128] text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors cursor-pointer flex items-center gap-2">
-               Imprimir Reporte
-            </button>
+            <div className="flex gap-2">
+              <button onClick={() => showToast("Comando TFHKA Z (SENIAT) enviado al Spooler...", "success")} className="bg-amber-100 text-amber-900 px-4 py-2 rounded-xl font-bold text-sm hover:bg-amber-200 transition-colors cursor-pointer flex items-center gap-2 border border-amber-300">
+                 Emitir Z Fiscal
+              </button>
+              <button onClick={() => window.print()} className="bg-[#0A1128] text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors cursor-pointer flex items-center gap-2">
+                 Imprimir Listado
+              </button>
+            </div>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full text-sm text-left">
@@ -3058,8 +3077,8 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
     setShowScanner(false);
   };
 
-  const handleConfirmCheckout = (paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone: string) => {
-    const tx = processPurchase(checkoutProduct, paymentMethod, applyIva, customerPhone);
+  const handleConfirmCheckout = (paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone: string, customerName: string, customerRif: string) => {
+    const tx = processPurchase(checkoutProduct, paymentMethod, applyIva, customerPhone, customerName, customerRif);
     if (tx) {
       setReceiptTx(tx);
     }
@@ -3076,9 +3095,14 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
           </span>
         </div>
         <div className="flex items-center gap-4">
-          <button onClick={() => generateZReport(currentUser.id, currentUser.clientId)} className="flex items-center gap-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 px-4 py-2 rounded-xl transition-colors text-sm font-bold">
-            Cerrar Turno
-          </button>
+          <div className="flex items-center gap-2">
+            <button onClick={() => showToast("Comando TFHKA Reporte X enviado...", "success")} className="flex items-center gap-2 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 px-4 py-2 rounded-xl transition-colors text-sm font-bold">
+              Reporte X
+            </button>
+            <button onClick={() => { generateZReport(currentUser.id, currentUser.clientId); showToast("Comando TFHKA Z enviado. Sesión cerrada.", "success"); }} className="flex items-center gap-2 bg-red-500/10 text-red-400 hover:bg-red-500/20 px-4 py-2 rounded-xl transition-colors text-sm font-bold">
+              Cerrar Caja (Z)
+            </button>
+          </div>
           <button onClick={logout} className="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-xl transition-colors text-white cursor-pointer text-sm font-bold">
             Salir
           </button>
@@ -3390,8 +3414,8 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
   const [activeStoreId, setActiveStoreId] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
-  const handleConfirmCheckout = (paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone: string) => {
-    submitOnlineOrder(checkoutProduct, paymentMethod, applyIva, paymentReference, customerPhone);
+  const handleConfirmCheckout = (paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone: string, customerName: string, customerRif: string) => {
+    submitOnlineOrder(checkoutProduct, paymentMethod, applyIva, paymentReference, customerPhone, customerName, customerRif);
     setCheckoutProduct(null);
   };
   
