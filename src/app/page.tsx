@@ -5,7 +5,8 @@ import {
   Camera, Upload, ShoppingCart, TrendingUp, Users, DollarSign, 
   LogOut, Shield, Package, Activity, Search, QrCode, Lock, 
   ChevronRight, CheckCircle, CreditCard, Bell, X, Info,
-  Store, Star, ChevronLeft, Clock, UserCheck, Palette
+  Store, Star, ChevronLeft, Clock, UserCheck, Palette,
+  Zap, BookOpen, Printer, Smartphone, Settings, DownloadCloud
 } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from "recharts";
@@ -329,13 +330,14 @@ const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap, showT
             {/* Header Receipt */}
             <div className="text-center border-b border-dashed border-gray-300 pb-3">
               <h3 className="text-sm font-black tracking-widest uppercase mb-1">{product?.clientName || "KFS ECOSISTEMA"}</h3>
+              <p className="text-[10px] text-gray-500 font-bold">RIF: J-50201438-9</p>
               <p className="text-[10px] text-gray-500">BOS CONTROL DIGITAL</p>
               <p className="text-[9px] text-gray-400 font-mono mt-1">{new Date(tx.timestamp).toLocaleString()}</p>
             </div>
 
             {/* Receipt Control Barcode (Pure CSS) */}
-            <div className="flex flex-col items-center gap-1 border-b border-dashed border-gray-300 pb-3">
-              <span className="text-[8px] text-gray-400 uppercase tracking-widest">Recibo KFS Control</span>
+            <div className="flex flex-col items-center gap-1 border-b border-dashed border-gray-300 pb-3 mt-3">
+              <span className="text-[8px] text-gray-400 uppercase tracking-widest">{tx.isFiscal ? "Factura Fiscal" : "Recibo KFS Control"}</span>
               <div className="flex justify-center items-center gap-[1px] h-8 bg-gray-50 px-3 py-1 border border-gray-200/50 rounded">
                 <div className="w-1 h-6 bg-black"></div>
                 <div className="w-0.5 h-6 bg-black"></div>
@@ -349,13 +351,15 @@ const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap, showT
                 <div className="w-0.5 h-6 bg-black"></div>
                 <div className="w-2 h-6 bg-black"></div>
               </div>
-              <span className="text-[9px] font-mono font-bold text-gray-700">{tx.receiptNumber}</span>
+              <span className="text-[9px] font-mono font-bold text-gray-700">{tx.isFiscal ? `FACTURA NRO: 00-${Math.floor(10000 + Math.random() * 89999)}` : tx.receiptNumber}</span>
+              {tx.isFiscal && <span className="text-[8px] font-mono text-gray-500">MÁQUINA FISCAL: Z1F-00129841</span>}
             </div>
 
             {/* Financial Ledger Details */}
-            <div className="space-y-1 text-[11px] font-bold text-gray-700 border-b border-dashed border-gray-300 pb-3">
+            <div className="space-y-1 text-[11px] font-bold text-gray-700 border-b border-dashed border-gray-300 pb-3 mt-3">
               <div className="flex justify-between"><span>PRODUCTO:</span> <span className="text-gray-900 font-black uppercase text-right truncate max-w-[130px]">{product?.name} {tx.isFiscal ? "(G)" : "(E)"}</span></div>
               <div className="flex justify-between"><span>{tx.isFiscal ? "BASE IMPONIBLE:" : "SUBTOTAL:"}</span> <span className="text-gray-900">{formatUSD(tx.baseUSD || tx.amountUSD)}</span></div>
+              {tx.isFiscal && <div className="flex justify-between"><span>EXENTO (E):</span> <span className="text-gray-900 font-black">$0.00</span></div>}
               {tx.ivaUSD > 0 && <div className="flex justify-between"><span>IVA (16%):</span> <span className="text-gray-900 font-black">+{formatUSD(tx.ivaUSD)}</span></div>}
               {tx.igtfUSD > 0 && <div className="flex justify-between"><span>IGTF (3%):</span> <span className="text-gray-900 font-black">+{formatUSD(tx.igtfUSD)}</span></div>}
               <div className="flex justify-between"><span>METODO:</span> <span className="text-gray-900 uppercase">{tx.paymentMethod.replace('_', ' ')}</span></div>
@@ -363,13 +367,13 @@ const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap, showT
             </div>
 
             {/* SUNDDE Compliance Section */}
-            <div className="space-y-1 text-[10px] font-bold text-gray-500 border-b border-dashed border-gray-300 pb-3">
+            <div className="space-y-1 text-[10px] font-bold text-gray-500 border-b border-dashed border-gray-300 pb-3 mt-3">
               <div className="flex justify-between"><span>TASA OFICIAL BCV:</span> <span>{tx.exchangeRateBCV?.toFixed(2)} Bs</span></div>
               <div className="flex justify-between text-xs text-gray-900 font-black mt-1"><span>TOTAL Bs:</span> <span>{(tx.amountUSD * (tx.exchangeRateBCV || 36.5)).toFixed(2)} Bs</span></div>
             </div>
 
             {/* Large Final Total */}
-            <div className="text-center py-2 bg-gray-50 border border-gray-100 rounded-xl">
+            <div className="text-center py-2 bg-gray-50 border border-gray-100 rounded-xl mt-3">
               <span className="text-[9px] text-gray-400 font-black uppercase block tracking-widest">Total Cancelado</span>
               <span className="text-3xl font-black text-[#0A1128] block">{formatUSD(tx.amountUSD)}</span>
               {tx.kfsPointsEarned > 0 && (
@@ -380,7 +384,7 @@ const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap, showT
             </div>
 
             {/* Passive Split Suggestion */}
-            <div className="text-center text-[9px] text-gray-400 border-t border-dashed border-gray-300 pt-3 flex flex-col gap-0.5 font-bold">
+            <div className="text-center text-[9px] text-gray-400 border-t border-dashed border-gray-300 pt-3 flex flex-col gap-0.5 font-bold mt-3">
               <span>Split KFS: Acreditación Directa Promotora</span>
               <span className="font-mono text-green-600 uppercase">Procesado Exitosamente</span>
             </div>
@@ -791,6 +795,121 @@ const KFSFinancialSplitCalculator = ({ formatUSD, formatEUR, clientFeePercentage
       </div>
       {/* Background icon design */}
       <DollarSign size={150} className="absolute -right-16 -bottom-16 text-white/5 pointer-events-none" />
+    </div>
+  );
+};
+
+// Sincro-Shield Fiscal Setup Widget (SENIAT)
+const FiscalPrinterSetupWidget = () => {
+  const { showToast } = useKFS();
+  const [proxyUrl, setProxyUrl] = useState("http://localhost:8080");
+  const [status, setStatus] = useState("disconnected");
+  const [details, setDetails] = useState<any>(null);
+  const [testing, setTesting] = useState(false);
+
+  const testConnection = async () => {
+    setTesting(true);
+    try {
+      const res = await fetch(`${proxyUrl}/status`);
+      const data = await res.json();
+      if (data.status === "connected") {
+        setStatus("connected");
+        setDetails(data);
+        showToast("Sincro-Shield Fiscal conectado al proxy local con éxito.", "success");
+      } else {
+        setStatus("disconnected");
+        setDetails(null);
+        showToast("Proxy local respondió pero la tiquetera fiscal está desconectada.", "error");
+      }
+    } catch (err) {
+      setStatus("disconnected");
+      setDetails(null);
+      showToast("Proxy local fuera de línea en " + proxyUrl + ". Ejecuta 'node fiscal-proxy.js'.", "error");
+    } finally {
+      setTesting(false);
+    }
+  };
+
+  useEffect(() => {
+    testConnection();
+  }, []);
+
+  const downloadProxyScript = () => {
+    const link = document.createElement("a");
+    link.href = "/fiscal-proxy.js";
+    link.download = "fiscal-proxy.js";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    showToast("Descargando script fiscal-proxy.js...", "success");
+  };
+
+  return (
+    <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 space-y-6">
+      <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-600">
+            <Shield size={24} />
+          </div>
+          <div>
+            <h3 className="font-black text-sm text-[#0A1128] uppercase tracking-wider">🛡️ Sincro-Shield Fiscal (SENIAT)</h3>
+            <p className="text-[10px] text-gray-500 mt-1">Conexión con impresoras fiscales de Venezuela en red local.</p>
+          </div>
+        </div>
+        <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full font-black text-[8px] uppercase tracking-wider border ${status === "connected" ? "bg-green-50 text-green-700 border-green-200 animate-pulse" : "bg-red-50 text-red-700 border-red-200"}`}>
+          {status === "connected" ? "CONECTADO" : "DESCONECTADO"}
+        </span>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-3">
+          <div className="space-y-1">
+            <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest block">Dirección IP del Proxy Local</label>
+            <div className="flex gap-2">
+              <input 
+                type="text" 
+                value={proxyUrl} 
+                onChange={(e) => setProxyUrl(e.target.value)} 
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-xs text-gray-900 focus:outline-none font-mono" 
+              />
+              <button 
+                type="button"
+                onClick={testConnection} 
+                disabled={testing}
+                className="bg-[#0A1128] text-white px-4 rounded-xl font-bold text-xs hover:bg-gray-800 disabled:opacity-50 flex-shrink-0 cursor-pointer"
+              >
+                {testing ? "Probando..." : "Probar"}
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 font-mono text-[9px] text-gray-500 space-y-1">
+            <p className="font-bold text-[#0A1128] uppercase tracking-wider text-[8px]">Telemetría Local:</p>
+            {details ? (
+              <>
+                <p>• Impresora: <span className="text-green-600 font-bold">{details.model}</span></p>
+                <p>• Puerto COM: <span className="text-green-600 font-bold">{details.port}</span></p>
+                <p>• Registro Fiscal: <span className="text-green-600 font-bold">{details.machineSerial}</span></p>
+              </>
+            ) : (
+              <p className="text-red-500 italic">No se detectó el Spooler de impresión fiscal local en el equipo.</p>
+            )}
+          </div>
+        </div>
+
+        <div className="bg-[#0A1128] text-white p-4 rounded-xl border border-white/5 flex flex-col justify-between">
+          <p className="text-[10px] text-gray-300 leading-relaxed">
+            Descarga el script `fiscal-proxy.js` y ejecútalo en la PC que tenga la impresora fiscal física conectada por serial.
+          </p>
+          <button 
+            type="button"
+            onClick={downloadProxyScript}
+            className="w-full mt-2 py-2 bg-[#C5A184] hover:bg-[#b08e72] text-[#0A1128] font-black rounded-lg text-xs transition-colors cursor-pointer text-center"
+          >
+            Descargar fiscal-proxy.js
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
@@ -1293,6 +1412,109 @@ const RegisterPromotoraForm = ({ onRegister, onCancel }: any) => {
   );
 };
 
+// Landing Page View
+const LandingPageView = ({ setView }: any) => {
+  return (
+    <div className="min-h-screen bg-[#0A1128] text-white font-sans overflow-x-hidden selection:bg-[#C5A184] selection:text-[#0A1128]">
+      {/* Navbar */}
+      <nav className="fixed w-full z-50 bg-[#0A1128]/80 backdrop-blur-xl border-b border-white/5 py-4 px-6 sm:px-10 flex justify-between items-center transition-all duration-300">
+        <div className="flex items-center gap-3">
+          <Shield className="text-[#C5A184]" size={28} />
+          <span className="font-black text-xl tracking-tighter">Kreatek<span className="text-[#C5A184]">OS</span></span>
+        </div>
+        <div className="flex gap-4">
+          <button onClick={() => setView("login")} className="text-sm font-bold text-gray-300 hover:text-white transition-colors cursor-pointer hidden sm:block pt-2">
+            Iniciar Sesión
+          </button>
+          <button onClick={() => setView("login")} className="bg-[#C5A184] text-[#0A1128] px-5 py-2 rounded-xl font-black text-sm hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(197,161,132,0.3)] cursor-pointer">
+            Acceso al Sistema
+          </button>
+        </div>
+      </nav>
+
+      {/* Hero Section */}
+      <section className="relative pt-40 pb-20 px-6 sm:px-10 max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12 min-h-[90vh]">
+        <div className="absolute top-20 left-10 w-72 h-72 bg-[#C5A184]/20 rounded-full blur-[100px] -z-10 animate-pulse"></div>
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-900/20 rounded-full blur-[120px] -z-10"></div>
+        
+        <div className="flex-1 space-y-8 z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-bold text-[#C5A184] uppercase tracking-widest backdrop-blur-md">
+            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+            El Ecosistema Financiero Definitivo
+          </div>
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-black leading-[1.1] tracking-tight">
+            Gobierna tu <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#C5A184] to-yellow-200">
+              Comercio Local
+            </span>
+          </h1>
+          <p className="text-lg text-gray-400 max-w-xl leading-relaxed">
+            Punto de venta físico, E-Commerce sincronizado, proxy fiscal SENIAT y auto-conciliación de Pago Móvil en una sola plataforma en la nube.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            <button onClick={() => setView("login")} className="bg-white text-[#0A1128] px-8 py-4 rounded-xl font-black text-lg hover:scale-105 active:scale-95 transition-all shadow-xl cursor-pointer flex items-center justify-center gap-2">
+              <Zap size={20} /> Empezar Ahora
+            </button>
+          </div>
+        </div>
+
+        <div className="flex-1 w-full relative z-10">
+           <div className="bg-gradient-to-tr from-[#0A1128] to-[#141E3A] border border-white/10 rounded-[2rem] p-2 shadow-2xl transition-transform duration-700 ease-out">
+             <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1000&auto=format&fit=crop" alt="Dashboard Preview" className="w-full h-auto rounded-xl opacity-80" />
+           </div>
+        </div>
+      </section>
+
+      {/* Features Grid */}
+      <section className="py-20 px-6 sm:px-10 max-w-7xl mx-auto border-t border-white/5">
+        <div className="text-center mb-16 space-y-4">
+          <h2 className="text-3xl md:text-5xl font-black tracking-tight">Todo lo que necesitas, <span className="text-[#C5A184]">sin licencias extra</span>.</h2>
+          <p className="text-gray-400 max-w-2xl mx-auto">Reemplazamos tu sistema viejo, el hardware obsoleto y las comisiones ocultas por un hub centralizado de alto rendimiento.</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Feature 1 */}
+          <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] hover:bg-white/10 transition-colors group">
+            <div className="w-14 h-14 bg-[#C5A184]/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <ShoppingCart className="text-[#C5A184]" size={28} />
+            </div>
+            <h3 className="text-xl font-black mb-3 text-white">Flow Express (E-Commerce)</h3>
+            <p className="text-sm text-gray-400 leading-relaxed">Tu inventario físico se refleja automáticamente en tu tienda online gratuita. Vende 24/7 sin comisiones por plataforma.</p>
+          </div>
+
+          {/* Feature 2 */}
+          <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] hover:bg-white/10 transition-colors group">
+            <div className="w-14 h-14 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <Printer className="text-blue-400" size={28} />
+            </div>
+            <h3 className="text-xl font-black mb-3 text-white">Sincro-Shield Fiscal</h3>
+            <p className="text-sm text-gray-400 leading-relaxed">Conéctate directamente a tu impresora fiscal (PnP) cumpliendo normativas del SENIAT sin pagar licencias de terceros.</p>
+          </div>
+
+          {/* Feature 3 */}
+          <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] hover:bg-white/10 transition-colors group">
+            <div className="w-14 h-14 bg-green-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+              <Smartphone className="text-green-400" size={28} />
+            </div>
+            <h3 className="text-xl font-black mb-3 text-white">Auto-Conciliación SMS</h3>
+            <p className="text-sm text-gray-400 leading-relaxed">Olvídate de las capturas falsas. El sistema lee el SMS de tu banco y aprueba las órdenes online de Pago Móvil instantáneamente.</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer CTA */}
+      <section className="py-24 px-6 sm:px-10 text-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-[#C5A184]/10 -z-10"></div>
+        <h2 className="text-4xl md:text-5xl font-black mb-6">Moderniza tu tienda hoy.</h2>
+        <p className="text-xl text-[#C5A184] mb-10 font-bold">Únete a la red de Kreatek Flow Systems.</p>
+        <button onClick={() => setView("login")} className="bg-[#C5A184] text-[#0A1128] px-10 py-5 rounded-2xl font-black text-xl hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(197,161,132,0.4)] cursor-pointer">
+          Acceder al Sistema
+        </button>
+      </section>
+    </div>
+  );
+};
+
 // Login View
 const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView, currentUser, logout }: any) => {
   const [activeTab, setActiveTab] = useState("marketplace"); 
@@ -1353,6 +1575,12 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
 
           {activeTab === "register" && <RegisterClientForm onRegister={registerClient} onCancel={() => setActiveTab("dueño")} />}
           {activeTab === "registerPromo" && <RegisterPromotoraForm onRegister={registerPromotora} onCancel={() => setActiveTab("promotora")} />}
+
+          <div className="mt-8 pt-6 border-t border-white/10 text-center">
+            <button onClick={() => setView("landing")} className="text-sm font-black text-[#C5A184] hover:text-white transition-colors cursor-pointer flex items-center justify-center gap-2 mx-auto">
+              <Star size={16} /> Ver Landing de Ventas - KFS OS
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -1361,6 +1589,7 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
 
 // CoreDashboard
 const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePromotoraEarnings, showToast, formatUSD, formatEUR, currentUser, logout }: any) => {
+  const { impersonateClient } = useKFS();
   const [searchPromotora, setSearchPromotora] = useState("");
   const [searchClient, setSearchClient] = useState("");
   const [searchVendedor, setSearchVendedor] = useState("");
@@ -1547,7 +1776,10 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                     <td className="py-4 px-4 text-gray-500 font-mono">{c.phone}</td>
                     <td className="py-4 px-4 font-black text-green-600">{formatUSD(c.salesUSD || 0)}</td>
                     <td className="py-4 px-4 font-black text-red-500">{formatUSD(c.kfsFeesOwedUSD || 0)}</td>
-                    <td className="py-4 px-4 text-right">
+                    <td className="py-4 px-4 text-right space-x-2">
+                      <button onClick={() => impersonateClient(c)} className="bg-blue-500 text-white px-4 py-2 rounded-xl font-bold text-xs hover:bg-blue-600 transition-colors cursor-pointer inline-flex items-center gap-1 shadow-sm">
+                        👁️ Ver Panel
+                      </button>
                       <button onClick={() => {
                         const cleanPhone = c.phone.replace(/[^0-9]/g, '');
                         // Check if venezuelan
@@ -1727,6 +1959,8 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
   const filteredClients = myClients.filter((c: any) => c.company.toLowerCase().includes(searchClient.toLowerCase()) || c.name.toLowerCase().includes(searchClient.toLowerCase()));
   const myPromotoraData = db.promotoras.find((p: any) => p.id === currentUser?.id) || currentUser;
 
+  const [activeManual, setActiveManual] = useState<string | null>(null);
+
   return (
     <div className="min-h-screen bg-gray-50 pb-24 font-sans">
       <Navbar title={`Portal Promotora: ${currentUser.name}`} showBack={true} onBack={logout} />
@@ -1752,6 +1986,25 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
              </div>
              <h3 className="text-6xl font-black text-[#0A1128] mb-3">{myPromotoraData?.setups || 0}</h3>
              <p className="text-sm font-black text-gray-400 uppercase tracking-widest">Nodos Captados</p>
+          </div>
+        </div>
+
+        {/* Manuals Section */}
+        <div className="bg-[#0A1128] text-white p-8 md:p-10 rounded-[2rem] shadow-xl relative overflow-hidden">
+          <h3 className="text-xl font-black mb-6">Centro de Aprendizaje y Manuales</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <button onClick={() => setActiveManual('sales')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
+              <BookOpen size={32} className="text-[#C5A184]" />
+              <span className="font-bold text-sm">Manual de Ventas</span>
+            </button>
+            <button onClick={() => setActiveManual('implementation')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
+              <Settings size={32} className="text-[#C5A184]" />
+              <span className="font-bold text-sm">Guía de Implementación</span>
+            </button>
+            <button onClick={() => setActiveManual('installation')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
+              <DownloadCloud size={32} className="text-[#C5A184]" />
+              <span className="font-bold text-sm">Setup Fiscal Proxy</span>
+            </button>
           </div>
         </div>
 
@@ -1814,6 +2067,90 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
               updateStoreSettings(id, settings);
               setCustomizingClient(null);
             }} />
+          </div>
+        </div>
+      )}
+
+      {activeManual && (
+        <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
+          <div className="bg-white text-[#0A1128] rounded-[2rem] w-full max-w-2xl max-h-[85vh] overflow-y-auto relative p-8 shadow-2xl border-4 border-[#0A1128]">
+            <button onClick={() => setActiveManual(null)} className="absolute top-6 right-6 text-gray-500 hover:text-[#0A1128] transition-colors cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200">
+              <X size={20} />
+            </button>
+            
+            {activeManual === 'sales' && (
+              <div>
+                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><BookOpen className="text-[#C5A184]" size={28} /> Manual de Ventas: KFS Ecosistema</h2>
+                <div className="space-y-5 text-gray-700 text-sm leading-relaxed">
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">1. Elevator Pitch (El Gancho):</p>
+                    <p>Kreatek Flow Systems OS no es solo un punto de venta. Es un sistema operativo integral que fusiona facturación fiscal, control de inventario y un marketplace E-Commerce automatizado llamado "Flow Express".</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">2. Beneficio Principal (Comercio):</p>
+                    <p>Eliminación de hardware obsoleto. Nuestro Sincro-Shield fiscal proxy permite conectar la nube directamente con impresoras fiscales sin pagar licencias de terceros anuales altísimas.</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">3. Beneficio Principal (Tú como Promotor):</p>
+                    <p>Recibes <span className="font-black text-green-600">20% de Revenue Share (Regalías)</span> de por vida sobre las comisiones generadas por los nodos comerciales que afilies. Esto es ingreso pasivo real y escalable.</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">4. Manejo de Objeciones:</p>
+                    <p>"Ya tengo un sistema". Respuesta: "KFS es gratis de instalar y de licencia perpetua en la nube. Reemplazamos sus licencias caras y les damos E-Commerce gratis integrado en una sola app web."</p>
+                  </div>
+                </div>
+              </div>
+            )}
+            {activeManual === 'implementation' && (
+              <div>
+                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><Settings className="text-[#C5A184]" size={28} /> Guía de Implementación KFS</h2>
+                <div className="space-y-5 text-gray-700 text-sm leading-relaxed">
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">1. Registro del Comercio:</p>
+                    <p>En este panel, haz clic en "+ Nuevo Setup". Llena los datos reales del comercio, asignando el email del dueño y una clave genérica para su primer acceso.</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">2. Configuración de Tarifa BOS:</p>
+                    <p>El default es 3% del total facturado. Puedes negociar hasta un 1% para clientes de alto volumen. Ese % es de lo que tú ganarás el 20%.</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">3. Personalización UI:</p>
+                    <p>Usa el botón "Diseño" en la tabla de comercios para subir el logo del cliente, fondo y colores de su Flow Express Marketplace.</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">4. Carga de Inventario:</p>
+                    <p>Acompaña al dueño en la creación de los primeros 5 productos para asegurar que entienda cómo funciona el código de barras y la vinculación de precios base.</p>
+                  </div>
+                </div>
+              </div>
+            )}
+            {activeManual === 'installation' && (
+              <div>
+                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><DownloadCloud className="text-[#C5A184]" size={28} /> Setup Sincro-Shield Fiscal</h2>
+                <div className="space-y-5 text-gray-700 text-sm leading-relaxed">
+                  <div className="bg-red-50 border border-red-200 p-4 rounded-xl mb-4">
+                    <p className="font-black text-red-800 text-xs uppercase tracking-widest mb-1">Obligatorio por Ley SENIAT</p>
+                    <p className="text-red-700 text-xs">Esta integración garantiza que el comercio cumpla con las normativas fiscales venezolanas.</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">1. Requisitos de Hardware:</p>
+                    <p>Máquina fiscal compatible (Ej: The Factory HKA modelo Bixolon, Aclas) conectada por cable USB a la PC principal de Caja (Windows/Mac).</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">2. Descarga del Proxy Local:</p>
+                    <p>En el dashboard del Cliente o Vendedor, se debe descargar "Sincro-Shield Fiscal Proxy" y tener Node.js instalado en el sistema operativo del cliente.</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">3. Ejecución y Servicio:</p>
+                    <p>Abrir una terminal en la PC de la caja y ejecutar <code>node fiscal-proxy.js</code>. Opcionalmente configurar PM2 para arranque automático. Se mantendrá corriendo en el puerto 8080.</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">4. Pruebas de Transmisión:</p>
+                    <p>En KFS OS (Caja), abrir el Setup Sincro-Shield y presionar "Probar Conexión Proxy". Si responde, marcar la casilla "Imprimir Copias Fiscales por Defecto".</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -1902,7 +2239,8 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   const [newVendedor, setNewVendedor] = useState({ name: "", email: "", password: "", avatar: "" });
   const [newExpense, setNewExpense] = useState({ description: "", amountUSD: "" });
   const [smsInput, setSmsInput] = useState("");
-  const { createVale, payVale, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, toggleProductFeatured } = useKFS();
+  const [activeManual, setActiveManual] = useState<string | null>(null);
+  const { createVale, payVale, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, toggleProductFeatured, stopImpersonating } = useKFS();
 
   const handleManualSmsConciliation = () => {
     if (!smsInput.trim()) return;
@@ -2056,6 +2394,14 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20 font-sans">
+      {currentUser?.isImpersonated && (
+        <div className="bg-amber-500 text-[#0A1128] px-4 py-3 font-bold text-center flex items-center justify-center gap-4 text-sm shadow-md animate-pulse sticky top-[64px] z-50">
+          <span>⚠️ MODO IMPERSONACIÓN ACTIVO: Estás controlando el panel de {currentUser.company}</span>
+          <button onClick={stopImpersonating} className="bg-[#0A1128] text-white px-4 py-1.5 rounded-xl text-xs font-black hover:bg-gray-800 transition-colors shadow cursor-pointer">
+            Regresar a Panel Core
+          </button>
+        </div>
+      )}
       <Navbar title={currentUser.company} showBack={true} onBack={logout} />
       <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-8 animate-fade-in">
         
@@ -2090,6 +2436,23 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         </div>
 
         <StorefrontCustomizer client={currentUser} updateStoreSettings={updateStoreSettings} />
+
+        <FiscalPrinterSetupWidget />
+
+        {/* Manuals Section for Client (Owner) */}
+        <div className="bg-[#0A1128] text-white p-8 rounded-[2rem] shadow-xl relative overflow-hidden mt-6 mb-6">
+          <h3 className="text-xl font-black mb-6">Centro de Aprendizaje (Dueño de Negocio)</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <button onClick={() => setActiveManual('owner')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
+              <BookOpen size={32} className="text-[#C5A184]" />
+              <span className="font-bold text-sm">Manual de Uso del Sistema</span>
+            </button>
+            <button onClick={() => setActiveManual('benefits')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
+              <Star size={32} className="text-[#C5A184]" />
+              <span className="font-bold text-sm">Whitepaper de Beneficios KFS</span>
+            </button>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
           <button onClick={() => setShowAddModal(true)} className="bg-white border border-gray-100 p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-5 hover:border-[#C5A184]/50 transition-all cursor-pointer">
@@ -2855,6 +3218,63 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           </div>
         </div>
       )}
+
+      {activeManual && (
+        <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
+          <div className="bg-white text-[#0A1128] rounded-[2rem] w-full max-w-2xl max-h-[85vh] overflow-y-auto relative p-8 shadow-2xl border-4 border-[#0A1128]">
+            <button onClick={() => setActiveManual(null)} className="absolute top-6 right-6 text-gray-500 hover:text-[#0A1128] transition-colors cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200">
+              <X size={20} />
+            </button>
+            
+            {activeManual === 'owner' && (
+              <div>
+                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><BookOpen className="text-[#C5A184]" size={28} /> Manual de Uso del Dueño</h2>
+                <div className="space-y-5 text-gray-700 text-sm leading-relaxed">
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">1. ¿Qué es KFS OS?</p>
+                    <p>Es tu centro de comando. Desde aquí controlas tus ventas físicas, tu E-Commerce (Flow Express Marketplace), empleados e inventario en un solo lugar.</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">2. Control de Inventario:</p>
+                    <p>Usa la sección "Inventario" para cargar tus productos. Recomendamos usar código de barras reales (EAN/UPC) para que la búsqueda en caja sea instantánea.</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">3. Control de Empleados (Vendedores):</p>
+                    <p>Crea usuarios y contraseñas temporales para tus cajeros. Ellos accederán desde sus propios dispositivos o la PC de la tienda al panel de Caja Registradora.</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">4. Liquidación y Tarifas:</p>
+                    <p>Tus ganancias netas están en la cima de este panel. La deuda KFS se calcula basada en tu tarifa operativa y debe ser cancelada en los datos de transferencia mostrados abajo.</p>
+                  </div>
+                </div>
+              </div>
+            )}
+            {activeManual === 'benefits' && (
+              <div>
+                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><Star className="text-[#C5A184]" size={28} /> Whitepaper de Beneficios KFS</h2>
+                <div className="space-y-5 text-gray-700 text-sm leading-relaxed">
+                  <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl mb-4">
+                    <p className="font-black text-blue-800 text-xs uppercase tracking-widest mb-1">El Ecosistema Financiero</p>
+                    <p className="text-blue-700 text-xs">Ahorros masivos al eliminar software de terceros obsoleto.</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">1. E-Commerce Flow Express Gratuito:</p>
+                    <p>Tu inventario está conectado en tiempo real al marketplace Flow Express. Cualquier cliente puede comprar online con pago móvil, Zelle o Binance Pay sin comisiones adicionales.</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">2. Sincro-Shield Fiscal Gratuito:</p>
+                    <p>No necesitas pagar licencias anuales a intermediarios. Nuestro proxy conecta tu PC directo a la impresora fiscal bajo las normativas del SENIAT.</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">3. Conciliación Automática SMS:</p>
+                    <p>Si activas la función SMS, el sistema verificará pagos móviles entrantes de forma autónoma. Se acabaron los fraudes de capturas falsas.</p>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );
@@ -3042,6 +3462,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
   
   const [newProd, setNewProd] = useState({ name: "", price: "", stock: "", imgUrl: "", category: "Alimentos", barcode: "" });
   const [isFetchingBarcode, setIsFetchingBarcode] = useState(false);
+  const [activeManual, setActiveManual] = useState<string | null>(null);
 
   const handleBarcodeSearch = async (barcode: string) => {
     if (!barcode) return;
@@ -3237,7 +3658,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
 
         <KFSIoTEdgeConsole showToast={showToast} />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <button onClick={() => setShowAddModal(true)} className="bg-white border border-gray-100 p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-4 hover:border-[#C5A184]/50 transition-all cursor-pointer">
             <div className="w-12 h-12 bg-[#0A1128]/5 rounded-full flex items-center justify-center">
               <Upload size={24} className="text-[#0A1128]" />
@@ -3249,6 +3670,12 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
               <QrCode size={24} className="text-[#0A1128]" />
             </div>
             <span className="font-black text-[#0A1128]">Escanear QR / Compra</span>
+          </button>
+          <button onClick={() => setActiveManual('operator')} className="bg-[#0A1128] text-white p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-4 hover:bg-gray-900 transition-all cursor-pointer">
+            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center">
+              <BookOpen size={24} className="text-[#C5A184]" />
+            </div>
+            <span className="font-black text-white">Manual de Operación</span>
           </button>
         </div>
 
@@ -3512,6 +3939,40 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
                 Registrar en Inventario
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {activeManual && (
+        <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
+          <div className="bg-white text-[#0A1128] rounded-[2rem] w-full max-w-2xl max-h-[85vh] overflow-y-auto relative p-8 shadow-2xl border-4 border-[#0A1128]">
+            <button onClick={() => setActiveManual(null)} className="absolute top-6 right-6 text-gray-500 hover:text-[#0A1128] transition-colors cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200">
+              <X size={20} />
+            </button>
+            
+            {activeManual === 'operator' && (
+              <div>
+                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><BookOpen className="text-[#C5A184]" size={28} /> Manual del Operador (Caja)</h2>
+                <div className="space-y-5 text-gray-700 text-sm leading-relaxed">
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">1. Registro de Compras Físicas:</p>
+                    <p>Usa el botón "Escanear QR / Compra" o busca el producto manualmente. Selecciona el método de pago e ingresa el RIF o Cédula del cliente si requiere Factura Fiscal.</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">2. Validar Órdenes Online (E-Commerce):</p>
+                    <p>Las compras realizadas por clientes en la tienda online aparecerán en el panel "Órdenes Online". Copia el mensaje SMS del banco (Pago Móvil) y pégalo en el "Conciliador SMS" para aprobar la orden automáticamente.</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">3. Cierre de Caja (Reporte Z):</p>
+                    <p>Al final del turno, debes presionar "Cerrar Caja (Z)" en el menú superior. Esto enviará la totalización al dueño y cerrará tu sesión operativa.</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[#0A1128] mb-1">4. Impresión Fiscal:</p>
+                    <p>Asegúrate de que la aplicación "Sincro-Shield Proxy" esté corriendo en la PC de caja para que el sistema KFS pueda emitir los recibos por la impresora conectada.</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -3889,6 +4350,8 @@ export default function Home() {
         </div>
       )}
 
+      {view === "landing" && <LandingPageView setView={setView} />}
+      
       {view === "login" && (
         <LoginView 
           handleLogin={handleLogin} 

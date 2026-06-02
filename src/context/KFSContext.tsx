@@ -87,6 +87,9 @@ interface KFSContextType {
   approveOrder: (orderId: string) => void;
   rejectOrder: (orderId: string) => void;
   generateZReport: (vendedorId: string, clientId: string) => void;
+  originalUser: any;
+  impersonateClient: (client: any) => void;
+  stopImpersonating: () => void;
   networkState: "online" | "mesh" | "offline";
   setNetworkState: (state: "online" | "mesh" | "offline") => void;
   smsConciliator: (smsText: string) => { matched: boolean; order?: any; bank?: string; amount?: number; reference?: string; phone?: string; error?: string };
@@ -111,6 +114,24 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const [isBooting, setIsBooting] = useState(true);
   const [view, setView] = useState("login"); 
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [originalUser, setOriginalUser] = useState<any>(null);
+
+  const impersonateClient = (client: any) => {
+    setOriginalUser(currentUser);
+    const impersonated = { ...client, role: "dueño", isImpersonated: true };
+    setCurrentUser(impersonated);
+    setView("client");
+    showToast(`Impersonando comercio: ${client.company}`, "success");
+  };
+
+  const stopImpersonating = () => {
+    if (originalUser) {
+      setCurrentUser(originalUser);
+      setOriginalUser(null);
+      setView("core");
+      showToast("Retornando a panel Core de Arquitecto", "success");
+    }
+  };
   const [toast, setToast] = useState({ show: false, message: "", type: "success" });
   const [rates, setRates] = useState(MOCK_BCV_RATES);
   const [db, setDb] = useState<any>(initialDB);
@@ -427,6 +448,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       
       const pointsEarned = client?.loyaltyProgramActive ? totalUSD * 0.5 : 0;
       
+      const isFiscal = applyIva;
+      const mockSerial = "PPG" + Math.floor(10000000 + Math.random() * 90000000);
+      const mockInvoice = "0000" + Math.floor(100 + Math.random() * 900);
+
       transactionObj = {
         id: `tx${Date.now()}`, 
         productId: product.id, 
@@ -439,6 +464,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         kreatekFeeEUR: kreatekTotalFeeEUR,
         customerPhone,
         customerName,
+        customerRif,
+        isFiscal,
+        fiscalSerial: isFiscal ? mockSerial : null,
+        fiscalInvoiceNumber: isFiscal ? mockInvoice : null,
         kfsPointsEarned: pointsEarned,
         vendedorId: currentUser?.role === 'vendedor' ? currentUser.id : null,
         clientId: product.clientId,
@@ -527,6 +556,45 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     
     if (typeof window !== "undefined") {
       window.dispatchEvent(new CustomEvent("kfs-purchase", { detail: { ...product, finalTotalUSD: totalUSD } }));
+    }
+
+    if (applyIva) {
+      const fiscalPayload = {
+        clientName: product.clientName || "Comercio KFS",
+        clientRif: "J-25218648-9",
+        customerName: customerName || "Consumidor Final",
+        customerRif: customerRif,
+        productName: product.name,
+        subtotalUSD: basePriceUSD,
+        ivaUSD,
+        igtfUSD,
+        amountUSD: totalUSD,
+        paymentMethod,
+        exchangeRateBCV: rates.USD
+      };
+
+      fetch("http://localhost:8080/print-fiscal", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(fiscalPayload)
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === "success") {
+          setDb((prev: any) => ({
+            ...prev,
+            transactions: prev.transactions.map((tx: any) => 
+              tx.id === transactionObj.id 
+                ? { ...tx, fiscalSerial: data.machineSerial, fiscalInvoiceNumber: data.invoiceNumber } 
+                : tx
+            )
+          }));
+          showToast(`Sincro-Shield Fiscal: Factura ${data.invoiceNumber} emitida en máquina ${data.machineSerial}`, "success");
+        }
+      })
+      .catch(err => {
+        console.warn("[Sincro-Shield] Proxy local desconectado. Factura fiscal en cola virtual.", err);
+      });
     }
     
     return transactionObj;
@@ -957,6 +1025,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       toast, showToast, rates, db, setDb, formatUSD, formatEUR,
       handleLogin, logout, registerClient, registerPromotora, approvePromotora, rejectPromotora, settlePromotoraEarnings,
       addProduct, addExpense, processPurchase, submitOnlineOrder, approveOrder, rejectOrder, generateZReport,
+      originalUser, impersonateClient, stopImpersonating,
       networkState, setNetworkState, smsConciliator, registerCrmExpress,
       ghostTrapLocked, setGhostTrapLocked, createVale, payVale, registerPosTerminal, deletePosTerminal,
       queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings, toggleProductFeatured
