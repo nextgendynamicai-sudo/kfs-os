@@ -109,6 +109,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const [db, setDb] = useState<any>(initialDB);
   const [networkState, setNetworkState] = useState<"online" | "mesh" | "offline">("online");
   const [ghostTrapLocked, setGhostTrapLocked] = useState(false);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   const ghostTrapActive = useRef(true);
 
@@ -137,9 +138,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       }
       
       if (isSupabaseConfigured && navigator.onLine) {
-        let tempDb = null;
-        try { if (saved) tempDb = JSON.parse(saved); } catch(e){}
-        const syncId = tempDb?.clients?.[0]?.id || "kfs-general-db";
+        const syncId = "kfs-general-db";
         
         supabase
           .from("kfs_store_states")
@@ -152,10 +151,14 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
               console.log("[Supabase Cloud] Base de datos restaurada desde la nube.");
             }
           })
-          .catch((err: any) => console.log("Supabase initial sync bypass:", err));
+          .catch((err: any) => console.log("Supabase initial sync bypass:", err))
+          .finally(() => setIsDataLoaded(true));
+      } else {
+        setIsDataLoaded(true);
       }
     } catch (error) {
       console.warn("Entorno restringido detectado. Activando memoria volátil.");
+      setIsDataLoaded(true);
     }
 
     if ("serviceWorker" in navigator) {
@@ -165,12 +168,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
   // Save DB to LocalStorage & Supabase Cloud
   useEffect(() => {
-    if (!isClient) return;
+    if (!isClient || !isDataLoaded) return;
     try {
       localStorage.setItem("kreatek_os_db", JSON.stringify(db));
       
       if (isSupabaseConfigured && networkState === "online") {
-        const syncId = currentUser?.id || db.clients?.[0]?.id || "kfs-general-db";
+        const syncId = "kfs-general-db";
         supabase
           .from("kfs_store_states")
           .upsert({
@@ -189,7 +192,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       // Ignorar bloqueos locales
     }
-  }, [db, isClient, networkState, currentUser]);
+  }, [db, isClient, networkState, currentUser, isDataLoaded]);
 
   const showToast = (message: string, type: "success" | "error" = "success") => {
     setToast({ show: true, message, type });
