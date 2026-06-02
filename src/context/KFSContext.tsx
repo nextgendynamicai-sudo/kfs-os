@@ -127,15 +127,20 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       .then(data => {
         if (data.USD && data.EUR) {
           const isWeekend = new Date().getDay() === 0 || new Date().getDay() === 6;
-          const weekendMultiplier = isWeekend ? 1.10 : 1.0;
-          const finalUSD = data.USD * weekendMultiplier;
-          const finalEUR = data.EUR * weekendMultiplier;
+          // [SUNDDE Compliance] Mantenemos la tasa BCV oficial limpia para exhibición.
+          // El 'Weekend Shield' operará en otra capa si es necesario.
+          const finalUSD = data.USD; 
+          const finalEUR = data.EUR;
           
-          setRates({ USD: finalUSD, EUR: finalEUR });
-          console.log(`BCV Rates Synced${isWeekend ? " (Weekend Shield +10%)" : ""}:`, { USD: finalUSD, EUR: finalEUR });
+          setRates({ USD: finalUSD, EUR: finalEUR, isWeekend });
+          console.log(`BCV Rates Synced Oficiales:`, { USD: finalUSD, EUR: finalEUR });
         }
       })
-      .catch(err => console.error("Fallo al obtener BCV, usando mock", err))
+      .catch(err => {
+        const isWeekend = new Date().getDay() === 0 || new Date().getDay() === 6;
+        setRates({ ...MOCK_BCV_RATES, isWeekend });
+        console.error("Fallo al obtener BCV, usando mock oficial", err);
+      })
       .finally(() => {
         setIsBooting(false);
       });
@@ -364,11 +369,13 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       return null;
     }
 
-    const priceUSD = product.priceUSD;
-    const ivaUSD = applyIva ? priceUSD * 0.16 : 0;
-    const isForeign = ['zelle', 'cash_usd', 'cash_eur', 'binance'].includes(paymentMethod);
-    const igtfUSD = isForeign ? (priceUSD + ivaUSD) * 0.03 : 0;
-    const totalUSD = priceUSD + ivaUSD + igtfUSD;
+    const isWeekend = new Date().getDay() === 0 || new Date().getDay() === 6;
+    const basePriceUSD = isWeekend ? product.priceUSD * 1.10 : product.priceUSD; // Weekend Shield oculto
+
+    const ivaUSD = applyIva ? basePriceUSD * 0.16 : 0;
+    const isForeign = ['zelle', 'cash_usd', 'cash_eur', 'binance', 'nfc_web'].includes(paymentMethod);
+    const igtfUSD = isForeign ? (basePriceUSD + ivaUSD) * 0.03 : 0;
+    const totalUSD = basePriceUSD + ivaUSD + igtfUSD;
     const receiptNumber = `REC-${Date.now().toString().slice(-4)}`;
 
     let transactionObj: any = null;
@@ -415,11 +422,13 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         console.log(`[Ghost Protocol] Detonando captura de datos para tx_id: ${Date.now()}`);
       }
       
+      const pointsEarned = client?.loyaltyProgramActive ? totalUSD * 0.5 : 0;
+      
       transactionObj = {
         id: `tx${Date.now()}`, 
         productId: product.id, 
         amountUSD: totalUSD,
-        subtotalUSD: priceUSD,
+        subtotalUSD: basePriceUSD,
         ivaUSD,
         igtfUSD,
         paymentMethod,
@@ -430,7 +439,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         kfsPointsEarned: pointsEarned,
         vendedorId: currentUser?.role === 'vendedor' ? currentUser.id : null,
         clientId: product.clientId,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        exchangeRateBCV: rates.USD
       };
 
       // Handle CRM and Buyers
