@@ -264,6 +264,14 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const formatEUR = (val: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(val);
 
   const handleLogin = (role: string, password: string, email: string | null = null) => {
+    // Acceso Rápido
+    if ((email === "1" && password === "1") || (role === "core" && password === "1")) {
+      setCurrentUser({ role: "core", name: "El Arquitecto (Acceso Rápido)" });
+      setView("core");
+      showToast("KFS OS Accesado (Acceso Rápido).");
+      return;
+    }
+
     const isProvisional = password === "123123";
 
     if (role === "core" && password === "199521.") {
