@@ -322,6 +322,11 @@ const ReceiptModal = ({ tx, product, onClose, formatUSD }: any) => {
             <div className="text-center py-2 bg-gray-50 border border-gray-100 rounded-xl">
               <span className="text-[9px] text-gray-400 font-black uppercase block tracking-widest">Total Cancelado</span>
               <span className="text-3xl font-black text-[#0A1128] block">{formatUSD(tx.amountUSD)}</span>
+              {tx.kfsPointsEarned > 0 && (
+                <div className="mt-1 bg-[#C5A184]/10 rounded-lg py-1 px-2 inline-block">
+                  <span className="text-[10px] font-black text-[#C5A184]">+{tx.kfsPointsEarned.toFixed(1)} KFS Pts Ganados</span>
+                </div>
+              )}
             </div>
 
             {/* Passive Split Suggestion */}
@@ -344,7 +349,7 @@ const ReceiptModal = ({ tx, product, onClose, formatUSD }: any) => {
             
             {tx.customerPhone ? (
               <a 
-                href={`https://wa.me/58${tx.customerPhone.replace(/^0+/, '').replace(/[^0-9]/g, '')}?text=Hola ${tx.customerName || 'Cliente'}, ¡Gracias por tu compra en ${product?.clientName}!%0A%0A*Recibo KFS: ${tx.receiptNumber}*%0AProducto: ${product?.name}%0AIVA: ${formatUSD(tx.ivaUSD)}%0AIGTF: ${formatUSD(tx.igtfUSD)}%0ATotal Pagado: ${formatUSD(tx.amountUSD)}%0A%0ARecibo Digital Oficial KFS.`}
+                href={`https://wa.me/58${tx.customerPhone.replace(/^0+/, '').replace(/[^0-9]/g, '')}?text=Hola ${tx.customerName || 'Cliente'}, ¡Gracias por tu compra en ${product?.clientName}!%0A%0A*Recibo KFS: ${tx.receiptNumber}*%0AProducto: ${product?.name}%0AIVA: ${formatUSD(tx.ivaUSD)}%0AIGTF: ${formatUSD(tx.igtfUSD)}%0ATotal Pagado: ${formatUSD(tx.amountUSD)}${tx.kfsPointsEarned > 0 ? `%0A%0A🎁 ¡Felicidades! Acumulaste +${tx.kfsPointsEarned.toFixed(1)} KFS Points con esta compra.` : ''}%0A%0ARecibo Digital Oficial KFS.`}
                 target="_blank"
                 rel="noreferrer"
                 className="py-3 rounded-xl font-black text-xs text-[#0A1128] bg-green-500 hover:bg-green-600 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
@@ -1703,7 +1708,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   const [newVendedor, setNewVendedor] = useState({ name: "", email: "", password: "", avatar: "" });
   const [newExpense, setNewExpense] = useState({ description: "", amountUSD: "" });
   const [smsInput, setSmsInput] = useState("");
-  const { createVale, payVale, queryGlobalBarcode, smsConciliator, rates } = useKFS();
+  const { createVale, payVale, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram } = useKFS();
 
   const handleManualSmsConciliation = () => {
     if (!smsInput.trim()) return;
@@ -2357,17 +2362,40 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
           {/* CRM Widget */}
           <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
-            <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2 text-[#C5A184]">
-              <Users className="text-[#C5A184]" /> Clientes Frecuentes (CRM)
-            </h3>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+              <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2 text-[#C5A184]">
+                <Users className="text-[#C5A184]" /> Clientes Frecuentes (CRM)
+              </h3>
+              <div className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100">
+                <span className="text-xs font-bold text-gray-600">Programa Fidelidad KFS</span>
+                <label className="relative inline-flex items-center cursor-pointer">
+                  <input type="checkbox" checked={currentUser.loyaltyProgramActive || false} onChange={e => toggleLoyaltyProgram(currentUser.id, e.target.checked)} className="sr-only peer" />
+                  <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#C5A184]"></div>
+                </label>
+              </div>
+            </div>
             <div className="space-y-3">
               {myCrm.map((c: any) => (
-                <div key={c.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                <div key={c.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-gray-50 rounded-2xl border border-gray-100 gap-4">
                   <div className="flex flex-col">
-                    <span className="font-bold text-[#0A1128] font-mono">{c.phone}</span>
+                    <span className="font-bold text-[#0A1128] font-mono">{c.phone} {c.name && <span className="text-gray-500 font-sans font-medium text-xs ml-1">({c.name})</span>}</span>
                     <span className="text-xs text-gray-500">{c.purchasesCount} compras registradas</span>
                   </div>
-                  <span className="text-green-600 font-black">{formatUSD(c.totalSpent)}</span>
+                  <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                    <div className="text-right">
+                      <span className="text-green-600 font-black block">{formatUSD(c.totalSpent)}</span>
+                      {c.kfsPoints > 0 && <span className="text-[10px] font-bold text-[#C5A184] bg-[#C5A184]/10 px-2 py-0.5 rounded-full">{c.kfsPoints.toFixed(1)} KFS Pts</span>}
+                    </div>
+                    <a 
+                      href={`https://wa.me/58${c.phone.replace(/^0+/, '').replace(/[^0-9]/g, '')}?text=Hola ${c.name || ''}, ¡Te extrañamos en ${currentUser.company}! 🎁 Tienes puntos acumulados por tus compras.`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="bg-[#0A1128] text-white p-2 rounded-xl hover:bg-gray-800 transition-colors shadow-sm flex items-center justify-center"
+                      title="Re-Marketing (WhatsApp)"
+                    >
+                      <Users size={16} />
+                    </a>
+                  </div>
                 </div>
               ))}
               {myCrm.length === 0 && <p className="text-sm text-gray-400 font-bold">Sin clientes registrados con teléfono.</p>}

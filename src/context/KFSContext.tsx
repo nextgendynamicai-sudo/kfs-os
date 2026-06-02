@@ -96,6 +96,7 @@ interface KFSContextType {
   registerPosTerminal: (posData: any) => void;
   deletePosTerminal: (posId: string) => void;
   queryGlobalBarcode: (barcode: string) => Promise<any>;
+  toggleLoyaltyProgram: (clientId: string, isActive: boolean) => void;
 }
 
 const KFSContext = createContext<KFSContextType | undefined>(undefined);
@@ -413,6 +414,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         kreatekFeeEUR: kreatekTotalFeeEUR,
         customerPhone,
         customerName,
+        kfsPointsEarned: pointsEarned,
         vendedorId: currentUser?.role === 'vendedor' ? currentUser.id : null,
         clientId: product.clientId,
         timestamp: new Date().toISOString()
@@ -421,15 +423,21 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       // Handle CRM and Buyers
       let updatedCrm = prev.crm || [];
       let updatedBuyers = prev.buyers || [];
+      const pointsEarned = client?.loyaltyProgramActive ? totalUSD * 0.5 : 0;
 
       if (customerPhone) {
         const existing = updatedCrm.find((c: any) => c.phone === customerPhone);
         if (existing) {
           updatedCrm = updatedCrm.map((c: any) => c.phone === customerPhone ? {
-            ...c, name: customerName || c.name, totalSpent: c.totalSpent + totalUSD, purchasesCount: c.purchasesCount + 1, lastPurchase: new Date().toISOString()
+            ...c, 
+            name: customerName || c.name, 
+            totalSpent: c.totalSpent + totalUSD, 
+            purchasesCount: c.purchasesCount + 1, 
+            lastPurchase: new Date().toISOString(),
+            kfsPoints: (c.kfsPoints || 0) + pointsEarned
           } : c);
         } else {
-          updatedCrm = [...updatedCrm, { id: `crm${Date.now()}`, name: customerName, phone: customerPhone, totalSpent: totalUSD, purchasesCount: 1, lastPurchase: new Date().toISOString() }];
+          updatedCrm = [...updatedCrm, { id: `crm${Date.now()}`, name: customerName, phone: customerPhone, totalSpent: totalUSD, purchasesCount: 1, lastPurchase: new Date().toISOString(), kfsPoints: pointsEarned }];
         }
 
         if (customerName) {
@@ -826,11 +834,19 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   };
 
   const deletePosTerminal = (posId: string) => {
-    setDb((prev: any) => ({
+    setDb(prev => ({
       ...prev,
       posTerminals: (prev.posTerminals || []).filter((p: any) => p.id !== posId)
     }));
-    showToast("Terminal POS retirado contablemente.");
+    showToast("Terminal POS eliminado", "success");
+  };
+
+  const toggleLoyaltyProgram = (clientId: string, isActive: boolean) => {
+    setDb(prev => ({
+      ...prev,
+      clients: prev.clients.map((c: any) => c.id === clientId ? { ...c, loyaltyProgramActive: isActive } : c)
+    }));
+    showToast(`Programa de Fidelización ${isActive ? "Activado" : "Desactivado"}.`, "success");
   };
 
   const queryGlobalBarcode = async (barcode: string) => {
@@ -882,7 +898,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       addProduct, addExpense, processPurchase, submitOnlineOrder, approveOrder, rejectOrder, generateZReport,
       networkState, setNetworkState, smsConciliator, registerCrmExpress,
       ghostTrapLocked, setGhostTrapLocked, createVale, payVale, registerPosTerminal, deletePosTerminal,
-      queryGlobalBarcode
+      queryGlobalBarcode, toggleLoyaltyProgram
     }}>
       {children}
     </KFSContext.Provider>
