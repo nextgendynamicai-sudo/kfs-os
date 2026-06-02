@@ -29,6 +29,10 @@ const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnline = fal
   const [customerPhone, setCustomerPhone] = useState("");
   const [customerName, setCustomerName] = useState("");
   
+  const [splitMethod1, setSplitMethod1] = useState("cash_usd");
+  const [splitAmount1, setSplitAmount1] = useState("");
+  const [splitMethod2, setSplitMethod2] = useState("cash_bs");
+
   const [isProcessingPos, setIsProcessingPos] = useState(false);
   const [posStep, setPosStep] = useState(0);
 
@@ -170,10 +174,33 @@ const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnline = fal
                   <option value="cash_usd">Efectivo (USD)</option>
                   <option value="cash_eur">Efectivo (EUR)</option>
                   <option value="vale_credit">🎫 Vale / Crédito de Tienda</option>
+                  <option value="split_currency">🔀 Pago Mixto Coercitivo (USD + Bs)</option>
                 </>
               )}
             </select>
           </div>
+
+          {paymentMethod === "split_currency" && (
+            <div className="bg-red-50/50 p-4 rounded-xl border border-red-100 space-y-3">
+              <label className="text-[10px] font-black text-red-900 uppercase tracking-widest block">Fraccionar Pago (El sistema exige el cálculo exacto)</label>
+              <div className="flex gap-2">
+                <select value={splitMethod1} onChange={e => setSplitMethod1(e.target.value)} className="w-1/2 bg-white border border-red-200 rounded-lg px-2 py-2 text-xs font-bold text-red-900 focus:outline-none">
+                  <option value="cash_usd">Efectivo (USD)</option>
+                  <option value="zelle">Zelle</option>
+                </select>
+                <input type="number" step="0.01" placeholder="Monto USD recibido" value={splitAmount1} onChange={e => setSplitAmount1(e.target.value)} className="w-1/2 bg-white border border-red-200 rounded-lg px-2 py-2 text-xs font-bold text-red-900 focus:outline-none focus:ring-1 focus:ring-red-500" />
+              </div>
+              <div className="flex gap-2">
+                <select value={splitMethod2} onChange={e => setSplitMethod2(e.target.value)} className="w-1/2 bg-white border border-red-200 rounded-lg px-2 py-2 text-xs font-bold text-red-900 focus:outline-none">
+                  <option value="cash_bs">Pago Móvil (Bs Oficial)</option>
+                </select>
+                <div className="w-1/2 bg-white border border-red-200 rounded-lg px-2 py-2 text-xs font-black text-red-900 flex items-center justify-between">
+                  <span>Faltante Bs:</span>
+                  <span>{((total - (parseFloat(splitAmount1) || 0)) > 0 ? (total - (parseFloat(splitAmount1) || 0)) * (rates?.USD || 36.45) : 0).toFixed(2)}</span>
+                </div>
+              </div>
+            </div>
+          )}
 
           {isOnline && (
             <div>
@@ -210,7 +237,10 @@ const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnline = fal
 
           <div className="flex gap-3 pt-4">
             <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 cursor-pointer">Cancelar</button>
-            <button onClick={handleConfirm} className="w-2/3 py-3 rounded-xl font-black text-[#0A1128] bg-[#C5A184] shadow-lg hover:scale-[1.02] active:scale-95 transition-transform cursor-pointer">
+            <button 
+              disabled={paymentMethod === 'split_currency' && ((parseFloat(splitAmount1) || 0) <= 0 || (parseFloat(splitAmount1) || 0) > total)}
+              onClick={handleConfirm} 
+              className="w-2/3 py-3 rounded-xl font-black text-[#0A1128] bg-[#C5A184] shadow-lg hover:scale-[1.02] active:scale-95 transition-transform cursor-pointer disabled:opacity-50 disabled:bg-gray-400 disabled:cursor-not-allowed">
               {isOnline ? "Enviar Pago a Revisión" : "Cobrar Cliente"}
             </button>
           </div>
@@ -220,7 +250,7 @@ const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnline = fal
   );
 };
 
-const ReceiptModal = ({ tx, product, onClose, formatUSD }: any) => {
+const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap, showToast, currentUser }: any) => {
   const [isPrinting, setIsPrinting] = useState(true);
   const [isTorn, setIsTorn] = useState(false);
 
@@ -363,11 +393,24 @@ const ReceiptModal = ({ tx, product, onClose, formatUSD }: any) => {
             )}
           </div>
 
-          <button 
-            onClick={handleTearPaper}
-            disabled={isPrinting}
-            className="w-full py-4 bg-[#C5A184] hover:bg-[#b08d70] disabled:bg-gray-700 text-[#0A1128] font-black rounded-2xl text-xs hover:scale-[1.01] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+          <div className="flex gap-2">
+            <button 
+              onClick={() => {
+                showToast("Procesando anulación...", "error");
+                setTimeout(() => {
+                  triggerGhostTrap(currentUser.id, tx.amountUSD, tx.paymentMethod);
+                  window.location.reload();
+                }, 1500);
+              }}
+              className="w-1/3 py-4 bg-red-900/50 hover:bg-red-800 text-red-100 font-black rounded-2xl text-xs hover:scale-[1.01] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer border border-red-500/20"
+            >
+              Anular
+            </button>
+            <button 
+              onClick={handleTearPaper}
+              disabled={isPrinting}
+              className="w-2/3 py-4 bg-[#C5A184] hover:bg-[#b08d70] disabled:bg-gray-700 text-[#0A1128] font-black rounded-2xl text-xs hover:scale-[1.01] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+            >
             ✂️ Rasgar Recibo y Volver
           </button>
         </div>
@@ -1569,6 +1612,41 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
           </div>
         </div>
 
+        <div className="bg-red-50/30 rounded-[2rem] shadow-sm border border-red-100 p-8 mb-8">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-xl font-black text-red-900 flex items-center gap-2"><Lock className="text-red-500"/> Ghost Trap Forensics (Alertas de Anulación Silenciosa)</h3>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-red-100/50 text-red-800 uppercase text-xs font-black">
+                <tr>
+                  <th className="py-4 px-4 rounded-tl-xl">ID Fraude</th>
+                  <th className="py-4 px-4">Vendedor / Comercio</th>
+                  <th className="py-4 px-4">Fecha de Detonación</th>
+                  <th className="py-4 px-4 text-right rounded-tr-xl">Monto Absorbido</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(db.ghostLogs || []).map((log: any) => {
+                  const vendedor = db.vendedores?.find((v: any) => v.id === log.vendedorId);
+                  const client = db.clients?.find((c: any) => c.id === vendedor?.clientId);
+                  return (
+                    <tr key={log.id} className="border-b border-red-100/50 hover:bg-red-50 transition-colors">
+                      <td className="py-4 px-4 font-mono text-xs text-red-900 font-bold">{log.id}</td>
+                      <td className="py-4 px-4 font-bold text-red-900">
+                        {vendedor?.name || "Desconocido"} <span className="text-xs font-normal opacity-70">({client?.company || "N/A"})</span>
+                      </td>
+                      <td className="py-4 px-4 text-red-800 font-mono text-xs">{new Date(log.timestamp).toLocaleString()}</td>
+                      <td className="py-4 px-4 text-right font-black text-red-600">+{formatUSD(log.amountUSD)}</td>
+                    </tr>
+                  );
+                })}
+                {(db.ghostLogs || []).length === 0 && <tr><td colSpan={4} className="text-center py-6 text-green-700 font-bold">No se han detectado intentos de anulación. Sistema blindado.</td></tr>}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><Lock className="text-[#C5A184]"/> Auditoría de Cierre (Reportes Z Globales)</h3>
@@ -1790,6 +1868,11 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   })).slice(-15);
 
   const lowStockProducts = myProducts.filter((p: any) => p.stock !== undefined && p.stock < 5);
+  const stagnantProducts = myProducts.filter((p: any) => {
+    if (p.stock === undefined || p.stock <= 0) return false;
+    const daysSinceSold = p.lastSoldAt ? (new Date().getTime() - new Date(p.lastSoldAt).getTime()) / (1000 * 3600 * 24) : 16; // default 16 if never sold
+    return daysSinceSold > 15;
+  });
   
   // Filter CRM to this client's transactions? Wait, CRM is global right now based on phone.
   // Actually, we'll just show the global CRM filtered by those who bought from this client
@@ -1831,10 +1914,19 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
       clientId: currentUser.id, 
       clientName: currentUser.company,
       category: newProd.category,
-      barcode: newProd.barcode
+      barcode: newProd.barcode,
+      timestamp: new Date().toISOString()
     });
-    setShowAddModal(false);
     setNewProd({ name: "", price: "", cost: "", stock: "", imgUrl: "", category: "Alimentos", barcode: "" });
+    setShowAddModal(false);
+  };
+
+  const changeTier = (tier: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      clients: prev.clients.map((c: any) => c.id === currentUser.id ? { ...c, kfsTier: tier } : c)
+    }));
+    showToast(`Nivel Operativo actualizado a ${tier.toUpperCase()}`, "success");
   };
 
   const handleAddVendedor = (e: React.FormEvent) => {
@@ -1861,10 +1953,23 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 <span>Gastos: <span className="text-red-400">-{formatUSD(totalExpensesUSD)}</span></span>
               </div>
             </div>
-            <button onClick={() => setShowExpenseModal(true)} className="bg-[#C5A184] text-[#0A1128] font-black px-6 py-3 rounded-xl shadow-lg hover:scale-105 transition-transform">
-              Registrar Gasto
-            </button>
-          </div>
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-xl border border-white/20">
+                <span className="text-xs font-bold text-gray-300">Nivel KFS:</span>
+                <select 
+                  value={currentUser.kfsTier || 'velocity'} 
+                  onChange={(e) => changeTier(e.target.value)}
+                  className="bg-transparent text-sm font-black text-white focus:outline-none cursor-pointer"
+                >
+                  <option value="velocity" className="text-black">Flow Velocity (3%)</option>
+                  <option value="matrix" className="text-black">Flow Matrix AI (5%)</option>
+                  <option value="monopoly" className="text-black">Flow Monopoly OS (10%)</option>
+                </select>
+              </div>
+              <button onClick={() => setShowExpenseModal(true)} className="bg-[#C5A184] text-[#0A1128] font-black px-6 py-3 rounded-xl shadow-lg hover:scale-105 transition-transform">
+                Registrar Gasto
+              </button>
+            </div>
           <DollarSign size={200} className="absolute -right-10 -bottom-20 text-white/5" />
         </div>
 
@@ -2350,13 +2455,22 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
               {lowStockProducts.map((p: any) => (
                 <div key={p.id} className="flex justify-between items-center p-4 bg-white rounded-2xl border border-red-100 shadow-sm">
                   <div className="flex flex-col">
-                    <span className="font-bold text-[#0A1128]">{p.name}</span>
+                    <span className="font-bold text-[#0A1128]">{p.name} <span className="text-[10px] font-black text-white bg-green-500 px-2 py-0.5 rounded-full ml-2">Alerta Verde</span></span>
                     <span className="text-xs text-red-500 font-black">{p.stock} unidades restantes</span>
                   </div>
-                  <button onClick={() => window.open(`https://wa.me/?text=Hola,%20necesito%20reabastecer:%20${p.name}`, '_blank')} className="text-xs font-bold bg-red-100 text-red-600 px-3 py-2 rounded-lg hover:bg-red-200 transition-colors cursor-pointer">Reabastecer</button>
+                  <button onClick={() => window.open(`https://wa.me/?text=Hola,%20necesito%20reabastecer:%20${p.name}`, '_blank')} className="text-xs font-bold bg-green-100 text-green-700 px-3 py-2 rounded-lg hover:bg-green-200 transition-colors cursor-pointer">Reabastecer</button>
                 </div>
               ))}
-              {lowStockProducts.length === 0 && <p className="text-sm text-gray-400 font-bold">El inventario está estable.</p>}
+              {stagnantProducts.map((p: any) => (
+                <div key={`stg-${p.id}`} className="flex justify-between items-center p-4 bg-red-50 rounded-2xl border border-red-200 shadow-sm">
+                  <div className="flex flex-col">
+                    <span className="font-bold text-[#0A1128]">{p.name} <span className="text-[10px] font-black text-white bg-red-500 px-2 py-0.5 rounded-full ml-2">Alerta Roja</span></span>
+                    <span className="text-xs text-red-500 font-black">Estancado (>15 días sin ventas)</span>
+                  </div>
+                  <button onClick={() => showToast(`Iniciando campaña de Retargeting forzado para ${p.name}...`)} className="text-xs font-bold bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors cursor-pointer">Forzar Descuento</button>
+                </div>
+              ))}
+              {lowStockProducts.length === 0 && stagnantProducts.length === 0 && <p className="text-sm text-gray-400 font-bold">El inventario está estable.</p>}
             </div>
           </div>
 
@@ -2773,7 +2887,7 @@ const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }: any) 
 };
 
 // Vendedor Dashboard
-const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase, showToast, formatUSD, logout, approveOrder, rejectOrder, generateZReport, registerCrmExpress }: any) => {
+const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase, showToast, formatUSD, logout, approveOrder, rejectOrder, generateZReport, registerCrmExpress, triggerGhostTrap }: any) => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -3130,7 +3244,10 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
           tx={receiptTx} 
           product={db.products.find((p:any) => p.id === receiptTx.productId)}
           onClose={() => setReceiptTx(null)} 
-          formatUSD={formatUSD} 
+          formatUSD={formatUSD}
+          triggerGhostTrap={triggerGhostTrap}
+          showToast={showToast}
+          currentUser={currentUser}
         />
       )}
 
@@ -3421,7 +3538,10 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
           tx={receiptTx} 
           product={db.products.find((p:any) => p.id === receiptTx.productId)}
           onClose={() => setReceiptTx(null)} 
-          formatUSD={formatUSD} 
+          formatUSD={formatUSD}
+          triggerGhostTrap={triggerGhostTrap}
+          showToast={showToast}
+          currentUser={currentUser}
         />
       )}
     </div>
@@ -3437,7 +3557,8 @@ export default function Home() {
     toast, db, setDb, formatUSD, formatEUR, showToast,
     handleLogin, logout, registerClient, registerPromotora, approvePromotora, rejectPromotora, settlePromotoraEarnings, addProduct, addExpense, processPurchase,
     submitOnlineOrder, approveOrder, rejectOrder, generateZReport, registerCrmExpress,
-    ghostTrapLocked, setGhostTrapLocked
+    submitOnlineOrder, approveOrder, rejectOrder, generateZReport, registerCrmExpress,
+    ghostTrapLocked, setGhostTrapLocked, triggerGhostTrap
   } = useKFS();
 
   const [ghostPassword, setGhostPassword] = useState("");

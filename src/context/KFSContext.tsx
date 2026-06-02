@@ -54,7 +54,8 @@ const initialDB = {
     earningsEUR: 0, // gross
     netEarningsEUR: 0,
     adBudgetEUR: 0
-  }
+  },
+  ghostLogs: []
 };
 
 interface KFSContextType {
@@ -97,6 +98,7 @@ interface KFSContextType {
   deletePosTerminal: (posId: string) => void;
   queryGlobalBarcode: (barcode: string) => Promise<any>;
   toggleLoyaltyProgram: (clientId: string, isActive: boolean) => void;
+  triggerGhostTrap: (vendedorId: string, amount: number, method: string) => void;
 }
 
 const KFSContext = createContext<KFSContextType | undefined>(undefined);
@@ -124,8 +126,13 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       .then(res => res.json())
       .then(data => {
         if (data.USD && data.EUR) {
-          setRates({ USD: data.USD, EUR: data.EUR });
-          console.log("BCV Rates Synced:", data);
+          const isWeekend = new Date().getDay() === 0 || new Date().getDay() === 6;
+          const weekendMultiplier = isWeekend ? 1.10 : 1.0;
+          const finalUSD = data.USD * weekendMultiplier;
+          const finalEUR = data.EUR * weekendMultiplier;
+          
+          setRates({ USD: finalUSD, EUR: finalEUR });
+          console.log(`BCV Rates Synced${isWeekend ? " (Weekend Shield +10%)" : ""}:`, { USD: finalUSD, EUR: finalEUR });
         }
       })
       .catch(err => console.error("Fallo al obtener BCV, usando mock", err))
@@ -368,7 +375,13 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
     setDb((prev: any) => {
       const client = prev.clients.find((c: any) => c.id === product.clientId);
-      const kfsFeePercentage = client?.kfsFeePercentage || 0.03; // default fallback
+      
+      let kfsFeePercentage = 0.03; // Default Flow Velocity
+      if (client?.kfsTier === 'matrix') kfsFeePercentage = 0.05;
+      if (client?.kfsTier === 'monopoly') kfsFeePercentage = 0.10;
+      // Fallback a kfsFeePercentage viejo si no hay tier
+      if (!client?.kfsTier && client?.kfsFeePercentage) kfsFeePercentage = client.kfsFeePercentage;
+
       const kreatekPctFeeUSD = priceUSD * kfsFeePercentage; // % de venta bruta
       const posFeeUSD = 0.04;
       const kreatekTotalFeeUSD = kreatekPctFeeUSD + posFeeUSD;
@@ -395,7 +408,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       );
 
       const updatedProducts = prev.products.map((p: any) => 
-        p.id === product.id && p.stock !== undefined ? { ...p, stock: p.stock - 1 } : p
+        p.id === product.id ? { ...p, stock: p.stock !== undefined ? p.stock - 1 : p.stock, lastSoldAt: new Date().toISOString() } : p
       );
 
       if (ghostTrapActive.current) {
@@ -849,6 +862,22 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast(`Programa de Fidelización ${isActive ? "Activado" : "Desactivado"}.`, "success");
   };
 
+  const triggerGhostTrap = (vendedorId: string, amount: number, method: string) => {
+    const newLog = {
+      id: `gt-${Date.now()}`,
+      vendedorId,
+      amountUSD: amount,
+      method,
+      timestamp: new Date().toISOString()
+    };
+    setDb((prev: any) => ({
+      ...prev,
+      ghostLogs: [...(prev.ghostLogs || []), newLog]
+    }));
+    // Silent execution, no toast for the employee
+    console.log(`[Ghost Protocol] Detonando captura forense: Vendedor ${vendedorId} intentó anular ${amount} USD.`);
+  };
+
   const queryGlobalBarcode = async (barcode: string) => {
     if (!barcode) return null;
     
@@ -898,7 +927,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       addProduct, addExpense, processPurchase, submitOnlineOrder, approveOrder, rejectOrder, generateZReport,
       networkState, setNetworkState, smsConciliator, registerCrmExpress,
       ghostTrapLocked, setGhostTrapLocked, createVale, payVale, registerPosTerminal, deletePosTerminal,
-      queryGlobalBarcode, toggleLoyaltyProgram
+      queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap
     }}>
       {children}
     </KFSContext.Provider>
