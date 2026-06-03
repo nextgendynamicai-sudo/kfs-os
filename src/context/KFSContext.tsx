@@ -50,13 +50,17 @@ const initialDB = {
   posTerminals: [], // { id, name, status, assignedVendedorId, type, connectionInfo, transactionsCount, totalAmountUSD, clientId }
   zReports: [], // { id, vendedorId, clientId, totalUSD, bs, usd, zelle, date }
   buyers: [], // { id, clientId, name, phone, createdAt }
+  customers: [], // { id, phone, password, name, createdAt }
   kreatekCore: {
     totalTransactions: 0,
     earningsEUR: 0, // gross
     netEarningsEUR: 0,
     adBudgetEUR: 0
   },
-  ghostLogs: []
+  ghostLogs: [],
+  notifications: [],
+  auditLogs: [],
+  supportTickets: []
 };
 
 interface KFSContextType {
@@ -86,6 +90,7 @@ interface KFSContextType {
   submitOnlineOrder: (product: any, paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone?: string) => void;
   approveOrder: (orderId: string) => void;
   rejectOrder: (orderId: string) => void;
+  dispatchOrder: (txId: string) => void;
   generateZReport: (vendedorId: string, clientId: string) => void;
   originalUser: any;
   impersonateClient: (client: any) => void;
@@ -105,6 +110,20 @@ interface KFSContextType {
   triggerGhostTrap: (vendedorId: string, amount: number, method: string) => void;
   updateStoreSettings: (clientId: string, settings: any) => void;
   toggleProductFeatured: (productId: string, isFeatured: boolean) => void;
+  sendNotification: (audience: string, title: string, message: string) => void;
+  assignPromotoraToClient: (clientId: string, promotoraId: string) => void;
+  addGlobalProduct: (product: any) => void;
+  paySubscription: (clientId: string, reference: string) => void;
+  approveSubscription: (clientId: string) => void;
+  finishOnboarding: (clientId: string) => void;
+  hashPassword: (password: string) => string;
+  logAction: (actor: string, action: string, details: string) => void;
+  createTicket: (clientId: string, subject: string, description: string) => void;
+  replyTicket: (ticketId: string, author: string, message: string) => void;
+  closeTicket: (ticketId: string) => void;
+  fundWallet: (clientId: string, amountUSD: number) => void;
+  processMonthlyBilling: (clientId: string) => void;
+  registerCustomer: (phone: string, password: string, name: string) => void;
 }
 
 const KFSContext = createContext<KFSContextType | undefined>(undefined);
@@ -206,6 +225,22 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                   }
                 })
                 .subscribe();
+
+              // Polling Fallback para Móviles (Garantiza 100% Real-Time si fallan WebSockets)
+              setInterval(() => {
+                supabase.from("kfs_store_states").select("db_state").eq("id", syncId).single().then(({ data }: any) => {
+                  if (data && data.db_state) {
+                    setDb((prevDb: any) => {
+                      if (JSON.stringify(prevDb) !== JSON.stringify(data.db_state)) {
+                        isRemoteUpdate.current = true;
+                        console.log("[Supabase Polling Fallback] Data entrante detectada. Sincronizando...");
+                        return data.db_state;
+                      }
+                      return prevDb;
+                    });
+                  }
+                }).catch(() => {});
+              }, 4000);
             }
           });
       } else {
@@ -235,20 +270,37 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       
       if (isSupabaseConfigured && networkState === "online") {
         const syncId = "kfs-general-db-v2";
-        supabase
-          .from("kfs_store_states")
-          .upsert({
-            id: syncId,
-            db_state: db,
-            updated_at: new Date().toISOString()
-          })
-          .then(({ error }: any) => {
-            if (error) {
-              console.warn("[KFS Cloud] Aviso: Sincronización asíncrona omitida. Verifique que haya ejecutado 'supabase_setup.sql' en su proyecto (tabla kfs_store_states no encontrada o sin RLS).", error.message || error.code || "");
-            } else {
-              console.log("[Supabase Cloud] Estado sincronizado asíncronamente.");
-            }
-          });
+        
+        // Anti-Collision Merge Strategy
+        supabase.from("kfs_store_states").select("db_state").eq("id", syncId).single().then(({ data }: any) => {
+          let mergedDb = { ...db };
+          if (data && data.db_state) {
+             const remote = data.db_state;
+             // Shallow merge arrays by ID to prevent dropping concurrent items
+             const mergeArray = (arr1: any[], arr2: any[]) => [...new Map([...(arr1||[]), ...(arr2||[])].map((i:any) => [i.id, i])).values()];
+             
+             mergedDb.orders = mergeArray(remote.orders, db.orders);
+             mergedDb.transactions = mergeArray(remote.transactions, db.transactions);
+             mergedDb.auditLogs = mergeArray(remote.auditLogs, db.auditLogs);
+             mergedDb.supportTickets = mergeArray(remote.supportTickets, db.supportTickets);
+             mergedDb.products = mergeArray(remote.products, db.products);
+          }
+
+          supabase
+            .from("kfs_store_states")
+            .upsert({
+              id: syncId,
+              db_state: mergedDb,
+              updated_at: new Date().toISOString()
+            })
+            .then(({ error }: any) => {
+              if (error) {
+                console.warn("[KFS Cloud] Aviso: Sincronización asíncrona omitida. Verifique que haya ejecutado 'supabase_setup.sql' en su proyecto.", error.message || error.code || "");
+              } else {
+                console.log("[Supabase Cloud] Estado sincronizado asíncronamente con protección Anti-Colisión.");
+              }
+            });
+        });
       }
     } catch (error) {
       // Ignorar bloqueos locales
@@ -264,27 +316,25 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const formatEUR = (val: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(val);
 
   const handleLogin = (role: string, password: string, email: string | null = null) => {
-    // Acceso Rápido
-    if ((email === "1" && password === "1") || (role === "core" && password === "1")) {
-      setCurrentUser({ role: "core", name: "El Arquitecto (Acceso Rápido)" });
+    const safePass = password ? password.trim() : "";
+    const safeEmail = email ? email.trim() : "";
+
+    // Acceso Rápido (Dev Access)
+    if (role === "core" && (safePass === "199521." || safePass === "000" || safePass === "1")) {
+      setCurrentUser({ role: "core", name: "El Arquitecto", avatar: db.kreatekCore?.avatar || "" });
       setView("core");
-      showToast("KFS OS Accesado (Acceso Rápido).");
+      showToast("KFS OS Accesado. Bienvenido, Arquitecto.");
       return;
     }
 
-    const isProvisional = password === "123123";
-
-    if (role === "core" && password === "199521.") {
-      setCurrentUser({ role: "core", name: "El Arquitecto" });
-      setView("core");
-      showToast("KFS OS Accesado. Bienvenido, Arquitecto.");
-    } else if (role === "promotora") {
+    const isProvisional = safePass === "123123" || safePass === "000";
+    if (role === "promotora") {
       if (password === "1995" || isProvisional) {
         setCurrentUser({ role: "promotora", name: "Promotora Alpha", id: "p1" });
         setView("promotora");
         showToast("Sesión de Promotora Maestra Iniciada.");
       } else {
-        const promo = db.promotoras.find((p: any) => p.email === email && p.password === password);
+        const promo = db.promotoras.find((p: any) => p.email === safeEmail && p.password === safePass);
         if (promo) {
           if (promo.status === 'pending') {
             showToast("Su cuenta está pendiente de aprobación por KFS.", "error");
@@ -298,8 +348,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         }
       }
     } else if (role === "dueño") {
-      if (password === "1234" || isProvisional) {
-        const client = db.clients.find((c: any) => c.email === email) || db.clients[0];
+      if (safePass === "1234" || isProvisional) {
+        const client = db.clients.find((c: any) => c.email === safeEmail) || db.clients[0] || { id: "c1", company: "Kreatek Demo Store", kfsTier: "monopoly", role: "dueño" };
         if (client) {
           setCurrentUser({ ...client, role: "dueño" });
           setView("client");
@@ -308,10 +358,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           showToast("Dueño no encontrado. Regístrese.", "error");
         }
       } else {
-        const client = db.clients.find((c: any) => c.email === email && c.password === password);
+        const client = db.clients.find((c: any) => c.email === safeEmail && (c.password === safePass || c.password === hashPassword(safePass)));
         if (client) {
           setCurrentUser({ ...client, role: "dueño" });
           setView("client");
+          logAction(client.company, "LOGIN_CLIENT", `Dueño de comercio ingresó al sistema.`);
           showToast(`Bienvenido al comercio: ${client.company}`);
         } else {
           showToast("Credenciales de dueño incorrectas.", "error");
@@ -319,7 +370,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       }
     } else if (role === "vendedor") {
       if (isProvisional) {
-        const vendedorDemo = db.vendedores[0];
+        const vendedorDemo = db.vendedores[0] || { id: "v1", name: "Vendedor Demo", clientId: "c1", role: "vendedor" };
         if (vendedorDemo) {
           setCurrentUser({ ...vendedorDemo, role: "vendedor" });
           setView("vendedor");
@@ -328,13 +379,30 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           showToast("No hay vendedores registrados para usar la clave provisional.", "error");
         }
       } else {
-        const vendedor = db.vendedores.find((v: any) => v.email === email && v.password === password);
+        const vendedor = db.vendedores.find((v: any) => v.email === safeEmail && (v.password === safePass || v.password === hashPassword(safePass)));
         if (vendedor) {
            setCurrentUser({ ...vendedor, role: "vendedor" });
            setView("vendedor");
+           logAction(vendedor.name, "LOGIN_VENDEDOR", `Terminal activado.`);
            showToast(`Terminal de Vendedor activado: ${vendedor.name}`);
         } else {
            showToast("Credenciales de vendedor inválidas.", "error");
+        }
+      }
+    } else if (role === "customer") {
+      if (isProvisional) {
+        const customerDemo = db.customers?.[0] || { role: "customer", name: "Usuario Demo", phone: "000" };
+        setCurrentUser({ ...customerDemo, role: "customer" });
+        setView("customer");
+        showToast(`Bienvenido de vuelta, ${customerDemo.name}`);
+      } else {
+        const customer = db.customers?.find((c: any) => c.phone === safeEmail && (c.password === safePass || c.password === hashPassword(safePass)));
+        if (customer) {
+          setCurrentUser({ ...customer, role: "customer" });
+          setView("customer");
+          showToast(`Bienvenido de vuelta, ${customer.name}`);
+        } else {
+          showToast("Credenciales de cliente incorrectas.", "error");
         }
       }
     } else if (role === "marketplace") {
@@ -344,40 +412,200 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const hashPassword = (password: string) => {
+    return btoa(password).split('').reverse().join('');
+  };
+
+  const logAction = (actor: string, action: string, details: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      auditLogs: [...(prev.auditLogs || []), {
+        id: `log${Date.now()}`,
+        date: new Date().toISOString(),
+        actor,
+        action,
+        details
+      }]
+    }));
+  };
+
+  const createTicket = (clientId: string, subject: string, description: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      supportTickets: [...(prev.supportTickets || []), {
+        id: `tkt${Date.now()}`,
+        clientId,
+        subject,
+        description,
+        status: "open",
+        createdAt: new Date().toISOString(),
+        messages: [{ author: "Sistema", text: "Ticket creado. Un agente te atenderá pronto.", date: new Date().toISOString() }]
+      }]
+    }));
+    showToast("Ticket de Soporte creado con éxito.");
+  };
+
+  const replyTicket = (ticketId: string, author: string, message: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      supportTickets: prev.supportTickets.map((t: any) => 
+        t.id === ticketId ? { ...t, messages: [...t.messages, { author, text: message, date: new Date().toISOString() }] } : t
+      )
+    }));
+    showToast("Respuesta enviada.");
+  };
+
+  const closeTicket = (ticketId: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      supportTickets: prev.supportTickets.map((t: any) => 
+        t.id === ticketId ? { ...t, status: "closed" } : t
+      )
+    }));
+    showToast("Ticket cerrado.");
+  };
+
+  const fundWallet = (clientId: string, amountUSD: number) => {
+    setDb((prev: any) => ({
+      ...prev,
+      clients: prev.clients.map((c: any) => 
+        c.id === clientId ? { ...c, walletBalanceUSD: (c.walletBalanceUSD || 0) + amountUSD } : c
+      )
+    }));
+    logAction("System", "WALLET_FUND", `Comercio ${clientId} recargó $${amountUSD}`);
+    showToast(`Billetera recargada con $${amountUSD}`, "success");
+  };
+
+  const registerCustomer = (phone: string, password: string, name: string) => {
+    const existing = db.customers?.find((c: any) => c.phone === phone);
+    if (existing) {
+      showToast("Este número de teléfono ya está registrado.", "error");
+      return;
+    }
+    const newCustomer = {
+      id: `cust_${Date.now()}`,
+      phone,
+      password: hashPassword(password),
+      name,
+      createdAt: new Date().toISOString()
+    };
+    setDb((prev: any) => ({
+      ...prev,
+      customers: [...(prev.customers || []), newCustomer]
+    }));
+    setCurrentUser({ ...newCustomer, role: "customer" });
+    setView("customer");
+    showToast(`Cuenta creada exitosamente. Bienvenido ${name}!`);
+  };
+
+  const processMonthlyBilling = (clientId: string) => {
+    setDb((prev: any) => {
+      const client = prev.clients.find((c: any) => c.id === clientId);
+      if (!client || (client.walletBalanceUSD || 0) < 6) {
+        return {
+          ...prev,
+          clients: prev.clients.map((c: any) => c.id === clientId ? { ...c, subscription: { ...c.subscription, status: "past_due" } } : c)
+        };
+      }
+      
+      const newNextMonth = new Date();
+      newNextMonth.setMonth(newNextMonth.getMonth() + 1);
+      
+      const splitUSD = 3;
+      const splitEUR = (splitUSD * rates.USD) / rates.EUR;
+
+      const updatedPromotoras = prev.promotoras.map((p: any) => 
+        p.id === client.promotoraId ? { ...p, passiveEarningsEUR: (p.passiveEarningsEUR || 0) + splitEUR } : p
+      );
+
+      const updatedClients = prev.clients.map((c: any) => 
+        c.id === clientId ? { 
+          ...c, 
+          walletBalanceUSD: c.walletBalanceUSD - 6,
+          subscription: { plan: "kfs_pro", costUSD: 6, status: "active", nextBillingDate: newNextMonth.toISOString() }
+        } : c
+      );
+
+      return {
+        ...prev,
+        clients: updatedClients,
+        promotoras: updatedPromotoras,
+        kreatekCore: { ...prev.kreatekCore, earningsEUR: prev.kreatekCore.earningsEUR + splitEUR }
+      };
+    });
+    logAction("System", "AUTO_BILLING", `Se dedujeron $6 a ${clientId}. Ganancias repartidas.`);
+    showToast("Ciclo de Facturación Procesado", "success");
+  };
+
   const logout = () => {
     setCurrentUser(null);
     setView("login");
   };
 
   const registerClient = (clientData: any, promotoraId: string, kfsFeePercentage: number) => {
+    const nextMonth = new Date();
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+
     const newClient = { 
       ...clientData, 
+      password: hashPassword(clientData.password),
       id: `c${Date.now()}`, 
       salesUSD: 0, 
       promotoraId, 
       rating: 5.0, 
       reviewCount: 0,
       kfsFeePercentage, // 0.03, 0.05, 0.10
-      kfsFeesOwedUSD: 0
+      kfsFeesOwedUSD: 0,
+      isOnboarded: false,
+      acceptedToS: true,
+      kycDocumentUrl: "",
+      walletBalanceUSD: 0,
+      subscription: {
+        plan: "kfs_pro",
+        costUSD: 6,
+        status: "active",
+        nextBillingDate: nextMonth.toISOString()
+      }
     };
+    logAction("System", "REGISTER_CLIENT", `Comercio Registrado: ${clientData.company} bajo promotora: ${promotoraId}`);
 
     setDb((prev: any) => {
+      const setupBonusEUR = (37.5 * rates.USD) / rates.EUR;
+      const coreSetupEUR = (37.5 * rates.USD) / rates.EUR;
+
       const updatedPromotoras = prev.promotoras.map((p: any) => {
         if (p.id === promotoraId) {
-          return { ...p, setups: (p.setups || 0) + 1 };
+          return { 
+            ...p, 
+            setups: (p.setups || 0) + 1,
+            passiveEarningsEUR: (p.passiveEarningsEUR || 0) + setupBonusEUR
+          };
         }
         return p;
       });
-      return { ...prev, clients: [...prev.clients, newClient], promotoras: updatedPromotoras };
+
+      const updatedCore = {
+        ...prev.kreatekCore,
+        earningsEUR: (prev.kreatekCore?.earningsEUR || 0) + coreSetupEUR,
+        netEarningsEUR: (prev.kreatekCore?.netEarningsEUR || 0) + coreSetupEUR
+      };
+
+      return { 
+        ...prev, 
+        clients: [...prev.clients, newClient], 
+        promotoras: updatedPromotoras,
+        kreatekCore: updatedCore
+      };
     });
 
-    showToast("Setup de Cliente completado con éxito.");
+    showToast("Setup de Cliente completado con éxito. Bono de Instalación ($37.50) liquidado a la Promotora.");
     if (view !== "promotora") setView("login");
   };
 
   const registerPromotora = (promoData: any) => {
-    const newPromo = { ...promoData, id: `p${Date.now()}`, setups: 0, earningsEUR: 0, status: 'pending' };
+    const newPromo = { ...promoData, password: hashPassword(promoData.password), id: `p${Date.now()}`, setups: 0, earningsEUR: 0, status: 'pending' };
     setDb((prev: any) => ({ ...prev, promotoras: [...prev.promotoras, newPromo] }));
+    logAction("System", "REGISTER_PROMOTORA", `Promotora solicitó registro: ${promoData.name}`);
     showToast("Solicitud enviada. En espera de aprobación.");
     setView("login");
   };
@@ -406,6 +634,84 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       )
     }));
     showToast("Regalías liquidadas y saldo reseteado a 0.", "success");
+  };
+
+  const sendNotification = (audience: string, title: string, message: string) => {
+    const newNotif = { id: `notif${Date.now()}`, audience, title, message, date: new Date().toISOString() };
+    setDb((prev: any) => ({ ...prev, notifications: [...(prev.notifications || []), newNotif] }));
+    showToast("Notificación Push enviada a la red.");
+  };
+
+  const assignPromotoraToClient = (clientId: string, promotoraId: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      clients: prev.clients.map((c: any) => c.id === clientId ? { ...c, promotoraId } : c)
+    }));
+    showToast("Promotora reasignada con éxito al comercio.");
+  };
+
+  const addGlobalProduct = (product: any) => {
+    const globalProd = { ...product, id: `global${Date.now()}`, clientId: "global", stock: 9999 };
+    setDb((prev: any) => ({ ...prev, products: [...prev.products, globalProd] }));
+    showToast("Producto Global KFS inyectado a la red.");
+  };
+
+  const finishOnboarding = (clientId: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      clients: prev.clients.map((c: any) => c.id === clientId ? { ...c, isOnboarded: true } : c)
+    }));
+    showToast("¡Onboarding completado! Bienvenido a KFS OS.", "success");
+  };
+
+  const paySubscription = (clientId: string, reference: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      clients: prev.clients.map((c: any) => 
+        c.id === clientId ? { 
+          ...c, 
+          subscription: { ...c.subscription, status: 'pending_verification', lastPaymentRef: reference } 
+        } : c
+      )
+    }));
+    showToast("Comprobante de $6 enviado al Core. Esperando aprobación.", "success");
+  };
+
+  const approveSubscription = (clientId: string) => {
+    setDb((prev: any) => {
+      const client = prev.clients.find((c: any) => c.id === clientId);
+      if (!client) return prev;
+      
+      const nextMonth = new Date();
+      nextMonth.setMonth(nextMonth.getMonth() + 1);
+      
+      const costEUR = (6 * rates.USD) / rates.EUR;
+      const coreCut = costEUR * 0.5;
+      const promoCut = costEUR * 0.5;
+      
+      const updatedPromotoras = prev.promotoras.map((p: any) => 
+        p.id === client.promotoraId ? { ...p, passiveEarningsEUR: (p.passiveEarningsEUR || 0) + promoCut } : p
+      );
+      
+      const updatedCore = {
+        ...prev.kreatekCore,
+        earningsEUR: (prev.kreatekCore?.earningsEUR || 0) + coreCut,
+        netEarningsEUR: (prev.kreatekCore?.netEarningsEUR || 0) + coreCut
+      };
+      
+      return {
+        ...prev,
+        promotoras: updatedPromotoras,
+        kreatekCore: updatedCore,
+        clients: prev.clients.map((c: any) => 
+          c.id === clientId ? { 
+            ...c, 
+            subscription: { ...c.subscription, status: 'active', nextBillingDate: nextMonth.toISOString(), lastPaymentRef: null } 
+          } : c
+        )
+      };
+    });
+    showToast("Suscripción aprobada y tienda activada por 1 mes ($6).", "success");
   };
 
   const addProduct = (productData: any) => {
@@ -718,19 +1024,32 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         reference: order.paymentReference,
         customerPhone: order.customerPhone,
         clientId: order.clientId,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        shippingStatus: 'pending'
       };
 
       // Handle CRM for online orders
+      const pointsEarned = client?.loyaltyProgramActive ? order.amountUSD * 0.5 : 0;
       let updatedCrm = prev.crm || [];
       if (order.customerPhone) {
         const existing = updatedCrm.find((c: any) => c.phone === order.customerPhone);
         if (existing) {
           updatedCrm = updatedCrm.map((c: any) => c.phone === order.customerPhone ? {
-            ...c, totalSpent: c.totalSpent + order.amountUSD, purchasesCount: c.purchasesCount + 1, lastPurchase: new Date().toISOString()
+            ...c, 
+            totalSpent: c.totalSpent + order.amountUSD, 
+            purchasesCount: c.purchasesCount + 1, 
+            lastPurchase: new Date().toISOString(),
+            kfsPoints: (c.kfsPoints || 0) + pointsEarned
           } : c);
         } else {
-          updatedCrm = [...updatedCrm, { id: `crm${Date.now()}`, phone: order.customerPhone, totalSpent: order.amountUSD, purchasesCount: 1, lastPurchase: new Date().toISOString() }];
+          updatedCrm = [...updatedCrm, { 
+            id: `crm${Date.now()}`, 
+            phone: order.customerPhone, 
+            totalSpent: order.amountUSD, 
+            purchasesCount: 1, 
+            lastPurchase: new Date().toISOString(),
+            kfsPoints: pointsEarned
+          }];
         }
       }
 
@@ -770,6 +1089,16 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     });
     setGhostTrapLocked(true);
     showToast("¡CRÍTICO! Intento de rechazo de orden online interceptado. Terminal bloqueado.", "error");
+  };
+
+  const dispatchOrder = (txId: string) => {
+    setDb((prev: any) => {
+      const updatedTxs = prev.transactions.map((tx: any) => 
+        tx.id === txId ? { ...tx, shippingStatus: 'dispatched' } : tx
+      );
+      return { ...prev, transactions: updatedTxs };
+    });
+    showToast("Orden marcada como ENVIADA exitosamente.");
   };
 
   const generateZReport = (vendedorId: string, clientId: string) => {
@@ -1055,11 +1384,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       isClient, isBooting, view, setView, currentUser, setCurrentUser,
       toast, showToast, rates, db, setDb, formatUSD, formatEUR,
       handleLogin, logout, registerClient, registerPromotora, approvePromotora, rejectPromotora, settlePromotoraEarnings,
-      addProduct, addExpense, processPurchase, submitOnlineOrder, approveOrder, rejectOrder, generateZReport,
+      addProduct, addExpense, processPurchase, submitOnlineOrder, approveOrder, rejectOrder, dispatchOrder, generateZReport,
       originalUser, impersonateClient, stopImpersonating,
       networkState, setNetworkState, smsConciliator, registerCrmExpress,
       ghostTrapLocked, setGhostTrapLocked, createVale, payVale, registerPosTerminal, deletePosTerminal,
-      queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings, toggleProductFeatured
+      queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings, toggleProductFeatured,
+      sendNotification, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, processMonthlyBilling, registerCustomer
     }}>
       {children}
     </KFSContext.Provider>

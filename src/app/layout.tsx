@@ -21,6 +21,11 @@ export const metadata: Metadata = {
   title: "KFS OS",
   description: "Business Operating System by Kreatek.",
   manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "KFS OS",
+  },
 };
 
 export default function RootLayout({

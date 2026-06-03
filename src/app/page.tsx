@@ -6,7 +6,7 @@ import {
   LogOut, Shield, Package, Activity, Search, QrCode, Lock, 
   ChevronRight, CheckCircle, CreditCard, Bell, X, Info,
   Store, Star, ChevronLeft, Clock, UserCheck, Palette,
-  Zap, BookOpen, Printer, Smartphone, Settings, DownloadCloud
+  Zap, BookOpen, Printer, Smartphone, Settings, DownloadCloud, Terminal, Truck
 } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from "recharts";
@@ -16,6 +16,34 @@ const KREATEK_COLORS = {
   navy: "#0A1128",
   bronze: "#C5A184",
   white: "#F8F9FA"
+};
+
+// ==========================================
+// UTILITIES
+// ==========================================
+const compressImage = (file: File, maxWidth: number = 500, quality: number = 0.7): Promise<string> => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const scaleSize = maxWidth / img.width;
+        if (scaleSize < 1) {
+          canvas.width = maxWidth;
+          canvas.height = img.height * scaleSize;
+        } else {
+          canvas.width = img.width;
+          canvas.height = img.height;
+        }
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = event.target?.result as string;
+    };
+    reader.readAsDataURL(file);
+  });
 };
 
 // ==========================================
@@ -845,7 +873,7 @@ const FiscalPrinterSetupWidget = () => {
   };
 
   return (
-    <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 space-y-6">
+    <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-6">
       <div className="flex justify-between items-center border-b border-gray-100 pb-4">
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-600">
@@ -1179,7 +1207,7 @@ const playCashDrawerSound = () => {
 
 // Navbar Component with state-aware interactive P2P Telemetry and profile avatar
 const Navbar = ({ title, showBack = false, onBack }: { title?: string, showBack?: boolean, onBack?: () => void }) => {
-  const { networkState, setNetworkState, showToast, currentUser, setCurrentUser, setDb } = useKFS();
+  const { networkState, setNetworkState, showToast, currentUser, setCurrentUser, setDb, db } = useKFS();
   const [isSyncing, setIsSyncing] = useState(false);
 
   const cycleNetworkState = () => {
@@ -1217,9 +1245,18 @@ const Navbar = ({ title, showBack = false, onBack }: { title?: string, showBack?
   };
 
   const net = getNetworkDetails();
+  const latestNotif: any = currentUser ? [...(db.notifications || [])].filter((n: any) => n.audience === 'all' || n.audience === currentUser.role).pop() : null;
 
   return (
-    <nav className="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-white/5 bg-[#0A1128] sticky top-0 z-40 backdrop-blur-md gap-3 w-full">
+    <>
+      {latestNotif && (
+        <div className="w-full bg-gradient-to-r from-red-600 to-red-800 text-white px-4 py-2 text-center text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-lg z-50 animate-fade-in relative">
+          <Bell size={16} className="animate-bounce" /> 
+          <span className="uppercase tracking-widest">{latestNotif.title}:</span> 
+          <span className="font-normal">{latestNotif.message}</span>
+        </div>
+      )}
+      <nav className="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-white/5 bg-[#0A1128] sticky top-0 z-40 backdrop-blur-md gap-3 w-full">
       <div className="flex items-center gap-3">
         <KreatekLogo className="h-8 w-auto" />
         <span className="font-bold text-lg tracking-widest uppercase text-[#C5A184]">
@@ -1252,12 +1289,11 @@ const Navbar = ({ title, showBack = false, onBack }: { title?: string, showBack?
               type="file" 
               accept="image/*" 
               className="hidden" 
-              onChange={e => {
+              onChange={async e => {
                 const file = e.target.files?.[0];
                 if (file) {
-                  const reader = new FileReader();
-                  reader.onloadend = () => {
-                    const base64String = reader.result as string;
+                  try {
+                    const base64String = await compressImage(file, 400);
                     setDb((prev: any) => {
                       let updated = { ...prev };
                       if (currentUser.role === "dueño") {
@@ -1266,14 +1302,17 @@ const Navbar = ({ title, showBack = false, onBack }: { title?: string, showBack?
                         updated.promotoras = prev.promotoras.map((p: any) => p.id === currentUser.id ? { ...p, avatar: base64String } : p);
                       } else if (currentUser.role === "vendedor") {
                         updated.vendedores = prev.vendedores.map((v: any) => v.id === currentUser.id ? { ...v, avatar: base64String } : v);
+                      } else if (currentUser.role === "core") {
+                        updated.kreatekCore = { ...updated.kreatekCore, avatar: base64String };
                       }
                       return updated;
                     });
                     
                     setCurrentUser((prev: any) => ({ ...prev, avatar: base64String }));
-                    showToast("Foto de perfil actualizada con éxito.", "success");
-                  };
-                  reader.readAsDataURL(file);
+                    showToast("Foto de perfil comprimida y guardada.", "success");
+                  } catch (error) {
+                    showToast("Error comprimiendo imagen", "error");
+                  }
                 }
               }} 
             />
@@ -1297,28 +1336,26 @@ const Navbar = ({ title, showBack = false, onBack }: { title?: string, showBack?
         )}
       </div>
     </nav>
+    </>
   );
 };
 
 const RegisterClientForm = ({ onRegister, onCancel, standalone = true }: any) => {
   const [formData, setFormData] = useState({ name: "", idCard: "", company: "", avgBilling: "", phone: "", email: "", password: "", address: "", kfsFeePercentage: 0.03, avatar: "" });
   const [avatar, setAvatar] = useState<string>("");
+  const [acceptedToS, setAcceptedToS] = useState(false);
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setAvatar(base64String);
-        setFormData(prev => ({ ...prev, avatar: base64String }));
-      };
-      reader.readAsDataURL(file);
+      const base64String = await compressImage(file, 400);
+      setAvatar(base64String);
+      setFormData(prev => ({ ...prev, avatar: base64String }));
     }
   };
 
   return (
-    <form onSubmit={(e) => { e.preventDefault(); onRegister(formData); }} className={`space-y-3 ${standalone ? "text-white animate-fade-in" : "text-gray-800"}`}>
+    <form onSubmit={(e) => { e.preventDefault(); if(acceptedToS) onRegister(formData); else alert("Debes aceptar los Términos de Servicio y Privacidad."); }} className={`space-y-3 ${standalone ? "text-white animate-fade-in" : "text-gray-800"}`}>
       <h3 className={`text-lg font-black mb-4 border-b pb-2 ${standalone ? "text-[#C5A184] border-[#C5A184]/30" : "text-[#0A1128] border-gray-200"}`}>Setup de Nuevo Comercio</h3>
       
       <div className="flex flex-col items-center gap-2 mb-4">
@@ -1354,6 +1391,14 @@ const RegisterClientForm = ({ onRegister, onCancel, standalone = true }: any) =>
       <input required placeholder="Teléfono Personal" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({...formData, phone: e.target.value})} />
       <input required type="email" placeholder="Correo Electrónico" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({...formData, email: e.target.value})} />
       <input required type="password" placeholder="Crear Clave de Acceso" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({...formData, password: e.target.value})} />
+      
+      <div className="flex items-start gap-2 pt-2 mb-2">
+        <input type="checkbox" required checked={acceptedToS} onChange={(e) => setAcceptedToS(e.target.checked)} className="mt-1 cursor-pointer" />
+        <span className={`text-[10px] leading-tight ${standalone ? "text-gray-400" : "text-gray-500"}`}>
+          He leído y acepto los <strong className="text-[#C5A184] cursor-pointer hover:underline">Términos de Servicio (ToS)</strong>. Entiendo que KFS cobra $6 mensuales por mantenimiento, y que Kreatek no asume responsabilidad financiera sobre el comercio frente al cliente final.
+        </span>
+      </div>
+
       <div className="flex gap-3 pt-4">
         <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl bg-gray-200/20 hover:bg-gray-200/30 text-white font-bold transition-all text-sm cursor-pointer">Cancelar</button>
         <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-[#0A1128] text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-lg cursor-pointer" style={{ backgroundColor: KREATEK_COLORS.bronze }}>Aprobar Setup</button>
@@ -1367,16 +1412,12 @@ const RegisterPromotoraForm = ({ onRegister, onCancel }: any) => {
   const [formData, setFormData] = useState({ name: "", email: "", password: "", binanceId: "", pagoMovil: "", avatar: "" });
   const [avatar, setAvatar] = useState<string>("");
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
-        setAvatar(base64String);
-        setFormData(prev => ({ ...prev, avatar: base64String }));
-      };
-      reader.readAsDataURL(file);
+      const base64String = await compressImage(file, 400);
+      setAvatar(base64String);
+      setFormData(prev => ({ ...prev, avatar: base64String }));
     }
   };
 
@@ -1423,11 +1464,14 @@ const LandingPageView = ({ setView }: any) => {
           <span className="font-black text-xl tracking-tighter">Kreatek<span className="text-[#C5A184]">OS</span></span>
         </div>
         <div className="flex gap-4">
+          <button onClick={() => setView("login")} className="text-sm font-bold text-[#C5A184] hover:text-white transition-colors cursor-pointer pt-2">
+            Soy Cliente
+          </button>
           <button onClick={() => setView("login")} className="text-sm font-bold text-gray-300 hover:text-white transition-colors cursor-pointer hidden sm:block pt-2">
-            Iniciar Sesión
+            Soy Tienda / Promotora
           </button>
           <button onClick={() => setView("login")} className="bg-[#C5A184] text-[#0A1128] px-5 py-2 rounded-xl font-black text-sm hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(197,161,132,0.3)] cursor-pointer">
-            Acceso al Sistema
+            Acceder
           </button>
         </div>
       </nav>
@@ -1534,12 +1578,13 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
             <p className="text-sm text-gray-400 mt-2 font-mono">Seleccione su vector de entrada</p>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 mb-8">
-            <button onClick={() => setActiveTab("marketplace")} className={`py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "marketplace" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Flow Exp.</button>
-            <button onClick={() => setActiveTab("dueño")} className={`py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "dueño" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Dueño</button>
-            <button onClick={() => setActiveTab("vendedor")} className={`py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "vendedor" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Vendedor</button>
-            <button onClick={() => setActiveTab("promotora")} className={`py-2.5 text-xs font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "promotora" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Promotora</button>
-            <button onClick={() => setActiveTab("core")} className={`col-span-2 py-2.5 text-xs font-black uppercase tracking-widest rounded-xl transition-all border border-[#C5A184]/30 cursor-pointer ${activeTab === "core" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_20px_rgba(197,161,132,0.5)]" : "bg-transparent text-[#C5A184] hover:bg-white/5"}`}>KFS OS (Arquitecto)</button>
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-8">
+            <button onClick={() => setActiveTab("marketplace")} className={`py-2.5 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "marketplace" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Flow Exp.</button>
+            <button onClick={() => setActiveTab("customer")} className={`py-2.5 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "customer" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Cliente</button>
+            <button onClick={() => setActiveTab("dueño")} className={`py-2.5 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "dueño" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Dueño</button>
+            <button onClick={() => setActiveTab("vendedor")} className={`py-2.5 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "vendedor" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Vendedor</button>
+            <button onClick={() => setActiveTab("promotora")} className={`py-2.5 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "promotora" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Promotora</button>
+            <button onClick={() => setActiveTab("core")} className={`col-span-2 md:col-span-1 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all border border-[#C5A184]/30 cursor-pointer ${activeTab === "core" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_20px_rgba(197,161,132,0.5)]" : "bg-transparent text-[#C5A184] hover:bg-white/5"}`}>Arquitecto</button>
           </div>
 
           {activeTab === "marketplace" && (
@@ -1548,17 +1593,17 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
             </button>
           )}
 
-          {(activeTab === "core" || activeTab === "promotora" || activeTab === "dueño" || activeTab === "vendedor") && (
+          {(activeTab === "core" || activeTab === "promotora" || activeTab === "dueño" || activeTab === "vendedor" || activeTab === "customer") && (
             <div className="space-y-4">
-              {(activeTab === "dueño" || activeTab === "vendedor" || activeTab === "promotora") && (
-                <input type="email" placeholder="Correo Electrónico de Usuario" value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#C5A184] focus:ring-1 focus:ring-[#C5A184] transition-all" />
+              {(activeTab === "dueño" || activeTab === "vendedor" || activeTab === "promotora" || activeTab === "customer") && (
+                <input type="text" placeholder={activeTab === "customer" ? "Número de Teléfono" : "Correo Electrónico de Usuario"} value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#C5A184] focus:ring-1 focus:ring-[#C5A184] transition-all" />
               )}
               <div className="relative">
                 <Lock className="absolute left-4 top-4 text-[#C5A184]/50" size={20} />
                 <input type="password" placeholder="Clave de Seguridad" value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl pl-12 pr-4 py-4 text-white focus:outline-none focus:border-[#C5A184] focus:ring-1 focus:ring-[#C5A184] transition-all" />
               </div>
               <button onClick={() => handleLogin(activeTab, password, email)} className="w-full py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-lg text-[#0A1128] bg-[#C5A184] cursor-pointer">
-                Desbloquear Terminal <ChevronRight size={20} />
+                Entrar a mi Panel <ChevronRight size={20} />
               </button>
               {activeTab === "dueño" && (
                 <button onClick={() => setActiveTab("register")} className="w-full text-center text-sm font-bold text-[#C5A184] hover:text-white transition-colors mt-4 cursor-pointer">
@@ -1570,11 +1615,17 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
                   ¿Nueva Promotora? Registrarse
                 </button>
               )}
+              {activeTab === "customer" && (
+                <button onClick={() => setActiveTab("registerCustomer")} className="w-full text-center text-sm font-bold text-[#C5A184] hover:text-white transition-colors mt-4 cursor-pointer">
+                  ¿Nuevo Cliente? Crea tu cuenta
+                </button>
+              )}
             </div>
           )}
 
           {activeTab === "register" && <RegisterClientForm onRegister={registerClient} onCancel={() => setActiveTab("dueño")} />}
           {activeTab === "registerPromo" && <RegisterPromotoraForm onRegister={registerPromotora} onCancel={() => setActiveTab("promotora")} />}
+          {activeTab === "registerCustomer" && <RegisterCustomerForm onCancel={() => setActiveTab("customer")} />}
 
           <div className="mt-8 pt-6 border-t border-white/10 text-center">
             <button onClick={() => setView("landing")} className="text-sm font-black text-[#C5A184] hover:text-white transition-colors cursor-pointer flex items-center justify-center gap-2 mx-auto">
@@ -1587,12 +1638,186 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
   );
 };
 
+const RegisterCustomerForm = ({ onCancel }: { onCancel: () => void }) => {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [password, setPassword] = useState("");
+  const { registerCustomer } = useKFS();
+
+  const handleSubmit = (e: any) => {
+    e.preventDefault();
+    registerCustomer(phone, password, name);
+  };
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4 animate-fade-in">
+      <input required type="text" placeholder="Nombre y Apellido" value={name} onChange={e=>setName(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184] transition-all" />
+      <input required type="text" placeholder="Teléfono Móvil (Ej: 0414...)" value={phone} onChange={e=>setPhone(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184] transition-all" />
+      <input required type="password" placeholder="Crear Contraseña" value={password} onChange={e=>setPassword(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184] transition-all" />
+      <div className="flex gap-2 pt-2">
+        <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl border border-white/20 text-gray-300 font-bold hover:bg-white/5 transition-all">Atrás</button>
+        <button type="submit" className="w-2/3 py-3 rounded-xl bg-[#C5A184] text-[#0A1128] font-black hover:scale-[1.02] active:scale-95 transition-all">Crear Cuenta</button>
+      </div>
+    </form>
+  )
+}
+// CustomerDashboard
+const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
+  const { formatUSD } = useKFS();
+  // Aggregate CRM points
+  const crmEntry = db.crm?.find((c: any) => c.phone === currentUser.phone);
+  const totalPoints = crmEntry?.kfsPoints || 0;
+  
+  // Aggregate transactions by store
+  const userTransactions = db.transactions?.filter((tx: any) => tx.customerPhone === currentUser.phone) || [];
+  const historyByStore = userTransactions.reduce((acc: any, tx: any) => {
+    if (!acc[tx.clientId]) {
+      acc[tx.clientId] = {
+        clientId: tx.clientId,
+        purchasesCount: 0,
+        totalSpent: 0
+      };
+    }
+    acc[tx.clientId].purchasesCount += 1;
+    acc[tx.clientId].totalSpent += tx.amountUSD;
+    return acc;
+  }, {});
+  const historyEntries = Object.values(historyByStore) as any[];
+
+  const activeOrders = db.orders?.filter((o: any) => o.customerPhone === currentUser.phone && o.status === 'pending') || [];
+  const logisticsTxs = db.transactions?.filter((tx: any) => tx.customerPhone === currentUser.phone && (tx.shippingStatus === 'pending' || tx.shippingStatus === 'dispatched')) || [];
+
+  return (
+    <div className="min-h-screen bg-[#0A1128] text-white p-6 md:p-10 font-sans">
+      <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
+        {/* Header */}
+        <div className="flex justify-between items-center bg-white/5 border border-white/10 rounded-[2rem] p-6 shadow-2xl backdrop-blur-xl">
+           <div className="flex items-center gap-4">
+             <div className="w-14 h-14 bg-[#C5A184] rounded-2xl flex items-center justify-center text-[#0A1128]">
+                <UserCheck size={28} />
+             </div>
+             <div>
+               <h2 className="text-xl md:text-2xl font-black tracking-tight">Hola, {currentUser.name}</h2>
+               <p className="text-[#C5A184] font-mono text-xs">{currentUser.phone}</p>
+             </div>
+           </div>
+           <button onClick={logout} className="p-3 bg-white/5 border border-white/10 text-gray-300 rounded-xl hover:bg-red-500 hover:text-white transition-colors cursor-pointer">
+             <LogOut size={20} />
+           </button>
+        </div>
+
+        {/* KFS Points Wallet */}
+        <div className="bg-gradient-to-r from-[#C5A184] to-[#9c7b60] rounded-[2rem] p-8 shadow-[0_0_40px_rgba(197,161,132,0.3)] relative overflow-hidden text-[#0A1128] border border-white/20">
+          <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div>
+              <h3 className="text-xs font-black uppercase tracking-widest opacity-80 mb-1">Billetera de Fidelidad Global</h3>
+              <p className="text-6xl font-black tracking-tighter drop-shadow-sm">{totalPoints.toFixed(1)} <span className="text-2xl">PTS</span></p>
+              <p className="text-[10px] font-bold mt-1 opacity-70">Tus puntos consolidados en todo el Ecosistema KFS</p>
+            </div>
+            <button onClick={() => setView("marketplace")} className="w-full md:w-auto bg-[#0A1128] text-[#C5A184] px-8 py-4 rounded-xl font-black hover:scale-[1.03] active:scale-95 transition-transform flex items-center justify-center gap-2 cursor-pointer shadow-xl border border-white/10">
+              <ShoppingCart size={20} /> Ver Marketplace KFS
+            </button>
+          </div>
+          <Star size={180} className="absolute -right-10 -bottom-10 opacity-10 text-white transform -rotate-12" />
+        </div>
+
+        {/* Logistics Tracking */}
+        {(activeOrders.length > 0 || logisticsTxs.length > 0) && (
+          <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 md:p-8 shadow-xl">
+             <h3 className="text-xl font-black mb-6 text-[#C5A184] flex items-center gap-2"><Truck size={24} /> Rastreo de Envíos Activos</h3>
+             <div className="space-y-4">
+               {activeOrders.map((o: any) => {
+                 const p = db.products.find((prod: any) => prod.id === o.productId);
+                 return (
+                   <div key={o.id} className="bg-orange-500/10 border border-orange-500/20 p-5 rounded-2xl flex justify-between items-center">
+                     <div>
+                       <h4 className="font-bold text-orange-400">{p?.name || "Producto Online"}</h4>
+                       <p className="text-xs text-orange-200/70 mt-1">Ref: {o.paymentReference} | Pendiente de Aprobación por el Vendedor</p>
+                     </div>
+                     <Clock className="text-orange-400 animate-pulse" />
+                   </div>
+                 );
+               })}
+               {logisticsTxs.map((tx: any) => {
+                 const p = db.products.find((prod: any) => prod.id === tx.productId);
+                 const isDispatched = tx.shippingStatus === 'dispatched';
+                 return (
+                   <div key={tx.id} className={`${isDispatched ? 'bg-green-500/10 border-green-500/20' : 'bg-blue-500/10 border-blue-500/20'} border p-5 rounded-2xl flex justify-between items-center`}>
+                     <div>
+                       <h4 className={`font-bold ${isDispatched ? 'text-green-400' : 'text-blue-400'}`}>{p?.name || "Producto Online"}</h4>
+                       <p className={`text-xs mt-1 ${isDispatched ? 'text-green-200/70' : 'text-blue-200/70'}`}>
+                         {isDispatched ? '📦 Tu paquete está en camino hacia ti' : '⏳ Pago Aprobado. Vendedor empacando'}
+                       </p>
+                     </div>
+                     {isDispatched ? <Truck className="text-green-400" /> : <Package className="text-blue-400 animate-pulse" />}
+                   </div>
+                 );
+               })}
+             </div>
+          </div>
+        )}
+
+        {/* Purchase History */}
+        <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 md:p-8 shadow-xl">
+           <h3 className="text-xl font-black mb-6 text-[#C5A184] flex items-center gap-2"><Activity size={24} /> Historial de Tiendas Visitadas</h3>
+           {historyEntries.length === 0 ? (
+             <div className="text-center py-10 opacity-70">
+                <Package size={48} className="mx-auto mb-4 text-[#C5A184]" />
+                <p className="font-bold text-gray-300">Aún no tienes historial de compras.</p>
+                <p className="text-xs text-gray-500 mt-1">Visita tiendas KFS o compra en Flow Express.</p>
+             </div>
+           ) : (
+             <div className="space-y-4">
+               {historyEntries.map((c: any, i: number) => {
+                 const store = db.clients.find((cl: any) => cl.id === c.clientId);
+                 return (
+                   <div key={i} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-5 bg-black/40 rounded-xl border border-white/5 hover:border-[#C5A184]/30 transition-colors gap-4">
+                     <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-[#C5A184]">
+                          <Store size={18} />
+                        </div>
+                        <div>
+                          <p className="font-black text-gray-100 text-lg">{store?.company || "Tienda Desconocida"}</p>
+                          <p className="text-[10px] uppercase tracking-widest text-gray-500 mt-1 font-bold">{c.purchasesCount} Compras Registradas</p>
+                        </div>
+                     </div>
+                     <div className="text-left sm:text-right w-full sm:w-auto bg-white/5 sm:bg-transparent p-3 sm:p-0 rounded-lg">
+                       <p className="text-[10px] text-gray-400 font-mono">Volumen Gastado</p>
+                       <p className="text-[#C5A184] font-black text-xl">{formatUSD(c.totalSpent)}</p>
+                     </div>
+                   </div>
+                 )
+               })}
+             </div>
+           )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // CoreDashboard
-const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePromotoraEarnings, showToast, formatUSD, formatEUR, currentUser, logout }: any) => {
-  const { impersonateClient } = useKFS();
+const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePromotoraEarnings, showToast, formatUSD, formatEUR, currentUser, logout, approveSubscription }: any) => {
+  const { impersonateClient, registerClient, assignPromotoraToClient, addGlobalProduct, sendNotification } = useKFS();
   const [searchPromotora, setSearchPromotora] = useState("");
   const [searchClient, setSearchClient] = useState("");
   const [searchVendedor, setSearchVendedor] = useState("");
+
+  const [activeModal, setActiveModal] = useState<string | null>(null);
+  
+  // Assign Promotora State
+  const [targetClientId, setTargetClientId] = useState("");
+  const [targetPromotoraId, setTargetPromotoraId] = useState("");
+
+  // Global Product State
+  const [globalProdName, setGlobalProdName] = useState("");
+  const [globalProdPrice, setGlobalProdPrice] = useState("");
+  const [globalProdCategory, setGlobalProdCategory] = useState("");
+
+  // Notification State
+  const [notifTarget, setNotifTarget] = useState("all");
+  const [notifTitle, setNotifTitle] = useState("");
+  const [notifMsg, setNotifMsg] = useState("");
 
   useEffect(() => {
     const handleGlobalSale = (e: any) => {
@@ -1625,33 +1850,54 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
       <Navbar title="KFS OS (Arquitecto)" showBack={true} onBack={logout} />
       <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 animate-fade-in">
         
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
-            <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Nodos Globales</span>
-            <div className="flex items-baseline gap-2 mt-1">
-              <h2 className="text-3xl font-black text-[#0A1128]">{totalDueños}</h2>
-              <span className="text-xs text-gray-400 font-bold">comercios</span>
-            </div>
+        <div className="flex justify-between items-center bg-[#0A1128] p-6 rounded-[2rem] shadow-lg border border-white/10">
+          <div>
+            <h2 className="text-white font-black text-2xl">Control Matriz KFS</h2>
+            <p className="text-[#C5A184] text-sm">Vista de Dios • Arquitectura de Red</p>
           </div>
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
-            <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Fuerza de Ventas</span>
-            <div className="flex items-baseline gap-2 mt-1">
-              <h2 className="text-3xl font-black text-[#0A1128]">{totalPromotoras}</h2>
-              <span className="text-xs text-gray-400 font-bold">promotoras</span>
+          <a href="/KFS_Whitepaper.txt" download className="bg-[#C5A184] text-[#0A1128] font-black px-6 py-3 rounded-xl hover:bg-white transition-colors shadow-[0_0_15px_rgba(197,161,132,0.5)]">
+             Descargar Whitepaper
+          </a>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-6 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
+            <div className="relative z-10">
+              <span className="text-[#C5A184] text-[10px] font-black uppercase tracking-widest mb-1 block">Nodos Globales</span>
+              <div className="flex items-baseline gap-2 mt-1">
+                <h2 className="text-4xl font-black text-white">{totalDueños}</h2>
+                <span className="text-xs text-white/50 font-bold">comercios</span>
+              </div>
             </div>
-            <span className="text-[10px] text-gray-400 font-bold mt-1">{totalSetups} setups históricos</span>
+            <Activity size={80} className="absolute -right-5 -bottom-5 text-white/5" />
           </div>
-          <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
-            <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">Facturación Global KFS</span>
-            <div className="flex items-baseline gap-2 mt-1">
-              <h2 className="text-3xl font-black text-green-600">{formatUSD(globalSalesUSD)}</h2>
+          <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-6 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
+            <div className="relative z-10">
+              <span className="text-[#C5A184] text-[10px] font-black uppercase tracking-widest mb-1 block">Fuerza de Ventas</span>
+              <div className="flex items-baseline gap-2 mt-1">
+                <h2 className="text-4xl font-black text-white">{totalPromotoras}</h2>
+                <span className="text-xs text-white/50 font-bold">promotoras</span>
+              </div>
+              <span className="text-[10px] text-white/40 font-bold mt-2 block">{totalSetups} setups históricos</span>
             </div>
+            <Users size={80} className="absolute -right-5 -bottom-5 text-white/5" />
           </div>
-          <div className="bg-red-50 p-6 rounded-2xl shadow-sm border border-red-100 flex flex-col">
-            <span className="text-[10px] text-red-400 font-black uppercase tracking-widest">Deuda Total x Cobrar</span>
-            <div className="flex items-baseline gap-2 mt-1">
-              <h2 className="text-3xl font-black text-red-600">{formatUSD(globalDebtUSD)}</h2>
+          <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-6 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
+            <div className="relative z-10">
+              <span className="text-[#C5A184] text-[10px] font-black uppercase tracking-widest mb-1 block">Facturación Global</span>
+              <div className="flex items-baseline gap-2 mt-1">
+                <h2 className="text-4xl font-black text-green-400">{formatUSD(globalSalesUSD)}</h2>
+              </div>
             </div>
+            <TrendingUp size={80} className="absolute -right-5 -bottom-5 text-white/5" />
+          </div>
+          <div className="bg-gradient-to-br from-[#1A0A0A] to-[#2A1111] text-white p-6 rounded-[2rem] shadow-2xl relative overflow-hidden border border-red-900/50 flex flex-col">
+            <div className="relative z-10">
+              <span className="text-red-400 text-[10px] font-black uppercase tracking-widest mb-1 block">Deuda Total x Cobrar</span>
+              <div className="flex items-baseline gap-2 mt-1">
+                <h2 className="text-4xl font-black text-red-500">{formatUSD(globalDebtUSD)}</h2>
+              </div>
+            </div>
+            <Activity size={80} className="absolute -right-5 -bottom-5 text-white/5" />
           </div>
         </div>
 
@@ -1676,6 +1922,107 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 
         <KFSFinancialSplitCalculator formatUSD={formatUSD} formatEUR={formatEUR} />
 
+        {/* Tactical Buttons Row */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <button onClick={() => setActiveModal('store')} className="bg-[#C5A184]/10 border border-[#C5A184]/30 hover:bg-[#C5A184]/20 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group">
+            <div className="bg-[#C5A184] text-[#0A1128] p-3 rounded-xl group-hover:scale-110 transition-transform"><Store size={24} /></div>
+            <span className="font-black text-[#0A1128] text-sm text-center">Alta de Comercio</span>
+          </button>
+          <button onClick={() => setActiveModal('assign')} className="bg-[#0A1128]/5 border border-[#0A1128]/10 hover:bg-[#0A1128]/10 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group">
+            <div className="bg-[#0A1128] text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Users size={24} /></div>
+            <span className="font-black text-[#0A1128] text-sm text-center">Asignar Promotora</span>
+          </button>
+          <button onClick={() => setActiveModal('product')} className="bg-indigo-50 border border-indigo-100 hover:bg-indigo-100 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group">
+            <div className="bg-indigo-600 text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Package size={24} /></div>
+            <span className="font-black text-[#0A1128] text-sm text-center">Catálogo Global KFS</span>
+          </button>
+          <button onClick={() => setActiveModal('push')} className="bg-red-50 border border-red-100 hover:bg-red-100 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group">
+            <div className="bg-red-500 text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Bell size={24} /></div>
+            <span className="font-black text-[#0A1128] text-sm text-center">Alerta Push Network</span>
+          </button>
+        </div>
+
+        {/* Modals for Tactical Actions */}
+        {activeModal === 'store' && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+            <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative p-2 shadow-2xl">
+              <button onClick={() => setActiveModal(null)} className="absolute top-6 right-6 z-50 text-gray-400 hover:text-black"><X size={24}/></button>
+              <RegisterClientForm onRegister={(data: any, promoId: string, fee: number) => { registerClient(data, promoId, fee); setActiveModal(null); }} onCancel={() => setActiveModal(null)} />
+            </div>
+          </div>
+        )}
+
+        {activeModal === 'assign' && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+            <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6">
+              <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+                <h3 className="text-xl font-black">Asignar Promotora</h3>
+                <button onClick={() => setActiveModal(null)}><X size={24} className="text-gray-400"/></button>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 block">Comercio (Target)</label>
+                  <select value={targetClientId} onChange={e => setTargetClientId(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold">
+                    <option value="">Seleccione Comercio...</option>
+                    {db.clients.map((c: any) => <option key={c.id} value={c.id}>{c.company}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 block">Nueva Promotora</label>
+                  <select value={targetPromotoraId} onChange={e => setTargetPromotoraId(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold">
+                    <option value="">Seleccione Promotora...</option>
+                    <option value="none">Sin Promotora (100% KFS)</option>
+                    {db.promotoras.filter((p: any) => p.status !== 'pending').map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
+                  </select>
+                </div>
+                <button onClick={() => { if(targetClientId && targetPromotoraId) { assignPromotoraToClient(targetClientId, targetPromotoraId === 'none' ? '' : targetPromotoraId); setActiveModal(null); } }} className="w-full bg-[#0A1128] text-white py-4 rounded-xl font-black shadow-lg">Aplicar Reasignación</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeModal === 'product' && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+            <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6">
+              <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+                <h3 className="text-xl font-black">Catálogo Global</h3>
+                <button onClick={() => setActiveModal(null)}><X size={24} className="text-gray-400"/></button>
+              </div>
+              <div className="space-y-4">
+                <input type="text" placeholder="Nombre del Producto" value={globalProdName} onChange={e => setGlobalProdName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold" />
+                <input type="number" placeholder="Precio ($ USD)" value={globalProdPrice} onChange={e => setGlobalProdPrice(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold" />
+                <input type="text" placeholder="Categoría" value={globalProdCategory} onChange={e => setGlobalProdCategory(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold" />
+                <button onClick={() => { if(globalProdName && globalProdPrice) { addGlobalProduct({ name: globalProdName, priceUSD: parseFloat(globalProdPrice), category: globalProdCategory }); setActiveModal(null); } }} className="w-full bg-indigo-600 text-white py-4 rounded-xl font-black shadow-lg">Inyectar a la Red KFS</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeModal === 'push' && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+            <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6">
+              <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+                <h3 className="text-xl font-black text-red-600">Alerta Push Network</h3>
+                <button onClick={() => setActiveModal(null)}><X size={24} className="text-gray-400"/></button>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 block">Audiencia Destino</label>
+                  <select value={notifTarget} onChange={e => setNotifTarget(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold">
+                    <option value="all">Toda la Red KFS</option>
+                    <option value="dueño">Comercios Afiliados</option>
+                    <option value="promotora">Fuerza de Promotoras</option>
+                    <option value="vendedor">Terminales (Vendedores)</option>
+                  </select>
+                </div>
+                <input type="text" placeholder="Título Breve" value={notifTitle} onChange={e => setNotifTitle(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold text-red-600" />
+                <textarea placeholder="Mensaje de impacto..." value={notifMsg} onChange={e => setNotifMsg(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold h-24 resize-none" />
+                <button onClick={() => { if(notifTitle && notifMsg) { sendNotification(notifTarget, notifTitle, notifMsg); setActiveModal(null); } }} className="w-full bg-red-600 text-white py-4 rounded-xl font-black shadow-lg flex justify-center gap-2 items-center"><Bell size={20}/> Broadcast Instantáneo</button>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
           <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><TrendingUp className="text-[#C5A184]"/> Flujo de Comisiones KFS</h3>
           <div className="h-64 w-full">
@@ -1688,6 +2035,92 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             </ResponsiveContainer>
           </div>
         </div>
+
+        <div className="bg-[#0A1128] rounded-[2rem] shadow-sm border border-white/10 p-8 text-white mt-8">
+          <h3 className="text-xl font-black mb-6 flex items-center gap-2"><Shield className="text-[#C5A184]"/> Registro Inmutable de Auditoría (Logs)</h3>
+          <div className="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+            {(db.auditLogs || []).slice().reverse().map((log: any) => (
+              <div key={log.id} className="bg-white/5 border border-white/10 p-4 rounded-xl flex items-start gap-4">
+                <div className="bg-[#C5A184]/20 text-[#C5A184] p-2 rounded-lg">
+                  <Terminal size={20} />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-gray-200">[{log.action}] <span className="text-gray-400 font-normal">por {log.actor}</span></p>
+                  <p className="text-xs text-gray-400 mt-1">{log.details}</p>
+                  <p className="text-[10px] text-gray-500 font-mono mt-1">{new Date(log.date).toLocaleString()}</p>
+                </div>
+              </div>
+            ))}
+            {(!db.auditLogs || db.auditLogs.length === 0) && (
+              <p className="text-gray-500 text-sm font-bold text-center py-4">No hay registros de auditoría recientes.</p>
+            )}
+          </div>
+        </div>
+
+
+        <div className="bg-[#0A1128] rounded-[2rem] shadow-sm border border-red-500/20 p-8 text-white mt-8">
+          <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-red-400"><Bell className="text-red-400"/> Help Desk (Tickets de Soporte Global)</h3>
+          <div className="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+            {(db.supportTickets || []).slice().reverse().map((ticket: any) => {
+              const client = db.clients.find((c: any) => c.id === ticket.clientId);
+              return (
+                <div key={ticket.id} className="bg-white/5 border border-white/10 p-4 rounded-xl flex flex-col gap-2">
+                  <div className="flex justify-between items-center">
+                    <p className="text-sm font-bold text-gray-200">[{ticket.status === 'open' ? '🔴 ABIERTO' : '🟢 CERRADO'}] {client?.company || "Comercio"} - {ticket.subject}</p>
+                    <span className="text-[10px] text-gray-500 font-mono">{new Date(ticket.createdAt).toLocaleString()}</span>
+                  </div>
+                  <div className="space-y-2 mt-2 pl-4 border-l-2 border-[#C5A184]/30">
+                    {ticket.messages.map((m: any, i: number) => (
+                      <div key={i} className="text-xs">
+                        <span className="font-bold text-[#C5A184]">{m.author}:</span> <span className="text-gray-300">{m.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {ticket.status === 'open' && (
+                    <div className="flex gap-2 mt-2">
+                      <input type="text" id={`reply-${ticket.id}`} placeholder="Respuesta Kreatek..." className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#C5A184]" />
+                      <button onClick={() => {
+                        const input = document.getElementById(`reply-${ticket.id}`) as HTMLInputElement;
+                        if(input && input.value) {
+                          const { replyTicket } = useKFS() as any;
+                          replyTicket(ticket.id, "Kreatek Core", input.value);
+                          input.value = "";
+                        }
+                      }} className="bg-[#C5A184] text-[#0A1128] px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer hover:bg-[#b08d70]">Responder</button>
+                      <button onClick={() => {
+                        const { closeTicket } = useKFS() as any;
+                        closeTicket(ticket.id);
+                      }} className="bg-white/10 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-white/20 cursor-pointer">Cerrar Ticket</button>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+            {(!db.supportTickets || db.supportTickets.length === 0) && (
+              <p className="text-gray-500 text-sm font-bold text-center py-4">No hay tickets de soporte.</p>
+            )}
+          </div>
+        </div>
+
+        {/* Suscripciones Pendientes */}
+        {db.clients.filter((c: any) => c.subscription?.status === 'pending_verification').length > 0 && (
+          <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 mb-8">
+            <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><CreditCard className="text-green-500"/> Suscripciones por Aprobar ($6)</h3>
+            <div className="space-y-4">
+              {db.clients.filter((c: any) => c.subscription?.status === 'pending_verification').map((c: any) => (
+                <div key={c.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-green-50/50 rounded-2xl border border-green-100 shadow-sm gap-4">
+                  <div>
+                    <h4 className="font-bold text-[#0A1128]">{c.company}</h4>
+                    <p className="text-sm text-gray-600 font-mono mt-1">Ref Bancaria Enviada: <span className="font-black text-green-700">{c.subscription.lastPaymentRef}</span></p>
+                  </div>
+                  <button onClick={() => approveSubscription(c.id)} className="w-full md:w-auto px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md">
+                    <CheckCircle size={18} /> Aprobar Pago y Reactivar
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
           <div className="flex justify-between items-center mb-6">
@@ -1967,25 +2400,70 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
       <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-8 animate-fade-in">
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 md:p-10 rounded-[2rem] shadow-2xl relative">
-            <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-4">Regalías Liquidadas (BOS)</p>
-            <h2 className="text-6xl font-black mb-6 text-green-400">{formatEUR(myPromotoraData?.passiveEarningsEUR || 0)}</h2>
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex items-center justify-between mb-4">
-              <span className="text-xs font-bold text-gray-300 flex items-center gap-2"><CreditCard size={16} className="text-[#C5A184]"/> Modelo Revenue Share (20%)</span>
+          <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
+            <div className="relative z-10">
+              <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><CreditCard size={14} className="text-green-500" /> Regalías Liquidadas (BOS)</p>
+              <h2 className="text-5xl font-black mb-1 text-green-400">{formatEUR(myPromotoraData?.passiveEarningsEUR || 0)}</h2>
+              <p className="text-xs text-gray-400 mt-2">Modelo Revenue Share (20%)</p>
+              {(myPromotoraData?.passiveEarningsEUR || 0) > 0 && (
+                <button onClick={() => settlePromotoraEarnings(currentUser.id)} className="w-full bg-[#C5A184] text-[#0A1128] py-3 rounded-xl font-bold text-sm hover:scale-[1.02] transition-transform cursor-pointer shadow-lg flex justify-center items-center gap-2 mt-4">
+                  <CheckCircle size={18} /> Confirmar Pago Recibido
+                </button>
+              )}
             </div>
-            {(myPromotoraData?.passiveEarningsEUR || 0) > 0 && (
-              <button onClick={() => settlePromotoraEarnings(currentUser.id)} className="w-full bg-[#C5A184] text-[#0A1128] py-3 rounded-xl font-bold text-sm hover:scale-[1.02] transition-transform cursor-pointer shadow-lg flex justify-center items-center gap-2 mt-2">
-                <CheckCircle size={18} /> Confirmar Pago Recibido
-              </button>
-            )}
+            <Activity size={100} className="absolute -right-10 -bottom-10 text-white/5" />
           </div>
           
-          <div className="bg-white p-8 md:p-10 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col justify-center items-center text-center">
-             <div className="w-24 h-24 bg-green-50 rounded-full flex items-center justify-center mb-6">
-               <CheckCircle size={40} className="text-green-500" />
+          <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
+             <div className="relative z-10">
+               <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><CheckCircle size={14} className="text-white/50" /> Nodos Captados</p>
+               <h2 className="text-5xl font-black mb-1 text-white">{myPromotoraData?.setups || 0}</h2>
+               <p className="text-xs text-gray-400 mt-2">Comercios afiliados activos</p>
              </div>
-             <h3 className="text-6xl font-black text-[#0A1128] mb-3">{myPromotoraData?.setups || 0}</h3>
-             <p className="text-sm font-black text-gray-400 uppercase tracking-widest">Nodos Captados</p>
+             <Users size={100} className="absolute -right-10 -bottom-10 text-white/5" />
+          </div>
+        </div>
+
+        <div className="bg-[#0A1128] rounded-[2rem] shadow-sm border border-red-500/20 p-8 text-white mt-8">
+          <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-red-400"><Bell className="text-red-400"/> Tickets de Mis Comercios</h3>
+          <div className="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+            {(db.supportTickets || []).slice().reverse().filter((t:any) => {
+               const client = myClients.find((c:any) => c.id === t.clientId);
+               return client !== undefined;
+            }).map((ticket: any) => {
+              const client = myClients.find((c: any) => c.id === ticket.clientId);
+              return (
+                <div key={ticket.id} className="bg-white/5 border border-white/10 p-4 rounded-xl flex flex-col gap-2">
+                  <div className="flex justify-between items-center">
+                    <p className="text-sm font-bold text-gray-200">[{ticket.status === 'open' ? '🔴 ABIERTO' : '🟢 CERRADO'}] {client?.company || "Comercio"} - {ticket.subject}</p>
+                    <span className="text-[10px] text-gray-500 font-mono">{new Date(ticket.createdAt).toLocaleString()}</span>
+                  </div>
+                  <div className="space-y-2 mt-2 pl-4 border-l-2 border-[#C5A184]/30">
+                    {ticket.messages.map((m: any, i: number) => (
+                      <div key={i} className="text-xs">
+                        <span className="font-bold text-[#C5A184]">{m.author}:</span> <span className="text-gray-300">{m.text}</span>
+                      </div>
+                    ))}
+                  </div>
+                  {ticket.status === 'open' && (
+                    <div className="flex gap-2 mt-2">
+                      <input type="text" id={`reply-promo-${ticket.id}`} placeholder="Respuesta..." className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#C5A184]" />
+                      <button onClick={() => {
+                        const input = document.getElementById(`reply-promo-${ticket.id}`) as HTMLInputElement;
+                        if(input && input.value) {
+                          const { replyTicket } = useKFS() as any;
+                          replyTicket(ticket.id, `Promotora ${currentUser.name}`, input.value);
+                          input.value = "";
+                        }
+                      }} className="bg-[#C5A184] text-[#0A1128] px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer hover:bg-[#b08d70]">Responder</button>
+                    </div>
+                  )}
+                </div>
+              )
+            })}
+            {(db.supportTickets || []).filter((t:any) => myClients.find((c:any) => c.id === t.clientId)).length === 0 && (
+              <p className="text-gray-500 text-sm font-bold text-center py-4">No hay tickets de soporte activos.</p>
+            )}
           </div>
         </div>
 
@@ -2173,7 +2651,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
   };
 
   return (
-    <div className="bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm space-y-4 h-full">
+    <div className="bg-white p-6 md:p-8 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col gap-6 h-full">
       <h4 className="font-black text-[#0A1128] text-lg flex items-center gap-2"><Palette className="text-[#C5A184]"/> Personalizar Tienda</h4>
       <p className="text-xs text-gray-500">Ajusta la apariencia visual de tu vitrina pública en Flow Express.</p>
       
@@ -2189,12 +2667,12 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
           </div>
         </div>
 
-        <div>
-          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Biografía o Eslogan (Max 150 char)</label>
+        <div className="flex flex-col gap-1">
+          <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Biografía o Eslogan (Max 150 char)</label>
           <textarea maxLength={150} value={settings.bioText} onChange={e => setSettings({...settings, bioText: e.target.value})} placeholder="Los mejores productos..." className="w-full h-16 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] resize-none" />
         </div>
         
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Color Principal</label>
             <div className="flex items-center gap-2">
@@ -2228,7 +2706,80 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
   );
 };
 
-const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showToast, formatUSD, formatEUR, logout, approveOrder, rejectOrder }: any) => {
+const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
+  const [step, setStep] = useState(1);
+  const [kycDoc, setKycDoc] = useState("");
+
+  const handleKycUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const base64String = await compressImage(file, 600);
+      setKycDoc(base64String);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0A1128] flex flex-col items-center justify-center p-4 text-white animate-fade-in relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-[#0A1128] via-[#C5A184]/10 to-[#0A1128] opacity-50"></div>
+      
+      <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 max-w-lg w-full relative z-10 shadow-2xl">
+        <h2 className="text-3xl font-black mb-2 text-[#C5A184]">Bienvenido a KFS OS</h2>
+        <p className="text-gray-300 mb-8 font-light">Vamos a preparar tu negocio {currentUser.company} para la nueva era digital en 3 simples pasos.</p>
+        
+        <div className="flex gap-2 mb-8">
+          {[1,2,3].map(s => (
+            <div key={s} className={`h-2 flex-1 rounded-full ${s <= step ? 'bg-[#C5A184]' : 'bg-white/10'}`}></div>
+          ))}
+        </div>
+
+        {step === 1 && (
+          <div className="space-y-4 animate-slide-up">
+            <h3 className="text-xl font-bold">1. Cumplimiento Legal (KYC)</h3>
+            <p className="text-sm text-gray-400">Por normativas internacionales anti-lavado de dinero (AML), debes adjuntar una foto de tu RIF o Documento de Identidad Fiscal.</p>
+            <label className="border-2 border-dashed border-[#C5A184]/50 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-colors">
+              <input type="file" accept="image/*" className="hidden" onChange={handleKycUpload} />
+              {kycDoc ? (
+                <div className="text-green-400 font-bold flex items-center gap-2"><CheckCircle size={20}/> Documento Cargado</div>
+              ) : (
+                <div className="text-center text-gray-400">
+                  <Camera size={32} className="mx-auto mb-2 opacity-50" />
+                  <span className="text-xs font-bold uppercase tracking-widest">Subir Foto KYC</span>
+                </div>
+              )}
+            </label>
+            <button disabled={!kycDoc} onClick={() => setStep(2)} className="w-full bg-[#C5A184] text-[#0A1128] py-4 rounded-xl font-black mt-6 shadow-lg shadow-[#C5A184]/20 hover:scale-[1.02] disabled:opacity-50 transition-transform cursor-pointer">Siguiente Paso →</button>
+          </div>
+        )}
+
+        {step === 2 && (
+          <div className="space-y-4 animate-slide-up">
+            <h3 className="text-xl font-bold">2. Sube un Producto</h3>
+            <p className="text-sm text-gray-400">Agregaremos el inventario más adelante. Mentalízate en que puedes subir productos y nosotros le daremos visibilidad global.</p>
+            <div className="h-32 border-2 border-dashed border-white/20 rounded-xl flex items-center justify-center text-white/30">
+              <Camera size={32}/>
+            </div>
+            <button onClick={() => setStep(3)} className="w-full bg-[#C5A184] text-[#0A1128] py-4 rounded-xl font-black mt-6 shadow-lg shadow-[#C5A184]/20 hover:scale-[1.02] transition-transform cursor-pointer">Entendido →</button>
+          </div>
+        )}
+
+        {step === 3 && (
+          <div className="space-y-4 animate-slide-up text-center">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-green-500/20 text-green-400 rounded-full mb-4">
+              <CheckCircle size={40} />
+            </div>
+            <h3 className="text-xl font-bold">3. ¡Todo Listo!</h3>
+            <p className="text-sm text-gray-400 mb-6">El sistema base de datos, el POS y la tienda online están desplegados y 100% enlazados en tiempo real.</p>
+            <button onClick={() => finishOnboarding(currentUser.id)} className="w-full bg-[#C5A184] text-[#0A1128] py-4 rounded-xl font-black shadow-lg shadow-[#C5A184]/20 hover:scale-[1.02] transition-transform cursor-pointer">Ir a mi Panel de Control</button>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showToast, formatUSD, formatEUR, logout, approveOrder, rejectOrder, dispatchOrder, paySubscription }: any) => {
+  const { finishOnboarding } = useKFS();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showAddVendedor, setShowAddVendedor] = useState(false);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
@@ -2240,7 +2791,59 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   const [newExpense, setNewExpense] = useState({ description: "", amountUSD: "" });
   const [smsInput, setSmsInput] = useState("");
   const [activeManual, setActiveManual] = useState<string | null>(null);
-  const { createVale, payVale, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, toggleProductFeatured, stopImpersonating } = useKFS();
+  const [showTicketModal, setShowTicketModal] = useState(false);
+  const [ticketSubject, setTicketSubject] = useState("");
+  const [ticketMsg, setTicketMsg] = useState("");
+  const [fundAmount, setFundAmount] = useState("");
+  const { createTicket, fundWallet, processMonthlyBilling, createVale, payVale, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, toggleProductFeatured, stopImpersonating } = useKFS();
+
+  const handleCSVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      const lines = text.split('\n');
+      if (lines.length > 1) {
+        const newProducts: any[] = [];
+        lines.slice(1).forEach(line => {
+          const cols = line.split(',');
+          if (cols.length >= 2) {
+            const name = cols[0]?.trim();
+            const price = parseFloat(cols[1]?.trim());
+            const stock = parseInt(cols[2]?.trim() || "0");
+            const category = cols[3]?.trim() || "Importados";
+            const barcode = cols[4]?.trim() || "";
+            if (name && !isNaN(price)) {
+              newProducts.push({
+                id: `p${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                name,
+                priceUSD: price,
+                costUSD: price * 0.7,
+                stock,
+                category,
+                barcode,
+                image: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=500",
+                clientId: currentUser.id,
+                clientName: currentUser.company,
+                timestamp: new Date().toISOString()
+              });
+            }
+          }
+        });
+        
+        if (newProducts.length > 0) {
+          setDb((prev: any) => ({
+            ...prev,
+            products: [...prev.products, ...newProducts]
+          }));
+          showToast(`¡Se importaron ${newProducts.length} productos con éxito desde CSV!`, "success");
+        }
+      }
+    };
+    reader.readAsText(file);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
   const handleManualSmsConciliation = () => {
     if (!smsInput.trim()) return;
@@ -2308,6 +2911,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   const myVendedores = db.vendedores?.filter((v: any) => v.clientId === currentUser.id) || [];
   const myExpenses = db.expenses?.filter((e: any) => e.clientId === currentUser.id) || [];
   const myOrders = db.orders?.filter((o: any) => o.clientId === currentUser.id && o.status === 'pending') || [];
+  const myPendingDispatch = db.transactions?.filter((tx: any) => tx.clientId === currentUser.id && tx.shippingStatus === 'pending') || [];
 
   const totalExpensesUSD = myExpenses.reduce((sum: number, exp: any) => sum + parseFloat(exp.amountUSD), 0);
   const grossSalesUSD = currentUser.salesUSD || 0;
@@ -2346,14 +2950,15 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
     return () => window.removeEventListener("kfs-purchase", handleStoreSale);
   }, [currentUser.id, showToast, formatUSD]);
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setNewProd(prev => ({ ...prev, imgUrl: reader.result as string }));
-      };
-      reader.readAsDataURL(file);
+      try {
+        const base64String = await compressImage(file, 600);
+        setNewProd(prev => ({ ...prev, imgUrl: base64String }));
+      } catch (error) {
+        showToast("Error comprimiendo imagen", "error");
+      }
     }
   };
 
@@ -2392,6 +2997,61 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
      showToast("Vendedor autorizado y registrado.");
   };
 
+  const isPastDue = currentUser.subscription?.status === 'past_due' || (currentUser.subscription?.nextBillingDate && new Date() > new Date(currentUser.subscription.nextBillingDate));
+  const isPendingVerification = currentUser.subscription?.status === 'pending_verification';
+
+  if (isPastDue || isPendingVerification) {
+    return (
+      <div className="min-h-screen bg-[#0A1128] flex flex-col items-center justify-center p-6 text-center">
+        <div className="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full p-10 border-t-8 border-[#C5A184] animate-fade-in relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-full bg-[#C5A184]/5 z-0 pointer-events-none"></div>
+          
+          <Lock size={64} className="text-[#C5A184] mx-auto mb-6 relative z-10" />
+          <h2 className="text-3xl font-black text-[#0A1128] mb-2 relative z-10">
+            {isPendingVerification ? "Pago en Verificación" : "Suscripción Vencida"}
+          </h2>
+          <p className="text-gray-600 mb-8 font-bold relative z-10 text-lg">
+            {isPendingVerification 
+              ? "Tu comprobante de pago ha sido enviado al equipo Kreatek Core y está siendo auditado. Tu tienda se reactivará en breve."
+              : "Tu membresía mensual a KFS OS ($6) se encuentra vencida. Tu tienda está pausada."}
+          </p>
+
+          {!isPendingVerification && (
+            <div className="bg-gray-50 border border-gray-200 p-6 rounded-2xl mb-8 relative z-10">
+              <h3 className="font-bold text-[#0A1128] mb-4">¿Cómo reactivar tu Tienda?</h3>
+              <p className="text-sm text-gray-500 mb-4">Transfiere $6 USD vía Zelle, Binance Pay o Pago Móvil y escribe la referencia bancaria a continuación:</p>
+              
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const ref = (e.target as any).reference.value;
+                paySubscription(currentUser.id, ref);
+              }} className="space-y-4">
+                <input 
+                  type="text" 
+                  name="reference" 
+                  required 
+                  placeholder="Ej: 12345678" 
+                  className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-[#C5A184] focus:outline-none"
+                />
+                <button type="submit" className="w-full bg-[#C5A184] text-white font-black py-4 rounded-xl hover:bg-[#b08e72] transition-colors cursor-pointer flex justify-center items-center gap-2 shadow-md">
+                  <Upload size={18} /> Enviar Comprobante al Core
+                </button>
+              </form>
+            </div>
+          )}
+
+          <button onClick={logout} className="text-gray-400 font-bold hover:text-red-500 transition relative z-10 cursor-pointer">
+            Cerrar Sesión
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (currentUser.isOnboarded === false) {
+    return <OnboardingWizard currentUser={currentUser} finishOnboarding={finishOnboarding} />;
+  }
+
   return (
     <div className="min-h-screen bg-gray-50 pb-20 font-sans">
       {currentUser?.isImpersonated && (
@@ -2403,7 +3063,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         </div>
       )}
       <Navbar title={currentUser.company} showBack={true} onBack={logout} />
-      <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-8 animate-fade-in">
+      <div className="p-4 md:p-8 max-w-5xl mx-auto flex flex-col gap-6 md:gap-8 animate-fade-in">
         
         <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 md:p-12 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
           <div className="relative z-10 w-full flex flex-col md:flex-row md:justify-between md:items-end gap-6">
@@ -2440,7 +3100,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         <FiscalPrinterSetupWidget />
 
         {/* Manuals Section for Client (Owner) */}
-        <div className="bg-[#0A1128] text-white p-8 rounded-[2rem] shadow-xl relative overflow-hidden mt-6 mb-6">
+        <div className="bg-[#0A1128] text-white p-6 md:p-8 rounded-[2rem] shadow-xl relative overflow-hidden">
           <h3 className="text-xl font-black mb-6">Centro de Aprendizaje (Dueño de Negocio)</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <button onClick={() => setActiveManual('owner')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
@@ -2454,37 +3114,98 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           <button onClick={() => setShowAddModal(true)} className="bg-white border border-gray-100 p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-5 hover:border-[#C5A184]/50 transition-all cursor-pointer">
             <div className="w-16 h-16 bg-[#0A1128]/5 rounded-full flex items-center justify-center">
-              <Upload size={32} className="text-[#0A1128]" />
+              <Package size={32} className="text-[#0A1128]" />
             </div>
             <span className="font-black text-lg text-[#0A1128]">Subir Producto</span>
           </button>
-          <button onClick={() => window.open("https://wa.me/584125455777?text=Solicito%20asistencia%20KFS", "_blank")} className="bg-[#0A1128] text-white p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-5 hover:bg-gray-900 transition-all relative overflow-hidden group cursor-pointer">
+          
+          <div className="bg-white border border-gray-100 p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-5 transition-all relative overflow-hidden">
+             <input type="file" accept=".csv" ref={fileInputRef} onChange={handleCSVUpload} className="hidden" />
+             <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center">
+               <DownloadCloud size={32} className="text-green-600" />
+             </div>
+             <button onClick={() => fileInputRef.current?.click()} className="font-black text-lg text-green-700 hover:text-green-800 transition-colors cursor-pointer text-center leading-tight">Importar Inventario<br/><span className="text-xs font-bold text-gray-400">Desde Excel/CSV</span></button>
+          </div>
+
+          <button onClick={() => setShowTicketModal(true)} className="bg-[#0A1128] text-white p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-5 hover:bg-gray-900 transition-all relative overflow-hidden group cursor-pointer">
             <div className="absolute inset-0 bg-red-500/20 animate-pulse group-hover:bg-red-500/40 transition-colors"></div>
             <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center relative z-10">
               <Bell size={32} className="text-red-400" />
             </div>
-            <span className="font-black text-lg text-white relative z-10">Alerta KFS (Soporte)</span>
+            <span className="font-black text-lg text-white relative z-10">Help Desk (Tickets)</span>
           </button>
         </div>
 
-        <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
-          <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2"><TrendingUp className="text-[#C5A184]"/> Rendimiento de Ventas</h3>
-          <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={clientChartData}>
-                <XAxis dataKey="name" fontSize={10} stroke="#cbd5e1" />
-                <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
-                <Line type="monotone" dataKey="amount" stroke="#0A1128" strokeWidth={4} dot={{ r: 4, fill: "#C5A184" }} />
-              </LineChart>
-            </ResponsiveContainer>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+          <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 h-full">
+            <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2"><TrendingUp className="text-[#C5A184]"/> Rendimiento de Ventas</h3>
+            <div className="h-64 w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={clientChartData}>
+                  <XAxis dataKey="name" fontSize={10} stroke="#cbd5e1" />
+                  <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
+                  <Line type="monotone" dataKey="amount" stroke="#0A1128" strokeWidth={4} dot={{ r: 4, fill: "#C5A184" }} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+          <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 h-full flex flex-col">
+            <h3 className="text-xl font-black mb-6 flex items-center gap-2"><Star className="text-indigo-500" /> Productos Estrella</h3>
+            <div className="space-y-4">
+              {myProducts.slice(0, 4).map((p: any, i: number) => (
+                <div key={i} className="flex justify-between items-center bg-gray-50 p-4 rounded-xl border border-gray-100">
+                  <div className="flex items-center gap-3">
+                    <div className="bg-indigo-100 text-indigo-600 font-black h-8 w-8 rounded-full flex items-center justify-center">#{i+1}</div>
+                    <span className="font-bold">{p.name}</span>
+                  </div>
+                  <span className="font-black text-indigo-600">{formatUSD(p.priceUSD)}</span>
+                </div>
+              ))}
+              {myProducts.length === 0 && <p className="text-gray-400 text-sm font-bold">Aún no hay productos.</p>}
+            </div>
           </div>
         </div>
 
-        <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
-          <div className="flex justify-between items-center mb-6 border-b border-gray-100 pb-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+          <div className="bg-[#0A1128] text-white p-6 md:p-8 rounded-[2rem] shadow-xl relative overflow-hidden border border-[#C5A184]/20 h-full">
+            <h3 className="font-black text-xl mb-2 flex items-center gap-2"><Activity className="text-[#C5A184]"/> Kreatek Insights (IA)</h3>
+            <p className="text-xs text-gray-400 mb-6">Motor de predicción de inventario activo.</p>
+            <div className="space-y-4">
+              <div className="bg-white/10 border border-[#C5A184]/30 rounded-xl p-4 flex gap-4">
+                <span className="text-2xl">🤖</span>
+                <p className="text-sm text-gray-200">He analizado tus productos estrella. Te sugiero aumentar un 5% el precio del producto top 1, la rotación soporta el margen.</p>
+              </div>
+              <div className="bg-white/10 border border-[#C5A184]/30 rounded-xl p-4 flex gap-4">
+                <span className="text-2xl">⚡</span>
+                <p className="text-sm text-gray-200">Tus ventas en horario matutino cayeron un 12%. Te sugiero lanzar un SMS Push "Oferta Mañanera" desde Flow Express.</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col justify-between h-full">
+            <div>
+              <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2 mb-2"><DollarSign className="text-green-600"/> Billetera KFS (Billing)</h3>
+              <p className="text-xs text-gray-500 mb-4">Suscripción SaaS Activa: $6/mes. Próximo cobro: {new Date(currentUser.subscription?.nextBillingDate).toLocaleDateString()}</p>
+              <div className="bg-gray-50 rounded-xl p-4 flex justify-between items-center mb-4 border border-gray-200">
+                <span className="font-bold text-gray-600">Saldo Actual:</span>
+                <span className="text-2xl font-black text-green-700">${(currentUser.walletBalanceUSD || 0).toFixed(2)}</span>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="flex gap-2">
+                <input type="number" placeholder="Monto $USD" value={fundAmount} onChange={e=>setFundAmount(e.target.value)} className="w-1/2 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 font-bold" />
+                <button onClick={() => { if(fundAmount) { fundWallet(currentUser.id, parseFloat(fundAmount)); setFundAmount(""); } }} className="w-1/2 bg-green-600 text-white font-black rounded-xl cursor-pointer hover:bg-green-700">Recargar Saldo</button>
+              </div>
+              <button onClick={() => processMonthlyBilling(currentUser.id)} className="w-full bg-red-100 text-red-600 font-bold py-2 rounded-xl border border-red-200 text-xs cursor-pointer hover:bg-red-200">Simular Cobro Mensual (Dev)</button>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 w-full">
+          <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6 border-b border-gray-100 pb-4">
             <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2"><Users className="text-[#C5A184]"/> Control de Empleados</h3>
             <div className="flex gap-4">
               <div className="relative w-48">
@@ -2517,9 +3238,9 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           </div>
         </div>
 
-        <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 relative overflow-hidden">
+        <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 relative overflow-hidden w-full">
            <div className="absolute top-0 right-0 w-40 h-40 bg-[#C5A184]/5 rounded-bl-[100px] -z-10"></div>
-           <div className="flex justify-between items-start mb-6 border-b border-gray-100 pb-4">
+           <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6 border-b border-gray-100 pb-4">
              <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2"><DollarSign className="text-[#C5A184]"/> Datos Oficiales de Liquidación KFS</h3>
              <span className="bg-gray-100 text-gray-600 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider border border-gray-200">Transferencia Directa</span>
            </div>
@@ -2540,7 +3261,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         </div>
 
         {/* Widget de Cierre y Publicidad para el Dueño */}
-        <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/5 animate-fade-in">
+        <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-6 md:p-8 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/5 animate-fade-in w-full">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#C5A184]/5 rounded-full blur-3xl -z-10"></div>
           <div className="flex flex-col md:flex-row justify-between items-stretch gap-6 relative z-10">
             
@@ -2842,10 +3563,10 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           </div>
         </div>
 
-        {myOrders.length > 0 && (
+        {(myOrders.length > 0 || myPendingDispatch.length > 0) && (
           <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-orange-200 bg-orange-50/30">
             <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2 text-orange-600">
-              <Clock className="text-orange-500" /> Órdenes Online por Validar ({myOrders.length})
+              <Clock className="text-orange-500" /> Órdenes Online ({myOrders.length} por validar, {myPendingDispatch.length} por despachar)
             </h3>
             
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -2873,6 +3594,32 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   );
                 })}
               </div>
+
+              {/* Columna Centro: Órdenes por Despachar */}
+              {myPendingDispatch.length > 0 && (
+                <div className="lg:col-span-2 space-y-4 mt-8 lg:mt-0 lg:border-t-0 border-t border-orange-100 pt-8 lg:pt-0">
+                  <h4 className="font-bold text-[#0A1128] mb-4 flex items-center gap-2">
+                    <Package className="text-blue-500" /> Listo para Empacar / Despachar ({myPendingDispatch.length})
+                  </h4>
+                  {myPendingDispatch.map((tx: any) => {
+                    const product = db.products.find((p: any) => p.id === tx.productId);
+                    return (
+                      <div key={tx.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-blue-50 rounded-2xl border border-blue-100 shadow-sm gap-4 animate-fade-in">
+                        <div>
+                          <span className="bg-blue-200 text-blue-800 text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-wider mb-2 inline-block">Pago Aprobado</span>
+                          <h4 className="font-bold text-[#0A1128]">{product?.name || "Producto Desconocido"}</h4>
+                          <p className="text-sm text-gray-600 font-mono mt-1">Teléfono: <span className="font-bold">{tx.customerPhone}</span></p>
+                        </div>
+                        <div className="flex gap-2 w-full md:w-auto">
+                          <button onClick={() => dispatchOrder(tx.id)} className="w-full md:w-auto px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md">
+                            <Truck size={16} /> Marcar como Enviado
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
 
               {/* Columna Derecha: Conciliador SMS Real */}
               <div className="bg-[#0A1128] border border-[#C5A184]/20 rounded-3xl p-6 text-[#F8F9FA] relative overflow-hidden shadow-xl flex flex-col justify-between text-left">
@@ -3159,14 +3906,15 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             <form onSubmit={handleAddVendedor} className="space-y-4">
               <div className="flex flex-col items-center gap-2 mb-4">
                 <label className="relative w-16 h-16 rounded-full border-2 border-dashed border-gray-300 cursor-pointer overflow-hidden flex items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors group">
-                  <input type="file" accept="image/*" className="hidden" onChange={e => {
+                  <input type="file" accept="image/*" className="hidden" onChange={async e => {
                     const file = e.target.files?.[0];
                     if (file) {
-                      const reader = new FileReader();
-                      reader.onloadend = () => {
-                        setNewVendedor(prev => ({ ...prev, avatar: reader.result as string }));
-                      };
-                      reader.readAsDataURL(file);
+                      try {
+                        const base64String = await compressImage(file, 400);
+                        setNewVendedor(prev => ({ ...prev, avatar: base64String }));
+                      } catch (error) {
+                        // ignore error or showToast if available in scope
+                      }
                     }
                   }} />
                   {newVendedor.avatar ? (
@@ -3275,6 +4023,22 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           </div>
         </div>
       )}
+      {showTicketModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white rounded-[2rem] max-w-md w-full p-8 space-y-4 shadow-2xl border border-gray-100">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-black text-[#0A1128]">Crear Ticket SOS</h3>
+              <button onClick={() => setShowTicketModal(false)} className="hover:bg-gray-100 p-2 rounded-full cursor-pointer transition-colors"><X size={20} className="text-gray-400"/></button>
+            </div>
+            <p className="text-xs text-gray-500 mb-2">Nuestro equipo técnico y tu promotora asignada recibirán este reporte inmediatamente.</p>
+            <input type="text" placeholder="Asunto (Ej: Lector no lee)" value={ticketSubject} onChange={e=>setTicketSubject(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-[#C5A184]" />
+            <textarea placeholder="Describe el problema..." value={ticketMsg} onChange={e=>setTicketMsg(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 h-32 resize-none focus:outline-none focus:border-[#C5A184]" />
+            <button onClick={() => { if(ticketSubject && ticketMsg) { createTicket(currentUser.id, ticketSubject, ticketMsg); setShowTicketModal(false); } }} className="w-full bg-red-600 text-white font-black py-4 rounded-xl shadow-lg hover:bg-red-700 transition-colors cursor-pointer disabled:opacity-50" disabled={!ticketSubject || !ticketMsg}>
+              Enviar a Soporte Técnico
+            </button>
+          </div>
+        </div>
+      )}
       </div>
     </div>
   );
@@ -3288,57 +4052,51 @@ const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }: any) 
   const localStreamRef = useRef<any>(null);
 
   useEffect(() => {
-    let active = true;
-    let detectorInterval: any;
+    let html5QrCode: any;
+    let isComponentMounted = true;
 
-    const startCam = async () => {
+    const startScanner = async () => {
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-        if (active) {
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-          }
-          localStreamRef.current = stream;
+        // Dynamic import to avoid SSR issues
+        const { Html5Qrcode } = await import("html5-qrcode");
+        
+        if (!isComponentMounted) return;
 
-          if ('BarcodeDetector' in window) {
-            try {
-              const detector = new (window as any).BarcodeDetector({ 
-                formats: ['qr_code', 'ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128', 'code_39'] 
+        html5QrCode = new Html5Qrcode("kfs-reader");
+        
+        await html5QrCode.start(
+          { facingMode: "environment" },
+          {
+            fps: 10,
+            qrbox: { width: 250, height: 250 }
+          },
+          (decodedText: string) => {
+            if (html5QrCode && html5QrCode.isScanning) {
+              html5QrCode.stop().then(() => {
+                onScan(decodedText);
+              }).catch(() => {
+                onScan(decodedText);
               });
-              
-              detectorInterval = setInterval(async () => {
-                if (videoRef.current && videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
-                  try {
-                    const barcodes = await detector.detect(videoRef.current);
-                    if (barcodes.length > 0) {
-                      clearInterval(detectorInterval);
-                      onScan(barcodes[0].rawValue);
-                    }
-                  } catch (e) {
-                    // Ignore transient detection errors
-                  }
-                }
-              }, 500);
-            } catch (e) {
-              console.warn("BarcodeDetector API no soportada totalmente en este navegador.");
             }
+          },
+          (errorMessage: string) => {
+            // Ignore frame parsing errors
           }
-        }
+        );
       } catch (err) {
-        console.warn("Cámara física no disponible. Se activa el simulador interactivo KFS.");
+        console.warn("Cámara física no disponible o error iniciando escáner. Se activa el simulador interactivo KFS.", err);
       }
     };
 
-    startCam();
+    startScanner();
 
     return () => {
-      active = false;
-      if (detectorInterval) clearInterval(detectorInterval);
-      if (localStreamRef.current) {
-        localStreamRef.current.getTracks().forEach((track: any) => track.stop());
+      isComponentMounted = false;
+      if (html5QrCode && html5QrCode.isScanning) {
+        html5QrCode.stop().catch(console.error);
       }
     };
-  }, [videoRef, onScan]);
+  }, [onScan]);
 
   const handleSimulatedScan = () => {
     if (!selectedProductToSimulate) return;
@@ -3354,19 +4112,11 @@ const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }: any) 
         <h3 className="text-xl font-black text-[#C5A184] mb-4 flex items-center gap-2"><QrCode /> Terminal de Escaneo KFS</h3>
         
         {/* Scan Frame */}
-        <div className="relative w-full aspect-square bg-black/40 rounded-2xl overflow-hidden border border-white/5 flex flex-col items-center justify-center mb-6">
-          <video ref={videoRef} autoPlay playsInline className="absolute inset-0 w-full h-full object-cover z-0" />
-          
+        <div id="kfs-reader" className="relative w-full aspect-square bg-black/40 rounded-2xl overflow-hidden border border-white/5 flex flex-col items-center justify-center mb-6">
           {/* Laser animation */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-red-500 animate-pulse border-b-2 border-red-400 z-10" style={{ animationDuration: "1.5s", animationIterationCount: "infinite" }} />
+          <div className="absolute top-0 left-0 right-0 h-1 bg-red-500 animate-pulse border-b-2 border-red-400 z-10 pointer-events-none" style={{ animationDuration: "1.5s", animationIterationCount: "infinite" }} />
           
-          {/* Crosshair target brackets */}
-          <div className="absolute top-12 left-12 w-8 h-8 border-t-4 border-l-4 border-[#C5A184] rounded-tl z-10" />
-          <div className="absolute top-12 right-12 w-8 h-8 border-t-4 border-r-4 border-[#C5A184] rounded-tr z-10" />
-          <div className="absolute bottom-12 left-12 w-8 h-8 border-b-4 border-l-4 border-[#C5A184] rounded-bl z-10" />
-          <div className="absolute bottom-12 right-12 w-8 h-8 border-b-4 border-r-4 border-[#C5A184] rounded-br z-10" />
-
-          <div className="absolute bottom-4 left-4 right-4 bg-black/60 backdrop-blur-sm p-3 rounded-lg text-center z-10">
+          <div className="absolute bottom-4 left-4 right-4 bg-black/60 backdrop-blur-sm p-3 rounded-lg text-center z-10 pointer-events-none">
             <span className="text-[10px] text-gray-300 font-mono flex items-center justify-center gap-1"><Info size={12}/> Buscando QR o Código de Barras...</span>
           </div>
         </div>
@@ -3505,14 +4255,15 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
   const myProducts = db.products.filter((p: any) => p.clientId === currentUser.clientId);
   const myOrders = db.orders?.filter((o: any) => o.clientId === currentUser.clientId && o.status === 'pending') || [];
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setNewProd(prev => ({ ...prev, imgUrl: reader.result as string }));
-      };
-      reader.readAsDataURL(file);
+      try {
+        const base64String = await compressImage(file, 600);
+        setNewProd(prev => ({ ...prev, imgUrl: base64String }));
+      } catch (error) {
+        showToast("Error comprimiendo imagen", "error");
+      }
     }
   };
 
@@ -3638,19 +4389,19 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
       </nav>
       <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-6 animate-fade-in">
         
-        <div className="bg-[#0A1128] text-white p-8 rounded-[2rem] shadow-xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border border-white/10">
           <div className="relative z-10">
-            <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-1">Sesión Operativa</p>
-            <h2 className="text-3xl font-black">{currentUser.name}</h2>
-            <p className="text-sm text-gray-400 mt-2 flex items-center gap-2">
+            <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><Activity size={14} className="text-green-500" /> Sesión Operativa</p>
+            <h2 className="text-5xl font-black mb-1">{currentUser.name}</h2>
+            <p className="text-xs text-gray-400 mt-2 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse inline-block"></span> Terminal en línea y asegurado.
             </p>
           </div>
           
           <div className="relative z-10 bg-black/50 border border-green-500/30 p-4 rounded-xl flex flex-col items-end">
-             <span className="text-xs font-bold text-green-400 uppercase tracking-widest">Cumplimiento SUNDDE</span>
-             <span className="text-2xl font-black text-white">Tasa Oficial BCV: {rates?.USD?.toFixed(2)} Bs</span>
-             <span className="text-[10px] text-gray-400 mt-1">Gaceta Oficial Banco Central de Venezuela</span>
+             <span className="text-[10px] font-bold text-green-400 uppercase tracking-widest">Cumplimiento SUNDDE</span>
+             <span className="text-2xl font-black text-white mt-1">Tasa BCV: {rates?.USD?.toFixed(2)} Bs</span>
+             <span className="text-[9px] text-gray-400 mt-1 uppercase tracking-widest">Gaceta Oficial de Venezuela</span>
           </div>
 
           <Activity size={150} className="absolute -right-10 -bottom-10 text-white/5" />
@@ -4237,8 +4988,9 @@ export default function Home() {
     isClient, isBooting, view, setView, currentUser, setCurrentUser,
     toast, db, setDb, formatUSD, formatEUR, showToast,
     handleLogin, logout, registerClient, registerPromotora, approvePromotora, rejectPromotora, settlePromotoraEarnings, addProduct, addExpense, processPurchase,
-    submitOnlineOrder, approveOrder, rejectOrder, generateZReport, registerCrmExpress,
-    ghostTrapLocked, setGhostTrapLocked, triggerGhostTrap
+    submitOnlineOrder, approveOrder, rejectOrder, dispatchOrder, generateZReport, registerCrmExpress,
+    paySubscription, approveSubscription,
+    ghostTrapLocked, setGhostTrapLocked, triggerGhostTrap, logAction
   } = useKFS();
 
   const [ghostPassword, setGhostPassword] = useState("");
@@ -4249,7 +5001,14 @@ export default function Home() {
       setGhostTrapLocked(false);
       setGhostPassword("");
       setGhostError("");
-      showToast("Terminal desbloqueado con éxito.", "success");
+      showToast("Terminal desbloqueado con éxito (Master).", "success");
+      logAction("Dueño/Arquitecto", "GHOST_TRAP_UNLOCK", "El Protocolo Ghost fue desbloqueado usando Clave Maestra.");
+    } else if (ghostPassword === "0000") {
+      setGhostTrapLocked(false);
+      setGhostPassword("");
+      setGhostError("");
+      showToast("Terminal desbloqueado por Supervisor.", "error");
+      logAction("Supervisor", "GHOST_TRAP_OVERRIDE", "ALERTA ROJA: El Protocolo Ghost fue evadido usando el PIN de contingencia (Supervisor).");
     } else {
       setGhostError("Clave incorrecta. Acceso denegado.");
     }
@@ -4319,7 +5078,7 @@ export default function Home() {
               <div>
                 <input 
                   type="password" 
-                  placeholder="Master Password (Dueño/Arquitecto)" 
+                  placeholder="Master Password o PIN de Supervisor" 
                   value={ghostPassword} 
                   onChange={(e) => setGhostPassword(e.target.value)} 
                   onKeyDown={(e) => e.key === "Enter" && handleUnlockGhostTrap()}
@@ -4372,6 +5131,14 @@ export default function Home() {
           currentUser={currentUser}
         />
       )}
+      {view === "customer" && (
+        <CustomerDashboard 
+          db={db}
+          currentUser={currentUser}
+          logout={logout}
+          setView={setView}
+        />
+      )}
       {view === "core" && (
         <CoreDashboard 
           db={db} 
@@ -4384,6 +5151,7 @@ export default function Home() {
           formatEUR={formatEUR} 
           currentUser={currentUser}
           logout={logout}
+          approveSubscription={approveSubscription}
         />
       )}
       {view === "promotora" && (
@@ -4411,6 +5179,8 @@ export default function Home() {
           logout={logout}
           approveOrder={approveOrder}
           rejectOrder={rejectOrder}
+          dispatchOrder={dispatchOrder}
+          paySubscription={paySubscription}
         />
       )}
       {view === "vendedor" && (
