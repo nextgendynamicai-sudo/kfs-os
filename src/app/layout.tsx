@@ -26,6 +26,10 @@ export const metadata: Metadata = {
     statusBarStyle: "black-translucent",
     title: "KFS OS",
   },
+  icons: {
+    icon: "/kreatek-logo.jpg",
+    apple: "/kreatek-logo.jpg",
+  },
 };
 
 export default function RootLayout({

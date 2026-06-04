@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kfs-os-v3';
+const CACHE_NAME = 'kfs-os-v4';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -6,7 +6,8 @@ self.addEventListener('install', (event) => {
       return cache.addAll([
         '/',
         '/manifest.json',
-        '/window.svg'
+        '/window.svg',
+        '/kreatek-logo.jpg'
       ]);
     })
   );
