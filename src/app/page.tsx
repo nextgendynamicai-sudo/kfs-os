@@ -4150,6 +4150,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         </div>
       )}
       </div>
+      </div>
     </div>
   );
 };
