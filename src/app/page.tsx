@@ -1229,10 +1229,7 @@ const Navbar = ({ title, showBack = false, onBack }: { title?: string, showBack?
       )}
       <nav className="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-white/5 bg-[#0A1128] sticky top-0 z-40 backdrop-blur-md gap-3 w-full">
       <div className="flex items-center gap-3">
-        <KreatekLogo className="h-8 w-auto" />
-        <span className="font-bold text-lg tracking-widest uppercase text-[#C5A184]">
-          KFS <span className="font-light text-white hidden md:inline-block">Operating System</span>
-        </span>
+        <KreatekLogo className="h-10 sm:h-12 w-auto" />
       </div>
 
       <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
@@ -2719,9 +2716,10 @@ const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
     <div className="min-h-screen bg-[#0A1128] flex flex-col items-center justify-center p-4 text-white animate-fade-in relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-[#0A1128] via-[#C5A184]/10 to-[#0A1128] opacity-50"></div>
       
-      <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 max-w-lg w-full relative z-10 shadow-2xl">
-        <h2 className="text-3xl font-black mb-2 text-[#C5A184]">Bienvenido a KFS OS</h2>
-        <p className="text-gray-300 mb-8 font-light">Vamos a preparar tu negocio {currentUser.company} para la nueva era digital en 3 simples pasos.</p>
+      <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 max-w-lg w-full relative z-10 shadow-2xl flex flex-col items-center text-center">
+        <KreatekLogo className="h-16 sm:h-20 w-auto mb-6" />
+        <h2 className="text-3xl font-black mb-2 text-[#C5A184]">Setup Inicial</h2>
+        <p className="text-gray-300 mb-8 font-light">Vamos a preparar tu ecosistema {currentUser.company} para la nueva era digital en 3 simples pasos.</p>
         
         <div className="flex gap-2 mb-8">
           {[1,2,3].map(s => (
@@ -5026,12 +5024,9 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-[#0A1128] flex flex-col items-center justify-center text-white">
         <div className="relative flex flex-col items-center">
-          <div className="w-20 h-20 border-4 border-[#C5A184]/20 border-t-[#C5A184] rounded-full animate-spin mb-6" />
-          <KreatekLogo className="absolute top-[22px] h-8 w-auto" />
-          <h1 className="text-xl font-bold tracking-widest uppercase text-[#C5A184] animate-pulse">
-            Kreatek <span className="font-light text-white">Flow OS</span>
-          </h1>
-          <p className="text-xs text-gray-500 font-mono mt-2">Loading core vectors...</p>
+          <KreatekLogo className="h-28 sm:h-32 w-auto animate-pulse mb-8" />
+          <div className="w-12 h-12 border-4 border-[#C5A184]/20 border-t-[#C5A184] rounded-full animate-spin" />
+          <p className="text-xs text-gray-500 font-mono mt-6">Loading core vectors...</p>
         </div>
       </div>
     );
