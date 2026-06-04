@@ -241,7 +241,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
               // Polling Fallback para Móviles (Garantiza 100% Real-Time si fallan WebSockets)
               setInterval(() => {
-                supabase.from("kfs_store_states").select("db_state").eq("id", syncId).single().then(({ data }: any) => {
+                supabase.from("kfs_store_states").select("db_state").eq("id", syncId).single().then(({ data, error }: any) => {
+                  if (error && error.code === '42501') {
+                    console.error("Supabase RLS Error:", error);
+                    // No spammeamos el toast cada 4 segundos, solo mostramos en consola
+                  }
                   if (data && data.db_state) {
                     setDb((prevDb: any) => {
                       if (JSON.stringify(prevDb) !== JSON.stringify(data.db_state)) {
