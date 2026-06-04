@@ -122,6 +122,7 @@ interface KFSContextType {
   toggleLoyaltyProgram: (clientId: string, isActive: boolean) => void;
   triggerGhostTrap: (vendedorId: string, amount: number, method: string) => void;
   updateStoreSettings: (clientId: string, settings: any) => void;
+  updatePaymentMethods: (clientId: string, methods: any) => void;
   toggleProductFeatured: (productId: string, isFeatured: boolean) => void;
   sendNotification: (audience: string, title: string, message: string) => void;
   assignPromotoraToClient: (clientId: string, promotoraId: string) => void;
@@ -1396,6 +1397,15 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast(isFeatured ? "Producto marcado como Estrella ⭐" : "Producto quitado de Destacados");
   };
 
+  const updatePaymentMethods = (clientId: string, methods: any) => {
+    setDb((prev: any) => ({
+      ...prev,
+      clients: prev.clients.map((c: any) => c.id === clientId ? { ...c, paymentMethods: methods } : c)
+    }));
+    showToast("Métodos de pago guardados exitosamente en la bóveda", "success");
+    logAction("Dueño", "UPDATE_PAYMENT_METHODS", "Se actualizaron los métodos de pago (Zelle/Pago Móvil).");
+  };
+
   return (
     <KFSContext.Provider value={{
       isClient, isBooting, view, setView, currentUser, setCurrentUser,
@@ -1405,7 +1415,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       originalUser, impersonateClient, stopImpersonating,
       networkState, setNetworkState, smsConciliator, registerCrmExpress,
       ghostTrapLocked, setGhostTrapLocked, createVale, payVale, registerPosTerminal, deletePosTerminal,
-      queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings, toggleProductFeatured,
+      queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings, updatePaymentMethods, toggleProductFeatured,
       sendNotification, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, processMonthlyBilling, registerCustomer
     }}>
       {children}

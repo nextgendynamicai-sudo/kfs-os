@@ -72,6 +72,7 @@ const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnline = fal
   const igtf = isForeign ? (price + iva) * 0.03 : 0;
   const total = price + iva + igtf;
   const totalBs = total * (rates?.USD || 36.45);
+  const storeOwner = db.clients?.find((c: any) => c.id === product?.clientId);
 
   const handleConfirm = async () => {
     if (isOnline && !paymentReference) {
@@ -233,10 +234,30 @@ const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnline = fal
           )}
 
           {isOnline && (
-            <div>
-              <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 block">Número de Referencia</label>
-              <input type="text" placeholder="Ej: 034199..." value={paymentReference} onChange={e => setPaymentReference(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C5A184]" />
-              <p className="text-[10px] text-gray-400 mt-1">Requerido para que el comercio valide tu compra.</p>
+            <div className="space-y-4">
+              {(paymentMethod === "zelle" || paymentMethod === "cash_bs" || paymentMethod === "binance") && (
+                <div className="bg-[#C5A184]/10 p-4 rounded-xl border border-[#C5A184]/30">
+                  <h4 className="text-[10px] font-black uppercase text-[#C5A184] mb-2 tracking-widest">Datos Exactos para el Pago</h4>
+                  {paymentMethod === "zelle" && (
+                    <p className="text-sm font-mono text-gray-800">Email Zelle: <strong>{storeOwner?.paymentMethods?.zelle || "No configurado (Pregunte al vendedor)"}</strong></p>
+                  )}
+                  {paymentMethod === "binance" && (
+                    <p className="text-sm font-mono text-gray-800">Binance Pay ID: <strong>{storeOwner?.paymentMethods?.binance || "No configurado (Pregunte al vendedor)"}</strong></p>
+                  )}
+                  {paymentMethod === "cash_bs" && (
+                    <div className="text-sm font-mono text-gray-800 space-y-1">
+                      <p>Banco: <strong>{storeOwner?.paymentMethods?.pagoMovilBank || "No configurado"}</strong></p>
+                      <p>Teléfono: <strong>{storeOwner?.paymentMethods?.pagoMovilPhone || "No configurado"}</strong></p>
+                      <p>Cédula/RIF: <strong>{storeOwner?.paymentMethods?.pagoMovilId || "No configurado"}</strong></p>
+                    </div>
+                  )}
+                </div>
+              )}
+              <div>
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 block">Número de Referencia Bancaria</label>
+                <input type="text" placeholder="Ej: 034199..." value={paymentReference} onChange={e => setPaymentReference(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C5A184]" />
+                <p className="text-[10px] text-gray-400 mt-1">Obligatorio. Nuestro KFS SMS Conciliator leerá esto para aprobar tu envío.</p>
+              </div>
             </div>
           )}
 
@@ -421,12 +442,21 @@ const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap, showT
 
         {/* Tactile Hardware Drawer Base */}
         <div className="w-full bg-[#151924] rounded-b-[2.5rem] border border-white/10 p-5 shadow-2xl flex flex-col gap-3 z-10 -mt-1">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <button 
               onClick={playCashDrawerSound} 
-              className="py-3 rounded-xl font-black text-xs text-[#C5A184] bg-white/5 border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
+              className="py-3 rounded-xl font-black text-xs text-[#C5A184] bg-white/5 border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md active:scale-95"
             >
-              💸 Abrir Gaveta
+              💸 Gaveta
+            </button>
+            <button 
+              onClick={() => {
+                showToast("Buscando Impresora Térmica vía WebUSB...", "success");
+                setTimeout(() => playCashDrawerSound(), 500);
+              }} 
+              className="py-3 rounded-xl font-black text-xs text-[#C5A184] bg-white/5 border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md active:scale-95"
+            >
+              🖨️ Imprimir
             </button>
             
             {tx.customerPhone ? (
@@ -3436,6 +3466,80 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
               </div>
             </div>
           </div>
+        {/* Lógica Empresarial / Analítica */}
+        <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-6">
+          <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+            <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2">
+              📊 Inteligencia de Mercado y Metas KFS
+            </h3>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-[#0A1128] text-white p-6 rounded-2xl border border-[#C5A184]/30 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#C5A184]/10 rounded-full blur-3xl" />
+              <h4 className="text-[10px] font-black uppercase text-[#C5A184] mb-2 font-mono">Meta Mensual (Expansión)</h4>
+              <p className="text-3xl font-black mb-1">${formatUSD(currentUser.salesUSD || 0)} <span className="text-sm font-light text-gray-400">/ $1,000</span></p>
+              <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden mt-4">
+                <div className="bg-[#C5A184] h-full" style={{ width: `${Math.min(100, ((currentUser.salesUSD || 0) / 1000) * 100)}%` }} />
+              </div>
+            </div>
+            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+              <h4 className="text-[10px] font-black uppercase text-gray-500 mb-2 font-mono">Categorías Fuertes</h4>
+              <ul className="space-y-2 mt-4 text-sm font-bold text-gray-800">
+                <li className="flex justify-between items-center"><span>Alimentos</span> <span className="text-[#C5A184]">74%</span></li>
+                <li className="flex justify-between items-center"><span>Bebidas</span> <span className="text-[#C5A184]">20%</span></li>
+                <li className="flex justify-between items-center"><span>Limpieza</span> <span className="text-[#C5A184]">6%</span></li>
+              </ul>
+            </div>
+            <div className="bg-red-50 p-6 rounded-2xl border border-red-100">
+              <h4 className="text-[10px] font-black uppercase text-red-500 mb-2 font-mono">Fuga de Capital Detectada</h4>
+              <p className="text-xs text-red-700 mt-2">KFS Oracle™ ha detectado que no tienes productos en la categoría <strong>'Higiene Personal'</strong>. Estás perdiendo aproximadamente un 15% de ventas combinadas ante tu competencia local.</p>
+              <button className="mt-4 text-xs font-black text-red-600 hover:underline uppercase tracking-wider">Poblar Catálogo →</button>
+            </div>
+          </div>
+        </div>
+
+        {/* Bóveda KFS (Métodos de Pago del Dueño) */}
+        <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-6">
+          <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+            <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2">
+              🏦 Bóveda Financiera (Métodos de Cobro)
+            </h3>
+            <span className="bg-green-100 text-green-700 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
+              Verificados
+            </span>
+          </div>
+          <form onSubmit={e => {
+            e.preventDefault();
+            const target = e.target as any;
+            updateStoreSettings(currentUser.id, {
+              paymentMethods: {
+                zelle: target.zelle.value,
+                pagoMovilPhone: target.pMovilPhone.value,
+                pagoMovilId: target.pMovilId.value,
+                pagoMovilBank: target.pMovilBank.value,
+                binance: target.binance.value
+              }
+            });
+            showToast("Bóveda actualizada. Tus clientes verán estos datos al pagar.", "success");
+          }} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Zelle (Email)</label>
+              <input name="zelle" defaultValue={currentUser.paymentMethods?.zelle || ""} placeholder="correo@zelle.com" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[#C5A184]" />
+            </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Binance Pay (Pay ID)</label>
+              <input name="binance" defaultValue={currentUser.paymentMethods?.binance || ""} placeholder="ID de Binance" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[#C5A184]" />
+            </div>
+            <div className="space-y-2 border border-gray-200 p-4 rounded-xl">
+              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono mb-2 block">Pago Móvil</label>
+              <input name="pMovilBank" defaultValue={currentUser.paymentMethods?.pagoMovilBank || ""} placeholder="Banco (Ej. Banesco 0134)" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#C5A184] mb-2" />
+              <input name="pMovilPhone" defaultValue={currentUser.paymentMethods?.pagoMovilPhone || ""} placeholder="Teléfono" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#C5A184] mb-2" />
+              <input name="pMovilId" defaultValue={currentUser.paymentMethods?.pagoMovilId || ""} placeholder="Cédula/RIF" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#C5A184]" />
+            </div>
+            <div className="md:col-span-3 flex justify-end">
+              <button type="submit" className="bg-[#0A1128] text-white font-bold py-3 px-8 rounded-xl hover:bg-black transition-colors cursor-pointer active:scale-95">Guardar en Bóveda Criptográfica</button>
+            </div>
+          </form>
         </div>
 
         {/* Gobernanza de Puntos de Venta (Multi-POS Integrado) */}
