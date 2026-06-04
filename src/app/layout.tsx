@@ -27,8 +27,8 @@ export const metadata: Metadata = {
     title: "KFS OS",
   },
   icons: {
-    icon: "/kreatek-logo.jpg",
-    apple: "/kreatek-logo.jpg",
+    icon: "/kfs-logo.png",
+    apple: "/kfs-logo.png",
   },
 };
 
