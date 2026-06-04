@@ -1578,13 +1578,13 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
             <p className="text-sm text-gray-400 mt-2 font-mono">Seleccione su vector de entrada</p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mb-8">
-            <button onClick={() => setActiveTab("marketplace")} className={`py-2.5 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "marketplace" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Flow Exp.</button>
-            <button onClick={() => setActiveTab("customer")} className={`py-2.5 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "customer" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Cliente</button>
-            <button onClick={() => setActiveTab("dueño")} className={`py-2.5 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "dueño" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Dueño</button>
-            <button onClick={() => setActiveTab("vendedor")} className={`py-2.5 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "vendedor" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Vendedor</button>
-            <button onClick={() => setActiveTab("promotora")} className={`py-2.5 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "promotora" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Promotora</button>
-            <button onClick={() => setActiveTab("core")} className={`col-span-2 md:col-span-1 py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all border border-[#C5A184]/30 cursor-pointer ${activeTab === "core" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_20px_rgba(197,161,132,0.5)]" : "bg-transparent text-[#C5A184] hover:bg-white/5"}`}>Arquitecto</button>
+          <div className="flex flex-wrap justify-center gap-2 mb-8">
+            <button onClick={() => setActiveTab("marketplace")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "marketplace" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Flow Exp.</button>
+            <button onClick={() => setActiveTab("customer")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "customer" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Cliente</button>
+            <button onClick={() => setActiveTab("dueño")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "dueño" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Dueño</button>
+            <button onClick={() => setActiveTab("vendedor")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "vendedor" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Vendedor</button>
+            <button onClick={() => setActiveTab("promotora")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "promotora" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Promotora</button>
+            <button onClick={() => setActiveTab("core")} className={`w-full py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all border border-[#C5A184]/30 cursor-pointer ${activeTab === "core" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_20px_rgba(197,161,132,0.5)]" : "bg-transparent text-[#C5A184] hover:bg-white/5"}`}>Arquitecto</button>
           </div>
 
           {activeTab === "marketplace" && (
@@ -4507,7 +4507,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
               <input type="text" placeholder="Buscar producto o barcode..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchProduct} onChange={e => setSearchProduct(e.target.value)} />
             </div>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-3 gap-4">
             {myProducts.filter((p: any) => p.name.toLowerCase().includes(searchProduct.toLowerCase()) || (p.barcode && p.barcode.includes(searchProduct))).map((p: any) => (
               <div key={p.id} className="border border-gray-100 rounded-2xl p-3 flex flex-col justify-between bg-gray-50/50">
                 <div className="h-28 bg-gray-200 rounded-lg overflow-hidden mb-2">

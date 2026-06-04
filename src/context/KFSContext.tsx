@@ -38,19 +38,32 @@ const MOCK_BCV_RATES = {
 };
 
 const initialDB = {
-  promotoras: [],
-  clients: [],
-  vendedores: [],
-  products: [],
+  promotoras: [
+    { id: "p1", name: "Promotora Alpha", email: "000", password: "000", phone: "000", createdAt: new Date().toISOString(), status: "approved" }
+  ],
+  clients: [
+    { id: "c1", company: "Kreatek Demo Store", email: "000", password: "000", phone: "000", kfsTier: "monopoly", status: "active", wallet: { balanceUSD: 500, kfsPoints: 1000 }, location: "Caracas, VE", description: "Tienda Oficial de Demostración KFS." }
+  ],
+  vendedores: [
+    { id: "v1", name: "Vendedor Demo", clientId: "c1", email: "000", password: "000", createdAt: new Date().toISOString() }
+  ],
+  products: [
+    { id: "prod1", clientId: "c1", name: "Servicio Premium", priceUSD: 10, stock: 100, isService: true },
+    { id: "prod2", clientId: "c1", name: "Producto Físico", priceUSD: 25, stock: 50, isService: false }
+  ],
   transactions: [],
   orders: [],
   expenses: [],
   crm: [], // { id, phone, totalSpent, purchasesCount, lastPurchase }
   vales: [], // { id, recipientName, type, amountUSD, surchargePct, totalDueUSD, dueDate, status, timestamp }
-  posTerminals: [], // { id, name, status, assignedVendedorId, type, connectionInfo, transactionsCount, totalAmountUSD, clientId }
-  zReports: [], // { id, vendedorId, clientId, totalUSD, bs, usd, zelle, date }
-  buyers: [], // { id, clientId, name, phone, createdAt }
-  customers: [], // { id, phone, password, name, createdAt }
+  posTerminals: [
+    { id: "pos1", name: "Caja Principal", status: "online", assignedVendedorId: "v1", type: "Punto de Venta Oficial", clientId: "c1" }
+  ],
+  zReports: [],
+  buyers: [],
+  customers: [
+    { id: "cust1", phone: "000", password: "000", name: "Cliente Demo", createdAt: new Date().toISOString() }
+  ],
   kreatekCore: {
     totalTransactions: 0,
     earningsEUR: 0, // gross
