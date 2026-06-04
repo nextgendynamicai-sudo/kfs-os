@@ -1268,7 +1268,7 @@ const Navbar = ({ title, showBack = false, onBack }: { title?: string, showBack?
           onClick={cycleNetworkState} 
           disabled={isSyncing}
           className={`flex items-center gap-2 px-3 py-1.5 rounded-full border bg-white/5 backdrop-blur-sm transition-all hover:bg-white/10 ${net.border} cursor-pointer group disabled:opacity-50`}
-          title="Tocar para cambiar estado de red (Simulación Mesh)"
+          title="Gestor de Conexión de Contingencia y Sincronización"
         >
           <span className={`relative flex h-2 w-2`}>
             <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${net.color}`}></span>
@@ -1458,8 +1458,7 @@ const LandingPageView = ({ setView }: any) => {
       {/* Navbar */}
       <nav className="fixed w-full z-50 bg-[#0A1128]/80 backdrop-blur-xl border-b border-white/5 py-4 px-6 sm:px-10 flex justify-between items-center transition-all duration-300">
         <div className="flex items-center gap-3">
-          <Shield className="text-[#C5A184]" size={28} />
-          <span className="font-black text-xl tracking-tighter">Kreatek<span className="text-[#C5A184]">OS</span></span>
+          <KreatekLogo className="h-8 w-auto" />
         </div>
         <div className="flex gap-4">
           <button onClick={() => setView("login")} className="text-sm font-bold text-[#C5A184] hover:text-white transition-colors cursor-pointer pt-2">
@@ -1699,9 +1698,12 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                <p className="text-[#C5A184] font-mono text-xs">{currentUser.phone}</p>
              </div>
            </div>
-           <button onClick={logout} className="p-3 bg-white/5 border border-white/10 text-gray-300 rounded-xl hover:bg-red-500 hover:text-white transition-colors cursor-pointer">
-             <LogOut size={20} />
-           </button>
+           <div className="flex items-center gap-4">
+             <KreatekLogo className="h-8 w-auto hidden sm:block opacity-60" />
+             <button onClick={logout} className="p-3 bg-white/5 border border-white/10 text-gray-300 rounded-xl hover:bg-red-500 hover:text-white transition-colors cursor-pointer">
+               <LogOut size={20} />
+             </button>
+           </div>
         </div>
 
         {/* KFS Points Wallet */}
@@ -2831,7 +2833,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   const [ticketSubject, setTicketSubject] = useState("");
   const [ticketMsg, setTicketMsg] = useState("");
   const [fundAmount, setFundAmount] = useState("");
-  const { createTicket, fundWallet, processMonthlyBilling, createVale, payVale, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, toggleProductFeatured, stopImpersonating } = useKFS();
+  const { createTicket, fundWallet, processMonthlyBilling, createVale, payVale, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating } = useKFS();
 
   const handleCSVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -3511,16 +3513,13 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           <form onSubmit={e => {
             e.preventDefault();
             const target = e.target as any;
-            updateStoreSettings(currentUser.id, {
-              paymentMethods: {
-                zelle: target.zelle.value,
-                pagoMovilPhone: target.pMovilPhone.value,
-                pagoMovilId: target.pMovilId.value,
-                pagoMovilBank: target.pMovilBank.value,
-                binance: target.binance.value
-              }
+            updatePaymentMethods(currentUser.id, {
+              zelle: target.zelle.value,
+              pagoMovilPhone: target.pMovilPhone.value,
+              pagoMovilId: target.pMovilId.value,
+              pagoMovilBank: target.pMovilBank.value,
+              binance: target.binance.value
             });
-            showToast("Bóveda actualizada. Tus clientes verán estos datos al pagar.", "success");
           }} className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="space-y-2">
               <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Zelle (Email)</label>
@@ -4210,8 +4209,13 @@ const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }: any) 
   }, [onScan]);
 
   const handleSimulatedScan = () => {
-    if (!selectedProductToSimulate) return;
-    onScan(selectedProductToSimulate);
+    if (selectedScanType === "product") {
+      if (!selectedProductToSimulate) return;
+      onScan(selectedProductToSimulate);
+    } else {
+      if (!selectedCedula) return;
+      onScan(selectedCedula);
+    }
   };
 
   return (
@@ -4232,8 +4236,9 @@ const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }: any) 
           </div>
         </div>
 
-        {/* Simulation Dropdown for testing without cameras */}
+        {/* Manual Fallback Entry Section */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3">
+          <span className="text-[10px] font-black text-[#C5A184] uppercase tracking-widest block font-mono">Entrada Manual de Emergencia</span>
           <div className="flex gap-2 mb-2 border-b border-white/5 pb-2">
             <button 
               type="button"
@@ -4257,7 +4262,7 @@ const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }: any) 
               value={selectedProductToSimulate}
               onChange={(e) => setSelectedProductToSimulate(e.target.value)}
             >
-              <option value="">-- Seleccionar Producto a Escanear --</option>
+              <option value="">-- Seleccionar Producto --</option>
               {myProducts.map((p: any) => (
                 <option key={p.id} value={p.id}>{p.name} - {formatUSD(p.priceUSD)}</option>
               ))}
@@ -4268,9 +4273,9 @@ const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }: any) 
               value={selectedCedula}
               onChange={(e) => setSelectedCedula(e.target.value)}
             >
-              <option value="PDF417:V25218648JAVIER_CASTILLO_M28051995">V-25.218.648 Javier Castillo (M)</option>
-              <option value="PDF417:V12345678MARIA_PEREZ_F15081985">V-12.345.678 Maria Perez (F)</option>
-              <option value="PDF417:E87654321PEDRO_GOMEZ_M10101974">E-87.654.321 Pedro Gomez (M)</option>
+              <option value="PDF417:V25218648JAVIER_CASTILLO_M28051995">Cédula V-25.218.648 Javier Castillo (M)</option>
+              <option value="PDF417:V12345678MARIA_PEREZ_F15081985">Cédula V-12.345.678 Maria Perez (F)</option>
+              <option value="PDF417:E87654321PEDRO_GOMEZ_M10101974">Cédula E-87.654.321 Pedro Gomez (M)</option>
             </select>
           )}
 
@@ -4279,7 +4284,7 @@ const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }: any) 
             onClick={handleSimulatedScan} 
             className="w-full py-3 bg-[#C5A184] text-[#0A1128] font-black rounded-xl text-xs hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
           >
-            Detonar Escaneo Simulado
+            ✓ Confirmar e Ingresar Manualmente
           </button>
         </div>
 
@@ -4479,7 +4484,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
     <div className="min-h-screen bg-gray-50 pb-20 font-sans">
       <nav className="flex justify-between items-center p-4 border-b border-white/5 bg-[#0A1128] sticky top-0 z-40 backdrop-blur-md">
         <div className="flex items-center gap-3">
-          <Shield size={24} style={{ color: KREATEK_COLORS.bronze }} />
+          <KreatekLogo className="h-8 w-auto" />
           <span className="font-bold text-lg tracking-widest uppercase text-[#C5A184] hidden sm:inline-block">
             Terminal: {currentUser.company}
           </span>
