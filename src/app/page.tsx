@@ -2397,7 +2397,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
   return (
     <div className="min-h-screen bg-gray-50 pb-24 font-sans">
       <Navbar title={`Portal Promotora: ${currentUser.name}`} showBack={true} onBack={logout} />
-      <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-8 animate-fade-in">
+      <div className="p-4 md:p-8 max-w-5xl mx-auto flex flex-col gap-8 animate-fade-in">
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
@@ -2659,17 +2659,17 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Logo / Foto de Perfil (URL)</label>
-            <input type="text" value={settings.profilePicUrl} onChange={e => setSettings({...settings, profilePicUrl: e.target.value})} placeholder="https://..." className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" />
+            <input type="text" value={settings.profilePicUrl} onChange={e => setSettings({...settings, profilePicUrl: e.target.value})} placeholder="https://..." className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C5A184]" />
           </div>
           <div>
             <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Banner Portada (URL)</label>
-            <input type="text" value={settings.coverPhotoUrl} onChange={e => setSettings({...settings, coverPhotoUrl: e.target.value})} placeholder="https://..." className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" />
+            <input type="text" value={settings.coverPhotoUrl} onChange={e => setSettings({...settings, coverPhotoUrl: e.target.value})} placeholder="https://..." className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C5A184]" />
           </div>
         </div>
 
         <div className="flex flex-col gap-1">
           <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Biografía o Eslogan (Max 150 char)</label>
-          <textarea maxLength={150} value={settings.bioText} onChange={e => setSettings({...settings, bioText: e.target.value})} placeholder="Los mejores productos..." className="w-full h-16 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] resize-none" />
+          <textarea maxLength={150} value={settings.bioText} onChange={e => setSettings({...settings, bioText: e.target.value})} placeholder="Los mejores productos..." className="w-full h-16 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C5A184] resize-none" />
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -2677,12 +2677,12 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
             <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Color Principal</label>
             <div className="flex items-center gap-2">
               <input type="color" value={settings.themeColor} onChange={e => setSettings({...settings, themeColor: e.target.value})} className="h-10 w-10 rounded cursor-pointer border-0 p-0" />
-              <input type="text" value={settings.themeColor} onChange={e => setSettings({...settings, themeColor: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none font-mono" />
+              <input type="text" value={settings.themeColor} onChange={e => setSettings({...settings, themeColor: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none font-mono" />
             </div>
           </div>
           <div>
             <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Tipografía</label>
-            <select value={settings.typography} onChange={e => setSettings({...settings, typography: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none">
+            <select value={settings.typography} onChange={e => setSettings({...settings, typography: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none">
               <option value="font-sans">Moderna (Sans)</option>
               <option value="font-serif">Clásica (Serif)</option>
               <option value="font-mono">Técnica (Mono)</option>
@@ -2692,7 +2692,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
 
         <div>
           <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Disposición (Layout)</label>
-          <select value={settings.layoutType} onChange={e => setSettings({...settings, layoutType: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm focus:outline-none">
+          <select value={settings.layoutType} onChange={e => setSettings({...settings, layoutType: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none">
             <option value="grid">Grilla de Tarjetas (Recomendado)</option>
             <option value="list">Lista Compacta</option>
           </select>
@@ -2707,8 +2707,11 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
 };
 
 const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
+  const { addProduct } = useKFS();
   const [step, setStep] = useState(1);
   const [kycDoc, setKycDoc] = useState("");
+  const [productImage, setProductImage] = useState("");
+  const [productName, setProductName] = useState("");
 
   const handleKycUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -2716,6 +2719,29 @@ const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
       const base64String = await compressImage(file, 600);
       setKycDoc(base64String);
     }
+  };
+
+  const handleProductUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const base64String = await compressImage(file, 600);
+      setProductImage(base64String);
+    }
+  };
+
+  const saveOnboardingProduct = () => {
+    if (productImage || productName) {
+      addProduct({
+        name: productName || "Mi Primer Producto",
+        priceUSD: 10.00,
+        stock: 50,
+        image: productImage || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=500",
+        clientId: currentUser.id,
+        clientName: currentUser.company,
+        category: "General"
+      });
+    }
+    setStep(3);
   };
 
   return (
@@ -2754,11 +2780,22 @@ const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
         {step === 2 && (
           <div className="space-y-4 animate-slide-up">
             <h3 className="text-xl font-bold">2. Sube un Producto</h3>
-            <p className="text-sm text-gray-400">Agregaremos el inventario más adelante. Mentalízate en que puedes subir productos y nosotros le daremos visibilidad global.</p>
-            <div className="h-32 border-2 border-dashed border-white/20 rounded-xl flex items-center justify-center text-white/30">
-              <Camera size={32}/>
-            </div>
-            <button onClick={() => setStep(3)} className="w-full bg-[#C5A184] text-[#0A1128] py-4 rounded-xl font-black mt-6 shadow-lg shadow-[#C5A184]/20 hover:scale-[1.02] transition-transform cursor-pointer">Entendido →</button>
+            <p className="text-sm text-gray-400">Personaliza tu inventario ahora mismo. Sube una foto de tu producto directamente desde la galería.</p>
+            
+            <input type="text" placeholder="Nombre de tu producto (Ej. Refresco)" value={productName} onChange={e => setProductName(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184]" />
+            
+            <label className="border-2 border-dashed border-[#C5A184]/50 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-colors">
+              <input type="file" accept="image/*" className="hidden" onChange={handleProductUpload} />
+              {productImage ? (
+                <img src={productImage} alt="Preview" className="h-32 object-contain rounded-lg" />
+              ) : (
+                <div className="text-center text-gray-400">
+                  <Camera size={32} className="mx-auto mb-2 opacity-50" />
+                  <span className="text-xs font-bold uppercase tracking-widest">Tocar para Galería</span>
+                </div>
+              )}
+            </label>
+            <button onClick={saveOnboardingProduct} className="w-full bg-[#C5A184] text-[#0A1128] py-4 rounded-xl font-black mt-6 shadow-lg shadow-[#C5A184]/20 hover:scale-[1.02] transition-transform cursor-pointer">Guardar y Continuar →</button>
           </div>
         )}
 
