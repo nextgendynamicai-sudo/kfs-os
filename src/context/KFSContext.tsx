@@ -42,7 +42,7 @@ const initialDB = {
     { id: "p1", name: "Promotora Alpha", email: "000", password: "000", phone: "000", createdAt: new Date().toISOString(), status: "approved" }
   ],
   clients: [
-    { id: "c1", company: "Kreatek Demo Store", email: "000", password: "000", phone: "000", kfsTier: "monopoly", status: "active", wallet: { balanceUSD: 500, kfsPoints: 1000 }, location: "Caracas, VE", description: "Tienda Oficial de Demostración KFS." }
+    { id: "c1", company: "Kreatek Demo Store", email: "000", password: "000", phone: "000", kfsTier: "monopoly", status: "active", wallet: { balanceUSD: 500, kfsPoints: 1000 }, location: "Caracas, VE", description: "Tienda Oficial de Demostración KFS.", paymentMethods: { zelle: "demo@zelle.com", pagoMovilPhone: "04141234567", pagoMovilId: "J123456789", pagoMovilBank: "Banesco", binance: "123456789" } }
   ],
   vendedores: [
     { id: "v1", name: "Vendedor Demo", clientId: "c1", email: "000", password: "000", createdAt: new Date().toISOString() }
