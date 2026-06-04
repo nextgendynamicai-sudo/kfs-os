@@ -1070,41 +1070,12 @@ const KFSIoTEdgeConsole = ({ showToast }: { showToast: any }) => {
 
 // Kreatek Logo Component (Removes white background dynamically)
 const KreatekLogo = ({ className = "h-8 w-auto" }: { className?: string }) => {
-  const [src, setSrc] = useState<string>("");
-
-  useEffect(() => {
-    const img = new Image();
-    img.src = "/kreatek-logo.jpg";
-    img.crossOrigin = "Anonymous";
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-      ctx.drawImage(img, 0, 0);
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const data = imageData.data;
-      
-      // Make near-white pixels transparent to remove background
-      for (let i = 0; i < data.length; i += 4) {
-        if (data[i] > 230 && data[i+1] > 230 && data[i+2] > 230) {
-          data[i+3] = 0; // Set alpha to 0
-        }
-      }
-      ctx.putImageData(imageData, 0, 0);
-      setSrc(canvas.toDataURL("image/png"));
-    };
-  }, []);
-
-  if (!src) return <div className={`animate-pulse bg-[#C5A184]/20 rounded ${className}`} style={{ minWidth: "1.5rem" }}></div>;
-  
   return (
     <img 
-      src={src} 
+      src="/kfs-logo.png" 
       className={className} 
-      alt="Kreatek" 
-      style={{ filter: "drop-shadow(0px 0px 4px rgba(197, 161, 132, 0.4))", objectFit: "contain" }} 
+      alt="Kreatek Flow Systems" 
+      style={{ objectFit: "contain" }} 
     />
   );
 };
