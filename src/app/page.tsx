@@ -13,7 +13,7 @@ import { useKFS } from "../context/KFSContext";
 import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { CheckoutModal } from "../components/CheckoutModal";
 import { ReceiptModal } from "../components/ReceiptModal";
-import { compressImage, playPremiumChime, playSyncChime, playCashDrawerSound } from "../lib/utils";
+import { compressImage, readAsBase64, playPremiumChime, playSyncChime, playCashDrawerSound } from "../lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Theme and Global Constants
@@ -1620,7 +1620,7 @@ const RegisterCustomerForm = ({ onCancel }: { onCancel: () => void }) => {
 }
 // CustomerDashboard
 const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
-  const { formatUSD, registerCandidate } = useKFS() as any;
+  const { formatUSD, registerCandidate, showToast } = useKFS() as any;
   const [subTab, setSubTab] = useState("profile"); // profile | jobs
 
   if (!currentUser) return null;
@@ -1663,6 +1663,15 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
   });
   const [isActive, setIsActive] = useState(currentCandidate ? (currentCandidate.active !== false) : true);
 
+  // CV Upload States
+  const [cvFile, setCvFile] = useState(currentCandidate?.cvFile || "");
+  const [cvFileType, setCvFileType] = useState(currentCandidate?.cvFileType || "");
+  const [cvFileName, setCvFileName] = useState(currentCandidate?.cvFileName || "");
+
+  // Registration Payment $1 USD States
+  const [regRefNum, setRegRefNum] = useState("");
+  const [regScreenshot, setRegScreenshot] = useState("");
+
   const availableSkills = [
     "Cuadre de caja", "Uso de POS", "Atención al cliente", 
     "Lector de código de barras", "Control de inventario", 
@@ -1680,9 +1689,29 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
   const handleSaveCandidate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!bio.trim() || !email.trim()) {
-      alert("Por favor completa los campos obligatorios (Correo y Presentación).");
+      showToast("Por favor completa los campos obligatorios (Correo y Presentación).", "error");
       return;
     }
+    if (!cvFile) {
+      showToast("Debe cargar su Currículum Vitae en PDF o Imagen.", "error");
+      return;
+    }
+
+    const isPaid = currentCandidate?.registrationPaymentStatus === "approved";
+    let nextStatus = currentCandidate?.registrationPaymentStatus || "unpaid";
+    let paymentRef = currentCandidate?.registrationPaymentRef || "";
+    let paymentProof = currentCandidate?.registrationPaymentProof || "";
+
+    if (!isPaid) {
+      if (!regRefNum.trim()) {
+        showToast("Por favor ingrese la referencia del pago de $1 USD.", "error");
+        return;
+      }
+      nextStatus = "pending_approval";
+      paymentRef = regRefNum;
+      paymentProof = regScreenshot;
+    }
+
     registerCandidate({
       id: currentCandidate?.id || `cand_${Date.now()}`,
       phone: currentUser.phone,
@@ -1693,7 +1722,15 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
       skills: selectedSkills,
       answers,
       status: currentCandidate?.status || "pending",
-      active: isActive
+      active: isActive,
+      cvFile,
+      cvFileType,
+      cvFileName,
+      registrationPaymentStatus: nextStatus,
+      registrationPaymentRef: paymentRef,
+      registrationPaymentProof: paymentProof,
+      hiringState: currentCandidate?.hiringState || "available",
+      interviewingClientId: currentCandidate?.interviewingClientId || null
     });
   };
 
@@ -1823,6 +1860,24 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                )}
             </div>
           </>
+        ) : currentCandidate?.registrationPaymentStatus === "pending_approval" ? (
+          <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 shadow-xl text-center space-y-6 max-w-2xl mx-auto animate-fade-in">
+            <div className="w-20 h-20 bg-yellow-500/10 rounded-full border border-yellow-500/30 flex items-center justify-center mx-auto shadow-lg">
+              <Clock size={36} className="text-yellow-400 animate-pulse" />
+            </div>
+            <div className="space-y-2">
+              <h3 className="text-xl font-black text-white">Postulación en Espera de Verificación</h3>
+              <p className="text-sm text-gray-400 leading-relaxed">
+                Hemos recibido tu postulación laboral y tu reporte de pago de **$1.00 USD**. Nuestro equipo de soporte técnico de KFS OS está verificando la transferencia y auditando tu CV.
+              </p>
+              <p className="text-xs text-[#C5A184] font-mono mt-1">
+                Referencia de pago de activación: <span className="font-bold">{currentCandidate.registrationPaymentRef}</span>
+              </p>
+            </div>
+            <div className="pt-2 border-t border-white/10 text-xs text-gray-500">
+              Tu perfil se activará en la bolsa de trabajo tan pronto como el pago sea conciliado.
+            </div>
+          </div>
         ) : (
           /* Jobs Tab */
           <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 md:p-8 shadow-xl space-y-6">
@@ -1914,6 +1969,43 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
               </div>
 
               <div>
+                <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider mb-2 block">Currículum Vitae (PDF o Imagen - Obligatorio)</label>
+                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-white/5 border border-white/10 p-5 rounded-2xl">
+                  <input
+                    type="file"
+                    accept="application/pdf,image/*"
+                    onChange={async (e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        try {
+                          setCvFileName(file.name);
+                          setCvFileType(file.type);
+                          const base64 = await readAsBase64(file);
+                          setCvFile(base64);
+                          showToast("Currículum cargado.", "success");
+                        } catch (err) {
+                          showToast("Error al leer el archivo.", "error");
+                        }
+                      }
+                    }}
+                    className="text-xs text-gray-400 block w-full sm:w-auto"
+                  />
+                  {cvFileName && (
+                    <div className="flex items-center gap-2 text-xs font-bold text-green-400">
+                      <span>📄 {cvFileName}</span>
+                      <button 
+                        type="button" 
+                        onClick={() => window.open(cvFile, '_blank')} 
+                        className="text-[10px] text-green-300 underline cursor-pointer hover:text-white"
+                      >
+                        (Ver actual)
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div>
                 <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider mb-3 block">Habilidades Técnicas</label>
                 <div className="flex flex-wrap gap-2">
                   {availableSkills.map(skill => {
@@ -1994,6 +2086,62 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                 </div>
               </div>
 
+              {currentCandidate?.registrationPaymentStatus !== "approved" && (
+                <div className="bg-white/5 border border-white/10 p-6 rounded-[2rem] space-y-4">
+                  <h4 className="text-sm font-black text-[#C5A184] uppercase tracking-wider border-b border-[#C5A184]/15 pb-2">
+                    Pago de Activación de Perfil ($1.00 USD)
+                  </h4>
+                  <p className="text-xs text-gray-300 leading-relaxed">
+                    Para activar tu perfil en la Bolsa de Trabajo de KFS OS y ser visible ante dueños de locales, debes realizar un pago único de **$1.00 USD** para cubrir la validación técnica de tu CV.
+                  </p>
+
+                  <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-xl text-[10px] text-amber-200 space-y-1 font-mono leading-tight">
+                    <p className="font-black border-b border-amber-500/20 pb-1">DATOS DE TRANSFERENCIA DIRECTA ($1 USD):</p>
+                    <p>Zinli/Wally/AirTM: <strong>master@kreatek.com</strong></p>
+                    <p>Pago Móvil: <strong>Banesco (0414-1234567) RIF: J-4019283-2</strong></p>
+                  </div>
+
+                  {currentCandidate?.registrationPaymentStatus === "rejected" && (
+                    <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-xs font-bold animate-pulse">
+                      ⚠️ Tu reporte de pago anterior fue RECHAZADO por el administrador. Por favor, realiza una transferencia correcta y reenvía los datos.
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Referencia del Pago</label>
+                      <input
+                        type="text"
+                        placeholder="Número de referencia de $1 USD"
+                        value={regRefNum}
+                        onChange={e => setRegRefNum(e.target.value)}
+                        className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#C5A184]"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1 font-sans">Capture de Transferencia ($1 USD)</label>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={async (e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            try {
+                              const base64 = await compressImage(file, 400);
+                              setRegScreenshot(base64);
+                              showToast("Capture cargado.", "success");
+                            } catch (err) {
+                              showToast("Error al comprimir el capture.", "error");
+                            }
+                          }
+                        }}
+                        className="text-xs text-gray-400 block mt-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="flex flex-col sm:flex-row justify-between items-center bg-white/5 border border-white/10 p-5 rounded-2xl gap-4">
                 <div>
                   <h4 className="text-sm font-black text-white">Estado de Búsqueda Activa</h4>
@@ -2026,7 +2174,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
 
 // CoreDashboard
 const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePromotoraEarnings, showToast, formatUSD, formatEUR, currentUser, logout, approveSubscription }: any) => {
-  const { impersonateClient, registerClient, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, approveUnlock, rejectUnlock, toggleCandidateBacking } = useKFS() as any;
+  const { impersonateClient, registerClient, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, toggleCandidateBacking } = useKFS() as any;
   const [searchPromotora, setSearchPromotora] = useState("");
   const [searchClient, setSearchClient] = useState("");
   const [searchVendedor, setSearchVendedor] = useState("");
@@ -2344,6 +2492,64 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                   </button>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Registros de Candidatos Pendientes ($1) */}
+        {db.candidates?.filter((c: any) => c.registrationPaymentStatus === 'pending_approval').length > 0 && (
+          <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 mb-8 animate-fade-in">
+            <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2">
+              <Briefcase className="text-green-500"/> Registraciones de Bolsa de Empleo por Aprobar ($1)
+            </h3>
+            <div className="space-y-4">
+              {db.candidates.filter((c: any) => c.registrationPaymentStatus === 'pending_approval').map((cand: any) => {
+                return (
+                  <div key={cand.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-green-50/50 rounded-2xl border border-green-100 shadow-sm gap-4">
+                    <div>
+                      <h4 className="font-black text-[#0A1128]">Candidato: {cand.name}</h4>
+                      <p className="text-xs text-gray-600 mt-1">
+                        Cargo: <strong>{cand.role}</strong> | Teléfono: <strong>{cand.phone}</strong>
+                      </p>
+                      <p className="text-xs text-gray-600 font-mono mt-1">
+                        Referencia de Activación ($1): <span className="font-black text-green-700">{cand.registrationPaymentRef}</span>
+                      </p>
+                      <div className="flex gap-4 mt-2">
+                        {cand.cvFile && (
+                          <button 
+                            onClick={() => window.open(cand.cvFile, '_blank')}
+                            className="text-[10px] font-black text-blue-700 underline cursor-pointer flex items-center gap-1"
+                          >
+                            👁️ Abrir Currículum ({cand.cvFileType?.includes('pdf') ? 'PDF' : 'Imagen'})
+                          </button>
+                        )}
+                        {cand.registrationPaymentProof && (
+                          <button 
+                            onClick={() => window.open(cand.registrationPaymentProof, '_blank')}
+                            className="text-[10px] font-black text-green-700 underline cursor-pointer flex items-center gap-1"
+                          >
+                            👁️ Ver Capture de Pago
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                      <button 
+                        onClick={() => approveCandidateRegistration(cand.id)} 
+                        className="px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md text-xs"
+                      >
+                        <CheckCircle size={14} /> Aprobar Registro
+                      </button>
+                      <button 
+                        onClick={() => rejectCandidateRegistration(cand.id)} 
+                        className="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md text-xs"
+                      >
+                        <X size={14} /> Rechazar Registro
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
         )}
@@ -3191,7 +3397,7 @@ const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
 };
 
 const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
-  const { unlockCandidateContact, updateStoreSettings, showToast } = useKFS() as any;
+  const { unlockCandidateContact, updateStoreSettings, hireCandidate, releaseCandidate, showToast } = useKFS() as any;
   const [activeWidgetTab, setActiveWidgetTab] = useState("search"); // search | preset | unlocked
   
   // Preset States
@@ -3277,7 +3483,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
   };
 
   const sortedCandidates = candidates
-    .filter((c: any) => c.active !== false)
+    .filter((c: any) => c.active !== false && c.registrationPaymentStatus === "approved" && c.hiringState === "available")
     .map((c: any) => ({ ...c, matchScore: getMatchScore(c) }))
     .sort((a: any, b: any) => {
       const aBack = a.status === "backed" ? 1 : 0;
@@ -3640,31 +3846,81 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                         <span className="text-gray-400">Email:</span>
                         <span className="text-white font-mono select-all text-[10px]">{cand.email}</span>
                       </div>
+                      <div className="flex justify-between items-center text-[10px] font-bold border-t border-[#C5A184]/10 pt-2 mt-1">
+                        <span className="text-gray-400">Estado de Contratación:</span>
+                        <span className={`uppercase tracking-wider font-black px-1.5 py-0.5 rounded ${
+                          cand.hiringState === 'hired' ? 'bg-green-500/20 text-green-400' : 
+                          cand.hiringState === 'interviewing' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-gray-500/20 text-gray-400'
+                        }`}>
+                          {cand.hiringState === 'hired' ? 'Contratado' : 
+                           cand.hiringState === 'interviewing' ? 'En Entrevista' : 'Libre'}
+                        </span>
+                      </div>
+                      {cand.cvFile && (
+                        <div className="flex justify-between items-center text-xs font-bold pt-1">
+                          <span className="text-gray-400">Hoja de Vida (CV):</span>
+                          <button 
+                            type="button"
+                            onClick={() => window.open(cand.cvFile, '_blank')}
+                            className="text-[#C5A184] underline cursor-pointer text-[10px]"
+                          >
+                            👁️ Descargar / Ver CV
+                          </button>
+                        </div>
+                      )}
                     </div>
                   </div>
 
-                  <div className="mt-6 pt-4 border-t border-gray-100 flex gap-2">
-                    <a 
-                      href={`tel:${cand.phone}`}
-                      className="w-1/2 py-3 rounded-xl border border-gray-300 font-bold text-center text-xs text-gray-700 bg-gray-50 hover:bg-gray-100 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
-                    >
-                      📞 Llamar Candidato
-                    </a>
-                    
-                    {(() => {
-                      const waNum = cand.phone.replace(/[^0-9]/g, '');
-                      const cleanWaNum = waNum.startsWith('0') ? '58' + waNum.slice(1) : (waNum.length === 10 ? '58' + waNum : waNum);
-                      return (
-                        <a 
-                          href={`https://wa.me/${cleanWaNum}?text=Hola%20${encodeURIComponent(cand.name)}!%20Vimos%20tu%20perfil%20en%20la%20Bolsa%20de%20Empleo%20de%20KFS%20OS%20y%20nos%20interesaría%20agendar%20una%20entrevista.%20¿Estás%20disponible?`}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="w-1/2 py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white transition-colors font-black text-center text-xs flex items-center justify-center gap-1.5 cursor-pointer"
+                  <div className="mt-6 pt-4 border-t border-gray-100 space-y-3">
+                    <div className="flex gap-2">
+                      <a 
+                        href={`tel:${cand.phone}`}
+                        className="w-1/2 py-3 rounded-xl border border-gray-300 font-bold text-center text-xs text-gray-700 bg-gray-50 hover:bg-gray-100 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        📞 Llamar Candidato
+                      </a>
+                      
+                      {(() => {
+                        const waNum = cand.phone.replace(/[^0-9]/g, '');
+                        const cleanWaNum = waNum.startsWith('0') ? '58' + waNum.slice(1) : (waNum.length === 10 ? '58' + waNum : waNum);
+                        return (
+                          <a 
+                            href={`https://wa.me/${cleanWaNum}?text=Hola%20${encodeURIComponent(cand.name)}!%20Vimos%20tu%20perfil%20en%20la%20Bolsa%20de%20Empleo%20de%20KFS%20OS%20y%20nos%20interesaría%20agendar%20una%20entrevista.%20¿Estás%20disponible?`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="w-1/2 py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white transition-colors font-black text-center text-xs flex items-center justify-center gap-1.5 cursor-pointer"
+                          >
+                            💬 WhatsApp
+                          </a>
+                        );
+                      })()}
+                    </div>
+
+                    <div className="flex gap-2 pt-2 border-t border-gray-100">
+                      {cand.hiringState === 'interviewing' ? (
+                        <>
+                          <button
+                            onClick={() => hireCandidate(cand.id, currentUser.id)}
+                            className="w-1/2 py-2.5 bg-green-600 hover:bg-green-700 text-white rounded-xl font-black text-xs cursor-pointer shadow-md transition-colors"
+                          >
+                            🤝 Contratar
+                          </button>
+                          <button
+                            onClick={() => releaseCandidate(cand.id, currentUser.id)}
+                            className="w-1/2 py-2.5 bg-gray-600 hover:bg-gray-700 text-white rounded-xl font-black text-xs cursor-pointer shadow-md transition-colors"
+                          >
+                            🔓 Liberar Candidato
+                          </button>
+                        </>
+                      ) : cand.hiringState === 'hired' && cand.interviewingClientId === currentUser.id ? (
+                        <button
+                          onClick={() => releaseCandidate(cand.id, currentUser.id)}
+                          className="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-black text-xs cursor-pointer shadow-md transition-colors"
                         >
-                          💬 WhatsApp
-                        </a>
-                      );
-                    })()}
+                          🚪 Finalizar Contrato (Liberar a la Bolsa)
+                        </button>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
               );

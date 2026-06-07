@@ -147,6 +147,10 @@ interface KFSContextType {
   unlockCandidateContact: (candidateId: string, clientId: string, reference: string, screenshot?: string) => void;
   approveUnlock: (unlockId: string) => void;
   rejectUnlock: (unlockId: string) => void;
+  approveCandidateRegistration: (candidateId: string) => void;
+  rejectCandidateRegistration: (candidateId: string) => void;
+  hireCandidate: (candidateId: string, clientId: string) => void;
+  releaseCandidate: (candidateId: string, clientId: string) => void;
   toggleCandidateBacking: (candidateId: string) => void;
 }
 
@@ -1568,12 +1572,17 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         netEarningsEUR: (prev.kreatekCore.netEarningsEUR || 0) + finalNetEUR
       };
 
+      const updatedCandidates = prev.candidates.map((c: any) =>
+        c.id === unlock.candidateId ? { ...c, hiringState: "interviewing", interviewingClientId: unlock.clientId } : c
+      );
+
       setTimeout(() => showToast("Pago de desbloqueo aprobado.", "success"), 50);
 
       return {
         ...prev,
         promotoras: updatedPromotoras,
         kreatekCore: updatedCore,
+        candidates: updatedCandidates,
         unlockedContacts: prev.unlockedContacts.map((u: any) =>
           u.id === unlockId ? { ...u, status: "approved" } : u
         )
@@ -1610,6 +1619,62 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
+  const approveCandidateRegistration = (candidateId: string) => {
+    setDb((prev: any) => {
+      const feeEUR = (1 * rates.USD) / rates.EUR;
+      const updatedCore = {
+        ...prev.kreatekCore,
+        earningsEUR: (prev.kreatekCore.earningsEUR || 0) + feeEUR,
+        netEarningsEUR: (prev.kreatekCore.netEarningsEUR || 0) + feeEUR
+      };
+      
+      setTimeout(() => showToast("Registro de candidato aprobado ($1 USD).", "success"), 50);
+      return {
+        ...prev,
+        kreatekCore: updatedCore,
+        candidates: prev.candidates.map((c: any) =>
+          c.id === candidateId ? { ...c, registrationPaymentStatus: "approved", hiringState: "available" } : c
+        )
+      };
+    });
+  };
+
+  const rejectCandidateRegistration = (candidateId: string) => {
+    setDb((prev: any) => {
+      setTimeout(() => showToast("Registro de candidato rechazado.", "error"), 50);
+      return {
+        ...prev,
+        candidates: prev.candidates.map((c: any) =>
+          c.id === candidateId ? { ...c, registrationPaymentStatus: "rejected" } : c
+        )
+      };
+    });
+  };
+
+  const hireCandidate = (candidateId: string, clientId: string) => {
+    setDb((prev: any) => {
+      setTimeout(() => showToast("Candidato marcado como CONTRATADO.", "success"), 50);
+      return {
+        ...prev,
+        candidates: prev.candidates.map((c: any) =>
+          c.id === candidateId ? { ...c, hiringState: "hired", interviewingClientId: clientId } : c
+        )
+      };
+    });
+  };
+
+  const releaseCandidate = (candidateId: string, clientId: string) => {
+    setDb((prev: any) => {
+      setTimeout(() => showToast("Candidato liberado y devuelto a la bolsa.", "success"), 50);
+      return {
+        ...prev,
+        candidates: prev.candidates.map((c: any) =>
+          c.id === candidateId ? { ...c, hiringState: "available", interviewingClientId: null } : c
+        )
+      };
+    });
+  };
+
   return (
     <KFSContext.Provider value={{
       isClient, isBooting, view, setView, currentUser, setCurrentUser,
@@ -1621,7 +1686,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       ghostTrapLocked, setGhostTrapLocked, createVale, payVale, registerPosTerminal, deletePosTerminal,
       queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings, updatePaymentMethods, toggleProductFeatured,
       sendNotification, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, processMonthlyBilling, registerCustomer, blockClient, releaseClient, deleteClient,
-      registerCandidate, unlockCandidateContact, approveUnlock, rejectUnlock, toggleCandidateBacking
+      registerCandidate, unlockCandidateContact, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, hireCandidate, releaseCandidate, toggleCandidateBacking
     }}>
       {children}
     </KFSContext.Provider>
