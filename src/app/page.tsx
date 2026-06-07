@@ -1524,7 +1524,7 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
               {(activeTab === "core" || activeTab === "promotora" || activeTab === "dueño" || activeTab === "vendedor" || activeTab === "customer") && (
                 <div className="space-y-4">
                   {(activeTab === "dueño" || activeTab === "vendedor" || activeTab === "promotora" || activeTab === "customer") && (
-                    <input type="text" placeholder={activeTab === "customer" ? "Número de Teléfono" : "Correo Electrónico de Usuario"} value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#C5A184] focus:ring-1 focus:ring-[#C5A184] transition-all" />
+                    <input type="text" placeholder={activeTab === "customer" ? "Número de Teléfono (Ej: +584141234567)" : "Correo Electrónico de Usuario"} value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#C5A184] focus:ring-1 focus:ring-[#C5A184] transition-all" />
                   )}
                   <div className="relative">
                     <Lock className="absolute left-4 top-4 text-[#C5A184]/50" size={20} />
@@ -1571,19 +1571,45 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
 
 const RegisterCustomerForm = ({ onCancel }: { onCancel: () => void }) => {
   const [name, setName] = useState("");
-  const [phone, setPhone] = useState("");
+  const [phonePrefix, setPhonePrefix] = useState("+58");
+  const [phoneBody, setPhoneBody] = useState("");
   const [password, setPassword] = useState("");
-  const { registerCustomer } = useKFS();
+  const { registerCustomer } = useKFS() as any;
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    registerCustomer(phone, password, name);
+    let rawBody = phoneBody.replace(/[^0-9]/g, '');
+    if (rawBody.startsWith('0')) {
+      rawBody = rawBody.slice(1);
+    }
+    const fullPhone = phonePrefix + rawBody;
+    registerCustomer(fullPhone, password, name);
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 animate-fade-in">
       <input required type="text" placeholder="Nombre y Apellido" value={name} onChange={e=>setName(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184] transition-all" />
-      <input required type="text" placeholder="Teléfono Móvil (Ej: 0414...)" value={phone} onChange={e=>setPhone(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184] transition-all" />
+      
+      <div className="flex gap-2">
+        <select 
+          value={phonePrefix} 
+          onChange={e => setPhonePrefix(e.target.value)} 
+          className="bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-[#C5A184] text-sm cursor-pointer"
+        >
+          <option value="+58">VE (+58)</option>
+          <option value="+57">CO (+57)</option>
+          <option value="+507">PA (+507)</option>
+          <option value="+34">ES (+34)</option>
+          <option value="+56">CL (+56)</option>
+          <option value="+593">EC (+593)</option>
+          <option value="+51">PE (+51)</option>
+          <option value="+54">AR (+54)</option>
+          <option value="+1">US/CA (+1)</option>
+          <option value="+1809">DO (+1-809)</option>
+        </select>
+        <input required type="text" placeholder="Número Telefónico (Ej: 4141234567)" value={phoneBody} onChange={e=>setPhoneBody(e.target.value)} className="flex-1 bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184] transition-all" />
+      </div>
+
       <input required type="password" placeholder="Crear Contraseña" value={password} onChange={e=>setPassword(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184] transition-all" />
       <div className="flex gap-2 pt-2">
         <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl border border-white/20 text-gray-300 font-bold hover:bg-white/5 transition-all">Atrás</button>
@@ -1635,6 +1661,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
     experienceYears: "1-3",
     hasVehicle: "no"
   });
+  const [isActive, setIsActive] = useState(currentCandidate ? (currentCandidate.active !== false) : true);
 
   const availableSkills = [
     "Cuadre de caja", "Uso de POS", "Atención al cliente", 
@@ -1665,7 +1692,8 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
       role: selectedRole,
       skills: selectedSkills,
       answers,
-      status: currentCandidate?.status || "pending"
+      status: currentCandidate?.status || "pending",
+      active: isActive
     });
   };
 
@@ -1966,6 +1994,20 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                 </div>
               </div>
 
+              <div className="flex flex-col sm:flex-row justify-between items-center bg-white/5 border border-white/10 p-5 rounded-2xl gap-4">
+                <div>
+                  <h4 className="text-sm font-black text-white">Estado de Búsqueda Activa</h4>
+                  <p className="text-xs text-gray-400">Si lo desactivas, los comercios no verán tu perfil en las búsquedas hasta que decidas reactivarlo.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsActive(!isActive)}
+                  className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${isActive ? "bg-green-600 text-white shadow-md" : "bg-gray-700 text-gray-300"}`}
+                >
+                  {isActive ? "🟢 Visible (Buscando Trabajo)" : "🔴 Pausado (Oculto)"}
+                </button>
+              </div>
+
               <div className="flex justify-end pt-4">
                 <button
                   type="submit"
@@ -1984,7 +2026,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
 
 // CoreDashboard
 const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePromotoraEarnings, showToast, formatUSD, formatEUR, currentUser, logout, approveSubscription }: any) => {
-  const { impersonateClient, registerClient, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, approveUnlock, toggleCandidateBacking } = useKFS() as any;
+  const { impersonateClient, registerClient, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, approveUnlock, rejectUnlock, toggleCandidateBacking } = useKFS() as any;
   const [searchPromotora, setSearchPromotora] = useState("");
   const [searchClient, setSearchClient] = useState("");
   const [searchVendedor, setSearchVendedor] = useState("");
@@ -2337,12 +2379,20 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                         </div>
                       )}
                     </div>
-                    <button 
-                      onClick={() => approveUnlock(u.id)} 
-                      className="w-full md:w-auto px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md"
-                    >
-                      <CheckCircle size={18} /> Aprobar Desbloqueo
-                    </button>
+                    <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                      <button 
+                        onClick={() => approveUnlock(u.id)} 
+                        className="px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md text-xs"
+                      >
+                        <CheckCircle size={14} /> Aprobar Desbloqueo
+                      </button>
+                      <button 
+                        onClick={() => rejectUnlock(u.id)} 
+                        className="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md text-xs"
+                      >
+                        <X size={14} /> Rechazar Pago
+                      </button>
+                    </div>
                   </div>
                 );
               })}
@@ -3198,7 +3248,8 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
   const unlocks = db.unlockedContacts || [];
 
   const checkUnlockStatus = (candId: string) => {
-    const found = unlocks.find((u: any) => u.clientId === currentUser.id && u.candidateId === candId);
+    const reversed = [...unlocks].reverse();
+    const found = reversed.find((u: any) => u.clientId === currentUser.id && u.candidateId === candId);
     if (!found) return { isUnlocked: false };
     return { isUnlocked: found.status === "approved", status: found.status };
   };
@@ -3226,6 +3277,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
   };
 
   const sortedCandidates = candidates
+    .filter((c: any) => c.active !== false)
     .map((c: any) => ({ ...c, matchScore: getMatchScore(c) }))
     .sort((a: any, b: any) => {
       const aBack = a.status === "backed" ? 1 : 0;
@@ -3446,6 +3498,12 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                           <span className="font-black text-[#0A1128]">Monto: $10.00 USD</span>
                         </div>
 
+                        {unlockStatus === "rejected" && (
+                          <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-[10px] font-bold text-red-700 leading-tight">
+                            ⚠️ Su reporte de pago anterior fue RECHAZADO por el administrador. Por favor, verifique la referencia y capture y reenvíe el reporte.
+                          </div>
+                        )}
+
                         <div className="bg-amber-50 p-3 rounded-lg border border-amber-200 text-[10px] text-amber-900 space-y-1 font-mono leading-tight">
                           <p className="font-black border-b border-amber-200/50 pb-1">DATOS DE TRANSFERENCIA DIRECTA ($10 USD):</p>
                           <p>Zinli/Wally/AirTM: <strong>master@kreatek.com</strong></p>
@@ -3495,12 +3553,19 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                         </div>
                       </div>
                     ) : (
-                      <button
-                        onClick={() => setPayingCandidateId(cand.id)}
-                        className="w-full bg-[#0A1128] text-white hover:bg-gray-800 transition-colors font-black text-xs py-3 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
-                      >
-                        <Lock size={14} className="text-[#C5A184]" /> Desbloquear Datos ($10)
-                      </button>
+                      <div className="space-y-2">
+                        {unlockStatus === "rejected" && (
+                          <div className="text-[10px] font-bold text-red-600 bg-red-50 border border-red-100 rounded-lg p-2 text-center">
+                            ❌ Pago de desbloqueo anterior rechazado
+                          </div>
+                        )}
+                        <button
+                          onClick={() => setPayingCandidateId(cand.id)}
+                          className="w-full bg-[#0A1128] text-white hover:bg-gray-800 transition-colors font-black text-xs py-3 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
+                        >
+                          <Lock size={14} className="text-[#C5A184]" /> Desbloquear Datos ($10)
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>
@@ -3586,14 +3651,20 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                       📞 Llamar Candidato
                     </a>
                     
-                    <a 
-                      href={`https://wa.me/${cand.phone.replace(/[^0-9]/g, '')}?text=Hola%20${encodeURIComponent(cand.name)}!%20Vimos%20tu%20perfil%20en%20la%20Bolsa%20de%20Empleo%20de%20KFS%20OS%20y%20nos%20interesaría%20agendar%20una%20entrevista.%20¿Estás%20disponible?`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="w-1/2 py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white transition-colors font-black text-center text-xs flex items-center justify-center gap-1.5 cursor-pointer"
-                    >
-                      💬 WhatsApp
-                    </a>
+                    {(() => {
+                      const waNum = cand.phone.replace(/[^0-9]/g, '');
+                      const cleanWaNum = waNum.startsWith('0') ? '58' + waNum.slice(1) : (waNum.length === 10 ? '58' + waNum : waNum);
+                      return (
+                        <a 
+                          href={`https://wa.me/${cleanWaNum}?text=Hola%20${encodeURIComponent(cand.name)}!%20Vimos%20tu%20perfil%20en%20la%20Bolsa%20de%20Empleo%20de%20KFS%20OS%20y%20nos%20interesaría%20agendar%20una%20entrevista.%20¿Estás%20disponible?`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="w-1/2 py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white transition-colors font-black text-center text-xs flex items-center justify-center gap-1.5 cursor-pointer"
+                        >
+                          💬 WhatsApp
+                        </a>
+                      );
+                    })()}
                   </div>
                 </div>
               );

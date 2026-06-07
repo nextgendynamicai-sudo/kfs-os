@@ -146,6 +146,7 @@ interface KFSContextType {
   registerCandidate: (candidateData: any) => void;
   unlockCandidateContact: (candidateId: string, clientId: string, reference: string, screenshot?: string) => void;
   approveUnlock: (unlockId: string) => void;
+  rejectUnlock: (unlockId: string) => void;
   toggleCandidateBacking: (candidateId: string) => void;
 }
 
@@ -1580,6 +1581,18 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
+  const rejectUnlock = (unlockId: string) => {
+    setDb((prev: any) => {
+      setTimeout(() => showToast("Pago de desbloqueo rechazado.", "error"), 50);
+      return {
+        ...prev,
+        unlockedContacts: prev.unlockedContacts.map((u: any) =>
+          u.id === unlockId ? { ...u, status: "rejected" } : u
+        )
+      };
+    });
+  };
+
   const toggleCandidateBacking = (candidateId: string) => {
     setDb((prev: any) => {
       const updatedCandidates = prev.candidates.map((c: any) => {
@@ -1608,7 +1621,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       ghostTrapLocked, setGhostTrapLocked, createVale, payVale, registerPosTerminal, deletePosTerminal,
       queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings, updatePaymentMethods, toggleProductFeatured,
       sendNotification, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, processMonthlyBilling, registerCustomer, blockClient, releaseClient, deleteClient,
-      registerCandidate, unlockCandidateContact, approveUnlock, toggleCandidateBacking
+      registerCandidate, unlockCandidateContact, approveUnlock, rejectUnlock, toggleCandidateBacking
     }}>
       {children}
     </KFSContext.Provider>
