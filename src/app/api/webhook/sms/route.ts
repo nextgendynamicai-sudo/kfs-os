@@ -35,7 +35,7 @@ export async function POST(req: Request) {
 
     // Connect to DB and apply business logic
     if (isSupabaseConfigured) {
-      const { data: dbData, error: dbError } = await supabase.from('kfs_store_states').select('*').eq('id', 'kfs-general-db-v2').single();
+      const { data: dbData, error: dbError } = await supabase.from('kfs_store_states').select('*').eq('id', 'kfs-general-db-prod').single();
       
       if (dbData && dbData.db_state) {
         let state = dbData.db_state;
@@ -159,7 +159,7 @@ export async function POST(req: Request) {
         }
 
         if (modified) {
-          await supabase.from('kfs_store_states').upsert({ id: 'kfs-general-db-v2', db_state: state, updated_at: new Date().toISOString() });
+          await supabase.from('kfs_store_states').upsert({ id: 'kfs-general-db-prod', db_state: state, updated_at: new Date().toISOString() });
         }
       }
     }

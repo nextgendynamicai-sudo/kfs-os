@@ -1,24 +1,22 @@
 {
-  "name": "Kreatek Flow System",
+  "name": "KFS OS",
   "short_name": "KFS OS",
-  "description": "Business Operating System by Kreatek",
+  "description": "Sistema Operativo Kreatek Flow Systems POS",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0A1128",
   "theme_color": "#0A1128",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/kfs-logo.png",
+      "src": "/icon.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
-      "src": "/kfs-logo.png",
+      "src": "/apple-icon.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ]
 }

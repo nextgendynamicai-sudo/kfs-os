@@ -2,15 +2,20 @@ import { NextResponse } from 'next/server';
 import https from 'https';
 import * as cheerio from 'cheerio';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600; // Cache de Next.js por 1 hora (ISR)
 
 export async function GET() {
   return new Promise<NextResponse>((resolve) => {
     const agent = new https.Agent({
-      rejectUnauthorized: false
+      rejectUnauthorized: false // Se mantiene deshabilitado temporalmente debido a errores del certificado del sitio oficial del BCV.
     });
 
-    https.get('https://www.bcv.org.ve/', { agent }, (res) => {
+    https.get('https://www.bcv.org.ve/', {
+      agent,
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      }
+    }, (res) => {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => {

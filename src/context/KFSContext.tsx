@@ -42,7 +42,7 @@ const initialDB = {
     { id: "p1", name: "Promotora Alpha", email: "000", password: "000", phone: "000", createdAt: new Date().toISOString(), status: "approved" }
   ],
   clients: [
-    { id: "c1", company: "Kreatek Demo Store", email: "000", password: "000", phone: "000", kfsTier: "monopoly", status: "active", wallet: { balanceUSD: 500, kfsPoints: 1000 }, location: "Caracas, VE", description: "Tienda Oficial de Demostración KFS.", paymentMethods: { zelle: "demo@zelle.com", pagoMovilPhone: "04141234567", pagoMovilId: "J123456789", pagoMovilBank: "Banesco", binance: "123456789" } }
+    { id: "c1", company: "Kreatek Demo Store", email: "000", password: "000", phone: "000", kfsTier: "monopoly", status: "active", wallet: { balanceUSD: 500, kfsPoints: 1000 }, location: "Caracas, VE", description: "Tienda Oficial de Demostración KFS.", paymentMethods: { zinli: "demo@zinli.com", wallyTech: "demo@wally.tech", airtm: "demo@airtm.com", ubbiApp: "demo@ubbi.app", pagoMovilPhone: "04141234567", pagoMovilId: "J123456789", pagoMovilBank: "Banesco", binance: "123456789" } }
   ],
   vendedores: [
     { id: "v1", name: "Vendedor Demo", clientId: "c1", email: "000", password: "000", createdAt: new Date().toISOString() }
@@ -73,7 +73,9 @@ const initialDB = {
   ghostLogs: [],
   notifications: [],
   auditLogs: [],
-  supportTickets: []
+  supportTickets: [],
+  candidates: [],
+  unlockedContacts: []
 };
 
 interface KFSContextType {
@@ -100,7 +102,7 @@ interface KFSContextType {
   addProduct: (productData: any) => void;
   addExpense: (expenseData: any) => void;
   processPurchase: (product: any, paymentMethod?: string, applyIva?: boolean, customerPhone?: string) => any;
-  submitOnlineOrder: (product: any, paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone?: string) => void;
+  submitOnlineOrder: (product: any, paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone?: string, customerName?: string, customerRif?: string, paymentScreenshot?: string) => void;
   approveOrder: (orderId: string) => void;
   rejectOrder: (orderId: string) => void;
   dispatchOrder: (txId: string) => void;
@@ -138,6 +140,13 @@ interface KFSContextType {
   fundWallet: (clientId: string, amountUSD: number) => void;
   processMonthlyBilling: (clientId: string) => void;
   registerCustomer: (phone: string, password: string, name: string) => void;
+  blockClient: (clientId: string) => void;
+  releaseClient: (clientId: string) => void;
+  deleteClient: (clientId: string) => void;
+  registerCandidate: (candidateData: any) => void;
+  unlockCandidateContact: (candidateId: string, clientId: string, reference: string, screenshot?: string) => void;
+  approveUnlock: (unlockId: string) => void;
+  toggleCandidateBacking: (candidateId: string) => void;
 }
 
 const KFSContext = createContext<KFSContextType | undefined>(undefined);
@@ -145,9 +154,18 @@ const KFSContext = createContext<KFSContextType | undefined>(undefined);
 export function KFSProvider({ children }: { children: React.ReactNode }) {
   const [isClient, setIsClient] = useState(false);
   const [isBooting, setIsBooting] = useState(true);
-  const [view, setView] = useState("login"); 
+  const [view, setViewInternal] = useState("landing"); 
+  
+  const setView = (newView: string) => {
+    setViewInternal(newView);
+    if (typeof window !== "undefined" && window.history) {
+      window.history.pushState({ view: newView }, "", `#${newView}`);
+    }
+  };
+
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [originalUser, setOriginalUser] = useState<any>(null);
+
 
   const impersonateClient = (client: any) => {
     setOriginalUser(currentUser);
@@ -179,6 +197,31 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setIsClient(true);
     
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash.replace("#", "");
+      if (hash) {
+        setViewInternal(hash);
+      } else {
+        setViewInternal("landing");
+        window.history.replaceState({ view: "landing" }, "", "#landing");
+      }
+    }
+
+    const handlePopState = (event: PopStateEvent) => {
+      if (event.state && event.state.view) {
+        setViewInternal(event.state.view);
+      } else {
+        const hash = window.location.hash.replace("#", "");
+        if (hash) {
+          setViewInternal(hash);
+        } else {
+          setViewInternal("landing");
+        }
+      }
+    };
+    window.addEventListener("popstate", handlePopState);
+
+    
     // Sincronización con el Banco Central de Venezuela (API Route)
     fetch("/api/bcv")
       .then(res => res.json())
@@ -204,13 +247,13 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       });
 
     try {
-      const saved = localStorage.getItem("kfs_os_db_v2");
+      const saved = localStorage.getItem("kfs_os_db_prod");
       if (saved) {
         setDb(JSON.parse(saved));
       }
       
       if (isSupabaseConfigured && navigator.onLine) {
-        const syncId = "kfs-general-db-v2";
+        const syncId = "kfs-general-db-prod";
         
         supabase
           .from("kfs_store_states")
@@ -272,13 +315,17 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("/sw.js").catch(err => console.error("SW failed", err));
     }
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
   }, []);
+
 
   // Save DB to LocalStorage & Supabase Cloud
   useEffect(() => {
     if (!isClient || !isDataLoaded) return;
     try {
-      localStorage.setItem("kfs_os_db_v2", JSON.stringify(db));
+      localStorage.setItem("kfs_os_db_prod", JSON.stringify(db));
       
       if (isRemoteUpdate.current) {
         // Skip cloud push for remote updates to prevent infinite loop
@@ -287,7 +334,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       }
       
       if (isSupabaseConfigured && networkState === "online") {
-        const syncId = "kfs-general-db-v2";
+        const syncId = "kfs-general-db-prod";
         
         // Anti-Collision Merge Strategy
         supabase.from("kfs_store_states").select("db_state").eq("id", syncId).single().then(({ data }: any) => {
@@ -732,6 +779,42 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast("Suscripción aprobada y tienda activada por 1 mes ($6).", "success");
   };
 
+  const blockClient = (clientId: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      clients: prev.clients.map((c: any) => 
+        c.id === clientId ? { ...c, subscription: { ...c.subscription, status: "past_due" } } : c
+      )
+    }));
+    logAction("System", "BLOCK_CLIENT", `Comercio ${clientId} bloqueado temporalmente.`);
+    showToast("Comercio bloqueado exitosamente.", "success");
+  };
+
+  const releaseClient = (clientId: string) => {
+    const nextMonth = new Date();
+    nextMonth.setMonth(nextMonth.getMonth() + 1);
+    setDb((prev: any) => ({
+      ...prev,
+      clients: prev.clients.map((c: any) => 
+        c.id === clientId ? { ...c, subscription: { ...c.subscription, status: "active", nextBillingDate: nextMonth.toISOString() } } : c
+      )
+    }));
+    logAction("System", "RELEASE_CLIENT", `Comercio ${clientId} liberado/reactivado.`);
+    showToast("Comercio liberado y reactivado por 1 mes.", "success");
+  };
+
+  const deleteClient = (clientId: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      clients: prev.clients.filter((c: any) => c.id !== clientId),
+      products: prev.products.filter((p: any) => p.clientId !== clientId),
+      vendedores: prev.vendedores.filter((v: any) => v.clientId !== clientId),
+      posTerminals: prev.posTerminals.filter((pt: any) => pt.clientId !== clientId)
+    }));
+    logAction("System", "DELETE_CLIENT", `Comercio ${clientId} eliminado de la red.`);
+    showToast("Comercio y sus datos asociados eliminados.", "error");
+  };
+
   const addProduct = (productData: any) => {
     setDb((prev: any) => ({ ...prev, products: [...prev.products, { ...productData, id: `prod${Date.now()}` }] }));
     showToast("Producto sincronizado con Flow Express.");
@@ -752,7 +835,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     const basePriceUSD = isWeekend ? product.priceUSD * 1.10 : product.priceUSD; // Weekend Shield oculto
 
     const ivaUSD = applyIva ? basePriceUSD * 0.16 : 0;
-    const isForeign = ['zelle', 'cash_usd', 'cash_eur', 'binance', 'nfc_web'].includes(paymentMethod);
+    const isForeign = ['zinli', 'wally_tech', 'airtm', 'ubbi_app', 'cash_usd', 'cash_eur', 'binance', 'nfc_web'].includes(paymentMethod);
     const igtfUSD = isForeign ? (basePriceUSD + ivaUSD) * 0.03 : 0;
     const totalUSD = basePriceUSD + ivaUSD + igtfUSD;
     const receiptNumber = `REC-${Date.now().toString().slice(-4)}`;
@@ -955,7 +1038,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     return transactionObj;
   };
 
-  const submitOnlineOrder = (product: any, paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone: string = "") => {
+  const submitOnlineOrder = (product: any, paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone: string = "", customerName: string = "", customerRif: string = "", paymentScreenshot: string = "") => {
     if (product.stock !== undefined && product.stock <= 0) {
       showToast("Producto agotado", "error");
       return;
@@ -963,7 +1046,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
     const priceUSD = product.priceUSD;
     const ivaUSD = applyIva ? priceUSD * 0.16 : 0;
-    const isForeign = ['zelle', 'cash_usd', 'cash_eur', 'binance'].includes(paymentMethod);
+    const isForeign = ['zinli', 'wally_tech', 'airtm', 'ubbi_app', 'cash_usd', 'cash_eur', 'binance'].includes(paymentMethod);
     const igtfUSD = isForeign ? (priceUSD + ivaUSD) * 0.03 : 0;
     const totalUSD = priceUSD + ivaUSD + igtfUSD;
 
@@ -983,6 +1066,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         paymentMethod,
         paymentReference,
         customerPhone,
+        customerName,
+        customerRif,
+        paymentScreenshot,
         status: 'pending',
         timestamp: new Date().toISOString()
       };
@@ -1041,6 +1127,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         kreatekFeeEUR: kreatekTotalFeeEUR,
         reference: order.paymentReference,
         customerPhone: order.customerPhone,
+        customerName: order.customerName,
+        customerRif: order.customerRif,
+        paymentScreenshot: order.paymentScreenshot,
         clientId: order.clientId,
         timestamp: new Date().toISOString(),
         shippingStatus: 'pending'
@@ -1172,7 +1261,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     else if (text.includes("banesco")) bank = "Banesco";
     else if (text.includes("provincial")) bank = "Provincial";
     else if (text.includes("venezuela") || text.includes("bdv")) bank = "Banco de Venezuela";
-    else if (text.includes("zelle")) bank = "Zelle";
+    else if (text.includes("zinli")) bank = "Zinli";
+    else if (text.includes("airtm")) bank = "AirTM";
+    else if (text.includes("wally")) bank = "Wally Tech";
+    else if (text.includes("ubbi")) bank = "Ubbi App";
 
     // Extract reference
     const refMatch = smsText.match(/(?:ref|referencia|nro|aprobacion|confirmacion)[:\s#]*([0-9]+)/i) || smsText.match(/\b([0-9]{6,12})\b/);
@@ -1403,7 +1495,106 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       clients: prev.clients.map((c: any) => c.id === clientId ? { ...c, paymentMethods: methods } : c)
     }));
     showToast("Métodos de pago guardados exitosamente en la bóveda", "success");
-    logAction("Dueño", "UPDATE_PAYMENT_METHODS", "Se actualizaron los métodos de pago (Zelle/Pago Móvil).");
+    logAction("Dueño", "UPDATE_PAYMENT_METHODS", "Se actualizaron los métodos de pago.");
+  };
+
+  const registerCandidate = (candidateData: any) => {
+    setDb((prev: any) => {
+      const existingCandidates = prev.candidates || [];
+      const filtered = existingCandidates.filter((c: any) => c.phone !== candidateData.phone);
+      const newCandidate = {
+        ...candidateData,
+        id: candidateData.id || `cand_${Date.now()}`,
+        status: candidateData.status || "pending",
+        createdAt: new Date().toISOString()
+      };
+      return {
+        ...prev,
+        candidates: [...filtered, newCandidate]
+      };
+    });
+    showToast("Perfil profesional publicado/actualizado en la Bolsa de Empleo KFS.");
+  };
+
+  const unlockCandidateContact = (candidateId: string, clientId: string, reference: string, screenshot?: string) => {
+    setDb((prev: any) => {
+      const client = prev.clients.find((c: any) => c.id === clientId);
+      if (!client) return prev;
+
+      if (!reference) {
+        setTimeout(() => showToast("Debe ingresar la referencia de pago.", "error"), 50);
+        return prev;
+      }
+
+      const newUnlock = {
+        id: `unl_${Date.now()}`,
+        clientId,
+        candidateId,
+        status: "pending_approval",
+        paymentMethod: "transfer",
+        reference,
+        screenshot: screenshot || "",
+        amountUSD: 10,
+        timestamp: new Date().toISOString()
+      };
+
+      setTimeout(() => showToast("Solicitud de desbloqueo enviada. Esperando validación KFS."), 50);
+
+      return {
+        ...prev,
+        unlockedContacts: [...(prev.unlockedContacts || []), newUnlock]
+      };
+    });
+  };
+
+  const approveUnlock = (unlockId: string) => {
+    setDb((prev: any) => {
+      const unlock = prev.unlockedContacts?.find((u: any) => u.id === unlockId);
+      if (!unlock) return prev;
+
+      const client = prev.clients.find((c: any) => c.id === unlock.clientId);
+      const feeEUR = (10 * rates.USD) / rates.EUR;
+      const promoCut = feeEUR * 0.20;
+      const finalNetEUR = feeEUR - promoCut;
+
+      const updatedPromotoras = prev.promotoras.map((p: any) =>
+        p.id === client?.promotoraId ? { ...p, passiveEarningsEUR: (p.passiveEarningsEUR || 0) + promoCut } : p
+      );
+
+      const updatedCore = {
+        ...prev.kreatekCore,
+        earningsEUR: (prev.kreatekCore.earningsEUR || 0) + feeEUR,
+        netEarningsEUR: (prev.kreatekCore.netEarningsEUR || 0) + finalNetEUR
+      };
+
+      setTimeout(() => showToast("Pago de desbloqueo aprobado.", "success"), 50);
+
+      return {
+        ...prev,
+        promotoras: updatedPromotoras,
+        kreatekCore: updatedCore,
+        unlockedContacts: prev.unlockedContacts.map((u: any) =>
+          u.id === unlockId ? { ...u, status: "approved" } : u
+        )
+      };
+    });
+  };
+
+  const toggleCandidateBacking = (candidateId: string) => {
+    setDb((prev: any) => {
+      const updatedCandidates = prev.candidates.map((c: any) => {
+        if (c.id === candidateId) {
+          const newStatus = c.status === "backed" ? "pending" : "backed";
+          setTimeout(() => showToast(newStatus === "backed" ? "Candidato ahora respaldado por KFS OS" : "Respaldo KFS OS removido", "success"), 50);
+          return { ...c, status: newStatus };
+        }
+        return c;
+      });
+      return {
+        ...prev,
+        candidates: updatedCandidates
+      };
+    });
   };
 
   return (
@@ -1416,7 +1607,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       networkState, setNetworkState, smsConciliator, registerCrmExpress,
       ghostTrapLocked, setGhostTrapLocked, createVale, payVale, registerPosTerminal, deletePosTerminal,
       queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings, updatePaymentMethods, toggleProductFeatured,
-      sendNotification, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, processMonthlyBilling, registerCustomer
+      sendNotification, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, processMonthlyBilling, registerCustomer, blockClient, releaseClient, deleteClient,
+      registerCandidate, unlockCandidateContact, approveUnlock, toggleCandidateBacking
     }}>
       {children}
     </KFSContext.Provider>
