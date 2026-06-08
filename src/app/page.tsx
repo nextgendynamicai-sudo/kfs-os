@@ -3910,7 +3910,10 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
     bioText: "",
     themeColor: "#C5A184",
     typography: "font-sans",
-    layoutType: "grid"
+    layoutType: "grid",
+    deliveryAddress: "",
+    deliveryCity: "",
+    deliveryReference: ""
   });
 
   const handleSave = () => {
@@ -3965,8 +3968,63 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
           </select>
         </div>
 
+        {/* ===== DELIVERY ADDRESS SECTION ===== */}
+        <div className="border-t border-gray-100 pt-6 mt-2">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="bg-orange-100 text-orange-600 p-2 rounded-xl">
+              <Truck size={18}/>
+            </div>
+            <div>
+              <h5 className="font-black text-[#0A1128] text-sm">Dirección de Delivery</h5>
+              <p className="text-[10px] text-gray-400">Esta dirección se enviará al rider cuando despaches un pedido.</p>
+            </div>
+          </div>
+          <div className="space-y-3">
+            <div>
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Calle y Número / Local</label>
+              <input
+                type="text"
+                value={settings.deliveryAddress || ""}
+                onChange={e => setSettings({...settings, deliveryAddress: e.target.value})}
+                placeholder="Ej: Av. Principal, Edificio Torre Norte, Local 4"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Ciudad / Municipio</label>
+              <input
+                type="text"
+                value={settings.deliveryCity || ""}
+                onChange={e => setSettings({...settings, deliveryCity: e.target.value})}
+                placeholder="Ej: Caracas, Miranda"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
+              />
+            </div>
+            <div>
+              <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Referencia (para el rider)</label>
+              <input
+                type="text"
+                value={settings.deliveryReference || ""}
+                onChange={e => setSettings({...settings, deliveryReference: e.target.value})}
+                placeholder="Ej: Frente al banco, puerta azul"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
+              />
+            </div>
+            {settings.deliveryAddress && (
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent([settings.deliveryAddress, settings.deliveryCity].filter(Boolean).join(", "))}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-xs text-orange-600 font-bold hover:text-orange-700 transition-colors"
+              >
+                <Truck size={13}/> Verificar en Google Maps ↗
+              </a>
+            )}
+          </div>
+        </div>
+
         <button onClick={handleSave} className="w-full mt-4 bg-[#0A1128] text-white py-3 rounded-xl font-bold hover:bg-gray-800 transition-colors">
-          Guardar Diseño
+          Guardar Diseño y Dirección
         </button>
       </div>
     </div>
@@ -7333,23 +7391,65 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
               </div>
             ) : myDeliveries.map((tx: any) => {
               const client = db.clients?.find((c: any) => c.id === tx.clientId);
+              const fullAddress = [tx.deliveryAddress, tx.deliveryCity].filter(Boolean).join(", ");
+              const mapsUrl = fullAddress
+                ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(fullAddress)}&travelmode=driving`
+                : null;
               return (
-                <div key={tx.id} className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                <div key={tx.id} className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3">
+                  {/* Header */}
                   <div className="flex justify-between items-start">
                     <div>
-                      <p className="font-black text-sm">{client?.company || "Comercio"}</p>
+                      <p className="font-black text-sm">{client?.company || tx.deliveryBusinessName || "Comercio"}</p>
                       <p className="text-[10px] text-gray-400 font-mono">{tx.id}</p>
                       <p className="text-[10px] text-gray-400">{new Date(tx.timestamp).toLocaleDateString()}</p>
                     </div>
                     <div className="text-right">
                       <p className="font-black text-green-400">+$2.00</p>
-                      <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${tx.shippingStatus === "dispatched" ? "bg-blue-500/20 text-blue-400" : "bg-green-500/20 text-green-400"}`}>
-                        {tx.shippingStatus === "dispatched" ? "En camino" : "Completado"}
+                      <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${
+                        tx.shippingStatus === "dispatched" ? "bg-blue-500/20 text-blue-400" : "bg-green-500/20 text-green-400"
+                      }`}>
+                        {tx.shippingStatus === "dispatched" ? "🛵 En camino" : "✅ Completado"}
                       </span>
                     </div>
                   </div>
+
+                  {/* ===== DELIVERY ADDRESS + MAPS NAVIGATION ===== */}
+                  {fullAddress ? (
+                    <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-3 space-y-2">
+                      <p className="text-[9px] text-orange-300 font-black uppercase tracking-wider flex items-center gap-1">
+                        <Truck size={11}/> Dirección de entrega
+                      </p>
+                      <div>
+                        <p className="text-sm font-black text-white">{fullAddress}</p>
+                        {tx.deliveryReference && (
+                          <p className="text-[10px] text-orange-200/70 mt-0.5">📍 {tx.deliveryReference}</p>
+                        )}
+                      </div>
+                      {/* Navigation Button */}
+                      <a
+                        href={mapsUrl!}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2 w-full py-2.5 bg-orange-500 hover:bg-orange-400 active:scale-95 text-white font-black rounded-xl transition-all text-xs cursor-pointer shadow-lg shadow-orange-500/30"
+                      >
+                        <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                        </svg>
+                        🗺️ Iniciar Navegación en Google Maps
+                      </a>
+                    </div>
+                  ) : (
+                    <div className="bg-white/5 border border-white/10 rounded-xl p-3">
+                      <p className="text-[10px] text-gray-500 font-bold flex items-center gap-1">
+                        <Truck size={11}/> El dueño no ha configurado dirección de delivery aún.
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Pago Móvil */}
                   {tx.riderPagoMovil && (
-                    <div className="mt-3 bg-green-900/20 border border-green-500/20 rounded-xl p-3">
+                    <div className="bg-green-900/20 border border-green-500/20 rounded-xl p-3">
                       <p className="text-[9px] text-green-400 font-black uppercase tracking-wider mb-1">El cliente debe pagarte a:</p>
                       <p className="text-xs font-bold text-white">🏦 {tx.riderPagoMovil.banco} · 📱 {tx.riderPagoMovil.telefono} · 🪪 {tx.riderPagoMovil.cedula}</p>
                     </div>

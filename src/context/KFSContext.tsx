@@ -1940,7 +1940,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           assignedRiderName: assignedRider.name,
           deliveryFeeUSD: 2,
           deliveryStatus: "assigned",
-          riderPagoMovil: assignedRider.pagoMovil || null
+          riderPagoMovil: assignedRider.pagoMovil || null,
+          // Delivery destination address from business settings
+          deliveryAddress: client?.storeSettings?.deliveryAddress || client?.address || "",
+          deliveryCity: client?.storeSettings?.deliveryCity || "",
+          deliveryReference: client?.storeSettings?.deliveryReference || "",
+          deliveryBusinessName: client?.company || "",
         } : tx
       );
 
