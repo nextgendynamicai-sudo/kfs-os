@@ -75,7 +75,8 @@ const initialDB = {
   auditLogs: [],
   supportTickets: [],
   candidates: [],
-  unlockedContacts: []
+  unlockedContacts: [],
+  riders: [] as any[]
 };
 
 interface KFSContextType {
@@ -150,8 +151,17 @@ interface KFSContextType {
   approveCandidateRegistration: (candidateId: string) => void;
   rejectCandidateRegistration: (candidateId: string) => void;
   hireCandidate: (candidateId: string, clientId: string) => void;
-  releaseCandidate: (candidateId: string, clientId: string) => void;
+  releaseCandidate: (candidateId: string, clientId: string, reviewData?: { rating: number; comment: string }) => void;
   toggleCandidateBacking: (candidateId: string) => void;
+  markNotificationsAsRead: (candidateId: string) => void;
+  updateCvBuilderOption: (candidateId: string, useBuilder: boolean) => void;
+  registerRider: (riderData: any) => void;
+  approveRider: (riderId: string) => void;
+  rejectRider: (riderId: string) => void;
+  assignRiderToBusiness: (riderId: string, clientId: string) => void;
+  removeRiderFromBusiness: (riderId: string, clientId: string) => void;
+  assignDeliveryToOrder: (txId: string, clientId: string) => void;
+  updateRiderPagoMovil: (riderId: string, pagoMovil: any) => void;
 }
 
 const KFSContext = createContext<KFSContextType | undefined>(undefined);
@@ -473,6 +483,33 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           showToast(`Bienvenido de vuelta, ${customer.name}`);
         } else {
           showToast("Credenciales de cliente incorrectas.", "error");
+        }
+      }
+    } else if (role === "rider") {
+      if (isProvisional) {
+        const riderDemo = db.riders?.[0];
+        if (riderDemo) {
+          setCurrentUser({ ...riderDemo, role: "rider" });
+          setView("rider");
+          showToast(`Panel Delivery activado: ${riderDemo.name}`);
+        } else {
+          showToast("No hay riders registrados.", "error");
+        }
+      } else {
+        const rider = db.riders?.find((r: any) => r.email === safeEmail && (r.password === safePass || r.password === hashPassword(safePass)));
+        if (rider) {
+          if (rider.status === 'pending') {
+            showToast("Tu cuenta de delivery está pendiente de aprobación.", "error");
+          } else if (rider.status === 'rejected') {
+            showToast("Tu solicitud de delivery fue rechazada.", "error");
+          } else {
+            setCurrentUser({ ...rider, role: "rider" });
+            setView("rider");
+            logAction(rider.name, "LOGIN_RIDER", `Rider ingresó al sistema.`);
+            showToast(`Panel Delivery activado: ${rider.name}`);
+          }
+        } else {
+          showToast("Credenciales de delivery incorrectas.", "error");
         }
       }
     } else if (role === "marketplace") {
@@ -1552,6 +1589,20 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
+  const addCandidateNotification = (candidate: any, title: string, message: string) => {
+    const newNotif = {
+      id: `notif_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`,
+      title,
+      message,
+      timestamp: new Date().toISOString(),
+      read: false
+    };
+    return {
+      ...candidate,
+      notifications: [...(candidate.notifications || []), newNotif]
+    };
+  };
+
   const approveUnlock = (unlockId: string) => {
     setDb((prev: any) => {
       const unlock = prev.unlockedContacts?.find((u: any) => u.id === unlockId);
@@ -1572,9 +1623,17 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         netEarningsEUR: (prev.kreatekCore.netEarningsEUR || 0) + finalNetEUR
       };
 
-      const updatedCandidates = prev.candidates.map((c: any) =>
-        c.id === unlock.candidateId ? { ...c, hiringState: "interviewing", interviewingClientId: unlock.clientId } : c
-      );
+      const updatedCandidates = prev.candidates.map((c: any) => {
+        if (c.id === unlock.candidateId) {
+          const updated = { ...c, hiringState: "interviewing", interviewingClientId: unlock.clientId };
+          return addCandidateNotification(
+            updated,
+            "Contacto Desbloqueado / Entrevista Iniciada 💬",
+            `El comercio "${client?.company || "Un comercio"}" ha desbloqueado tus datos de contacto y ha iniciado un proceso de entrevista contigo.`
+          );
+        }
+        return c;
+      });
 
       setTimeout(() => showToast("Pago de desbloqueo aprobado.", "success"), 50);
 
@@ -1608,7 +1667,14 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         if (c.id === candidateId) {
           const newStatus = c.status === "backed" ? "pending" : "backed";
           setTimeout(() => showToast(newStatus === "backed" ? "Candidato ahora respaldado por KFS OS" : "Respaldo KFS OS removido", "success"), 50);
-          return { ...c, status: newStatus };
+          const updated = { ...c, status: newStatus };
+          return addCandidateNotification(
+            updated,
+            newStatus === "backed" ? "Sello de Aval Otorgado 🏆" : "Aval KFS OS Removido",
+            newStatus === "backed"
+              ? "¡Felicidades! Tu perfil ha recibido el Sello Dorado de Aval por parte del soporte de KFS OS."
+              : "El Aval de KFS OS ha sido removido de tu perfil."
+          );
         }
         return c;
       });
@@ -1628,51 +1694,280 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         netEarningsEUR: (prev.kreatekCore.netEarningsEUR || 0) + feeEUR
       };
       
+      const updatedCandidates = prev.candidates.map((c: any) => {
+        if (c.id === candidateId) {
+          const updated = { ...c, registrationPaymentStatus: "approved", hiringState: "available" };
+          return addCandidateNotification(
+            updated,
+            "Postulación Aprobada ($1 USD) 🟢",
+            "Tu pago de $1 USD fue verificado con éxito. Tu perfil ya está activo y visible para los comercios de KFS OS."
+          );
+        }
+        return c;
+      });
+
       setTimeout(() => showToast("Registro de candidato aprobado ($1 USD).", "success"), 50);
       return {
         ...prev,
         kreatekCore: updatedCore,
-        candidates: prev.candidates.map((c: any) =>
-          c.id === candidateId ? { ...c, registrationPaymentStatus: "approved", hiringState: "available" } : c
-        )
+        candidates: updatedCandidates
       };
     });
   };
 
   const rejectCandidateRegistration = (candidateId: string) => {
     setDb((prev: any) => {
+      const updatedCandidates = prev.candidates.map((c: any) => {
+        if (c.id === candidateId) {
+          const updated = { ...c, registrationPaymentStatus: "rejected" };
+          return addCandidateNotification(
+            updated,
+            "Pago de Postulación Rechazado ⚠️",
+            "Tu reporte de pago de $1 USD fue rechazado por discrepancias de conciliación. Por favor, reenvía los datos de transferencia en tu portal."
+          );
+        }
+        return c;
+      });
       setTimeout(() => showToast("Registro de candidato rechazado.", "error"), 50);
       return {
         ...prev,
-        candidates: prev.candidates.map((c: any) =>
-          c.id === candidateId ? { ...c, registrationPaymentStatus: "rejected" } : c
-        )
+        candidates: updatedCandidates
       };
     });
   };
 
   const hireCandidate = (candidateId: string, clientId: string) => {
     setDb((prev: any) => {
+      const client = prev.clients.find((cl: any) => cl.id === clientId);
+      const updatedCandidates = prev.candidates.map((c: any) => {
+        if (c.id === candidateId) {
+          const updated = { ...c, hiringState: "hired", interviewingClientId: clientId };
+          return addCandidateNotification(
+            updated,
+            "¡Has sido Contratado! 🎉",
+            `¡Felicitaciones! Has sido marcado como CONTRATADO por el comercio "${client?.company || "el comercio"}".`
+          );
+        }
+        return c;
+      });
       setTimeout(() => showToast("Candidato marcado como CONTRATADO.", "success"), 50);
       return {
         ...prev,
-        candidates: prev.candidates.map((c: any) =>
-          c.id === candidateId ? { ...c, hiringState: "hired", interviewingClientId: clientId } : c
-        )
+        candidates: updatedCandidates
       };
     });
   };
 
-  const releaseCandidate = (candidateId: string, clientId: string) => {
+  const releaseCandidate = (candidateId: string, clientId: string, reviewData?: { rating: number; comment: string }) => {
     setDb((prev: any) => {
+      const candidate = prev.candidates.find((c: any) => c.id === candidateId);
+      if (!candidate) return prev;
+
+      const client = prev.clients.find((cl: any) => cl.id === clientId);
+      
+      let updatedReviews = candidate.reviews || [];
+      if (reviewData && reviewData.rating > 0) {
+        updatedReviews = [
+          ...updatedReviews,
+          {
+            id: `rev_${Date.now()}`,
+            rating: reviewData.rating,
+            comment: reviewData.comment || "",
+            clientName: client?.company || "Comercio",
+            timestamp: new Date().toISOString()
+          }
+        ];
+      }
+
+      const updatedCandidates = prev.candidates.map((c: any) => {
+        if (c.id === candidateId) {
+          const updated = {
+            ...c,
+            hiringState: "available",
+            interviewingClientId: null,
+            reviews: updatedReviews
+          };
+          return addCandidateNotification(
+            updated,
+            "Proceso de Entrevista Concluido 🔓",
+            `Tu proceso con "${client?.company || "el comercio"}" ha terminado. Tu perfil vuelve a estar disponible para todos los comercios.`
+          );
+        }
+        return c;
+      });
+
       setTimeout(() => showToast("Candidato liberado y devuelto a la bolsa.", "success"), 50);
+
       return {
         ...prev,
-        candidates: prev.candidates.map((c: any) =>
-          c.id === candidateId ? { ...c, hiringState: "available", interviewingClientId: null } : c
-        )
+        candidates: updatedCandidates
       };
     });
+  };
+
+  const markNotificationsAsRead = (candidateId: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      candidates: (prev.candidates || []).map((c: any) =>
+        c.id === candidateId
+          ? {
+              ...c,
+              notifications: (c.notifications || []).map((n: any) => ({ ...n, read: true }))
+            }
+          : c
+      )
+    }));
+  };
+
+  const updateCvBuilderOption = (candidateId: string, useBuilder: boolean) => {
+    setDb((prev: any) => ({
+      ...prev,
+      candidates: (prev.candidates || []).map((c: any) =>
+        c.id === candidateId ? { ...c, useKfsCvBuilder: useBuilder } : c
+      )
+    }));
+    showToast(useBuilder ? "CV Digital KFS activado." : "CV Digital KFS desactivado.");
+  };
+
+  // ==========================================
+  // DELIVERY RIDER FUNCTIONS
+  // ==========================================
+
+  const registerRider = (riderData: any) => {
+    const existing = db.riders?.find((r: any) => r.email === riderData.email);
+    if (existing) {
+      showToast("Este correo ya está registrado como rider.", "error");
+      return;
+    }
+    const newRider = {
+      ...riderData,
+      password: hashPassword(riderData.password),
+      id: `rider_${Date.now()}`,
+      status: "pending",
+      associatedBusinesses: [],
+      deliveriesCompleted: 0,
+      totalEarningsUSD: 0,
+      createdAt: new Date().toISOString()
+    };
+    setDb((prev: any) => ({
+      ...prev,
+      riders: [...(prev.riders || []), newRider]
+    }));
+    logAction("System", "REGISTER_RIDER", `Rider solicitó registro: ${riderData.name}`);
+    showToast("Solicitud de Delivery enviada. Esperando aprobación del Arquitecto.");
+    setView("login");
+  };
+
+  const approveRider = (riderId: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      riders: (prev.riders || []).map((r: any) => r.id === riderId ? { ...r, status: "approved" } : r)
+    }));
+    logAction("Core", "APPROVE_RIDER", `Rider ${riderId} aprobado.`);
+    showToast("Rider aprobado y activado.", "success");
+  };
+
+  const rejectRider = (riderId: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      riders: (prev.riders || []).filter((r: any) => r.id !== riderId)
+    }));
+    logAction("Core", "REJECT_RIDER", `Rider ${riderId} rechazado y eliminado.`);
+    showToast("Solicitud de rider rechazada y eliminada.", "error");
+  };
+
+  const assignRiderToBusiness = (riderId: string, clientId: string) => {
+    setDb((prev: any) => {
+      const rider = (prev.riders || []).find((r: any) => r.id === riderId);
+      if (!rider) return prev;
+      if (rider.status !== "approved") {
+        setTimeout(() => showToast("El rider debe estar aprobado primero.", "error"), 50);
+        return prev;
+      }
+      if ((rider.associatedBusinesses || []).length >= 2) {
+        setTimeout(() => showToast("Este rider ya está asociado al máximo de 2 negocios.", "error"), 50);
+        return prev;
+      }
+      if ((rider.associatedBusinesses || []).includes(clientId)) {
+        setTimeout(() => showToast("Este rider ya está asociado a este negocio.", "error"), 50);
+        return prev;
+      }
+      // Check business rider limit (2)
+      const businessRiderCount = (prev.riders || []).filter((r: any) => (r.associatedBusinesses || []).includes(clientId)).length;
+      if (businessRiderCount >= 2) {
+        setTimeout(() => showToast("Este negocio ya tiene el máximo de 2 riders.", "error"), 50);
+        return prev;
+      }
+      const updatedRiders = (prev.riders || []).map((r: any) =>
+        r.id === riderId ? { ...r, associatedBusinesses: [...(r.associatedBusinesses || []), clientId] } : r
+      );
+      setTimeout(() => showToast("Rider asociado al negocio exitosamente.", "success"), 50);
+      return { ...prev, riders: updatedRiders };
+    });
+  };
+
+  const removeRiderFromBusiness = (riderId: string, clientId: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      riders: (prev.riders || []).map((r: any) =>
+        r.id === riderId ? { ...r, associatedBusinesses: (r.associatedBusinesses || []).filter((id: string) => id !== clientId) } : r
+      )
+    }));
+    showToast("Rider desasociado del negocio.", "success");
+  };
+
+  const assignDeliveryToOrder = (txId: string, clientId: string) => {
+    setDb((prev: any) => {
+      const businessRiders = (prev.riders || []).filter((r: any) => r.status === "approved" && (r.associatedBusinesses || []).includes(clientId));
+      if (businessRiders.length === 0) {
+        setTimeout(() => showToast("No hay riders disponibles para este negocio.", "error"), 50);
+        return prev;
+      }
+      // Get current round-robin index for this client
+      const client = prev.clients.find((c: any) => c.id === clientId);
+      const currentIndex = client?.deliveryRoundRobinIndex || 0;
+      const assignedRider = businessRiders[currentIndex % businessRiders.length];
+      const nextIndex = currentIndex + 1;
+
+      const updatedClients = prev.clients.map((c: any) =>
+        c.id === clientId ? { ...c, deliveryRoundRobinIndex: nextIndex } : c
+      );
+
+      const updatedTransactions = prev.transactions.map((tx: any) =>
+        tx.id === txId ? {
+          ...tx,
+          assignedRiderId: assignedRider.id,
+          assignedRiderName: assignedRider.name,
+          deliveryFeeUSD: 2,
+          deliveryStatus: "assigned",
+          riderPagoMovil: assignedRider.pagoMovil || null
+        } : tx
+      );
+
+      const updatedRiders = (prev.riders || []).map((r: any) =>
+        r.id === assignedRider.id ? {
+          ...r,
+          deliveriesCompleted: (r.deliveriesCompleted || 0) + 1,
+          totalEarningsUSD: (r.totalEarningsUSD || 0) + 2
+        } : r
+      );
+
+      setTimeout(() => showToast(`Delivery asignado a ${assignedRider.name}. Tarifa: $2 USD.`, "success"), 50);
+      return { ...prev, clients: updatedClients, transactions: updatedTransactions, riders: updatedRiders };
+    });
+  };
+
+  const updateRiderPagoMovil = (riderId: string, pagoMovil: any) => {
+    setDb((prev: any) => ({
+      ...prev,
+      riders: (prev.riders || []).map((r: any) =>
+        r.id === riderId ? { ...r, pagoMovil } : r
+      )
+    }));
+    if (currentUser?.id === riderId) {
+      setCurrentUser((prev: any) => ({ ...prev, pagoMovil }));
+    }
+    showToast("Datos de Pago Móvil actualizados.", "success");
   };
 
   return (
@@ -1686,7 +1981,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       ghostTrapLocked, setGhostTrapLocked, createVale, payVale, registerPosTerminal, deletePosTerminal,
       queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings, updatePaymentMethods, toggleProductFeatured,
       sendNotification, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, processMonthlyBilling, registerCustomer, blockClient, releaseClient, deleteClient,
-      registerCandidate, unlockCandidateContact, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, hireCandidate, releaseCandidate, toggleCandidateBacking
+      registerCandidate, unlockCandidateContact, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, hireCandidate, releaseCandidate, toggleCandidateBacking, markNotificationsAsRead, updateCvBuilderOption,
+      registerRider, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, updateRiderPagoMovil
     }}>
       {children}
     </KFSContext.Provider>

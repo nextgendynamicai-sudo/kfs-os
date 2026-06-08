@@ -49,6 +49,243 @@ const Toast = ({ toast }: { toast: any }) => {
   );
 };
 
+// CvViewerModal Component
+const CvViewerModal = ({ isOpen, onClose, candidate }: any) => {
+  if (!isOpen || !candidate) return null;
+
+  const handlePrint = () => {
+    if (typeof window === "undefined") return;
+    const printContent = document.getElementById("printable-cv-area")?.innerHTML;
+    const cleanName = candidate.name.replace(/\s+/g, '_');
+    
+    // Create an iframe to print cleanly without resetting state or styling
+    const iframe = document.createElement('iframe');
+    iframe.style.position = 'fixed';
+    iframe.style.right = '0';
+    iframe.style.bottom = '0';
+    iframe.style.width = '0';
+    iframe.style.height = '0';
+    iframe.style.border = '0';
+    document.body.appendChild(iframe);
+
+    const doc = iframe.contentWindow?.document || iframe.contentDocument;
+    if (doc) {
+      doc.write(`
+        <html>
+          <head>
+            <title>CV_${cleanName}</title>
+            <style>
+              @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap');
+              body {
+                font-family: 'Outfit', sans-serif;
+                color: #0A1128;
+                background: white;
+                margin: 40px;
+                line-height: 1.5;
+                font-size: 14px;
+              }
+              .header {
+                border-bottom: 2px solid #C5A184;
+                padding-bottom: 20px;
+                margin-bottom: 25px;
+              }
+              .name {
+                font-size: 28px;
+                font-weight: 900;
+                color: #0A1128;
+                margin: 0;
+              }
+              .role {
+                font-size: 16px;
+                font-weight: 800;
+                color: #C5A184;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin-top: 5px;
+              }
+              .contact-info {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 15px;
+                font-size: 12px;
+                color: #555;
+                margin-top: 10px;
+              }
+              .section-title {
+                font-size: 14px;
+                font-weight: 800;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                color: #0A1128;
+                border-bottom: 1px solid #eee;
+                padding-bottom: 5px;
+                margin-top: 25px;
+                margin-bottom: 12px;
+              }
+              .bio {
+                font-size: 13px;
+                color: #333;
+                text-align: justify;
+                white-space: pre-line;
+              }
+              .skills-container {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
+              }
+              .skill-tag {
+                background: #F4F4F6;
+                border: 1px solid #E4E4E7;
+                color: #0A1128;
+                padding: 4px 10px;
+                border-radius: 8px;
+                font-size: 11px;
+                font-weight: 600;
+              }
+              .grid {
+                display: grid;
+                grid-template-cols: 1fr 1fr;
+                gap: 15px;
+                font-size: 12px;
+              }
+              .grid-item {
+                background: #F8F9FA;
+                padding: 10px 15px;
+                border-radius: 12px;
+                border: 1px solid #F1F3F5;
+              }
+              .grid-label {
+                font-weight: 800;
+                color: #C5A184;
+                text-transform: uppercase;
+                font-size: 9px;
+              }
+              .grid-value {
+                font-weight: 600;
+                color: #0A1128;
+                margin-top: 2px;
+              }
+              .footer {
+                margin-top: 40px;
+                border-top: 1px solid #eee;
+                padding-top: 15px;
+                text-align: center;
+                font-size: 10px;
+                color: #aaa;
+                font-weight: 600;
+              }
+              @media print {
+                body {
+                  margin: 20px;
+                }
+              }
+            </style>
+          </head>
+          <body>
+            ${printContent}
+          </body>
+        </html>
+      `);
+      doc.close();
+      
+      setTimeout(() => {
+        iframe.contentWindow?.focus();
+        iframe.contentWindow?.print();
+        document.body.removeChild(iframe);
+      }, 500);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[10000] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+      <div className="bg-white text-[#0A1128] rounded-[2rem] w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-white/20 animate-scale-up">
+        {/* Modal Actions */}
+        <div className="bg-gray-50 border-b border-gray-100 p-5 flex justify-between items-center shrink-0">
+          <div>
+            <h3 className="font-black text-lg text-[#0A1128]">Previsualizar CV Digital</h3>
+            <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Generador de PDF KFS OS</p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={handlePrint}
+              className="bg-[#0A1128] text-white hover:bg-gray-800 px-4 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-md transition-colors"
+            >
+              🖨️ Imprimir / PDF
+            </button>
+            <button
+              onClick={onClose}
+              className="bg-gray-100 hover:bg-gray-200 text-gray-500 px-4 py-2 rounded-xl text-xs font-black cursor-pointer transition-colors animate-pulse"
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
+
+        {/* CV Render Area */}
+        <div className="p-8 overflow-y-auto flex-1 bg-white">
+          <div id="printable-cv-area" className="w-full">
+            <div className="header">
+              <h1 className="name">{candidate.name}</h1>
+              <div className="role">{candidate.role}</div>
+              <div className="contact-info">
+                <span>📞 Teléfono: {candidate.phone}</span>
+                <span>📧 Correo: {candidate.email}</span>
+                <span>📍 Ubicación: {candidate.answers?.location || "Caracas"}</span>
+              </div>
+            </div>
+
+            <div className="section-title">Perfil Profesional</div>
+            <div className="bio">{candidate.bio}</div>
+
+            <div className="section-title">Habilidades Técnicas</div>
+            <div className="skills-container">
+              {candidate.skills?.map((s: string) => (
+                <span key={s} className="skill-tag">{s}</span>
+              ))}
+              {(!candidate.skills || candidate.skills.length === 0) && (
+                <span className="text-xs text-gray-400 italic">Ninguna seleccionada</span>
+              )}
+            </div>
+
+            <div className="section-title">Micro-Encuesta KFS</div>
+            <div className="grid">
+              <div className="grid-item">
+                <div className="grid-label">Disponibilidad de Horario</div>
+                <div className="grid-value">
+                  {candidate.answers?.availability === "full-time" ? "Tiempo Completo (Full-time)" : 
+                   candidate.answers?.availability === "part-time" ? "Medio Tiempo (Part-time)" : "Fines de Semana"}
+                </div>
+              </div>
+              <div className="grid-item">
+                <div className="grid-label">Años de Experiencia</div>
+                <div className="grid-value">
+                  {candidate.answers?.experienceYears === "0-1" ? "Menos de 1 año" : 
+                   candidate.answers?.experienceYears === "1-3" ? "1 a 3 años" : "Más de 3 años"}
+                </div>
+              </div>
+              <div className="grid-item">
+                <div className="grid-label">Movilización / Vehículo</div>
+                <div className="grid-value">
+                  {candidate.answers?.hasVehicle === "no" ? "No posee transporte propio" : 
+                   candidate.answers?.hasVehicle === "moto" ? "Moto propia" : "Carro propio"}
+                </div>
+              </div>
+              <div className="grid-item">
+                <div className="grid-label">Ubicación Residencial</div>
+                <div className="grid-value">{candidate.answers?.location || "No especificada"}</div>
+              </div>
+            </div>
+
+            <div className="footer">
+              Sello de Validación Técnica KFS OS • ID Postulante: {candidate.id}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // SMS Bank Notification Simulator (Smart Conciliator Sim with Live Terminal Logs)
 const SMSConciliatorSimulator = () => {
   const { smsConciliator, showToast, db } = useKFS();
@@ -1482,6 +1719,7 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
                     else if (role === "promotora") setView("promotora");
                     else if (role === "core") setView("core");
                     else if (role === "customer") setView("customer");
+                    else if (role === "rider") setView("rider");
                     else setView("landing");
                   }}
                   className="w-full py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-lg text-[#0A1128] bg-[#C5A184] cursor-pointer text-sm"
@@ -1512,6 +1750,7 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
                 <button onClick={() => setActiveTab("dueño")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "dueño" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Dueño</button>
                 <button onClick={() => setActiveTab("vendedor")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "vendedor" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Vendedor</button>
                 <button onClick={() => setActiveTab("promotora")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "promotora" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Promotora</button>
+                <button onClick={() => setActiveTab("rider")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "rider" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Delivery</button>
                 <button onClick={() => setActiveTab("core")} className={`w-full py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all border border-[#C5A184]/30 cursor-pointer ${activeTab === "core" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_20px_rgba(197,161,132,0.5)]" : "bg-transparent text-[#C5A184] hover:bg-white/5"}`}>Arquitecto</button>
               </div>
 
@@ -1521,9 +1760,9 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
                 </button>
               )}
 
-              {(activeTab === "core" || activeTab === "promotora" || activeTab === "dueño" || activeTab === "vendedor" || activeTab === "customer") && (
+              {(activeTab === "core" || activeTab === "promotora" || activeTab === "dueño" || activeTab === "vendedor" || activeTab === "customer" || activeTab === "rider") && (
                 <div className="space-y-4">
-                  {(activeTab === "dueño" || activeTab === "vendedor" || activeTab === "promotora" || activeTab === "customer") && (
+                  {(activeTab === "dueño" || activeTab === "vendedor" || activeTab === "promotora" || activeTab === "customer" || activeTab === "rider") && (
                     <input type="text" placeholder={activeTab === "customer" ? "Número de Teléfono (Ej: +584141234567)" : "Correo Electrónico de Usuario"} value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#C5A184] focus:ring-1 focus:ring-[#C5A184] transition-all" />
                   )}
                   <div className="relative">
@@ -1548,12 +1787,18 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
                       ¿Nuevo Cliente? Crea tu cuenta
                     </button>
                   )}
+                  {activeTab === "rider" && (
+                    <button onClick={() => setActiveTab("registerRider")} className="w-full text-center text-sm font-bold text-[#C5A184] hover:text-white transition-colors mt-4 cursor-pointer">
+                      ¿Nuevo Rider? Regístrate como Delivery
+                    </button>
+                  )}
                 </div>
               )}
 
               {activeTab === "register" && <RegisterClientForm onRegister={registerClient} onCancel={() => setActiveTab("dueño")} />}
               {activeTab === "registerPromo" && <RegisterPromotoraForm onRegister={registerPromotora} onCancel={() => setActiveTab("promotora")} />}
               {activeTab === "registerCustomer" && <RegisterCustomerForm onCancel={() => setActiveTab("customer")} />}
+              {activeTab === "registerRider" && <RegisterRiderForm onCancel={() => setActiveTab("rider")} />}
             </>
           )}
 
@@ -1618,9 +1863,109 @@ const RegisterCustomerForm = ({ onCancel }: { onCancel: () => void }) => {
     </form>
   )
 }
+// RegisterRiderForm — Formulario de Registro para Riders de Delivery
+const RegisterRiderForm = ({ onCancel }: { onCancel: () => void }) => {
+  const { registerRider, showToast } = useKFS() as any;
+  const [formData, setFormData] = useState({
+    name: "", email: "", password: "", phone: "",
+    cedulaImg: "", medCertImg: "", licenseImg: "",
+    pagoMovil: { banco: "", telefono: "", cedula: "" }
+  });
+  const [uploading, setUploading] = useState({ cedula: false, med: false, license: false });
+
+  const handleDocUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: "cedulaImg" | "medCertImg" | "licenseImg", key: "cedula" | "med" | "license") => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(prev => ({ ...prev, [key]: true }));
+    try {
+      const base64 = await compressImage(file, 800, 0.85);
+      setFormData(prev => ({ ...prev, [field]: base64 }));
+    } catch {
+      showToast("Error al subir documento", "error");
+    }
+    setUploading(prev => ({ ...prev, [key]: false }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.cedulaImg) { showToast("Debes subir tu Cédula de Identidad.", "error"); return; }
+    if (!formData.medCertImg) { showToast("Debes subir tu Certificado Médico.", "error"); return; }
+    if (!formData.licenseImg) { showToast("Debes subir tu Licencia de Conducir.", "error"); return; }
+    if (!formData.pagoMovil.banco || !formData.pagoMovil.telefono || !formData.pagoMovil.cedula) {
+      showToast("Completa todos los datos de Pago Móvil.", "error"); return;
+    }
+    registerRider(formData);
+  };
+
+  const DocUploadField = ({ label, icon, field, fileKey, uploaded }: { label: string; icon: string; field: "cedulaImg" | "medCertImg" | "licenseImg"; fileKey: "cedula" | "med" | "license"; uploaded: boolean }) => (
+    <label className={`relative flex flex-col items-center justify-center gap-2 p-4 border-2 border-dashed rounded-2xl cursor-pointer transition-all group ${uploaded ? "border-green-500/60 bg-green-500/10" : "border-[#C5A184]/30 bg-[#0A1128]/40 hover:bg-[#0A1128]/60"}`}>
+      <input type="file" accept="image/*,application/pdf" className="hidden" onChange={(e) => handleDocUpload(e, field, fileKey)} />
+      <span className="text-3xl">{uploaded ? "✅" : icon}</span>
+      <span className={`text-[10px] font-black uppercase tracking-wider text-center ${uploaded ? "text-green-400" : "text-gray-400 group-hover:text-white"}`}>
+        {uploading[fileKey] ? "Subiendo..." : uploaded ? "¡Cargado!" : label}
+      </span>
+      {uploaded && <span className="text-[8px] text-green-400 font-mono">Toca para cambiar</span>}
+    </label>
+  );
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-4 animate-fade-in max-h-[70vh] overflow-y-auto pr-1">
+      <div className="text-center pb-2 border-b border-[#C5A184]/20">
+        <div className="w-12 h-12 bg-[#C5A184]/10 rounded-full flex items-center justify-center mx-auto mb-2 border border-[#C5A184]/30">
+          <Truck className="text-[#C5A184]" size={24} />
+        </div>
+        <h3 className="text-base font-black text-[#C5A184] uppercase tracking-wider">Registro Rider Delivery</h3>
+        <p className="text-[10px] text-gray-400 mt-1">Sujeto a aprobación del Arquitecto KFS</p>
+      </div>
+
+      {/* Personal Data */}
+      <input required placeholder="Nombre Completo" value={formData.name} onChange={e => setFormData(p => ({...p, name: e.target.value}))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
+      <input required type="tel" placeholder="Teléfono (Ej: 04141234567)" value={formData.phone} onChange={e => setFormData(p => ({...p, phone: e.target.value}))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
+      <input required type="email" placeholder="Correo Electrónico" value={formData.email} onChange={e => setFormData(p => ({...p, email: e.target.value}))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
+      <input required type="password" placeholder="Crear Contraseña" value={formData.password} onChange={e => setFormData(p => ({...p, password: e.target.value}))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
+
+      {/* Document Uploads */}
+      <div className="space-y-1">
+        <p className="text-[10px] font-black text-[#C5A184] uppercase tracking-widest">Documentos Requeridos</p>
+        <p className="text-[9px] text-gray-500">Sube fotos directas desde tu galería o cámara</p>
+      </div>
+      <div className="grid grid-cols-3 gap-2">
+        <DocUploadField label="Cédula" icon="🪪" field="cedulaImg" fileKey="cedula" uploaded={!!formData.cedulaImg} />
+        <DocUploadField label="Cert. Médico" icon="🏥" field="medCertImg" fileKey="med" uploaded={!!formData.medCertImg} />
+        <DocUploadField label="Licencia" icon="🚗" field="licenseImg" fileKey="license" uploaded={!!formData.licenseImg} />
+      </div>
+
+      {/* Pago Móvil */}
+      <div className="space-y-1">
+        <p className="text-[10px] font-black text-[#C5A184] uppercase tracking-widest">Pago Móvil (Cobro de Delivery $2)</p>
+        <p className="text-[9px] text-gray-500">Los clientes te pagarán directamente aquí</p>
+      </div>
+      <select required value={formData.pagoMovil.banco} onChange={e => setFormData(p => ({...p, pagoMovil: {...p.pagoMovil, banco: e.target.value}}))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all">
+        <option value="">— Selecciona Banco —</option>
+        {["Banesco","Mercantil","Banco de Venezuela","Provincial","BOD","Bancaribe","Bicentenario","BNC","Exterior","Tesoro"].map(b => <option key={b} value={b}>{b}</option>)}
+      </select>
+      <div className="grid grid-cols-2 gap-2">
+        <input required type="tel" placeholder="Teléfono PM (04xx...)" value={formData.pagoMovil.telefono} onChange={e => setFormData(p => ({...p, pagoMovil: {...p.pagoMovil, telefono: e.target.value}}))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-3 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
+        <input required placeholder="Cédula Titular" value={formData.pagoMovil.cedula} onChange={e => setFormData(p => ({...p, pagoMovil: {...p.pagoMovil, cedula: e.target.value}}))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-3 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
+      </div>
+
+      <div className="bg-amber-900/20 border border-amber-500/30 rounded-xl p-3">
+        <p className="text-[10px] text-amber-300 font-bold leading-relaxed">⚠️ Tu solicitud será revisada por el Arquitecto KFS. Recibirás notificación de aprobación antes de poder operar.</p>
+      </div>
+
+      <div className="flex gap-3 pt-2">
+        <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl border border-white/20 text-gray-300 font-bold hover:bg-white/5 transition-all text-sm cursor-pointer">Atrás</button>
+        <button type="submit" className="w-2/3 py-3 rounded-xl bg-[#C5A184] text-[#0A1128] font-black hover:scale-[1.02] active:scale-95 transition-all text-sm cursor-pointer flex items-center justify-center gap-2">
+          <Truck size={16} /> Enviar Solicitud
+        </button>
+      </div>
+    </form>
+  );
+};
+
 // CustomerDashboard
 const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
-  const { formatUSD, registerCandidate, showToast } = useKFS() as any;
+  const { formatUSD, registerCandidate, showToast, markNotificationsAsRead } = useKFS() as any;
   const [subTab, setSubTab] = useState("profile"); // profile | jobs
 
   if (!currentUser) return null;
@@ -1650,6 +1995,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
 
   // Candidate Form States
   const currentCandidate = db.candidates?.find((c: any) => c.phone === currentUser.phone);
+  const unreadNotifsCount = currentCandidate?.notifications?.filter((n: any) => !n.read).length || 0;
   
   const [bio, setBio] = useState(currentCandidate?.bio || "");
   const [email, setEmail] = useState(currentCandidate?.email || "");
@@ -1672,6 +2018,9 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
   const [regRefNum, setRegRefNum] = useState("");
   const [regScreenshot, setRegScreenshot] = useState("");
 
+  const [useKfsCvBuilder, setUseKfsCvBuilder] = useState(currentCandidate?.useKfsCvBuilder || false);
+  const [showCvModal, setShowCvModal] = useState(false);
+
   const availableSkills = [
     "Cuadre de caja", "Uso de POS", "Atención al cliente", 
     "Lector de código de barras", "Control de inventario", 
@@ -1692,8 +2041,8 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
       showToast("Por favor completa los campos obligatorios (Correo y Presentación).", "error");
       return;
     }
-    if (!cvFile) {
-      showToast("Debe cargar su Currículum Vitae en PDF o Imagen.", "error");
+    if (!useKfsCvBuilder && !cvFile) {
+      showToast("Debe cargar su Currículum Vitae en PDF/Imagen o activar el CV Digital KFS.", "error");
       return;
     }
 
@@ -1723,9 +2072,10 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
       answers,
       status: currentCandidate?.status || "pending",
       active: isActive,
-      cvFile,
-      cvFileType,
-      cvFileName,
+      cvFile: useKfsCvBuilder ? "" : cvFile,
+      cvFileType: useKfsCvBuilder ? "" : cvFileType,
+      cvFileName: useKfsCvBuilder ? "" : cvFileName,
+      useKfsCvBuilder,
       registrationPaymentStatus: nextStatus,
       registrationPaymentRef: paymentRef,
       registrationPaymentProof: paymentProof,
@@ -1769,6 +2119,11 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
             className={`flex-1 py-3 px-4 text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 ${subTab === "jobs" ? "bg-[#C5A184] text-[#0A1128] shadow-lg" : "text-gray-400 hover:text-white hover:bg-white/5"}`}
           >
             <Briefcase size={16} /> Bolsa de Empleo KFS
+            {unreadNotifsCount > 0 && (
+              <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full animate-pulse">
+                {unreadNotifsCount}
+              </span>
+            )}
           </button>
         </div>
 
@@ -1860,28 +2215,62 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                )}
             </div>
           </>
-        ) : currentCandidate?.registrationPaymentStatus === "pending_approval" ? (
-          <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 shadow-xl text-center space-y-6 max-w-2xl mx-auto animate-fade-in">
-            <div className="w-20 h-20 bg-yellow-500/10 rounded-full border border-yellow-500/30 flex items-center justify-center mx-auto shadow-lg">
-              <Clock size={36} className="text-yellow-400 animate-pulse" />
-            </div>
-            <div className="space-y-2">
-              <h3 className="text-xl font-black text-white">Postulación en Espera de Verificación</h3>
-              <p className="text-sm text-gray-400 leading-relaxed">
-                Hemos recibido tu postulación laboral y tu reporte de pago de **$1.00 USD**. Nuestro equipo de soporte técnico de KFS OS está verificando la transferencia y auditando tu CV.
-              </p>
-              <p className="text-xs text-[#C5A184] font-mono mt-1">
-                Referencia de pago de activación: <span className="font-bold">{currentCandidate.registrationPaymentRef}</span>
-              </p>
-            </div>
-            <div className="pt-2 border-t border-white/10 text-xs text-gray-500">
-              Tu perfil se activará en la bolsa de trabajo tan pronto como el pago sea conciliado.
-            </div>
-          </div>
         ) : (
-          /* Jobs Tab */
-          <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 md:p-8 shadow-xl space-y-6">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-6">
+          /* Jobs Tab Container */
+          <div className="space-y-6">
+            {/* Candidate Notifications Section */}
+            {currentCandidate?.notifications && currentCandidate.notifications.length > 0 && (
+              <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 space-y-4 animate-fade-in">
+                <div className="flex justify-between items-center border-b border-white/10 pb-3">
+                  <h4 className="text-sm font-black text-[#C5A184] uppercase tracking-wider flex items-center gap-2">
+                    <Bell size={16} /> Notificaciones de Empleo
+                  </h4>
+                  {unreadNotifsCount > 0 && (
+                    <button 
+                      type="button" 
+                      onClick={() => markNotificationsAsRead(currentCandidate.id)} 
+                      className="text-[10px] text-gray-400 hover:text-white underline cursor-pointer"
+                    >
+                      Marcar todas como leídas
+                    </button>
+                  )}
+                </div>
+                <div className="space-y-3 max-h-48 overflow-y-auto pr-2">
+                  {[...currentCandidate.notifications].reverse().map((n: any) => (
+                    <div key={n.id} className={`p-4 rounded-xl border transition-all text-xs ${n.read ? 'bg-black/35 border-white/5 text-gray-400' : 'bg-[#C5A184]/10 border-[#C5A184]/30 text-white font-bold'}`}>
+                      <div className="flex justify-between items-start gap-2">
+                        <span className="uppercase tracking-wider font-black">{n.title}</span>
+                        <span className="text-[9px] text-gray-500 font-mono shrink-0">{new Date(n.timestamp).toLocaleDateString()}</span>
+                      </div>
+                      <p className="mt-1 text-gray-300 font-normal leading-relaxed">{n.message}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {currentCandidate?.registrationPaymentStatus === "pending_approval" ? (
+              <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 shadow-xl text-center space-y-6 max-w-2xl mx-auto animate-fade-in">
+                <div className="w-20 h-20 bg-yellow-500/10 rounded-full border border-yellow-500/30 flex items-center justify-center mx-auto shadow-lg">
+                  <Clock size={36} className="text-yellow-400 animate-pulse" />
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-xl font-black text-white">Postulación en Espera de Verificación</h3>
+                  <p className="text-sm text-gray-400 leading-relaxed">
+                    Hemos recibido tu postulación laboral y tu reporte de pago de **$1.00 USD**. Nuestro equipo de soporte técnico de KFS OS está verificando la transferencia y auditando tu CV.
+                  </p>
+                  <p className="text-xs text-[#C5A184] font-mono mt-1">
+                    Referencia de pago de activación: <span className="font-bold">{currentCandidate.registrationPaymentRef}</span>
+                  </p>
+                </div>
+                <div className="pt-2 border-t border-white/10 text-xs text-gray-500">
+                  Tu perfil se activará en la bolsa de trabajo tan pronto como el pago sea conciliado.
+                </div>
+              </div>
+            ) : (
+              /* Jobs Tab Form Container */
+              <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 md:p-8 shadow-xl space-y-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-6">
               <div>
                 <h3 className="text-2xl font-black text-[#C5A184] flex items-center gap-2">
                   <Briefcase size={26} /> Mi Perfil Laboral
@@ -1969,40 +2358,82 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
               </div>
 
               <div>
-                <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider mb-2 block">Currículum Vitae (PDF o Imagen - Obligatorio)</label>
-                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-white/5 border border-white/10 p-5 rounded-2xl">
-                  <input
-                    type="file"
-                    accept="application/pdf,image/*"
-                    onChange={async (e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        try {
-                          setCvFileName(file.name);
-                          setCvFileType(file.type);
-                          const base64 = await readAsBase64(file);
-                          setCvFile(base64);
-                          showToast("Currículum cargado.", "success");
-                        } catch (err) {
-                          showToast("Error al leer el archivo.", "error");
-                        }
-                      }
-                    }}
-                    className="text-xs text-gray-400 block w-full sm:w-auto"
-                  />
-                  {cvFileName && (
-                    <div className="flex items-center gap-2 text-xs font-bold text-green-400">
-                      <span>📄 {cvFileName}</span>
-                      <button 
-                        type="button" 
-                        onClick={() => window.open(cvFile, '_blank')} 
-                        className="text-[10px] text-green-300 underline cursor-pointer hover:text-white"
-                      >
-                        (Ver actual)
-                      </button>
-                    </div>
-                  )}
+                <div className="flex justify-between items-center mb-2">
+                  <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider block">Currículum Vitae (Obligatorio)</label>
+                  <button
+                    type="button"
+                    onClick={() => setUseKfsCvBuilder(!useKfsCvBuilder)}
+                    className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${useKfsCvBuilder ? "bg-[#C5A184] text-[#0A1128]" : "bg-white/5 text-gray-400 hover:text-white"}`}
+                  >
+                    {useKfsCvBuilder ? "⚡ Usando CV Digital KFS" : "📄 Usar CV Digital KFS"}
+                  </button>
                 </div>
+                
+                {useKfsCvBuilder ? (
+                  <div className="bg-white/5 border border-white/10 p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <div>
+                      <p className="text-xs text-green-400 font-bold">✨ CV Digital Autogenerado KFS OS</p>
+                      <p className="text-[10px] text-gray-400 mt-0.5">Se generará un currículum formateado profesionalmente con tu Bio, Habilidades y Respuestas.</p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowCvModal(true)}
+                      className="px-4 py-2 rounded-xl bg-[#0A1128] text-[#C5A184] border border-[#C5A184]/35 font-bold text-xs hover:bg-[#C5A184] hover:text-[#0A1128] transition-all cursor-pointer"
+                    >
+                      Previsualizar / Imprimir CV
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-white/5 border border-white/10 p-5 rounded-2xl">
+                    <input
+                      type="file"
+                      accept="application/pdf,image/*"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          try {
+                            setCvFileName(file.name);
+                            setCvFileType(file.type);
+                            const base64 = await readAsBase64(file);
+                            setCvFile(base64);
+                            showToast("Currículum cargado.", "success");
+                          } catch (err) {
+                            showToast("Error al leer el archivo.", "error");
+                          }
+                        }
+                      }}
+                      className="text-xs text-gray-400 block w-full sm:w-auto"
+                    />
+                    {cvFileName && (
+                      <div className="flex items-center gap-2 text-xs font-bold text-green-400">
+                        <span>📄 {cvFileName}</span>
+                        <button 
+                          type="button" 
+                          onClick={() => window.open(cvFile, '_blank')} 
+                          className="text-[10px] text-green-300 underline cursor-pointer hover:text-white"
+                        >
+                          (Ver actual)
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {showCvModal && (
+                  <CvViewerModal 
+                    isOpen={showCvModal} 
+                    onClose={() => setShowCvModal(false)} 
+                    candidate={{
+                      name: currentUser.name,
+                      phone: currentUser.phone,
+                      email: email || currentCandidate?.email || "correo@ejemplo.com",
+                      bio: bio || currentCandidate?.bio || "Bio...",
+                      role: selectedRole || currentCandidate?.role || "Cajero",
+                      skills: selectedSkills || currentCandidate?.skills || [],
+                      answers: answers || currentCandidate?.answers || {},
+                      id: currentCandidate?.id || "cand_demo"
+                    }}
+                  />
+                )}
               </div>
 
               <div>
@@ -2168,16 +2599,19 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
           </div>
         )}
       </div>
-    </div>
+    )}
+  </div>
+</div>
   );
 };
 
 // CoreDashboard
 const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePromotoraEarnings, showToast, formatUSD, formatEUR, currentUser, logout, approveSubscription }: any) => {
-  const { impersonateClient, registerClient, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, toggleCandidateBacking } = useKFS() as any;
+  const { impersonateClient, registerClient, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, toggleCandidateBacking, approveRider, rejectRider } = useKFS() as any;
   const [searchPromotora, setSearchPromotora] = useState("");
   const [searchClient, setSearchClient] = useState("");
   const [searchVendedor, setSearchVendedor] = useState("");
+  const [viewingCandidateCv, setViewingCandidateCv] = useState<any | null>(null);
 
   const [activeModal, setActiveModal] = useState<string | null>(null);
   
@@ -2515,12 +2949,18 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                         Referencia de Activación ($1): <span className="font-black text-green-700">{cand.registrationPaymentRef}</span>
                       </p>
                       <div className="flex gap-4 mt-2">
-                        {cand.cvFile && (
+                        {(cand.cvFile || cand.useKfsCvBuilder) && (
                           <button 
-                            onClick={() => window.open(cand.cvFile, '_blank')}
+                            onClick={() => {
+                              if (cand.useKfsCvBuilder) {
+                                setViewingCandidateCv(cand);
+                              } else {
+                                window.open(cand.cvFile, '_blank');
+                              }
+                            }}
                             className="text-[10px] font-black text-blue-700 underline cursor-pointer flex items-center gap-1"
                           >
-                            👁️ Abrir Currículum ({cand.cvFileType?.includes('pdf') ? 'PDF' : 'Imagen'})
+                            👁️ {cand.useKfsCvBuilder ? "Ver CV Digital KFS" : `Abrir Currículum (${cand.cvFileType?.includes('pdf') ? 'PDF' : 'Imagen'})`}
                           </button>
                         )}
                         {cand.registrationPaymentProof && (
@@ -2641,7 +3081,21 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                     </td>
                     <td className="py-4 px-4 text-gray-500 font-mono text-xs">
                       <span className="block">{cand.phone}</span>
-                      <span>{cand.email}</span>
+                      <span className="block">{cand.email}</span>
+                      {(cand.cvFile || cand.useKfsCvBuilder) && (
+                        <button 
+                          onClick={() => {
+                            if (cand.useKfsCvBuilder) {
+                              setViewingCandidateCv(cand);
+                            } else {
+                              window.open(cand.cvFile, '_blank');
+                            }
+                          }}
+                          className="text-[9px] font-black text-blue-700 underline cursor-pointer block mt-1 text-left"
+                        >
+                          👁️ {cand.useKfsCvBuilder ? "Ver CV Digital" : "Ver CV Adjunto"}
+                        </button>
+                      )}
                     </td>
                     <td className="py-4 px-4 text-center">
                       {cand.status === 'backed' ? (
@@ -2959,6 +3413,120 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
           </div>
         </div>
 
+        {/* =================== RIDERS DELIVERY =================== */}
+        <div className="bg-white rounded-[2rem] shadow-lg overflow-hidden border border-gray-100">
+          <div className="flex items-center justify-between p-6 border-b border-gray-100">
+            <div>
+              <h2 className="text-xl font-black text-[#0A1128] flex items-center gap-2">
+                <Truck size={20} className="text-[#C5A184]" /> Riders de Delivery
+              </h2>
+              <p className="text-xs text-gray-400 mt-0.5">Aprobación, revisión de documentos y gestión de riders</p>
+            </div>
+            <div className="flex gap-2 items-center">
+              {(db.riders?.filter((r: any) => r.status === "pending") || []).length > 0 && (
+                <span className="bg-amber-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full animate-pulse">
+                  {(db.riders?.filter((r: any) => r.status === "pending") || []).length} pendientes
+                </span>
+              )}
+              <span className="bg-[#0A1128] text-white text-[10px] font-black px-3 py-1.5 rounded-full">
+                {(db.riders || []).length} total
+              </span>
+            </div>
+          </div>
+
+          {(db.riders || []).length === 0 ? (
+            <div className="p-10 text-center">
+              <Truck size={40} className="mx-auto text-gray-300 mb-3" />
+              <p className="text-gray-400 font-bold">No hay riders registrados aún.</p>
+              <p className="text-xs text-gray-300 mt-1">Los riders se registran desde el panel de login.</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-gray-50">
+              {(db.riders || []).map((rider: any) => {
+                const businessNames = (rider.associatedBusinesses || []).map((bId: string) =>
+                  db.clients?.find((c: any) => c.id === bId)?.company
+                ).filter(Boolean);
+                return (
+                  <div key={rider.id} className="p-5">
+                    <div className="flex items-start gap-4 mb-4">
+                      <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg flex-shrink-0 border-2 ${rider.status === "approved" ? "border-green-400 bg-green-50" : "border-amber-400 bg-amber-50"}`}>
+                        🛵
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h3 className="font-black text-[#0A1128]">{rider.name}</h3>
+                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${rider.status === "approved" ? "bg-green-100 text-green-700" : rider.status === "rejected" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>
+                            {rider.status === "approved" ? "✅ Aprobado" : rider.status === "rejected" ? "❌ Rechazado" : "⏳ Pendiente"}
+                          </span>
+                        </div>
+                        <p className="text-xs text-gray-500 font-mono">{rider.email} · {rider.phone}</p>
+                        <p className="text-[10px] text-gray-400 mt-0.5">
+                          {businessNames.length > 0 ? `Negocios: ${businessNames.join(", ")}` : "Sin negocios asociados"}
+                        </p>
+                        {rider.pagoMovil?.banco && (
+                          <p className="text-[10px] text-green-600 font-bold mt-0.5">
+                            💳 PM: {rider.pagoMovil.banco} · {rider.pagoMovil.telefono} · CI {rider.pagoMovil.cedula}
+                          </p>
+                        )}
+                      </div>
+                      <p className="text-[9px] text-gray-300 flex-shrink-0">{new Date(rider.createdAt).toLocaleDateString()}</p>
+                    </div>
+
+                    {/* Documents Preview */}
+                    <div className="grid grid-cols-3 gap-2 mb-4">
+                      {[
+                        { label: "Cédula", key: "cedulaImg", icon: "🪪" },
+                        { label: "Cert. Médico", key: "medCertImg", icon: "🏥" },
+                        { label: "Licencia", key: "licenseImg", icon: "🚗" }
+                      ].map(({ label, key, icon }) => (
+                        <div key={key} className={`rounded-xl p-2 text-center border ${rider[key] ? "border-green-200 bg-green-50" : "border-gray-200 bg-gray-50"}`}>
+                          {rider[key] ? (
+                            <img src={rider[key]} alt={label} className="w-full h-16 object-cover rounded-lg mb-1 cursor-pointer" onClick={() => window.open(rider[key], "_blank")} title="Click para ampliar" />
+                          ) : (
+                            <div className="w-full h-16 flex items-center justify-center text-2xl mb-1">{icon}</div>
+                          )}
+                          <p className={`text-[8px] font-black uppercase ${rider[key] ? "text-green-600" : "text-red-400"}`}>
+                            {rider[key] ? "✅ " : "⚠️ "}{label}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Actions */}
+                    {rider.status === "pending" && (
+                      <div className="flex gap-2">
+                        <button onClick={() => approveRider(rider.id)} className="flex-1 py-2.5 bg-green-500 text-white font-black rounded-xl hover:bg-green-600 active:scale-95 transition-all text-xs cursor-pointer">
+                          ✅ Aprobar Rider
+                        </button>
+                        <button onClick={() => rejectRider(rider.id)} className="flex-1 py-2.5 bg-red-500 text-white font-black rounded-xl hover:bg-red-600 active:scale-95 transition-all text-xs cursor-pointer">
+                          ❌ Rechazar y Eliminar
+                        </button>
+                      </div>
+                    )}
+                    {rider.status === "approved" && (
+                      <div className="flex gap-2">
+                        <div className="flex-1 py-2 bg-green-50 border border-green-200 rounded-xl text-center">
+                          <p className="text-[10px] font-black text-green-600">🏁 {rider.deliveriesCompleted || 0} entregas realizadas</p>
+                        </div>
+                        <button onClick={() => rejectRider(rider.id)} className="px-4 py-2 bg-red-50 text-red-500 font-black rounded-xl hover:bg-red-100 text-xs border border-red-200 cursor-pointer">
+                          Revocar
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {viewingCandidateCv && (
+          <CvViewerModal 
+            isOpen={!!viewingCandidateCv} 
+            onClose={() => setViewingCandidateCv(null)} 
+            candidate={viewingCandidateCv} 
+          />
+        )}
       </div>
     </div>
   );
@@ -3399,6 +3967,31 @@ const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
 const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
   const { unlockCandidateContact, updateStoreSettings, hireCandidate, releaseCandidate, showToast } = useKFS() as any;
   const [activeWidgetTab, setActiveWidgetTab] = useState("search"); // search | preset | unlocked
+
+  // Rating & Review Modal State
+  const [ratingCandidateId, setRatingCandidateId] = useState<string | null>(null);
+  const [ratingStars, setRatingStars] = useState(5);
+  const [ratingComment, setRatingComment] = useState("");
+  const [viewingCandidateCv, setViewingCandidateCv] = useState<any | null>(null);
+
+  const getAverageRating = (c: any) => {
+    if (!c.reviews || c.reviews.length === 0) return 0;
+    const sum = c.reviews.reduce((acc: number, r: any) => acc + r.rating, 0);
+    return Math.round((sum / c.reviews.length) * 10) / 10;
+  };
+
+  const renderStars = (rating: number) => {
+    const rounded = Math.round(rating);
+    return (
+      <div className="flex text-amber-500 gap-0.5">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <span key={star} className="text-xs">
+            {star <= rounded ? "★" : "☆"}
+          </span>
+        ))}
+      </div>
+    );
+  };
   
   // Preset States
   const storePreset = currentUser.storeSettings?.hiringPreset || {
@@ -3658,6 +4251,18 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                         <h4 className="text-lg font-black text-[#0A1128] mt-1 filter blur-[4px] select-none">
                           {cand.name}
                         </h4>
+                        {(() => {
+                          const avg = getAverageRating(cand);
+                          if (avg === 0) return null;
+                          return (
+                            <div className="flex items-center gap-1.5 mt-1">
+                              {renderStars(avg)}
+                              <span className="text-[10px] font-bold text-gray-500">
+                                {avg} ({cand.reviews.length} {cand.reviews.length === 1 ? "reseña" : "reseñas"})
+                              </span>
+                            </div>
+                          );
+                        })()}
                       </div>
                       <div className="flex flex-col items-end gap-1">
                         <span className={`text-xs font-black px-2.5 py-1 rounded-full ${cand.matchScore >= 80 ? 'bg-green-100 text-green-700' : cand.matchScore >= 50 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>
@@ -3856,19 +4461,45 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                            cand.hiringState === 'interviewing' ? 'En Entrevista' : 'Libre'}
                         </span>
                       </div>
-                      {cand.cvFile && (
+                      {(cand.cvFile || cand.useKfsCvBuilder) && (
                         <div className="flex justify-between items-center text-xs font-bold pt-1">
                           <span className="text-gray-400">Hoja de Vida (CV):</span>
                           <button 
                             type="button"
-                            onClick={() => window.open(cand.cvFile, '_blank')}
+                            onClick={() => {
+                              if (cand.useKfsCvBuilder) {
+                                setViewingCandidateCv(cand);
+                              } else {
+                                window.open(cand.cvFile, '_blank');
+                              }
+                            }}
                             className="text-[#C5A184] underline cursor-pointer text-[10px]"
                           >
-                            👁️ Descargar / Ver CV
+                            👁️ {cand.useKfsCvBuilder ? "Ver CV Digital KFS" : "Ver CV Adjunto"}
                           </button>
                         </div>
                       )}
                     </div>
+                    {cand.reviews && cand.reviews.length > 0 && (
+                      <div className="bg-gray-50 border border-gray-150 p-4 rounded-xl space-y-2">
+                        <p className="text-[10px] font-black uppercase text-gray-500 tracking-wider">Historial de Referencias KFS:</p>
+                        <div className="space-y-2 max-h-32 overflow-y-auto pr-1">
+                          {cand.reviews.map((r: any) => (
+                            <div key={r.id} className="p-3 bg-white border border-gray-200 rounded-lg text-[10px] space-y-1">
+                              <div className="flex justify-between items-center font-bold">
+                                <span className="text-[#0A1128]">{r.clientName}</span>
+                                <div className="flex items-center gap-1">
+                                  {renderStars(r.rating)}
+                                  <span className="text-gray-500 font-mono">({r.rating})</span>
+                                </div>
+                              </div>
+                              <p className="text-gray-600 leading-normal font-normal italic">"{r.comment}"</p>
+                              <div className="text-[8px] text-gray-400 text-right font-mono">{new Date(r.timestamp).toLocaleDateString()}</div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="mt-6 pt-4 border-t border-gray-100 space-y-3">
@@ -3906,7 +4537,11 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                             🤝 Contratar
                           </button>
                           <button
-                            onClick={() => releaseCandidate(cand.id, currentUser.id)}
+                            onClick={() => {
+                              setRatingCandidateId(cand.id);
+                              setRatingStars(5);
+                              setRatingComment("");
+                            }}
                             className="w-1/2 py-2.5 bg-gray-600 hover:bg-gray-700 text-white rounded-xl font-black text-xs cursor-pointer shadow-md transition-colors"
                           >
                             🔓 Liberar Candidato
@@ -3914,7 +4549,11 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                         </>
                       ) : cand.hiringState === 'hired' && cand.interviewingClientId === currentUser.id ? (
                         <button
-                          onClick={() => releaseCandidate(cand.id, currentUser.id)}
+                          onClick={() => {
+                            setRatingCandidateId(cand.id);
+                            setRatingStars(5);
+                            setRatingComment("");
+                          }}
                           className="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-black text-xs cursor-pointer shadow-md transition-colors"
                         >
                           🚪 Finalizar Contrato (Liberar a la Bolsa)
@@ -3934,6 +4573,74 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
             )}
           </div>
         </div>
+      )}
+      {ratingCandidateId && (
+        <div className="fixed inset-0 z-[11000] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-white text-[#0A1128] rounded-[2rem] p-8 w-full max-w-md shadow-2xl border border-white/20 animate-scale-up space-y-6">
+            <div className="text-center">
+              <h3 className="text-xl font-black text-[#0A1128]">Calificar Candidato</h3>
+              <p className="text-xs text-gray-500 mt-1">Comparte tu experiencia para ayudar a otros comercios de la red KFS.</p>
+            </div>
+
+            {/* Stars Selector */}
+            <div className="flex justify-center gap-2">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setRatingStars(star)}
+                  className="text-3xl focus:outline-none hover:scale-110 transition-transform cursor-pointer text-amber-500"
+                >
+                  {star <= ratingStars ? "★" : "☆"}
+                </button>
+              ))}
+            </div>
+
+            {/* Comment Input */}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase text-gray-500 tracking-wider block">Reseña / Referencia laboral</label>
+              <textarea
+                rows={3}
+                placeholder="Ej: Excelente actitud, muy rápido en el POS y puntual. Altamente recomendado."
+                value={ratingComment}
+                onChange={(e) => setRatingComment(e.target.value)}
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#C5A184] text-[#0A1128] font-bold"
+              />
+            </div>
+
+            {/* Buttons */}
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  releaseCandidate(ratingCandidateId, currentUser.id);
+                  setRatingCandidateId(null);
+                }}
+                className="w-1/2 py-3 bg-gray-150 text-gray-500 rounded-xl font-bold text-xs transition-colors cursor-pointer text-center animate-pulse"
+              >
+                Omitir Calificación
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  releaseCandidate(ratingCandidateId, currentUser.id, { rating: ratingStars, comment: ratingComment });
+                  setRatingCandidateId(null);
+                }}
+                className="w-1/2 py-3 bg-[#0A1128] hover:bg-gray-800 text-white rounded-xl font-black text-xs transition-colors cursor-pointer text-center shadow-md"
+              >
+                Enviar y Liberar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {viewingCandidateCv && (
+        <CvViewerModal 
+          isOpen={!!viewingCandidateCv} 
+          onClose={() => setViewingCandidateCv(null)} 
+          candidate={viewingCandidateCv} 
+        />
       )}
     </div>
   );
@@ -3959,7 +4666,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   const [ticketSubject, setTicketSubject] = useState("");
   const [ticketMsg, setTicketMsg] = useState("");
   const [fundAmount, setFundAmount] = useState("");
-  const { createTicket, fundWallet, processMonthlyBilling, createVale, payVale, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating, registerPosTerminal, deletePosTerminal } = useKFS() as any;
+  const { createTicket, fundWallet, processMonthlyBilling, createVale, payVale, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating, registerPosTerminal, deletePosTerminal, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder } = useKFS() as any;
 
   const handleCSVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -4868,21 +5575,75 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   </h4>
                   {myPendingDispatch.map((tx: any) => {
                     const product = db.products.find((p: any) => p.id === tx.productId);
+                    const assignedRider = tx.assignedRiderId ? db.riders?.find((r: any) => r.id === tx.assignedRiderId) : null;
                     return (
-                      <div key={tx.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-blue-50 rounded-2xl border border-blue-100 shadow-sm gap-4 animate-fade-in">
-                        <div>
-                          <span className="bg-blue-200 text-blue-800 text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-wider mb-2 inline-block">Pago Aprobado</span>
-                          <h4 className="font-bold text-[#0A1128]">{product?.name || "Producto Desconocido"}</h4>
-                          <p className="text-sm text-gray-600 font-mono mt-1">Teléfono: <span className="font-bold">{tx.customerPhone}</span></p>
+                      <div key={tx.id} className="flex flex-col p-5 bg-blue-50 rounded-2xl border border-blue-100 shadow-sm gap-4 animate-fade-in">
+                        <div className="flex justify-between items-start flex-wrap gap-2">
+                          <div>
+                            <span className="bg-blue-200 text-blue-800 text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-wider mb-2 inline-block">Pago Aprobado</span>
+                            <h4 className="font-bold text-[#0A1128]">{product?.name || "Producto Desconocido"}</h4>
+                            <p className="text-sm text-gray-600 font-mono mt-1">Teléfono: <span className="font-bold">{tx.customerPhone}</span></p>
+                          </div>
+                          <div className="flex gap-2">
+                            <button onClick={() => { dispatchOrder(tx.id); assignDeliveryToOrder(tx.id, currentUser.id); }} className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md text-sm">
+                              <Truck size={16} /> Despachar + Asignar Rider
+                            </button>
+                          </div>
                         </div>
-                        <div className="flex gap-2 w-full md:w-auto">
-                          <button onClick={() => dispatchOrder(tx.id)} className="w-full md:w-auto px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md">
-                            <Truck size={16} /> Marcar como Enviado
-                          </button>
-                        </div>
+                        {assignedRider && (
+                          <div className="bg-green-50 border border-green-200 rounded-xl p-3">
+                            <p className="text-[10px] text-green-600 font-black uppercase tracking-wider mb-1">🛵 Rider Asignado — El cliente paga $2 directamente</p>
+                            <p className="font-bold text-sm text-[#0A1128]">{assignedRider.name}</p>
+                            {assignedRider.pagoMovil?.banco && (
+                              <p className="text-xs text-gray-600 mt-0.5">💳 {assignedRider.pagoMovil.banco} · {assignedRider.pagoMovil.telefono} · CI {assignedRider.pagoMovil.cedula}</p>
+                            )}
+                          </div>
+                        )}
                       </div>
                     );
                   })}
+                  
+                  {/* My Riders Section */}
+                  {(() => {
+                    const myRiders = (db.riders || []).filter((r: any) => (r.associatedBusinesses || []).includes(currentUser.id));
+                    const availableRiders = (db.riders || []).filter((r: any) => r.status === "approved" && !(r.associatedBusinesses || []).includes(currentUser.id) && (r.associatedBusinesses || []).length < 2);
+                    return (
+                      <div className="bg-white border border-blue-100 rounded-2xl p-5 mt-4">
+                        <h4 className="font-black text-[#0A1128] text-sm mb-3 flex items-center gap-2">
+                          <Truck size={16} className="text-blue-500" /> Mis Riders ({myRiders.length}/2)
+                        </h4>
+                        {myRiders.length === 0 ? (
+                          <p className="text-xs text-gray-400 italic">No tienes riders asignados. Añade un rider aprobado abajo.</p>
+                        ) : (
+                          <div className="space-y-2 mb-3">
+                            {myRiders.map((r: any) => (
+                              <div key={r.id} className="flex items-center justify-between bg-blue-50 rounded-xl p-3">
+                                <div>
+                                  <p className="font-black text-sm text-[#0A1128]">{r.name}</p>
+                                  <p className="text-[10px] text-gray-500">{r.pagoMovil?.banco ? `PM: ${r.pagoMovil.banco}` : "Sin Pago Móvil"}</p>
+                                </div>
+                                <button onClick={() => removeRiderFromBusiness(r.id, currentUser.id)} className="text-[10px] text-red-500 hover:text-red-700 font-bold cursor-pointer px-2 py-1 rounded-lg hover:bg-red-50">Quitar</button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                        {myRiders.length < 2 && availableRiders.length > 0 && (
+                          <div>
+                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-wider mb-2">Riders disponibles para asignar:</p>
+                            <div className="space-y-1">
+                              {availableRiders.slice(0, 5).map((r: any) => (
+                                <button key={r.id} onClick={() => assignRiderToBusiness(r.id, currentUser.id)} className="w-full text-left px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl hover:bg-blue-50 hover:border-blue-200 transition-colors cursor-pointer">
+                                  <span className="font-bold text-sm text-[#0A1128]">{r.name}</span>
+                                  <span className="text-[10px] text-gray-400 ml-2">{r.email}</span>
+                                  <span className="float-right text-[10px] text-blue-500 font-black">+ Añadir</span>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
 
@@ -6344,6 +7105,222 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
 };
 
 // ==========================================
+// RIDER DASHBOARD
+// ==========================================
+const RiderDashboard = ({ db, currentUser, logout }: any) => {
+  const { updateRiderPagoMovil, showToast, formatUSD } = useKFS() as any;
+  const [activeTab, setActiveTab] = useState("overview");
+  const [editingPM, setEditingPM] = useState(false);
+  const [pmForm, setPmForm] = useState({ banco: "", telefono: "", cedula: "" });
+
+  const riderInfo = db.riders?.find((r: any) => r.id === currentUser.id) || currentUser;
+  const myDeliveries = db.transactions?.filter((tx: any) => tx.assignedRiderId === currentUser.id) || [];
+  const pendingDeliveries = myDeliveries.filter((tx: any) => tx.deliveryStatus === "assigned" && tx.shippingStatus !== "delivered");
+  const completedDeliveries = myDeliveries.filter((tx: any) => tx.shippingStatus === "delivered" || tx.deliveryStatus === "delivered");
+  const totalEarnings = myDeliveries.length * 2;
+
+  const myBusinesses = (riderInfo.associatedBusinesses || []).map((bId: string) =>
+    db.clients?.find((c: any) => c.id === bId)
+  ).filter(Boolean);
+
+  const handleSavePM = () => {
+    if (!pmForm.banco || !pmForm.telefono || !pmForm.cedula) {
+      showToast("Completa todos los campos de Pago Móvil.", "error"); return;
+    }
+    updateRiderPagoMovil(currentUser.id, pmForm);
+    setEditingPM(false);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0A1128] text-white font-sans pb-20">
+      <Navbar title="Panel Delivery" showBack={true} onBack={logout} />
+      <div className="max-w-2xl mx-auto p-4 space-y-4 animate-fade-in">
+
+        {/* Status Banner */}
+        <div className={`rounded-2xl p-5 border flex items-center gap-4 ${riderInfo.status === "approved" ? "bg-green-900/20 border-green-500/30" : "bg-amber-900/20 border-amber-500/30"}`}>
+          <div className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl flex-shrink-0 border-2 ${riderInfo.status === "approved" ? "border-green-400" : "border-amber-400"}`}>
+            🛵
+          </div>
+          <div className="flex-1 min-w-0">
+            <h2 className="font-black text-lg truncate">{riderInfo.name}</h2>
+            <p className="text-xs text-gray-400 font-mono truncate">{riderInfo.email}</p>
+            <span className={`inline-flex items-center gap-1 mt-1 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${riderInfo.status === "approved" ? "bg-green-500/20 text-green-400 border border-green-500/30" : "bg-amber-500/20 text-amber-400 border border-amber-500/30 animate-pulse"}`}>
+              {riderInfo.status === "approved" ? "✅ Activo" : "⏳ Pendiente de Aprobación"}
+            </span>
+          </div>
+          <div className="text-right flex-shrink-0">
+            <p className="text-[10px] text-gray-400 font-mono">Ganancias</p>
+            <p className="text-xl font-black text-green-400">${totalEarnings.toFixed(2)}</p>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex gap-2">
+          {[["overview","📊 General"],["deliveries","📦 Pedidos"],["pago","💳 Pago Móvil"],["docs","🪪 Docs"]].map(([tab, label]) => (
+            <button key={tab} onClick={() => setActiveTab(tab)} className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${activeTab === tab ? "bg-[#C5A184] text-[#0A1128]" : "bg-white/5 text-gray-400 hover:bg-white/10"}`}>{label}</button>
+          ))}
+        </div>
+
+        {/* TAB: Overview */}
+        {activeTab === "overview" && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-3 gap-3">
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
+                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Entregas</p>
+                <p className="text-2xl font-black text-[#C5A184] mt-1">{myDeliveries.length}</p>
+              </div>
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
+                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Pendientes</p>
+                <p className="text-2xl font-black text-amber-400 mt-1">{pendingDeliveries.length}</p>
+              </div>
+              <div className="bg-green-900/20 border border-green-500/30 rounded-2xl p-4 text-center">
+                <p className="text-[9px] text-green-400 font-bold uppercase tracking-wider">Ganado</p>
+                <p className="text-2xl font-black text-green-400 mt-1">${totalEarnings}</p>
+              </div>
+            </div>
+
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-3">
+              <h3 className="font-black text-sm text-[#C5A184] uppercase tracking-wider flex items-center gap-2"><Store size={16}/> Negocios Asociados ({myBusinesses.length}/2)</h3>
+              {myBusinesses.length === 0 ? (
+                <p className="text-xs text-gray-400 italic">Aún no estás asociado a ningún negocio. El dueño debe asignarte.</p>
+              ) : myBusinesses.map((b: any) => (
+                <div key={b.id} className="flex items-center gap-3 bg-white/5 rounded-xl p-3 border border-white/10">
+                  <div className="w-10 h-10 rounded-full bg-[#C5A184]/20 flex items-center justify-center font-black text-[#C5A184] text-sm flex-shrink-0">
+                    {b.company?.slice(0,2).toUpperCase()}
+                  </div>
+                  <div>
+                    <p className="font-black text-sm">{b.company}</p>
+                    <p className="text-[10px] text-gray-400">{b.address || b.location || "Sin dirección"}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-[#C5A184]/10 border border-[#C5A184]/30 rounded-2xl p-5">
+              <h3 className="font-black text-sm text-[#C5A184] flex items-center gap-2 mb-2"><CreditCard size={16}/> Cómo cobras</h3>
+              <p className="text-xs text-gray-300 leading-relaxed">Por cada pedido que entregues, el cliente te pagará <span className="font-black text-white">$2.00 USD</span> directamente a tu Pago Móvil. El sistema muestra tus datos al cliente automáticamente al confirmar el envío.</p>
+            </div>
+          </div>
+        )}
+
+        {/* TAB: Pedidos */}
+        {activeTab === "deliveries" && (
+          <div className="space-y-3">
+            <h3 className="font-black text-sm text-[#C5A184] uppercase tracking-wider">Mis Pedidos Asignados</h3>
+            {myDeliveries.length === 0 ? (
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center">
+                <Truck size={40} className="mx-auto text-gray-600 mb-3" />
+                <p className="text-sm font-bold text-gray-400">No tienes pedidos asignados aún.</p>
+                <p className="text-xs text-gray-500 mt-1">Cuando el dueño despache un pedido, aparecerá aquí.</p>
+              </div>
+            ) : myDeliveries.map((tx: any) => {
+              const client = db.clients?.find((c: any) => c.id === tx.clientId);
+              return (
+                <div key={tx.id} className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <p className="font-black text-sm">{client?.company || "Comercio"}</p>
+                      <p className="text-[10px] text-gray-400 font-mono">{tx.id}</p>
+                      <p className="text-[10px] text-gray-400">{new Date(tx.timestamp).toLocaleDateString()}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-black text-green-400">+$2.00</p>
+                      <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${tx.shippingStatus === "dispatched" ? "bg-blue-500/20 text-blue-400" : "bg-green-500/20 text-green-400"}`}>
+                        {tx.shippingStatus === "dispatched" ? "En camino" : "Completado"}
+                      </span>
+                    </div>
+                  </div>
+                  {tx.riderPagoMovil && (
+                    <div className="mt-3 bg-green-900/20 border border-green-500/20 rounded-xl p-3">
+                      <p className="text-[9px] text-green-400 font-black uppercase tracking-wider mb-1">El cliente debe pagarte a:</p>
+                      <p className="text-xs font-bold text-white">🏦 {tx.riderPagoMovil.banco} · 📱 {tx.riderPagoMovil.telefono} · 🪪 {tx.riderPagoMovil.cedula}</p>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* TAB: Pago Móvil */}
+        {activeTab === "pago" && (
+          <div className="space-y-4">
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-4">
+              <h3 className="font-black text-sm text-[#C5A184] uppercase tracking-wider flex items-center gap-2"><CreditCard size={16}/> Datos de Pago Móvil</h3>
+              {!editingPM ? (
+                <>
+                  <div className="space-y-2">
+                    {[
+                      { label: "Banco", value: riderInfo.pagoMovil?.banco || "No configurado" },
+                      { label: "Teléfono", value: riderInfo.pagoMovil?.telefono || "No configurado" },
+                      { label: "Cédula Titular", value: riderInfo.pagoMovil?.cedula || "No configurado" }
+                    ].map(({ label, value }) => (
+                      <div key={label} className="bg-white/5 rounded-xl p-3 flex justify-between items-center">
+                        <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">{label}</span>
+                        <span className="font-black text-sm text-white">{value}</span>
+                      </div>
+                    ))}
+                  </div>
+                  <button onClick={() => { setPmForm(riderInfo.pagoMovil || { banco:"",telefono:"",cedula:"" }); setEditingPM(true); }} className="w-full py-3 bg-[#C5A184] text-[#0A1128] font-black rounded-xl hover:scale-[1.02] active:scale-95 transition-all cursor-pointer text-sm">
+                    ✏️ Editar Datos de Pago Móvil
+                  </button>
+                </>
+              ) : (
+                <div className="space-y-3">
+                  <select value={pmForm.banco} onChange={e => setPmForm(p => ({...p, banco: e.target.value}))} className="w-full bg-[#0A1128] border border-[#C5A184]/50 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184]">
+                    <option value="">— Banco —</option>
+                    {["Banesco","Mercantil","Banco de Venezuela","Provincial","BOD","Bancaribe","Bicentenario","BNC","Exterior","Tesoro"].map(b => <option key={b} value={b}>{b}</option>)}
+                  </select>
+                  <input type="tel" placeholder="Teléfono PM" value={pmForm.telefono} onChange={e => setPmForm(p => ({...p, telefono: e.target.value}))} className="w-full bg-[#0A1128] border border-[#C5A184]/50 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184]" />
+                  <input placeholder="Cédula Titular" value={pmForm.cedula} onChange={e => setPmForm(p => ({...p, cedula: e.target.value}))} className="w-full bg-[#0A1128] border border-[#C5A184]/50 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184]" />
+                  <div className="flex gap-2">
+                    <button onClick={() => setEditingPM(false)} className="w-1/3 py-3 border border-white/20 text-gray-300 font-bold rounded-xl hover:bg-white/5 cursor-pointer text-sm">Cancelar</button>
+                    <button onClick={handleSavePM} className="w-2/3 py-3 bg-[#C5A184] text-[#0A1128] font-black rounded-xl hover:scale-[1.02] cursor-pointer text-sm">Guardar</button>
+                  </div>
+                </div>
+              )}
+            </div>
+            <div className="bg-blue-900/20 border border-blue-500/30 rounded-2xl p-4">
+              <p className="text-xs text-blue-300 font-bold">ℹ️ Estos datos se muestran automáticamente al cliente cuando se le asigna tu delivery. El cliente debe pagarte $2.00 USD directamente a tu Pago Móvil.</p>
+            </div>
+          </div>
+        )}
+
+        {/* TAB: Documentos */}
+        {activeTab === "docs" && (
+          <div className="space-y-4">
+            <h3 className="font-black text-sm text-[#C5A184] uppercase tracking-wider">Documentos Registrados</h3>
+            {[
+              { label: "Cédula de Identidad", key: "cedulaImg", icon: "🪪" },
+              { label: "Certificado Médico", key: "medCertImg", icon: "🏥" },
+              { label: "Licencia de Conducir", key: "licenseImg", icon: "🚗" }
+            ].map(({ label, key, icon }) => (
+              <div key={key} className="bg-white/5 border border-white/10 rounded-2xl p-4">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-2xl">{icon}</span>
+                  <div>
+                    <p className="font-black text-sm">{label}</p>
+                    <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${(riderInfo as any)[key] ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>
+                      {(riderInfo as any)[key] ? "✅ Cargado" : "⚠️ No subido"}
+                    </span>
+                  </div>
+                </div>
+                {(riderInfo as any)[key] && (
+                  <img src={(riderInfo as any)[key]} alt={label} className="w-full max-h-40 object-contain rounded-xl border border-white/10" />
+                )}
+              </div>
+            ))}
+            <div className="bg-amber-900/20 border border-amber-500/30 rounded-2xl p-4">
+              <p className="text-xs text-amber-300 font-bold">⚠️ Los documentos son revisados por el Arquitecto KFS para verificar tu identidad antes de aprobar tu cuenta.</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+// ==========================================
 // MAIN COMPONENT DEFINITION
 // ==========================================
 export default function Home() {
@@ -6557,6 +7534,13 @@ export default function Home() {
           rejectOrder={rejectOrder}
           generateZReport={generateZReport}
           registerCrmExpress={registerCrmExpress}
+        />
+      )}
+      {view === "rider" && (
+        <RiderDashboard
+          db={db}
+          currentUser={currentUser}
+          logout={logout}
         />
       )}
       {null}
