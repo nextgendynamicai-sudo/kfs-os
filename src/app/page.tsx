@@ -2607,7 +2607,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
 
 // CoreDashboard
 const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePromotoraEarnings, showToast, formatUSD, formatEUR, currentUser, logout, approveSubscription }: any) => {
-  const { impersonateClient, registerClient, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, toggleCandidateBacking, approveRider, rejectRider } = useKFS() as any;
+  const { impersonateClient, registerClient, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, toggleCandidateBacking, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness } = useKFS() as any;
   const [searchPromotora, setSearchPromotora] = useState("");
   const [searchClient, setSearchClient] = useState("");
   const [searchVendedor, setSearchVendedor] = useState("");
@@ -2618,6 +2618,10 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
   // Assign Promotora State
   const [targetClientId, setTargetClientId] = useState("");
   const [targetPromotoraId, setTargetPromotoraId] = useState("");
+
+  // Assign Rider to Business State
+  const [assignRiderModal, setAssignRiderModal] = useState<{ riderId: string; riderName: string } | null>(null);
+  const [assignRiderBusinessId, setAssignRiderBusinessId] = useState("");
 
   // Global Product State
   const [globalProdName, setGlobalProdName] = useState("");
@@ -2749,6 +2753,10 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
           <button onClick={() => setActiveModal('push')} className="bg-red-50 border border-red-100 hover:bg-red-100 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group">
             <div className="bg-red-500 text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Bell size={24} /></div>
             <span className="font-black text-[#0A1128] text-sm text-center">Alerta Push Network</span>
+          </button>
+          <button onClick={() => setAssignRiderModal({ riderId: "", riderName: "" })} className="bg-orange-50 border border-orange-100 hover:bg-orange-100 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group">
+            <div className="bg-orange-500 text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Truck size={24} /></div>
+            <span className="font-black text-[#0A1128] text-sm text-center">Asignar Rider a Negocio</span>
           </button>
         </div>
 
@@ -3504,13 +3512,35 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                       </div>
                     )}
                     {rider.status === "approved" && (
-                      <div className="flex gap-2">
-                        <div className="flex-1 py-2 bg-green-50 border border-green-200 rounded-xl text-center">
-                          <p className="text-[10px] font-black text-green-600">🏁 {rider.deliveriesCompleted || 0} entregas realizadas</p>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex gap-2">
+                          <div className="flex-1 py-2 bg-green-50 border border-green-200 rounded-xl text-center">
+                            <p className="text-[10px] font-black text-green-600">🏁 {rider.deliveriesCompleted || 0} entregas realizadas</p>
+                          </div>
+                          <button
+                            onClick={() => { setAssignRiderModal({ riderId: rider.id, riderName: rider.name }); setAssignRiderBusinessId(""); }}
+                            className="px-4 py-2 bg-orange-500 text-white font-black rounded-xl hover:bg-orange-600 text-xs border border-orange-400 cursor-pointer flex items-center gap-1"
+                          >
+                            <Truck size={12}/> Asignar Negocio
+                          </button>
+                          <button onClick={() => rejectRider(rider.id)} className="px-4 py-2 bg-red-50 text-red-500 font-black rounded-xl hover:bg-red-100 text-xs border border-red-200 cursor-pointer">
+                            Revocar
+                          </button>
                         </div>
-                        <button onClick={() => rejectRider(rider.id)} className="px-4 py-2 bg-red-50 text-red-500 font-black rounded-xl hover:bg-red-100 text-xs border border-red-200 cursor-pointer">
-                          Revocar
-                        </button>
+                        {/* Businesses assigned – with remove option */}
+                        {(rider.associatedBusinesses || []).length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {(rider.associatedBusinesses || []).map((bId: string) => {
+                              const biz = db.clients?.find((c: any) => c.id === bId);
+                              return biz ? (
+                                <span key={bId} className="flex items-center gap-1 bg-orange-100 text-orange-700 text-[9px] font-black px-2 py-1 rounded-full border border-orange-200">
+                                  🏪 {biz.company}
+                                  <button onClick={() => removeRiderFromBusiness(rider.id, bId)} className="hover:text-red-500 transition-colors cursor-pointer ml-0.5">✕</button>
+                                </span>
+                              ) : null;
+                            })}
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -3519,6 +3549,94 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             </div>
           )}
         </div>
+
+        {/* ============ MODAL: ASIGNAR RIDER A NEGOCIO ============ */}
+        {assignRiderModal !== null && (
+          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+            <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6">
+              <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+                <div>
+                  <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><Truck className="text-orange-500" size={22}/> Asignar Rider a Negocio</h3>
+                  <p className="text-xs text-gray-400 mt-0.5">Máx. 2 negocios por rider • Máx. 2 riders por negocio</p>
+                </div>
+                <button onClick={() => { setAssignRiderModal(null); setAssignRiderBusinessId(""); }}><X size={24} className="text-gray-400 hover:text-gray-700 cursor-pointer"/></button>
+              </div>
+              <div className="space-y-4">
+                {/* Rider selector */}
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 block">Rider Aprobado</label>
+                  <select
+                    value={assignRiderModal.riderId}
+                    onChange={e => {
+                      const r = db.riders?.find((r: any) => r.id === e.target.value);
+                      setAssignRiderModal({ riderId: e.target.value, riderName: r?.name || "" });
+                    }}
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold text-[#0A1128] focus:outline-none focus:ring-2 focus:ring-orange-300"
+                  >
+                    <option value="">Seleccione un Rider...</option>
+                    {(db.riders || []).filter((r: any) => r.status === "approved").map((r: any) => (
+                      <option key={r.id} value={r.id} disabled={(r.associatedBusinesses || []).length >= 2}>
+                        🛵 {r.name} {(r.associatedBusinesses || []).length >= 2 ? "(Máx. negocios)" : `(${(r.associatedBusinesses || []).length}/2 negocios)`}
+                      </option>
+                    ))}
+                  </select>
+                  {(db.riders || []).filter((r: any) => r.status === "approved").length === 0 && (
+                    <p className="text-xs text-amber-500 font-bold mt-1">⚠️ No hay riders aprobados. Aprueba un rider primero en la sección de abajo.</p>
+                  )}
+                </div>
+                {/* Business selector */}
+                <div>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 block">Negocio Destino</label>
+                  <select
+                    value={assignRiderBusinessId}
+                    onChange={e => setAssignRiderBusinessId(e.target.value)}
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold text-[#0A1128] focus:outline-none focus:ring-2 focus:ring-orange-300"
+                  >
+                    <option value="">Seleccione un Comercio...</option>
+                    {db.clients.map((c: any) => {
+                      const bizRiderCount = (db.riders || []).filter((r: any) => (r.associatedBusinesses || []).includes(c.id)).length;
+                      const alreadyAssigned = assignRiderModal.riderId && (db.riders || []).find((r: any) => r.id === assignRiderModal.riderId)?.associatedBusinesses?.includes(c.id);
+                      return (
+                        <option key={c.id} value={c.id} disabled={bizRiderCount >= 2 || !!alreadyAssigned}>
+                          🏪 {c.company} {alreadyAssigned ? "(Ya asignado)" : bizRiderCount >= 2 ? "(Máx. riders)" : `(${bizRiderCount}/2 riders)`}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </div>
+                {/* Info panel for selected rider */}
+                {assignRiderModal.riderId && (() => {
+                  const r = db.riders?.find((r: any) => r.id === assignRiderModal.riderId);
+                  const bizNames = (r?.associatedBusinesses || []).map((bId: string) => db.clients?.find((c: any) => c.id === bId)?.company).filter(Boolean);
+                  return r ? (
+                    <div className="bg-orange-50 border border-orange-200 rounded-xl p-3">
+                      <p className="text-xs font-black text-orange-700">🛵 {r.name}</p>
+                      <p className="text-[10px] text-orange-500 mt-0.5">
+                        {bizNames.length > 0 ? `Ya en: ${bizNames.join(", ")}` : "Sin negocios asignados aún"}
+                      </p>
+                      {r.pagoMovil?.banco && (
+                        <p className="text-[10px] text-green-600 font-bold mt-0.5">💳 PM: {r.pagoMovil.banco} · {r.pagoMovil.telefono}</p>
+                      )}
+                    </div>
+                  ) : null;
+                })()}
+                <button
+                  onClick={() => {
+                    if (assignRiderModal.riderId && assignRiderBusinessId) {
+                      assignRiderToBusiness(assignRiderModal.riderId, assignRiderBusinessId);
+                      setAssignRiderModal(null);
+                      setAssignRiderBusinessId("");
+                    }
+                  }}
+                  disabled={!assignRiderModal.riderId || !assignRiderBusinessId}
+                  className="w-full bg-orange-500 text-white py-4 rounded-xl font-black shadow-lg disabled:opacity-40 disabled:cursor-not-allowed hover:bg-orange-600 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <Truck size={18}/> Confirmar Asignación
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {viewingCandidateCv && (
           <CvViewerModal 
