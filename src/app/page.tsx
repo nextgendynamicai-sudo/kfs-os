@@ -2085,47 +2085,32 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A1128] text-white p-6 md:p-10 font-sans">
-      <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
-        {/* Header */}
-        <div className="flex justify-between items-center bg-white/5 border border-white/10 rounded-[2rem] p-6 shadow-2xl backdrop-blur-xl">
-           <div className="flex items-center gap-4">
-             <div className="w-14 h-14 bg-[#C5A184] rounded-2xl flex items-center justify-center text-[#0A1128]">
-                <UserCheck size={28} />
-             </div>
-             <div>
-               <h2 className="text-xl md:text-2xl font-black tracking-tight">Hola, {currentUser.name}</h2>
-               <p className="text-[#C5A184] font-mono text-xs">{currentUser.phone}</p>
-             </div>
-           </div>
-           <div className="flex items-center gap-4">
-             <KreatekLogo className="h-8 w-auto hidden sm:block opacity-60" />
-             <button onClick={logout} className="p-3 bg-white/5 border border-white/10 text-gray-300 rounded-xl hover:bg-red-500 hover:text-white transition-colors cursor-pointer">
-               <LogOut size={20} />
-             </button>
-           </div>
+    <div className="min-h-screen bg-gray-50 text-[#0A1128] font-sans pb-24 relative">
+      {/* Wavy Header */}
+      <div className="bg-gradient-to-br from-[#0A1128] to-[#1a2b5e] rounded-b-[3rem] shadow-[0_10px_30px_rgba(10,17,40,0.3)] pt-6 pb-12 px-6 text-white relative z-10">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-2">
+            <span className="bg-white/20 p-2 rounded-xl text-[#C5A184]"><UserCheck size={20}/></span>
+            <h1 className="font-black text-xl tracking-tight">KFS Customer</h1>
+          </div>
+          <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
+            <LogOut size={16}/>
+          </button>
         </div>
 
-        {/* Sub-Navigation Tabs */}
-        <div className="flex gap-4 p-1.5 bg-white/5 border border-white/10 rounded-2xl max-w-md">
-          <button
-            onClick={() => setSubTab("profile")}
-            className={`flex-1 py-3 px-4 text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 ${subTab === "profile" ? "bg-[#C5A184] text-[#0A1128] shadow-lg" : "text-gray-400 hover:text-white hover:bg-white/5"}`}
-          >
-            <Activity size={16} /> Mi Cuenta y Compras
-          </button>
-          <button
-            onClick={() => setSubTab("jobs")}
-            className={`flex-1 py-3 px-4 text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 ${subTab === "jobs" ? "bg-[#C5A184] text-[#0A1128] shadow-lg" : "text-gray-400 hover:text-white hover:bg-white/5"}`}
-          >
-            <Briefcase size={16} /> Bolsa de Empleo KFS
-            {unreadNotifsCount > 0 && (
-              <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full animate-pulse">
-                {unreadNotifsCount}
-              </span>
-            )}
-          </button>
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 bg-[#C5A184] rounded-full flex items-center justify-center text-[#0A1128] font-black text-2xl flex-shrink-0 shadow-lg border-4 border-[#0A1128]">
+            {currentUser.name?.slice(0,2).toUpperCase()}
+          </div>
+          <div>
+            <h2 className="text-xl md:text-2xl font-black tracking-tight truncate">{currentUser.name}</h2>
+            <p className="text-[#C5A184] font-mono text-xs mt-1 bg-[#0A1128] inline-block px-2 py-0.5 rounded-md">{currentUser.phone}</p>
+          </div>
         </div>
+      </div>
+
+      {/* Main Content Area */}
+      <div className="max-w-4xl mx-auto px-4 -mt-6 relative z-20 space-y-6 animate-fade-in">
 
         {subTab === "profile" ? (
           <>
@@ -2638,10 +2623,43 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
             </form>
           </div>
         )}
+          </div>
+        )}
+
       </div>
-    )}
-  </div>
-</div>
+
+      {/* FIXED BOTTOM NAVIGATION */}
+      <div className="fixed bottom-0 inset-x-0 z-50 bg-white/90 backdrop-blur-xl border-t border-gray-200 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pb-safe">
+        <div className="max-w-4xl mx-auto px-6 py-4 flex justify-center gap-10 items-center relative">
+          {[
+            { id: "profile", icon: Activity, label: "Mi Cuenta" },
+            { id: "jobs", icon: Briefcase, label: "Empleos", badge: unreadNotifsCount }
+          ].map(tab => {
+            const Icon = tab.icon;
+            const isActive = subTab === tab.id;
+            return (
+              <button 
+                key={tab.id} 
+                onClick={() => setSubTab(tab.id)} 
+                className="relative flex flex-col items-center justify-center w-20 h-12 cursor-pointer group"
+              >
+                {isActive && <span className="absolute -top-4 w-12 h-1 bg-[#C5A184] rounded-b-full shadow-[0_4px_10px_rgba(197,161,132,0.5)]" />}
+                <div className={`relative transition-all duration-300 ${isActive ? '-translate-y-2 text-[#0A1128]' : 'text-gray-400 group-hover:text-gray-600'}`}>
+                  <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+                  {tab.badge ? (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full border-2 border-white animate-pulse">
+                      {tab.badge}
+                    </span>
+                  ) : null}
+                </div>
+                <span className={`text-[9px] font-bold mt-1 transition-all duration-300 ${isActive ? 'opacity-100 text-[#0A1128]' : 'opacity-0 translate-y-2'}`}>{tab.label}</span>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
+    </div>
   );
 };
 
@@ -3731,14 +3749,39 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
   const filteredClients = myClients.filter((c: any) => c.company.toLowerCase().includes(searchClient.toLowerCase()) || c.name.toLowerCase().includes(searchClient.toLowerCase()));
   const myPromotoraData = db.promotoras.find((p: any) => p.id === currentUser?.id) || currentUser;
 
+  const [activeTab, setActiveTab] = useState("panel"); // panel | negocios
   const [activeManual, setActiveManual] = useState<string | null>(null);
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24 font-sans">
-      <Navbar title={`Portal Promotora: ${currentUser.name}`} showBack={true} onBack={logout} />
-      <div className="p-4 md:p-8 max-w-5xl mx-auto flex flex-col gap-8 animate-fade-in">
+    <div className="min-h-screen bg-gray-50 pb-24 font-sans text-[#0A1128] relative">
+      {/* Wavy Header */}
+      <div className="bg-gradient-to-br from-[#0A1128] to-[#1a2b5e] rounded-b-[3rem] shadow-[0_10px_30px_rgba(10,17,40,0.3)] pt-6 pb-12 px-6 text-white relative z-10">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-2">
+            <span className="bg-white/20 p-2 rounded-xl text-[#C5A184]"><CheckCircle size={20}/></span>
+            <h1 className="font-black text-xl tracking-tight">KFS Promotora</h1>
+          </div>
+          <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
+            <LogOut size={16}/>
+          </button>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 bg-[#C5A184] rounded-full flex items-center justify-center text-[#0A1128] font-black text-2xl flex-shrink-0 shadow-lg border-4 border-[#0A1128]">
+            {currentUser.name?.slice(0,2).toUpperCase()}
+          </div>
+          <div>
+            <h2 className="text-xl md:text-2xl font-black tracking-tight truncate">{currentUser.name}</h2>
+            <p className="text-[#C5A184] font-mono text-xs mt-1 bg-[#0A1128] inline-block px-2 py-0.5 rounded-md">{currentUser.phone}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-4 md:p-8 max-w-5xl mx-auto -mt-6 relative z-20 flex flex-col gap-8 animate-fade-in">
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {activeTab === "panel" && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
             <div className="relative z-10">
               <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><CreditCard size={14} className="text-green-500" /> Regalías Liquidadas (BOS)</p>
@@ -3823,7 +3866,11 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
             </button>
           </div>
         </div>
+        </div>
+        )}
 
+        {activeTab === "negocios" && (
+          <div className="space-y-6">
         {!showRegister ? (
           <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 relative overflow-hidden">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-gray-100 pb-4 gap-4">
@@ -3870,6 +3917,8 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
           <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 max-w-2xl mx-auto">
             <RegisterClientForm onRegister={(data: any) => { registerClient(data, currentUser.id, data.kfsFeePercentage); setShowRegister(false); }} onCancel={() => setShowRegister(false)} standalone={false} />
           </div>
+        )}
+        </div>
         )}
       </div>
 
@@ -3970,6 +4019,36 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
           </div>
         </div>
       )}
+      {/* FIXED BOTTOM NAVIGATION */}
+      <div className="fixed bottom-0 inset-x-0 z-50 bg-white/90 backdrop-blur-xl border-t border-gray-200 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pb-safe">
+        <div className="max-w-5xl mx-auto px-6 py-4 flex justify-center gap-10 items-center relative">
+          {[
+            { id: "panel", icon: Activity, label: "Panel" },
+            { id: "negocios", icon: Store, label: "Comercios", badge: myClients.length }
+          ].map(tab => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button 
+                key={tab.id} 
+                onClick={() => setActiveTab(tab.id)} 
+                className="relative flex flex-col items-center justify-center w-20 h-12 cursor-pointer group"
+              >
+                {isActive && <span className="absolute -top-4 w-12 h-1 bg-[#C5A184] rounded-b-full shadow-[0_4px_10px_rgba(197,161,132,0.5)]" />}
+                <div className={`relative transition-all duration-300 ${isActive ? '-translate-y-2 text-[#0A1128]' : 'text-gray-400 group-hover:text-gray-600'}`}>
+                  <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+                  {tab.badge ? (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full border-2 border-white animate-pulse">
+                      {tab.badge}
+                    </span>
+                  ) : null}
+                </div>
+                <span className={`text-[9px] font-bold mt-1 transition-all duration-300 ${isActive ? 'opacity-100 text-[#0A1128]' : 'opacity-0 translate-y-2'}`}>{tab.label}</span>
+              </button>
+            )
+          })}
+        </div>
+      </div>
     </div>
   );
 };
@@ -4889,6 +4968,9 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
           candidate={viewingCandidateCv} 
         />
       )}
+
+
+
     </div>
   );
 };
@@ -4897,6 +4979,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   const { finishOnboarding } = useKFS();
   const clientInfo = db.clients?.find((c: any) => c.id === currentUser.id) || currentUser;
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [activeTab, setActiveTab] = useState("resumen"); // resumen | inventario | personal | config
   const [showAddModal, setShowAddModal] = useState(false);
   const [showAddVendedor, setShowAddVendedor] = useState(false);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
@@ -5173,7 +5256,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 font-sans">
+    <div className="min-h-screen bg-gray-50 pb-24 font-sans text-[#0A1128] relative">
       {currentUser?.isImpersonated && (
         <div className="bg-amber-500 text-[#0A1128] px-4 py-3 font-bold text-center flex items-center justify-center gap-4 text-sm shadow-md animate-pulse sticky top-[64px] z-50">
           <span>⚠️ MODO IMPERSONACIÓN ACTIVO: Estás controlando el panel de {currentUser.company}</span>
@@ -5182,9 +5265,34 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           </button>
         </div>
       )}
-      <Navbar title={currentUser.company} showBack={true} onBack={logout} />
-      <div className="p-4 md:p-8 max-w-5xl mx-auto flex flex-col gap-6 md:gap-8 animate-fade-in">
+
+      {/* Wavy Header */}
+      <div className="bg-gradient-to-br from-[#0A1128] to-[#1a2b5e] rounded-b-[3rem] shadow-[0_10px_30px_rgba(10,17,40,0.3)] pt-6 pb-12 px-6 text-white relative z-10">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-2">
+            <span className="bg-white/20 p-2 rounded-xl text-[#C5A184]"><Store size={20}/></span>
+            <h1 className="font-black text-xl tracking-tight">KFS Negocio</h1>
+          </div>
+          <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
+            <LogOut size={16}/>
+          </button>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 bg-[#C5A184] rounded-full flex items-center justify-center text-[#0A1128] font-black text-2xl flex-shrink-0 shadow-lg border-4 border-[#0A1128]">
+            {currentUser.company?.slice(0,2).toUpperCase()}
+          </div>
+          <div>
+            <h2 className="text-xl md:text-2xl font-black tracking-tight truncate">{currentUser.company}</h2>
+            <p className="text-gray-300 font-mono text-xs mt-1 truncate max-w-[200px]">{currentUser.email}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-5xl mx-auto px-4 -mt-6 relative z-20 space-y-6 animate-fade-in">
         
+        {activeTab === "resumen" && (
+          <div className="space-y-6">
         <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 md:p-12 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
           <div className="relative z-10 w-full flex flex-col md:flex-row md:justify-between md:items-end gap-6">
             <div>
@@ -5215,10 +5323,13 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           </div>
           <DollarSign size={200} className="absolute -right-10 -bottom-20 text-white/5" />
         </div>
+        </div>
+        )}
 
-        <StorefrontCustomizer client={currentUser} updateStoreSettings={updateStoreSettings} />
+        {activeTab === 'config' && <StorefrontCustomizer client={currentUser} updateStoreSettings={updateStoreSettings} />}
 
         {/* ===== OPEN / CLOSE TOGGLE + DELIVERY CONFIG ===== */}
+        {activeTab === 'config' && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Open / Close */}
           <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 flex flex-col gap-4">
@@ -5281,12 +5392,14 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             </div>
           </div>
         </div>
+        )}
 
-        <FiscalPrinterSetupWidget />
+        {activeTab === 'config' && <FiscalPrinterSetupWidget />}
 
-        <RecruitmentWidget db={db} currentUser={currentUser} formatUSD={formatUSD} />
+        {activeTab === 'personal' && <RecruitmentWidget db={db} currentUser={currentUser} formatUSD={formatUSD} />}
 
         {/* Manuals Section for Client (Owner) */}
+        {activeTab === 'resumen' && (
         <div className="bg-[#0A1128] text-white p-6 md:p-8 rounded-[2rem] shadow-xl relative overflow-hidden">
           <h3 className="text-xl font-black mb-6">Centro de Aprendizaje (Dueño de Negocio)</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -5300,8 +5413,11 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             </button>
           </div>
         </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+          {activeTab === 'inventario' && (
+            <>
           <button onClick={() => setShowAddModal(true)} className="bg-white border border-gray-100 p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-5 hover:border-[#C5A184]/50 transition-all cursor-pointer">
             <div className="w-16 h-16 bg-[#0A1128]/5 rounded-full flex items-center justify-center">
               <Package size={32} className="text-[#0A1128]" />
@@ -5324,8 +5440,11 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             </div>
             <span className="font-black text-lg text-white relative z-10">Help Desk (Tickets)</span>
           </button>
+          </>
+          )}
         </div>
 
+        {activeTab === 'resumen' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 h-full">
             <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2"><TrendingUp className="text-[#C5A184]"/> Rendimiento de Ventas</h3>
@@ -5355,7 +5474,9 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             </div>
           </div>
         </div>
+        )}
 
+        {activeTab === 'resumen' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
           <div className="bg-[#0A1128] text-white p-6 md:p-8 rounded-[2rem] shadow-xl relative overflow-hidden border border-[#C5A184]/20 h-full">
             <h3 className="font-black text-xl mb-2 flex items-center gap-2"><Activity className="text-[#C5A184]"/> Kreatek Insights (IA)</h3>
@@ -5374,7 +5495,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           
           <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col justify-between h-full">
             <div>
-              <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2 mb-2"><DollarSign className="text-green-600"/> Billetera KFS (Billing)</h3>
+              <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2"><DollarSign className="text-green-600"/> Billetera KFS (Billing)</h3>
               <p className="text-xs text-gray-500 mb-4">Suscripción SaaS Activa: $6/mes. Próximo cobro: {new Date(clientInfo.subscription?.nextBillingDate).toLocaleDateString()}</p>
               <div className="bg-gray-50 rounded-xl p-4 flex justify-between items-center mb-4 border border-gray-200">
                 <span className="font-bold text-gray-600">Saldo Actual:</span>
@@ -5390,7 +5511,9 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             </div>
           </div>
         </div>
+        )}
 
+        {activeTab === 'personal' && (
         <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 w-full">
           <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6 border-b border-gray-100 pb-4">
             <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2"><Users className="text-[#C5A184]"/> Control de Empleados</h3>
@@ -5424,7 +5547,9 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             {myVendedores.length === 0 && <p className="text-sm text-gray-400 text-center py-4">Sin empleados. Añada vendedores para usar los terminales móviles.</p>}
           </div>
         </div>
+        )}
 
+        {activeTab === 'config' && (
         <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 relative overflow-hidden w-full">
            <div className="absolute top-0 right-0 w-40 h-40 bg-[#C5A184]/5 rounded-bl-[100px] -z-10"></div>
            <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6 border-b border-gray-100 pb-4">
@@ -5446,8 +5571,10 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
              </div>
            </div>
         </div>
+        )}
 
         {/* Widget de Cierre y Publicidad para el Dueño */}
+        {activeTab === 'resumen' && (
         <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-6 md:p-8 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/5 animate-fade-in w-full">
           <div className="absolute top-0 right-0 w-64 h-64 bg-[#C5A184]/5 rounded-full blur-3xl -z-10"></div>
           <div className="flex flex-col md:flex-row justify-between items-stretch gap-6 relative z-10">
@@ -5503,10 +5630,12 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
           </div>
         </div>
+        )}
         
-        <KFSIoTEdgeConsole showToast={showToast} />
+        {activeTab === 'config' && <KFSIoTEdgeConsole showToast={showToast} />}
 
         {/* Vales & Créditos Widget */}
+        {activeTab === 'personal' && (
         <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-6">
           <div className="flex justify-between items-center border-b border-gray-100 pb-4">
             <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2 text-[#C5A184]">
@@ -5617,7 +5746,10 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
               </div>
             </div>
           </div>
+          </div>
+          )}
         {/* Lógica Empresarial / Analítica */}
+        {activeTab === 'resumen' && (
         <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-6">
           <div className="flex justify-between items-center border-b border-gray-100 pb-4">
             <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2">
@@ -5648,8 +5780,10 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             </div>
           </div>
         </div>
+        )}
 
         {/* Bóveda KFS (Métodos de Pago del Dueño) */}
+        {activeTab === 'config' && (
         <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-6">
           <div className="flex justify-between items-center border-b border-gray-100 pb-4">
             <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2">
@@ -5704,8 +5838,10 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             </div>
           </form>
         </div>
+        )}
 
         {/* Gobernanza de Puntos de Venta (Multi-POS Integrado) */}
+        {activeTab === 'config' && (
         <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-6">
           <div className="flex justify-between items-center border-b border-gray-100 pb-4">
             <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2 text-[#C5A184]">
@@ -5833,8 +5969,11 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             </div>
           </div>
         </div>
+        )}
 
-        {(myOrders.length > 0 || myPendingDispatch.length > 0) && (
+        {activeTab === 'inventario' && (
+          <div className="space-y-6">
+          {(myOrders.length > 0 || myPendingDispatch.length > 0) && (
           <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-orange-200 bg-orange-50/30">
             <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2 text-orange-600">
               <Clock className="text-orange-500" /> Órdenes Online ({myOrders.length} por validar, {myPendingDispatch.length} por despachar)
@@ -6178,10 +6317,11 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             })}
             {myProducts.length === 0 && <div className="col-span-2 md:col-span-4 text-center py-10 bg-white rounded-2xl text-gray-400 font-bold">Catálogo vacío.</div>}
           </div>
+          </div>
         </div>
-      </div>
+        )}
 
-      {/* Modal Agregar Producto */}
+        {/* Modal Agregar Producto */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl">
@@ -6391,6 +6531,35 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           </div>
         </div>
       )}
+
+      {/* FIXED BOTTOM NAVIGATION */}
+      <div className="fixed bottom-0 inset-x-0 z-40 bg-white/90 backdrop-blur-xl border-t border-gray-200 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pb-safe">
+        <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between gap-2 items-center relative">
+          {[
+            { id: "resumen", icon: Activity, label: "Resumen" },
+            { id: "inventario", icon: Package, label: "Inventario" },
+            { id: "personal", icon: Users, label: "Personal" },
+            { id: "config", icon: Settings, label: "Ajustes" }
+          ].map(tab => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button 
+                key={tab.id} 
+                onClick={() => setActiveTab(tab.id)} 
+                className="relative flex flex-col items-center justify-center w-20 h-12 cursor-pointer group"
+              >
+                {isActive && <span className="absolute -top-4 w-12 h-1 bg-[#C5A184] rounded-b-full shadow-[0_4px_10px_rgba(197,161,132,0.5)]" />}
+                <div className={`relative transition-all duration-300 ${isActive ? '-translate-y-2 text-[#0A1128]' : 'text-gray-400 group-hover:text-gray-600'}`}>
+                  <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+                </div>
+                <span className={`text-[9px] font-bold mt-1 transition-all duration-300 ${isActive ? 'opacity-100 text-[#0A1128]' : 'opacity-0 translate-y-2'}`}>{tab.label}</span>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+
       </div>
     </div>
   );
@@ -7465,94 +7634,97 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A1128] text-white font-sans pb-20">
-      <Navbar title="Panel Delivery" showBack={true} onBack={logout} />
-      <div className="max-w-2xl mx-auto p-4 space-y-4 animate-fade-in">
+    <div className="min-h-screen bg-gray-50 text-[#0A1128] font-sans pb-24 relative">
+      {/* Wavy Header */}
+      <div className="bg-gradient-to-br from-[#0A1128] to-[#1a2b5e] rounded-b-[3rem] shadow-[0_10px_30px_rgba(10,17,40,0.3)] pt-6 pb-12 px-6 text-white relative z-10">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-2">
+            <span className="bg-white/20 p-2 rounded-xl text-[#C5A184]"><Truck size={20}/></span>
+            <h1 className="font-black text-xl tracking-tight">KFS Delivery</h1>
+          </div>
+          <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
+            <LogOut size={16}/>
+          </button>
+        </div>
 
-        {/* Status Banner */}
-        <div className={`rounded-2xl p-5 border flex items-center gap-4 ${riderInfo.status === "approved" ? "bg-green-900/20 border-green-500/30" : "bg-amber-900/20 border-amber-500/30"}`}>
-          <div className={`w-14 h-14 rounded-full flex items-center justify-center text-2xl flex-shrink-0 border-2 ${riderInfo.status === "approved" ? "border-green-400" : "border-amber-400"}`}>
+        <div className="flex items-center gap-4">
+          <div className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl flex-shrink-0 border-4 shadow-lg bg-[#0A1128] ${riderInfo.status === "approved" ? "border-green-400 shadow-green-500/20" : "border-amber-400 shadow-amber-500/20"}`}>
             🛵
           </div>
-          <div className="flex-1 min-w-0">
-            <h2 className="font-black text-lg truncate">{riderInfo.name}</h2>
-            <p className="text-xs text-gray-400 font-mono truncate">{riderInfo.email}</p>
-            <span className={`inline-flex items-center gap-1 mt-1 px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider ${riderInfo.status === "approved" ? "bg-green-500/20 text-green-400 border border-green-500/30" : "bg-amber-500/20 text-amber-400 border border-amber-500/30 animate-pulse"}`}>
-              {riderInfo.status === "approved" ? "✅ Activo" : "⏳ Pendiente de Aprobación"}
+          <div>
+            <h2 className="font-black text-2xl truncate">{riderInfo.name}</h2>
+            <p className="text-xs text-gray-300 font-mono truncate">{riderInfo.email}</p>
+            <span className={`inline-flex items-center gap-1 mt-2 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider shadow-sm ${riderInfo.status === "approved" ? "bg-green-500 text-white" : "bg-amber-500 text-white animate-pulse"}`}>
+              {riderInfo.status === "approved" ? "✅ Rider Activo" : "⏳ En Verificación"}
             </span>
           </div>
-          <div className="text-right flex-shrink-0">
-            <p className="text-[10px] text-gray-400 font-mono">Ganancias</p>
-            <p className="text-xl font-black text-green-400">${totalEarnings.toFixed(2)}</p>
-          </div>
         </div>
+      </div>
 
-        {/* Tabs */}
-        <div className="flex gap-2">
-          {[["overview","📊 General"],["deliveries","📦 Pedidos"],["pago","💳 Pago Móvil"],["docs","🪪 Docs"]].map(([tab, label]) => (
-            <button key={tab} onClick={() => setActiveTab(tab)} className={`flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${activeTab === tab ? "bg-[#C5A184] text-[#0A1128]" : "bg-white/5 text-gray-400 hover:bg-white/10"}`}>{label}</button>
-          ))}
-        </div>
+      {/* Main Content Area */}
+      <div className="max-w-2xl mx-auto px-4 -mt-6 relative z-20 space-y-4 animate-fade-in">
+
 
         {/* TAB: Overview */}
         {activeTab === "overview" && (
           <div className="space-y-4">
-            <div className="grid grid-cols-3 gap-3">
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
-                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Entregas</p>
-                <p className="text-2xl font-black text-[#C5A184] mt-1">{myDeliveries.length}</p>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-white rounded-3xl p-5 text-center shadow-sm border border-gray-100 flex flex-col items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center mb-2"><Truck size={20}/></div>
+                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Entregas</p>
+                <p className="text-3xl font-black text-[#0A1128] mt-1">{myDeliveries.length}</p>
               </div>
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
-                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Pendientes</p>
-                <p className="text-2xl font-black text-amber-400 mt-1">{pendingDeliveries.length}</p>
-              </div>
-              <div className="bg-green-900/20 border border-green-500/30 rounded-2xl p-4 text-center">
-                <p className="text-[9px] text-green-400 font-bold uppercase tracking-wider">Ganado</p>
-                <p className="text-2xl font-black text-green-400 mt-1">${totalEarnings}</p>
+              <div className="bg-[#0A1128] rounded-3xl p-5 text-center shadow-lg border border-[#0A1128] flex flex-col items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-[#C5A184]/20 text-[#C5A184] flex items-center justify-center mb-2"><DollarSign size={20}/></div>
+                <p className="text-[10px] text-gray-300 font-bold uppercase tracking-wider">Ganado</p>
+                <p className="text-3xl font-black text-[#C5A184] mt-1">${totalEarnings}</p>
               </div>
             </div>
 
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-3">
-              <h3 className="font-black text-sm text-[#C5A184] uppercase tracking-wider flex items-center gap-2"><Store size={16}/> Negocios Asociados ({myBusinesses.length}/2)</h3>
+            <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 space-y-4">
+              <h3 className="font-black text-sm text-[#0A1128] uppercase tracking-wider flex items-center gap-2"><Store size={16} className="text-[#C5A184]"/> Negocios Asociados ({myBusinesses.length}/2)</h3>
               {myBusinesses.length === 0 ? (
-                <p className="text-xs text-gray-400 italic">Aún no estás asociado a ningún negocio. El dueño debe asignarte.</p>
+                <p className="text-xs text-gray-400 italic text-center py-4">Aún no estás asociado a ningún negocio.</p>
               ) : myBusinesses.map((b: any) => (
-                <div key={b.id} className="flex items-center gap-3 bg-white/5 rounded-xl p-3 border border-white/10">
-                  <div className="w-10 h-10 rounded-full bg-[#C5A184]/20 flex items-center justify-center font-black text-[#C5A184] text-sm flex-shrink-0">
+                <div key={b.id} className="flex items-center gap-3 bg-gray-50 rounded-2xl p-4 border border-gray-100">
+                  <div className="w-12 h-12 rounded-full bg-[#C5A184]/20 flex items-center justify-center font-black text-[#0A1128] text-sm flex-shrink-0">
                     {b.company?.slice(0,2).toUpperCase()}
                   </div>
                   <div>
-                    <p className="font-black text-sm">{b.company}</p>
-                    <p className="text-[10px] text-gray-400">{b.address || b.location || "Sin dirección"}</p>
+                    <p className="font-black text-sm text-[#0A1128]">{b.company}</p>
+                    <p className="text-[10px] text-gray-500">{b.address || b.location || "Sin dirección"}</p>
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="bg-[#C5A184]/10 border border-[#C5A184]/30 rounded-2xl p-5">
-              <h3 className="font-black text-sm text-[#C5A184] flex items-center gap-2 mb-2"><CreditCard size={16}/> Cómo cobras</h3>
-              <p className="text-xs text-gray-300 leading-relaxed">Por cada pedido que entregues, el cliente te pagará <span className="font-black text-white">$2.00 USD</span> directamente a tu Pago Móvil. El sistema muestra tus datos al cliente automáticamente al confirmar el envío.</p>
+            <div className="bg-[#C5A184] rounded-[2rem] p-6 shadow-lg relative overflow-hidden">
+              <div className="relative z-10">
+                <h3 className="font-black text-sm text-[#0A1128] flex items-center gap-2 mb-2"><CreditCard size={16}/> Cómo cobras</h3>
+                <p className="text-xs text-[#0A1128]/80 leading-relaxed font-bold">Por cada pedido que entregues, el cliente te pagará <span className="font-black text-white bg-[#0A1128] px-1.5 py-0.5 rounded-md">$2.00 USD</span> directamente a tu Pago Móvil.</p>
+              </div>
+              <Star size={100} className="absolute -right-6 -bottom-6 opacity-10 text-white transform -rotate-12" />
             </div>
 
             {/* Rating + GPS */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="bg-white rounded-[2rem] p-5 text-center shadow-sm border border-gray-100 flex flex-col items-center justify-center">
                 <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Calificación</p>
                 <div className="flex justify-center gap-0.5 mt-2">
-                  {[1,2,3,4,5].map(s => <span key={s} className={`text-lg ${s <= Math.round(avgRating) ? 'text-yellow-400' : 'text-gray-600'}`}>★</span>)}
+                  {[1,2,3,4,5].map(s => <span key={s} className={`text-xl ${s <= Math.round(avgRating) ? 'text-yellow-400' : 'text-gray-200'}`}>★</span>)}
                 </div>
-                <p className="text-xs font-black text-white mt-1">{avgRating > 0 ? avgRating.toFixed(1) : "Sin calif."} <span className="text-gray-500 font-normal">({riderInfo.totalRatings || 0})</span></p>
+                <p className="text-xs font-black text-[#0A1128] mt-1">{avgRating > 0 ? avgRating.toFixed(1) : "Sin calif."} <span className="text-gray-400 font-normal">({riderInfo.totalRatings || 0})</span></p>
               </div>
               <button
                 onClick={toggleGPS}
-                className={`rounded-2xl p-4 text-center border transition-all cursor-pointer ${
-                  gpsSharing ? 'bg-green-500/20 border-green-500/40' : 'bg-white/5 border-white/10 hover:bg-white/10'
+                className={`rounded-[2rem] p-5 text-center border transition-all cursor-pointer shadow-sm flex flex-col items-center justify-center ${
+                  gpsSharing ? 'bg-green-500 border-green-600 text-white' : 'bg-white border-gray-100 hover:bg-gray-50'
                 }`}
               >
-                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">GPS en Vivo</p>
-                <p className="text-2xl mt-1">{gpsSharing ? '📍' : '📍'}</p>
-                <p className={`text-[10px] font-black mt-1 ${gpsSharing ? 'text-green-400' : 'text-gray-500'}`}>
-                  {gpsSharing ? 'Activo • Compartiendo' : 'Toca para activar'}
+                <p className={`text-[9px] font-bold uppercase tracking-wider ${gpsSharing ? 'text-green-100' : 'text-gray-400'}`}>GPS en Vivo</p>
+                <p className="text-3xl mt-2">{gpsSharing ? '📍' : '📍'}</p>
+                <p className={`text-[10px] font-black mt-2 ${gpsSharing ? 'text-white' : 'text-[#0A1128]'}`}>
+                  {gpsSharing ? 'Compartiendo' : 'Activar GPS'}
                 </p>
               </button>
             </div>
