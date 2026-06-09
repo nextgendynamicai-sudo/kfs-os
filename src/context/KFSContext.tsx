@@ -38,44 +38,31 @@ const MOCK_BCV_RATES = {
 };
 
 const initialDB = {
-  promotoras: [
-    { id: "p1", name: "Promotora Alpha", email: "000", password: "000", phone: "000", createdAt: new Date().toISOString(), status: "approved" }
-  ],
-  clients: [
-    { id: "c1", company: "Kreatek Demo Store", email: "000", password: "000", phone: "000", kfsTier: "monopoly", status: "active", wallet: { balanceUSD: 500, kfsPoints: 1000 }, location: "Caracas, VE", description: "Tienda Oficial de Demostración KFS.", paymentMethods: { zinli: "demo@zinli.com", wallyTech: "demo@wally.tech", airtm: "demo@airtm.com", ubbiApp: "demo@ubbi.app", pagoMovilPhone: "04141234567", pagoMovilId: "J123456789", pagoMovilBank: "Banesco", binance: "123456789" } }
-  ],
-  vendedores: [
-    { id: "v1", name: "Vendedor Demo", clientId: "c1", email: "000", password: "000", createdAt: new Date().toISOString() }
-  ],
-  products: [
-    { id: "prod1", clientId: "c1", name: "Servicio Premium", priceUSD: 10, stock: 100, isService: true },
-    { id: "prod2", clientId: "c1", name: "Producto Físico", priceUSD: 25, stock: 50, isService: false }
-  ],
-  transactions: [],
-  orders: [],
-  expenses: [],
-  crm: [], // { id, phone, totalSpent, purchasesCount, lastPurchase }
-  vales: [], // { id, recipientName, type, amountUSD, surchargePct, totalDueUSD, dueDate, status, timestamp }
-  posTerminals: [
-    { id: "pos1", name: "Caja Principal", status: "online", assignedVendedorId: "v1", type: "Punto de Venta Oficial", clientId: "c1" }
-  ],
-  zReports: [],
-  buyers: [],
-  customers: [
-    { id: "cust1", phone: "000", password: "000", name: "Cliente Demo", createdAt: new Date().toISOString() }
-  ],
+  promotoras: [] as any[],
+  clients: [] as any[],
+  vendedores: [] as any[],
+  products: [] as any[],
+  transactions: [] as any[],
+  orders: [] as any[],
+  expenses: [] as any[],
+  crm: [] as any[],
+  vales: [] as any[],
+  posTerminals: [] as any[],
+  zReports: [] as any[],
+  buyers: [] as any[],
+  customers: [] as any[],
   kreatekCore: {
     totalTransactions: 0,
-    earningsEUR: 0, // gross
+    earningsEUR: 0,
     netEarningsEUR: 0,
     adBudgetEUR: 0
   },
-  ghostLogs: [],
-  notifications: [],
-  auditLogs: [],
-  supportTickets: [],
-  candidates: [],
-  unlockedContacts: [],
+  ghostLogs: [] as any[],
+  notifications: [] as any[],
+  auditLogs: [] as any[],
+  supportTickets: [] as any[],
+  candidates: [] as any[],
+  unlockedContacts: [] as any[],
   riders: [] as any[]
 };
 
