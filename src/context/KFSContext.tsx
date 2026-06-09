@@ -162,6 +162,11 @@ interface KFSContextType {
   removeRiderFromBusiness: (riderId: string, clientId: string) => void;
   assignDeliveryToOrder: (txId: string, clientId: string) => void;
   updateRiderPagoMovil: (riderId: string, pagoMovil: any) => void;
+  confirmDelivery: (txId: string) => void;
+  rateRider: (txId: string, stars: number, comment?: string) => void;
+  updateRiderGPS: (riderId: string, lat: number, lng: number) => void;
+  toggleBusinessOpen: (clientId: string) => void;
+  updateBusinessConfig: (clientId: string, config: any) => void;
 }
 
 const KFSContext = createContext<KFSContextType | undefined>(undefined);
@@ -1975,6 +1980,67 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast("Datos de Pago Móvil actualizados.", "success");
   };
 
+  // ========== DELIVERY LIFECYCLE ==========
+
+  const confirmDelivery = (txId: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      transactions: (prev.transactions || []).map((tx: any) =>
+        tx.id === txId ? { ...tx, shippingStatus: "delivered", deliveryStatus: "delivered", deliveredAt: new Date().toISOString() } : tx
+      )
+    }));
+    showToast("\u2705 Entrega confirmada. \u00a1Buen trabajo!", "success");
+  };
+
+  const rateRider = (txId: string, stars: number, comment: string = "") => {
+    setDb((prev: any) => ({
+      ...prev,
+      transactions: (prev.transactions || []).map((tx: any) =>
+        tx.id === txId ? { ...tx, riderRating: stars, riderRatingComment: comment, ratedAt: new Date().toISOString() } : tx
+      ),
+      riders: (prev.riders || []).map((r: any) => {
+        const riderTxs = (prev.transactions || []).filter((tx: any) => tx.assignedRiderId === r.id && tx.riderRating);
+        const newTx = { riderRating: stars };
+        const allRatings = [...riderTxs, newTx].map((tx: any) => tx.riderRating);
+        const avg = allRatings.reduce((a: number, b: number) => a + b, 0) / allRatings.length;
+        return riderTxs.some((tx: any) => tx.id === txId) || (prev.transactions || []).find((tx: any) => tx.id === txId)?.assignedRiderId === r.id
+          ? { ...r, averageRating: Math.round(avg * 10) / 10, totalRatings: allRatings.length }
+          : r;
+      })
+    }));
+    showToast(`\u2605 Calificación de ${stars} estrellas enviada. \u00a1Gracias!`, "success");
+  };
+
+  const updateRiderGPS = (riderId: string, lat: number, lng: number) => {
+    setDb((prev: any) => ({
+      ...prev,
+      riders: (prev.riders || []).map((r: any) =>
+        r.id === riderId ? { ...r, lastLat: lat, lastLng: lng, lastLocationAt: new Date().toISOString() } : r
+      )
+    }));
+  };
+
+  // ========== BUSINESS CONFIG ==========
+
+  const toggleBusinessOpen = (clientId: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      clients: prev.clients.map((c: any) =>
+        c.id === clientId ? { ...c, isOpen: !c.isOpen } : c
+      )
+    }));
+  };
+
+  const updateBusinessConfig = (clientId: string, config: { schedule?: any; deliveryRadiusKm?: number }) => {
+    setDb((prev: any) => ({
+      ...prev,
+      clients: prev.clients.map((c: any) =>
+        c.id === clientId ? { ...c, ...config } : c
+      )
+    }));
+    showToast("Configuración del negocio actualizada.", "success");
+  };
+
   return (
     <KFSContext.Provider value={{
       isClient, isBooting, view, setView, currentUser, setCurrentUser,
@@ -1987,7 +2053,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings, updatePaymentMethods, toggleProductFeatured,
       sendNotification, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, processMonthlyBilling, registerCustomer, blockClient, releaseClient, deleteClient,
       registerCandidate, unlockCandidateContact, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, hireCandidate, releaseCandidate, toggleCandidateBacking, markNotificationsAsRead, updateCvBuilderOption,
-      registerRider, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, updateRiderPagoMovil
+      registerRider, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, updateRiderPagoMovil,
+      confirmDelivery, rateRider, updateRiderGPS, toggleBusinessOpen, updateBusinessConfig
     }}>
       {children}
     </KFSContext.Provider>

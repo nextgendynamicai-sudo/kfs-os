@@ -2164,15 +2164,55 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                    {logisticsTxs.map((tx: any) => {
                      const p = db.products.find((prod: any) => prod.id === tx.productId);
                      const isDispatched = tx.shippingStatus === 'dispatched';
+                     const isDelivered = tx.shippingStatus === 'delivered';
                      return (
-                       <div key={tx.id} className={`${isDispatched ? 'bg-green-500/10 border-green-500/20' : 'bg-blue-500/10 border-blue-500/20'} border p-5 rounded-2xl flex justify-between items-center`}>
-                         <div>
-                           <h4 className={`font-bold ${isDispatched ? 'text-green-400' : 'text-blue-400'}`}>{p?.name || "Producto Online"}</h4>
-                           <p className={`text-xs mt-1 ${isDispatched ? 'text-green-200/70' : 'text-blue-200/70'}`}>
-                             {isDispatched ? '📦 Tu paquete está en camino hacia ti' : '⏳ Pago Aprobado. Vendedor empacando'}
-                           </p>
+                       <div key={tx.id} className={`${isDelivered ? 'bg-gray-800/50 border-gray-700' : isDispatched ? 'bg-green-500/10 border-green-500/20' : 'bg-blue-500/10 border-blue-500/20'} border p-5 rounded-2xl space-y-4`}>
+                         <div className="flex justify-between items-start">
+                           <div>
+                             <h4 className={`font-bold ${isDelivered ? 'text-gray-400' : isDispatched ? 'text-green-400' : 'text-blue-400'}`}>{p?.name || "Producto Online"}</h4>
+                             <p className={`text-xs mt-1 ${isDelivered ? 'text-gray-500' : isDispatched ? 'text-green-200/70' : 'text-blue-200/70'}`}>
+                               {isDelivered ? '✅ Entregado' : isDispatched ? '📦 Tu paquete está en camino hacia ti' : '⏳ Pago Aprobado. Vendedor empacando'}
+                             </p>
+                           </div>
+                           {isDelivered ? <CheckCircle className="text-gray-500" /> : isDispatched ? <Truck className="text-green-400 animate-bounce" /> : <Package className="text-blue-400 animate-pulse" />}
                          </div>
-                         {isDispatched ? <Truck className="text-green-400" /> : <Package className="text-blue-400 animate-pulse" />}
+
+                         {/* Rider Info */}
+                         {tx.assignedRiderName && (
+                           <div className="bg-black/30 rounded-xl p-3 flex items-center justify-between border border-white/5">
+                             <div className="flex items-center gap-3">
+                               <div className="w-8 h-8 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center font-black">
+                                 🛵
+                               </div>
+                               <div>
+                                 <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">Tu Rider</p>
+                                 <p className="text-sm font-black text-white">{tx.assignedRiderName}</p>
+                               </div>
+                             </div>
+                             {/* Rating Widget if Delivered */}
+                             {isDelivered && !tx.riderRating && (
+                               <div className="flex gap-1">
+                                 {[1,2,3,4,5].map(star => (
+                                   <button
+                                     key={star}
+                                     onClick={() => {
+                                       const { rateRider } = useKFS() as any;
+                                       rateRider(tx.id, star);
+                                     }}
+                                     className="text-gray-500 hover:text-yellow-400 transition-colors text-lg"
+                                   >
+                                     ★
+                                   </button>
+                                 ))}
+                               </div>
+                             )}
+                             {tx.riderRating && (
+                               <div className="text-yellow-400 text-sm font-black flex items-center gap-1">
+                                 {tx.riderRating} ★
+                               </div>
+                             )}
+                           </div>
+                         )}
                        </div>
                      );
                    })}
@@ -3439,6 +3479,37 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
               <span className="bg-[#0A1128] text-white text-[10px] font-black px-3 py-1.5 rounded-full">
                 {(db.riders || []).length} total
               </span>
+            </div>
+          </div>
+
+          {/* Metrics Banner */}
+          <div className="bg-gray-50 border-b border-gray-100 p-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Entregas</p>
+                <p className="text-xl font-black text-[#0A1128]">
+                  {(db.riders || []).reduce((acc: number, r: any) => acc + (r.deliveriesCompleted || 0), 0)}
+                </p>
+              </div>
+              <div className="bg-orange-100 text-orange-600 p-2 rounded-lg"><Truck size={20}/></div>
+            </div>
+            <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Ganancias Generadas</p>
+                <p className="text-xl font-black text-green-500">
+                  {formatUSD((db.riders || []).reduce((acc: number, r: any) => acc + (r.totalEarningsUSD || 0), 0))}
+                </p>
+              </div>
+              <div className="bg-green-100 text-green-600 p-2 rounded-lg"><DollarSign size={20}/></div>
+            </div>
+            <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
+              <div>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Riders Activos</p>
+                <p className="text-xl font-black text-[#0A1128]">
+                  {(db.riders || []).filter((r: any) => r.status === "approved").length}
+                </p>
+              </div>
+              <div className="bg-blue-100 text-blue-600 p-2 rounded-lg"><Users size={20}/></div>
             </div>
           </div>
 
@@ -4842,7 +4913,8 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   const [ticketSubject, setTicketSubject] = useState("");
   const [ticketMsg, setTicketMsg] = useState("");
   const [fundAmount, setFundAmount] = useState("");
-  const { createTicket, fundWallet, processMonthlyBilling, createVale, payVale, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating, registerPosTerminal, deletePosTerminal, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder } = useKFS() as any;
+  const { createTicket, fundWallet, processMonthlyBilling, createVale, payVale, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating, registerPosTerminal, deletePosTerminal, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, toggleBusinessOpen, updateBusinessConfig } = useKFS() as any;
+  const [deliveryRadiusKm, setDeliveryRadiusKm] = useState(clientInfo?.deliveryRadiusKm || 5);
 
   const handleCSVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -5145,6 +5217,70 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         </div>
 
         <StorefrontCustomizer client={currentUser} updateStoreSettings={updateStoreSettings} />
+
+        {/* ===== OPEN / CLOSE TOGGLE + DELIVERY CONFIG ===== */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* Open / Close */}
+          <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 flex flex-col gap-4">
+            <h4 className="font-black text-[#0A1128] flex items-center gap-2"><Store size={20} className="text-[#C5A184]"/> Estado del Negocio</h4>
+            <div className="flex items-center justify-between bg-gray-50 rounded-2xl p-4">
+              <div>
+                <p className="font-black text-sm text-[#0A1128]">{clientInfo.isOpen !== false ? '🟢 Abierto' : '🔴 Cerrado'}</p>
+                <p className="text-[10px] text-gray-400 mt-0.5">Tus clientes verán este estado en tu tienda</p>
+              </div>
+              <button
+                onClick={() => toggleBusinessOpen(currentUser.id)}
+                className={`relative w-14 h-7 rounded-full transition-colors duration-300 focus:outline-none cursor-pointer ${
+                  clientInfo.isOpen !== false ? 'bg-green-500' : 'bg-gray-300'
+                }`}
+              >
+                <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform duration-300 ${
+                  clientInfo.isOpen !== false ? 'translate-x-7' : 'translate-x-0'
+                }`} />
+              </button>
+            </div>
+            <div className="space-y-2">
+              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Horario de Atención</p>
+              {['Lun-Vie','Sáb','Dom'].map(day => (
+                <div key={day} className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-gray-600 w-14">{day}</span>
+                  <input type="time" defaultValue="08:00" className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 text-xs flex-1" />
+                  <span className="text-xs text-gray-400">–</span>
+                  <input type="time" defaultValue="18:00" className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 text-xs flex-1" />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Delivery zone */}
+          <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 flex flex-col gap-4">
+            <h4 className="font-black text-[#0A1128] flex items-center gap-2"><Truck size={20} className="text-orange-500"/> Zona de Delivery</h4>
+            <div className="flex flex-col gap-3">
+              <div>
+                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block mb-2">
+                  Radio máximo: <span className="text-orange-500">{deliveryRadiusKm} km</span>
+                </label>
+                <input
+                  type="range" min={1} max={30} value={deliveryRadiusKm}
+                  onChange={e => setDeliveryRadiusKm(Number(e.target.value))}
+                  className="w-full accent-orange-500 cursor-pointer"
+                />
+                <div className="flex justify-between text-[9px] text-gray-400 font-bold mt-1">
+                  <span>1 km</span><span>15 km</span><span>30 km</span>
+                </div>
+              </div>
+              <div className="bg-orange-50 border border-orange-100 rounded-xl p-3 text-xs text-orange-700 font-bold">
+                📦 Solo se aceptarán pedidos dentro de {deliveryRadiusKm} km del negocio.
+              </div>
+              <button
+                onClick={() => updateBusinessConfig(currentUser.id, { deliveryRadiusKm })}
+                className="w-full bg-orange-500 text-white py-3 rounded-xl font-black hover:bg-orange-600 active:scale-95 transition-all text-sm cursor-pointer"
+              >
+                Guardar Configuración de Zona
+              </button>
+            </div>
+          </div>
+        </div>
 
         <FiscalPrinterSetupWidget />
 
@@ -7284,16 +7420,37 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
 // RIDER DASHBOARD
 // ==========================================
 const RiderDashboard = ({ db, currentUser, logout }: any) => {
-  const { updateRiderPagoMovil, showToast, formatUSD } = useKFS() as any;
+  const { updateRiderPagoMovil, showToast, formatUSD, confirmDelivery, updateRiderGPS } = useKFS() as any;
   const [activeTab, setActiveTab] = useState("overview");
   const [editingPM, setEditingPM] = useState(false);
   const [pmForm, setPmForm] = useState({ banco: "", telefono: "", cedula: "" });
+  const [gpsSharing, setGpsSharing] = useState(false);
+  const gpsWatchRef = useRef<number | null>(null);
 
   const riderInfo = db.riders?.find((r: any) => r.id === currentUser.id) || currentUser;
   const myDeliveries = db.transactions?.filter((tx: any) => tx.assignedRiderId === currentUser.id) || [];
   const pendingDeliveries = myDeliveries.filter((tx: any) => tx.deliveryStatus === "assigned" && tx.shippingStatus !== "delivered");
   const completedDeliveries = myDeliveries.filter((tx: any) => tx.shippingStatus === "delivered" || tx.deliveryStatus === "delivered");
-  const totalEarnings = myDeliveries.length * 2;
+  const totalEarnings = completedDeliveries.length * 2;
+  const avgRating = riderInfo.averageRating || 0;
+
+  const toggleGPS = () => {
+    if (!gpsSharing) {
+      if (!navigator.geolocation) { showToast("GPS no disponible en este dispositivo.", "error"); return; }
+      const id = navigator.geolocation.watchPosition(
+        (pos) => updateRiderGPS(currentUser.id, pos.coords.latitude, pos.coords.longitude),
+        () => {}, { enableHighAccuracy: true, maximumAge: 10000 }
+      );
+      gpsWatchRef.current = id;
+      setGpsSharing(true);
+      showToast("📍 Compartiendo ubicación GPS en tiempo real.", "success");
+    } else {
+      if (gpsWatchRef.current !== null) navigator.geolocation.clearWatch(gpsWatchRef.current);
+      setGpsSharing(false);
+      showToast("GPS desactivado.", "success");
+    }
+  };
+
 
   const myBusinesses = (riderInfo.associatedBusinesses || []).map((bId: string) =>
     db.clients?.find((c: any) => c.id === bId)
@@ -7376,6 +7533,29 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
               <h3 className="font-black text-sm text-[#C5A184] flex items-center gap-2 mb-2"><CreditCard size={16}/> Cómo cobras</h3>
               <p className="text-xs text-gray-300 leading-relaxed">Por cada pedido que entregues, el cliente te pagará <span className="font-black text-white">$2.00 USD</span> directamente a tu Pago Móvil. El sistema muestra tus datos al cliente automáticamente al confirmar el envío.</p>
             </div>
+
+            {/* Rating + GPS */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center">
+                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Calificación</p>
+                <div className="flex justify-center gap-0.5 mt-2">
+                  {[1,2,3,4,5].map(s => <span key={s} className={`text-lg ${s <= Math.round(avgRating) ? 'text-yellow-400' : 'text-gray-600'}`}>★</span>)}
+                </div>
+                <p className="text-xs font-black text-white mt-1">{avgRating > 0 ? avgRating.toFixed(1) : "Sin calif."} <span className="text-gray-500 font-normal">({riderInfo.totalRatings || 0})</span></p>
+              </div>
+              <button
+                onClick={toggleGPS}
+                className={`rounded-2xl p-4 text-center border transition-all cursor-pointer ${
+                  gpsSharing ? 'bg-green-500/20 border-green-500/40' : 'bg-white/5 border-white/10 hover:bg-white/10'
+                }`}
+              >
+                <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">GPS en Vivo</p>
+                <p className="text-2xl mt-1">{gpsSharing ? '📍' : '📍'}</p>
+                <p className={`text-[10px] font-black mt-1 ${gpsSharing ? 'text-green-400' : 'text-gray-500'}`}>
+                  {gpsSharing ? 'Activo • Compartiendo' : 'Toca para activar'}
+                </p>
+              </button>
+            </div>
           </div>
         )}
 
@@ -7452,6 +7632,22 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
                     <div className="bg-green-900/20 border border-green-500/20 rounded-xl p-3">
                       <p className="text-[9px] text-green-400 font-black uppercase tracking-wider mb-1">El cliente debe pagarte a:</p>
                       <p className="text-xs font-bold text-white">🏦 {tx.riderPagoMovil.banco} · 📱 {tx.riderPagoMovil.telefono} · 🪪 {tx.riderPagoMovil.cedula}</p>
+                    </div>
+                  )}
+
+                  {/* Confirmar Entrega */}
+                  {tx.shippingStatus !== "delivered" && (
+                    <button
+                      onClick={() => confirmDelivery(tx.id)}
+                      className="w-full py-3 bg-green-500 hover:bg-green-400 active:scale-95 text-white font-black rounded-xl transition-all text-sm cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-green-500/30"
+                    >
+                      <CheckCircle size={16}/> Confirmar Entrega Completada
+                    </button>
+                  )}
+                  {tx.shippingStatus === "delivered" && (
+                    <div className="flex items-center justify-center gap-2 py-2 text-green-400 text-xs font-black">
+                      ✅ Entrega Completada · {tx.deliveredAt ? new Date(tx.deliveredAt).toLocaleString() : ""}
+                      {tx.riderRating && <span className="text-yellow-400">· {tx.riderRating}★</span>}
                     </div>
                   )}
                 </div>
