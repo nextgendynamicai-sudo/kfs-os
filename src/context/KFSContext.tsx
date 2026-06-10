@@ -37,7 +37,7 @@ const MOCK_BCV_RATES = {
   isWeekend: false
 };
 
-const CURRENT_WIPE_VERSION = 2;
+const CURRENT_WIPE_VERSION = 3;
 
 const initialDB = {
   promotoras: [] as any[],
@@ -502,7 +502,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           .then(({ data, error }: any) => {
             if (data && data.db_state) {
               const remote = data.db_state;
-              if (remote.kreatekCore?.wipeVersion !== CURRENT_WIPE_VERSION) {
+              const remoteVersion = remote.kreatekCore?.wipeVersion || 0;
+              if (remoteVersion > CURRENT_WIPE_VERSION) {
+                console.log("[Supabase Cloud] Versión de la nube es más reciente. Recargando...");
+                if (typeof window !== "undefined") window.location.reload();
+              } else if (remoteVersion < CURRENT_WIPE_VERSION) {
                 console.log("[Supabase Cloud] Versión de BD antigua detectada. Forzando reinicio local y en la nube.");
                 setDb(initialDB);
                 localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
@@ -544,7 +548,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'kfs_store_states', filter: `id=eq.${syncId}` }, (payload: any) => {
                   if (payload.new && payload.new.db_state) {
                     const remote = payload.new.db_state;
-                    if (remote.kreatekCore?.wipeVersion !== CURRENT_WIPE_VERSION) {
+                    const remoteVersion = remote.kreatekCore?.wipeVersion || 0;
+                    if (remoteVersion > CURRENT_WIPE_VERSION) {
+                      console.log("[Supabase Realtime] Versión de la nube es más reciente. Recargando...");
+                      if (typeof window !== "undefined") window.location.reload();
+                    } else if (remoteVersion < CURRENT_WIPE_VERSION) {
                       console.log("[Supabase Realtime] Versión de BD antigua recibida. Forzando reinicio.");
                       setDb(initialDB);
                       localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
@@ -581,7 +589,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                   }
                   if (data && data.db_state) {
                     const remote = data.db_state;
-                    if (remote.kreatekCore?.wipeVersion !== CURRENT_WIPE_VERSION) {
+                    const remoteVersion = remote.kreatekCore?.wipeVersion || 0;
+                    if (remoteVersion > CURRENT_WIPE_VERSION) {
+                      console.log("[Supabase Polling Fallback] Versión de la nube es más reciente. Recargando...");
+                      if (typeof window !== "undefined") window.location.reload();
+                    } else if (remoteVersion < CURRENT_WIPE_VERSION) {
                       console.log("[Supabase Polling Fallback] Versión de BD antigua detectada. Forzando reinicio.");
                       setDb(initialDB);
                       localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
