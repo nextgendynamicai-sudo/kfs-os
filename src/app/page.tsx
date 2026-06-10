@@ -12,6 +12,7 @@ import {
 import { useKFS } from "../context/KFSContext";
 import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { CheckoutModal } from "../components/CheckoutModal";
+import { PayoutModal } from "../components/PayoutModal";
 import { ReceiptModal } from "../components/ReceiptModal";
 import { DualWalletCard } from "../components/DualWalletCard";
 import { FlowExpressCatalog } from "../components/FlowExpressCatalog";
@@ -4035,8 +4036,8 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
               <h2 className="text-5xl font-black mb-1 text-green-400">{formatEUR(myPromotoraData?.passiveEarningsEUR || 0)}</h2>
               <p className="text-xs text-gray-400 mt-2">Modelo Revenue Share (20%)</p>
               {(myPromotoraData?.passiveEarningsEUR || 0) > 0 && (
-                <button onClick={() => settlePromotoraEarnings(currentUser.id)} className="w-full bg-[#C5A184] text-[#0A1128] py-3 rounded-xl font-bold text-sm hover:scale-[1.02] transition-transform cursor-pointer shadow-lg flex justify-center items-center gap-2 mt-4">
-                  <CheckCircle size={18} /> Confirmar Pago Recibido
+                <button onClick={() => setShowPayoutModal(true)} className="w-full bg-[#C5A184] text-[#0A1128] py-3 rounded-xl font-bold text-sm hover:scale-[1.02] transition-transform cursor-pointer shadow-lg flex justify-center items-center gap-2 mt-4">
+                  <CheckCircle size={18} /> Solicitar Retiro
                 </button>
               )}
             </div>
@@ -5324,6 +5325,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   const [showAddModal, setShowAddModal] = useState(false);
   const [showAddVendedor, setShowAddVendedor] = useState(false);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
+  const [showPayoutModal, setShowPayoutModal] = useState(false);
   const [searchVendedor, setSearchVendedor] = useState("");
   
   const [newProd, setNewProd] = useState({ name: "", price: "", cost: "", stock: "", imgUrl: "", category: "Alimentos", barcode: "", description: "" });
@@ -6129,10 +6131,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 <div className="bg-[#C5A184] h-full" style={{ width: `${Math.min(100, ((currentUser.salesUSD || 0) / 1000) * 100)}%` }} />
               </div>
               <button 
-                onClick={() => {
-                  const amount = parseFloat(window.prompt("Monto a retirar en USD:", "0") || "0");
-                  if (amount > 0) requestPayout(amount, "Datos bancarios en perfil");
-                }}
+                onClick={() => setShowPayoutModal(true)}
                 className="w-full py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-black uppercase tracking-wider transition-colors"
               >
                 Solicitar Retiro
@@ -7690,6 +7689,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
           </div>
         </div>
       )}
+      )}
       {activeScreenshot && (
         <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
           <div className="bg-[#0A1128] border border-[#C5A184]/30 rounded-[2.5rem] w-full max-w-lg p-6 shadow-2xl relative flex flex-col items-center">
@@ -7702,6 +7702,19 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
             </div>
           </div>
         </div>
+      )}
+
+      {showPayoutModal && (
+        <PayoutModal
+          maxAmount={currentUser.salesUSD || 0}
+          currency="USD"
+          formatMoney={formatUSD}
+          onCancel={() => setShowPayoutModal(false)}
+          onConfirm={(amount: number, details: string) => {
+            requestPayout(amount, details);
+            setShowPayoutModal(false);
+          }}
+        />
       )}
     </div>
   );
@@ -8461,6 +8474,7 @@ export default function Home() {
           formatUSD={formatUSD} 
           formatEUR={formatEUR} 
           logout={logout}
+          requestPayout={requestPayout}
         />
       )}
       {view === "client" && (
