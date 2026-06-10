@@ -37,7 +37,7 @@ const MOCK_BCV_RATES = {
   isWeekend: false
 };
 
-const CURRENT_WIPE_VERSION = 3;
+const CURRENT_WIPE_VERSION = 4;
 
 const initialDB = {
   promotoras: [] as any[],
@@ -129,8 +129,9 @@ interface KFSContextType {
   replyTicket: (ticketId: string, author: string, message: string) => void;
   closeTicket: (ticketId: string) => void;
   fundWallet: (clientId: string, amountUSD: number) => void;
+  fundCustomerWallet: (customerId: string, amountUSD: number, gateway: string) => void;
   processMonthlyBilling: (clientId: string) => void;
-  registerCustomer: (phone: string, password: string, name: string) => void;
+  registerCustomer: (phone: string, password: string, name: string, referralCode?: string) => void;
   blockClient: (clientId: string) => void;
   releaseClient: (clientId: string) => void;
   deleteClient: (clientId: string) => void;
@@ -371,7 +372,8 @@ const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
     earningsEUR: Math.max(localCore.earningsEUR || 0, remoteCore.earningsEUR || 0),
     netEarningsEUR: Math.max(localCore.netEarningsEUR || 0, remoteCore.netEarningsEUR || 0),
     adBudgetEUR: Math.max(localCore.adBudgetEUR || 0, remoteCore.adBudgetEUR || 0),
-    avatar: localCore.avatar || remoteCore.avatar
+    avatar: localCore.avatar || remoteCore.avatar,
+    wipeVersion: localCore.wipeVersion || remoteCore.wipeVersion || CURRENT_WIPE_VERSION
   };
 
   return mergedDb;
@@ -507,12 +509,15 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                 console.log("[Supabase Cloud] Versión de la nube es más reciente. Recargando...");
                 if (typeof window !== "undefined") window.location.reload();
               } else if (remoteVersion < CURRENT_WIPE_VERSION) {
-                console.log("[Supabase Cloud] Versión de BD antigua detectada. Forzando reinicio local y en la nube.");
-                setDb(initialDB);
-                localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
-                setCurrentUser(null);
-                setOriginalUser(null);
-                setView("landing");
+                setDb((prevDb: any) => {
+                  if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION) return prevDb;
+                  console.log("[Supabase Cloud] Versión de BD antigua detectada. Forzando reinicio local y en la nube.");
+                  localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
+                  setCurrentUser(null);
+                  setOriginalUser(null);
+                  if (currentUserRef.current) setView("landing");
+                  return initialDB;
+                });
               } else {
                 setDb((prevDb: any) => {
                   return mergeIncomingDb(prevDb, remote, currentUserRef.current);
@@ -520,22 +525,28 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                 console.log("[Supabase Cloud] Base de datos restaurada desde la nube y fusionada con estado local.");
               }
             } else if (error && error.code === 'PGRST116') {
-              console.log("[Supabase Cloud] Fila no encontrada (BD vacía o borrada). Restableciendo local a 0.");
-              setDb(initialDB);
-              localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
-              setCurrentUser(null);
-              setOriginalUser(null);
-              setView("landing");
+              setDb((prevDb: any) => {
+                if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION && prevDb.transactions?.length === 0) return prevDb;
+                console.log("[Supabase Cloud] Fila no encontrada (BD vacía o borrada). Restableciendo local a 0.");
+                localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
+                setCurrentUser(null);
+                setOriginalUser(null);
+                if (currentUserRef.current) setView("landing");
+                return initialDB;
+              });
             }
           })
           .catch((err: any) => {
             console.log("Supabase initial sync bypass:", err);
             if (err && (err.code === 'PGRST116' || (err.message && err.message.includes('0 rows')))) {
-              setDb(initialDB);
-              localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
-              setCurrentUser(null);
-              setOriginalUser(null);
-              setView("landing");
+              setDb((prevDb: any) => {
+                if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION && prevDb.transactions?.length === 0) return prevDb;
+                localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
+                setCurrentUser(null);
+                setOriginalUser(null);
+                if (currentUserRef.current) setView("landing");
+                return initialDB;
+              });
             }
           })
           .finally(() => {
@@ -553,12 +564,15 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                       console.log("[Supabase Realtime] Versión de la nube es más reciente. Recargando...");
                       if (typeof window !== "undefined") window.location.reload();
                     } else if (remoteVersion < CURRENT_WIPE_VERSION) {
-                      console.log("[Supabase Realtime] Versión de BD antigua recibida. Forzando reinicio.");
-                      setDb(initialDB);
-                      localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
-                      setCurrentUser(null);
-                      setOriginalUser(null);
-                      setView("landing");
+                      setDb((prevDb: any) => {
+                        if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION) return prevDb;
+                        console.log("[Supabase Realtime] Versión de BD antigua recibida. Forzando reinicio.");
+                        localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
+                        setCurrentUser(null);
+                        setOriginalUser(null);
+                        if (currentUserRef.current) setView("landing");
+                        return initialDB;
+                      });
                     } else {
                       isRemoteUpdate.current = true;
                       setDb((prevDb: any) => {
@@ -571,12 +585,15 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                       console.log("[Supabase Realtime] Estado sincronizado en tiempo real con fusión local.");
                     }
                   } else if (payload.eventType === 'DELETE' || !payload.new) {
-                    console.log("[Supabase Realtime] Fila eliminada (BD borrada). Restableciendo local a 0.");
-                    setDb(initialDB);
-                    localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
-                    setCurrentUser(null);
-                    setOriginalUser(null);
-                    setView("landing");
+                    setDb((prevDb: any) => {
+                      if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION && prevDb.transactions?.length === 0) return prevDb;
+                      console.log("[Supabase Realtime] Fila eliminada (BD borrada). Restableciendo local a 0.");
+                      localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
+                      setCurrentUser(null);
+                      setOriginalUser(null);
+                      if (currentUserRef.current) setView("landing");
+                      return initialDB;
+                    });
                   }
                 })
                 .subscribe();
@@ -594,12 +611,15 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                       console.log("[Supabase Polling Fallback] Versión de la nube es más reciente. Recargando...");
                       if (typeof window !== "undefined") window.location.reload();
                     } else if (remoteVersion < CURRENT_WIPE_VERSION) {
-                      console.log("[Supabase Polling Fallback] Versión de BD antigua detectada. Forzando reinicio.");
-                      setDb(initialDB);
-                      localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
-                      setCurrentUser(null);
-                      setOriginalUser(null);
-                      setView("landing");
+                      setDb((prevDb: any) => {
+                        if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION) return prevDb;
+                        console.log("[Supabase Polling Fallback] Versión de BD antigua detectada. Forzando reinicio.");
+                        localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
+                        setCurrentUser(null);
+                        setOriginalUser(null);
+                        if (currentUserRef.current) setView("landing");
+                        return initialDB;
+                      });
                     } else {
                       setDb((prevDb: any) => {
                         const merged = mergeIncomingDb(prevDb, remote, currentUserRef.current);
@@ -612,12 +632,15 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                       });
                     }
                   } else if (error && error.code === 'PGRST116') {
-                    console.log("[Supabase Polling Fallback] Fila no encontrada (BD vacía o borrada). Restableciendo local a 0.");
-                    setDb(initialDB);
-                    localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
-                    setCurrentUser(null);
-                    setOriginalUser(null);
-                    setView("landing");
+                    setDb((prevDb: any) => {
+                      if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION && prevDb.transactions?.length === 0) return prevDb;
+                      console.log("[Supabase Polling Fallback] Fila no encontrada (BD vacía o borrada). Restableciendo local a 0.");
+                      localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
+                      setCurrentUser(null);
+                      setOriginalUser(null);
+                      if (currentUserRef.current) setView("landing");
+                      return initialDB;
+                    });
                   }
                 }).catch(() => {});
               }, 4000);
@@ -664,8 +687,37 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         }
       });
     }
+    const expiryInterval = setInterval(() => {
+      setDb((prev: any) => {
+        const now = Date.now();
+        let updated = false;
+        const newCustomers = (prev.customers || []).map((c: any) => {
+          if (c.k_points_expiry && c.k_points_balance > 0) {
+            const expiryTime = new Date(c.k_points_expiry).getTime();
+            if (now > expiryTime) {
+              updated = true;
+              return {
+                ...c,
+                k_points_balance: 0,
+                k_points_expiry: null
+              };
+            }
+          }
+          return c;
+        });
+        if (updated) {
+          return {
+            ...prev,
+            customers: newCustomers
+          };
+        }
+        return prev;
+      });
+    }, 10000);
+
     return () => {
       window.removeEventListener("popstate", handlePopState);
+      clearInterval(expiryInterval);
     };
   }, []);
 
@@ -961,23 +1013,92 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast(`Billetera recargada con $${amountUSD}`, "success");
   };
 
-  const registerCustomer = (phone: string, password: string, name: string) => {
+  const fundCustomerWallet = (customerId: string, amountUSD: number, gateway: string) => {
+    setDb((prev: any) => {
+      let updatedCustomers = prev.customers || [];
+      const customer = updatedCustomers.find((c: any) => c.id === customerId);
+      if (!customer) return prev;
+
+      let referringCustomerBonusId = null;
+      if (!customer.hasRecharged && customer.referred_by_customer_id) {
+         referringCustomerBonusId = customer.referred_by_customer_id;
+      }
+
+      updatedCustomers = updatedCustomers.map((c: any) => {
+        if (c.id === customerId) {
+          return { ...c, real_balance: (c.real_balance || 0) + amountUSD, hasRecharged: true };
+        }
+        if (c.id === referringCustomerBonusId) {
+           return { ...c, k_points_balance: (c.k_points_balance || 0) + 500, k_points_expiry: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString() };
+        }
+        return c;
+      });
+
+      return {
+        ...prev,
+        customers: updatedCustomers
+      };
+    });
+    
+    logAction("System", `FUND_CUSTOMER_${gateway.toUpperCase()}`, `Usuario ${customerId} recargó $${amountUSD} via ${gateway}`);
+    showToast(`Recarga de $${amountUSD} acreditada vía ${gateway}.`, "success");
+  };
+
+  const registerCustomer = (phone: string, password: string, name: string, referralCode?: string) => {
     const existing = db.customers?.find((c: any) => c.phone === phone);
     if (existing) {
       showToast("Este número de teléfono ya está registrado.", "error");
       return;
     }
+
+    let referred_by_promoter_id = null;
+    let referred_by_merchant_id = null;
+    let referred_by_customer_id = null;
+
+    if (referralCode) {
+      const isPromotora = db.promotoras?.find((p: any) => p.id === referralCode || p.referralCode === referralCode);
+      const isMerchant = db.clients?.find((c: any) => c.id === referralCode || c.referralCode === referralCode);
+      const isCustomer = db.customers?.find((c: any) => c.id === referralCode || c.referralCode === referralCode);
+
+      if (isPromotora) referred_by_promoter_id = isPromotora.id;
+      else if (isMerchant) referred_by_merchant_id = isMerchant.id;
+      else if (isCustomer) referred_by_customer_id = isCustomer.id;
+    }
+
     const newCustomer = {
       id: `cust_${Date.now()}`,
       phone,
       password: hashPassword(password),
       name,
+      real_balance: 0,
+      k_points_balance: 0,
+      k_points_expiry: null,
+      referred_by_promoter_id,
+      referred_by_merchant_id,
+      referred_by_customer_id,
       createdAt: new Date().toISOString()
     };
-    setDb((prev: any) => ({
-      ...prev,
-      customers: [...(prev.customers || []), newCustomer]
-    }));
+
+    setDb((prev: any) => {
+      let updatedClients = prev.clients || [];
+      if (referred_by_merchant_id) {
+        updatedClients = updatedClients.map((c: any) => 
+          c.id === referred_by_merchant_id ? { ...c, onboardedUsers: (c.onboardedUsers || 0) + 1 } : c
+        );
+      }
+      let updatedCustomers = prev.customers || [];
+      if (referred_by_customer_id) {
+        updatedCustomers = updatedCustomers.map((c: any) => 
+          c.id === referred_by_customer_id ? { ...c, referralCount: (c.referralCount || 0) + 1 } : c
+        );
+      }
+      return {
+        ...prev,
+        clients: updatedClients,
+        customers: [...updatedCustomers, newCustomer]
+      };
+    });
+
     setCurrentUser({ ...newCustomer, role: "customer" });
     setView("customer");
     showToast(`Cuenta creada exitosamente. Bienvenido ${name}!`);
@@ -1040,6 +1161,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       rating: 5.0, 
       reviewCount: 0,
       kfsFeePercentage, // 0.03, 0.05, 0.10
+      fee_tier: clientData.fee_tier || (kfsFeePercentage === 0.03 ? "3%" : kfsFeePercentage === 0.01 ? "1%" : "5%"),
+      is_founder: clientData.is_founder !== undefined ? clientData.is_founder : false,
       kfsFeesOwedUSD: 0,
       isOnboarded: false,
       acceptedToS: true,
@@ -1262,16 +1385,70 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     const totalUSD = basePriceUSD + ivaUSD + igtfUSD;
     const receiptNumber = `REC-${Date.now().toString().slice(-4)}`;
 
+    if (['real_balance', 'k_points', 'hybrid'].includes(paymentMethod)) {
+      if (!customerPhone) {
+        showToast("Se requiere el teléfono del cliente para pagar con balance.", "error");
+        return null;
+      }
+      const customer = db.customers?.find((c: any) => c.phone === customerPhone);
+      if (!customer) {
+        showToast("Cliente no encontrado en la base de datos.", "error");
+        return null;
+      }
+      const userReal = customer.real_balance || 0;
+      const userKP = customer.k_points_balance || 0;
+      if (paymentMethod === "real_balance" && userReal < totalUSD) {
+        showToast("Saldo real insuficiente.", "error");
+        return null;
+      }
+      if (paymentMethod === "k_points" && userKP < totalUSD * 1000) {
+        showToast("Puntos K-Points insuficientes.", "error");
+        return null;
+      }
+      if (paymentMethod === "hybrid") {
+        const pointsUsed = Math.min(userKP, totalUSD * 1000);
+        const realNeeded = totalUSD - (pointsUsed / 1000);
+        if (userReal < realNeeded) {
+          showToast("Saldo real insuficiente para el co-pago híbrido.", "error");
+          return null;
+        }
+      }
+    }
+
     let transactionObj: any = null;
 
     setDb((prev: any) => {
       const client = prev.clients.find((c: any) => c.id === product.clientId);
       
       let kfsFeePercentage = 0.03; // Default Flow Velocity
-      if (client?.kfsTier === 'matrix') kfsFeePercentage = 0.05;
-      if (client?.kfsTier === 'monopoly') kfsFeePercentage = 0.10;
-      // Fallback a kfsFeePercentage viejo si no hay tier
-      if (!client?.kfsTier && client?.kfsFeePercentage) kfsFeePercentage = client.kfsFeePercentage;
+      if (client?.is_founder) {
+        kfsFeePercentage = 0.01;
+      } else if (client?.onboardedUsers >= 50) {
+        kfsFeePercentage = 0.03; // Peaje Gamificado permanente por traer 50 usuarios
+      } else if (customerPhone) {
+        const customer = prev.customers?.find((c: any) => c.phone === customerPhone);
+        if (customer && customer.referred_by_merchant_id === client?.id) {
+          kfsFeePercentage = 0.03; // Descuento específico para ventas al propio referido
+        } else if (client?.fee_tier) {
+          if (client.fee_tier === "1%") kfsFeePercentage = 0.01;
+          else if (client.fee_tier === "3%") kfsFeePercentage = 0.03;
+          else if (client.fee_tier === "5%") kfsFeePercentage = 0.05;
+        } else {
+          if (client?.kfsTier === 'matrix') kfsFeePercentage = 0.05;
+          if (client?.kfsTier === 'monopoly') kfsFeePercentage = 0.10;
+          if (!client?.kfsTier && client?.kfsFeePercentage) kfsFeePercentage = client.kfsFeePercentage;
+        }
+      } else {
+        if (client?.fee_tier) {
+          if (client.fee_tier === "1%") kfsFeePercentage = 0.01;
+          else if (client.fee_tier === "3%") kfsFeePercentage = 0.03;
+          else if (client.fee_tier === "5%") kfsFeePercentage = 0.05;
+        } else {
+          if (client?.kfsTier === 'matrix') kfsFeePercentage = 0.05;
+          if (client?.kfsTier === 'monopoly') kfsFeePercentage = 0.10;
+          if (!client?.kfsTier && client?.kfsFeePercentage) kfsFeePercentage = client.kfsFeePercentage;
+        }
+      }
 
       const kreatekPctFeeUSD = basePriceUSD * kfsFeePercentage; // % de venta bruta
       const posFeeUSD = 0.04;
@@ -1283,20 +1460,85 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       const adBudgetEUR = kreatekNetEUR * 0.20; // 20% de ganancia neta para ads
       const finalNetEUR = kreatekNetEUR - adBudgetEUR;
 
+      let cashbackKP = 0;
+      let realUSDSpent = 0;
+      let pointsUsed = 0;
+      let realNeeded = 0;
+
+      if (customerPhone && ['real_balance', 'k_points', 'hybrid'].includes(paymentMethod)) {
+        const customer = prev.customers?.find((c: any) => c.phone === customerPhone);
+        if (customer) {
+          if (paymentMethod === "real_balance") {
+            realUSDSpent = totalUSD;
+            realNeeded = totalUSD;
+          } else if (paymentMethod === "k_points") {
+            pointsUsed = totalUSD * 1000;
+          } else if (paymentMethod === "hybrid") {
+            pointsUsed = Math.min(customer.k_points_balance || 0, totalUSD * 1000);
+            realNeeded = totalUSD - (pointsUsed / 1000);
+            realUSDSpent = realNeeded;
+          }
+          cashbackKP = Math.round(realUSDSpent * 0.01 * 1000); // 1% cashback as points
+        }
+      }
+
+      const updatedCustomers = (prev.customers || []).map((c: any) => {
+        if (c.phone === customerPhone && ['real_balance', 'k_points', 'hybrid'].includes(paymentMethod)) {
+          const newReal = (c.real_balance || 0) - realNeeded;
+          const newKP = (c.k_points_balance || 0) - pointsUsed + cashbackKP;
+          const newExpiry = cashbackKP > 0 ? new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString() : (newKP <= 0 ? null : c.k_points_expiry);
+          return {
+            ...c,
+            real_balance: newReal,
+            k_points_balance: newKP,
+            k_points_expiry: newExpiry
+          };
+        }
+        return c;
+      });
+
+      // Promoter "Guardian de cartera" (0.5% commission on real spend within first 30 days)
+      let guardianCommissionEUR = 0;
+      let guardianPromoterId = null;
+      if (customerPhone && realUSDSpent > 0) {
+        const customerObj = prev.customers?.find((c: any) => c.phone === customerPhone);
+        if (customerObj && customerObj.referred_by_promoter_id) {
+          const createdAtTime = new Date(customerObj.createdAt || Date.now()).getTime();
+          const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+          if (createdAtTime > thirtyDaysAgo) {
+            const rateUSD = rates.USD || 36.45;
+            const rateEUR = rates.EUR || 39.20;
+            const commissionUSD = realUSDSpent * 0.005; // 0.5%
+            guardianCommissionEUR = (commissionUSD * rateUSD) / rateEUR;
+            guardianPromoterId = customerObj.referred_by_promoter_id;
+          }
+        }
+      }
+
       const updatedClients = prev.clients.map((c: any) => 
         c.id === product.clientId ? { 
           ...c, 
-          salesUSD: (c.salesUSD || 0) + basePriceUSD,
+          salesUSD: (c.salesUSD || 0) + (paymentMethod === "hybrid" ? realNeeded : basePriceUSD),
           kfsFeesOwedUSD: (c.kfsFeesOwedUSD || 0) + kreatekTotalFeeUSD
         } : c
       );
 
-      const updatedPromotoras = prev.promotoras.map((p: any) => 
-        p.id === client?.promotoraId ? {
-          ...p,
-          passiveEarningsEUR: (p.passiveEarningsEUR || 0) + promotoraFeeEUR
-        } : p
-      );
+      const updatedPromotoras = prev.promotoras.map((p: any) => {
+        let earn = 0;
+        if (p.id === client?.promotoraId) {
+          earn += promotoraFeeEUR;
+        }
+        if (p.id === guardianPromoterId) {
+          earn += guardianCommissionEUR;
+        }
+        if (earn > 0) {
+          return {
+            ...p,
+            passiveEarningsEUR: (p.passiveEarningsEUR || 0) + earn
+          };
+        }
+        return p;
+      });
 
       const updatedProducts = prev.products.map((p: any) => 
         p.id === product.id ? { ...p, stock: p.stock !== undefined ? p.stock - 1 : p.stock, lastSoldAt: new Date().toISOString() } : p
@@ -1329,6 +1571,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         fiscalSerial: isFiscal ? mockSerial : null,
         fiscalInvoiceNumber: isFiscal ? mockInvoice : null,
         kfsPointsEarned: pointsEarned,
+        cashback_awarded: cashbackKP,
         vendedorId: currentUser?.role === 'vendedor' ? currentUser.id : null,
         clientId: product.clientId,
         timestamp: new Date().toISOString(),
@@ -2435,7 +2678,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       networkState, setNetworkState, smsConciliator, registerCrmExpress,
       ghostTrapLocked, setGhostTrapLocked, createVale, payVale, registerPosTerminal, deletePosTerminal,
       queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings, updatePaymentMethods, toggleProductFeatured,
-      sendNotification, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, processMonthlyBilling, registerCustomer, blockClient, releaseClient, deleteClient,
+      sendNotification, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, fundCustomerWallet, processMonthlyBilling, registerCustomer, blockClient, releaseClient, deleteClient,
       registerCandidate, unlockCandidateContact, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, hireCandidate, releaseCandidate, toggleCandidateBacking, markNotificationsAsRead, updateCvBuilderOption,
       registerRider, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, updateRiderPagoMovil,
       confirmDelivery, rateRider, updateRiderGPS, toggleBusinessOpen, updateBusinessConfig

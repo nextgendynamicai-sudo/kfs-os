@@ -7,12 +7,16 @@ import {
   ChevronRight, CheckCircle, CreditCard, Bell, X, Info,
   Store, Star, ChevronLeft, Clock, UserCheck, Palette,
   Zap, BookOpen, Printer, Smartphone, Settings, DownloadCloud, Terminal, Truck,
-  Briefcase, FileText, Award, Check
+  Briefcase, FileText, Award, Check, ArrowUpRight
 } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { CheckoutModal } from "../components/CheckoutModal";
 import { ReceiptModal } from "../components/ReceiptModal";
+import { DualWalletCard } from "../components/DualWalletCard";
+import { FlowExpressCatalog } from "../components/FlowExpressCatalog";
+import { B2BSelfOnboarding } from "../components/B2BSelfOnboarding";
+import { useP2PTransfer } from "../hooks/useP2PTransfer";
 import { compressImage, readAsBase64, playPremiumChime, playSyncChime, playCashDrawerSound } from "../lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -1169,6 +1173,9 @@ const LandingPageView = ({ setView }: any) => {
           <button onClick={() => setView("login")} className="text-sm font-bold text-gray-300 hover:text-white transition-colors cursor-pointer hidden sm:block pt-2">
             Soy Tienda / Promotora
           </button>
+          <button onClick={() => setView("b2b-onboarding")} className="text-[#C5A184] text-sm font-bold hover:text-white transition-colors cursor-pointer hidden sm:block pt-2">
+            Afiliar Comercio (B2B)
+          </button>
           <button onClick={() => setView("login")} className="bg-[#C5A184] text-[#0A1128] px-5 py-2 rounded-xl font-black text-sm hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(197,161,132,0.3)] cursor-pointer">
             Acceder
           </button>
@@ -1967,10 +1974,28 @@ const RegisterRiderForm = ({ onCancel }: { onCancel: () => void }) => {
   );
 };
 
-// CustomerDashboard
 const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
   const { formatUSD, registerCandidate, showToast, markNotificationsAsRead } = useKFS() as any;
   const [subTab, setSubTab] = useState("profile"); // profile | jobs
+  
+  const { transferP2P } = useP2PTransfer();
+  const [p2pRecipient, setP2pRecipient] = useState("");
+  const [p2pAmount, setP2pAmount] = useState("");
+  const [p2pType, setP2pType] = useState<"real_balance" | "k_points">("real_balance");
+
+  const handleP2PTransferSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const amountNum = parseFloat(p2pAmount);
+    if (isNaN(amountNum) || amountNum <= 0) {
+      showToast("Por favor ingresa un monto válido.", "error");
+      return;
+    }
+    const success = transferP2P(currentUser.phone, p2pRecipient, amountNum, p2pType);
+    if (success) {
+      setP2pRecipient("");
+      setP2pAmount("");
+    }
+  };
 
   if (!currentUser) return null;
   
@@ -2118,20 +2143,87 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
 
         {subTab === "profile" ? (
           <>
-            {/* KFS Points Wallet */}
-            <div className="bg-gradient-to-r from-[#C5A184] to-[#9c7b60] rounded-[2rem] p-8 shadow-[0_0_40px_rgba(197,161,132,0.3)] relative overflow-hidden text-[#0A1128] border border-white/20">
-              <div className="relative z-10 flex flex-col md:flex-row justify-between items-center gap-6">
-                <div>
-                  <h3 className="text-xs font-black uppercase tracking-widest opacity-80 mb-1">Billetera de Fidelidad Global</h3>
-                  <p className="text-6xl font-black tracking-tighter drop-shadow-sm">{totalPoints.toFixed(1)} <span className="text-2xl">PTS</span></p>
-                  <p className="text-[10px] font-bold mt-1 opacity-70">Tus puntos consolidados en todo el Ecosistema KFS</p>
-                </div>
-                <button onClick={() => setView("marketplace")} className="w-full md:w-auto bg-[#0A1128] text-[#C5A184] px-8 py-4 rounded-xl font-black hover:scale-[1.03] active:scale-95 transition-transform flex items-center justify-center gap-2 cursor-pointer shadow-xl border border-white/10">
-                  <ShoppingCart size={20} /> Ver Marketplace KFS
-                </button>
+            {/* Overdrive Dual Wallet Card */}
+            <DualWalletCard currentUser={currentUser} formatUSD={formatUSD} />
+
+            {/* P2P Transfer Form */}
+            <div className="bg-gradient-to-tr from-[#0A1128]/85 to-[#141E3A]/85 backdrop-blur-xl border border-[#C5A184]/20 rounded-[2.5rem] p-6 sm:p-8 shadow-2xl space-y-5">
+              <div>
+                <h3 className="text-xl font-black text-[#C5A184] flex items-center gap-2">
+                  <Users size={24} /> Transferencias P2P Instantáneas
+                </h3>
+                <p className="text-xs text-gray-400 mt-1">
+                  Envía Saldo Real o K-Points a cualquier contacto registrado en la red KFS OS al instante.
+                </p>
               </div>
-              <Star size={180} className="absolute -right-10 -bottom-10 opacity-10 text-white transform -rotate-12" />
+
+              {/* Banner P2P Viral */}
+              <div className="bg-[#1A1108]/80 border border-[#C5A184]/40 p-4 rounded-2xl flex items-center gap-4">
+                <div className="w-12 h-12 bg-[#C5A184]/20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Gift size={24} className="text-[#C5A184]" />
+                </div>
+                <div>
+                  <h4 className="font-black text-[#C5A184] text-sm">Bono Viral Embajador</h4>
+                  <p className="text-xs text-gray-300 leading-tight mt-1">
+                    Comparte tu código de afiliado <span className="font-mono bg-black/50 px-1.5 py-0.5 rounded text-white">{currentUser.id}</span> con tus amigos. ¡Cuando se registren y hagan su primera recarga, recibirás <strong>500 K-Points</strong> automáticos!
+                  </p>
+                </div>
+              </div>
+              
+              <form onSubmit={handleP2PTransferSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-xs font-bold text-gray-300 block mb-1">Destinatario (Teléfono o Nombre)</label>
+                    <input
+                      type="text"
+                      placeholder="Ej: 04121234567 o Nombre"
+                      value={p2pRecipient}
+                      onChange={(e) => setP2pRecipient(e.target.value)}
+                      className="w-full bg-black/45 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#C5A184] transition-colors"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-xs font-bold text-gray-300 block mb-1">Monto a Enviar</label>
+                    <input
+                      type="number"
+                      step="any"
+                      placeholder="Ej: 5.00 o 500"
+                      value={p2pAmount}
+                      onChange={(e) => setP2pAmount(e.target.value)}
+                      className="w-full bg-black/45 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#C5A184] transition-colors"
+                    />
+                  </div>
+                </div>
+
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-2">
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setP2pType("real_balance")}
+                      className={`py-2 px-4 rounded-xl text-xs font-bold border transition-all cursor-pointer ${p2pType === "real_balance" ? "bg-[#C5A184] text-[#0A1128] border-[#C5A184]" : "bg-white/5 border-white/10 text-gray-300 hover:border-white/20"}`}
+                    >
+                      Saldo Real (USD)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setP2pType("k_points")}
+                      className={`py-2 px-4 rounded-xl text-xs font-bold border transition-all cursor-pointer ${p2pType === "k_points" ? "bg-[#C5A184] text-[#0A1128] border-[#C5A184]" : "bg-white/5 border-white/10 text-gray-300 hover:border-white/20"}`}
+                    >
+                      K-Points
+                    </button>
+                  </div>
+                  <button
+                    type="submit"
+                    className="bg-white/10 hover:bg-[#C5A184] hover:text-[#0A1128] border border-white/10 rounded-xl px-6 py-2.5 text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-md self-end sm:self-auto font-sans"
+                  >
+                    Transferir Balance <ArrowUpRight size={14} />
+                  </button>
+                </div>
+              </form>
             </div>
+
+            {/* Overdrive Digital Catalog */}
+            <FlowExpressCatalog currentUser={currentUser} formatUSD={formatUSD} />
 
             {/* Logistics Tracking */}
             {(activeOrders.length > 0 || logisticsTxs.length > 0) && (
@@ -2698,7 +2790,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
           earningsEUR: 0,
           netEarningsEUR: 0,
           adBudgetEUR: 0,
-          wipeVersion: 3
+          wipeVersion: 4
         },
         ghostLogs: [],
         notifications: [],
@@ -2771,6 +2863,8 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
   const totalDueños = db.clients.length;
   const globalSalesUSD = db.clients.reduce((acc: number, c: any) => acc + (c.salesUSD || 0), 0);
   const globalDebtUSD = db.clients.reduce((acc: number, c: any) => acc + (c.kfsFeesOwedUSD || 0), 0);
+  const totalKPoints = db.customers?.reduce((acc: number, c: any) => acc + (c.kPoints || 0), 0) || 0;
+  const usdFloat = db.customers?.reduce((acc: number, c: any) => acc + (c.walletUSD || 0), 0) || 0;
 
   const chartData = db.transactions.map((t: any, index: number) => ({
     name: `TX-${index + 1}`,
@@ -2857,6 +2951,26 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                   <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><DollarSign size={14} className="text-green-500" /> Ganancia Neta KFS</p>
                   <h2 className="text-5xl font-black mb-1 text-green-400">{formatEUR(db.kreatekCore?.netEarningsEUR || 0)}</h2>
                   <p className="text-xs text-gray-400 mt-2">Libre de pago a promotoras y fondos.</p>
+                </div>
+                <Activity size={100} className="absolute -right-10 -bottom-10 text-white/5" />
+              </div>
+
+              {/* Float & Liquidez (Phase E) */}
+              <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden">
+                <div className="relative z-10">
+                  <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><CheckCircle size={14} className="text-blue-500" /> Float Liquidez (USD)</p>
+                  <h2 className="text-5xl font-black mb-1 text-blue-400">{formatUSD(usdFloat)}</h2>
+                  <p className="text-xs text-gray-400 mt-2">Dinero real pre-pagado por usuarios, listo para invertir.</p>
+                </div>
+                <Activity size={100} className="absolute -right-10 -bottom-10 text-white/5" />
+              </div>
+
+              {/* K-Points Emitidos (Phase E) */}
+              <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden">
+                <div className="relative z-10">
+                  <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><TrendingUp size={14} className="text-purple-500" /> Total K-Points Emitidos</p>
+                  <h2 className="text-5xl font-black mb-1 text-purple-400">{totalKPoints} K-Pts</h2>
+                  <p className="text-xs text-gray-400 mt-2">Deuda interna en la economía. {(totalKPoints * 0.001).toFixed(2)} USD (Ref).</p>
                 </div>
                 <Activity size={100} className="absolute -right-10 -bottom-10 text-white/5" />
               </div>
@@ -3880,9 +3994,9 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
   const { updateStoreSettings, replyTicket } = useKFS() as any;
   const myClients = db.clients.filter((c: any) => c.promotoraId === currentUser.id);
   const filteredClients = myClients.filter((c: any) => c.company.toLowerCase().includes(searchClient.toLowerCase()) || c.name.toLowerCase().includes(searchClient.toLowerCase()));
-  const myPromotoraData = db.promotoras.find((p: any) => p.id === currentUser?.id) || currentUser;
+  const myCustomers = db.customers?.filter((c: any) => c.referred_by_promoter_id === currentUser.id) || [];
 
-  const [activeTab, setActiveTab] = useState("panel"); // panel | negocios
+  const [activeTab, setActiveTab] = useState("panel"); // panel | negocios | afiliados
   const [activeManual, setActiveManual] = useState<string | null>(null);
 
   return (
@@ -4152,12 +4266,55 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
           </div>
         </div>
       )}
+      {activeTab === "afiliados" && (
+        <div className="space-y-6">
+          <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 relative overflow-hidden text-[#0A1128]">
+             <h3 className="text-xl font-black mb-4">Mi Código QR de Afiliación (B2C)</h3>
+             <div className="flex flex-col md:flex-row gap-6 items-center">
+                <div className="w-40 h-40 bg-gray-100 rounded-xl flex items-center justify-center border-4 border-[#C5A184]">
+                   {/* Mock QR */}
+                   <div className="text-center">
+                     <QrCode size={64} className="mx-auto text-gray-800" />
+                     <p className="text-xs font-bold mt-2">Scan Me</p>
+                   </div>
+                </div>
+                <div>
+                   <p className="text-sm text-gray-600 mb-2">Pide a tus clientes que escaneen este código o ingresen tu ID al registrarse para quedar enlazados a tu perfil.</p>
+                   <p className="bg-gray-100 px-4 py-2 rounded-lg font-mono font-bold inline-block text-lg border border-gray-300">{currentUser.id}</p>
+                   <p className="text-xs text-green-600 font-bold mt-3"><CheckCircle size={12} className="inline mr-1" /> Ganas el 0.5% de todas sus compras por 30 días.</p>
+                </div>
+             </div>
+          </div>
+          <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
+             <h3 className="text-lg font-black mb-4">Mis Clientes Afiliados ({myCustomers.length})</h3>
+             {myCustomers.length > 0 ? (
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 {myCustomers.map((c: any) => (
+                   <div key={c.id} className="p-4 border border-gray-100 rounded-xl flex justify-between items-center bg-gray-50">
+                      <div>
+                        <p className="font-bold text-sm text-[#0A1128]">{c.name}</p>
+                        <p className="text-xs text-gray-500 font-mono">{c.phone}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-[10px] text-green-600 font-bold uppercase">Afiliado</p>
+                        <p className="text-[10px] text-gray-400">{new Date(c.createdAt).toLocaleDateString()}</p>
+                      </div>
+                   </div>
+                 ))}
+               </div>
+             ) : (
+               <p className="text-sm text-gray-500 text-center py-6">No tienes clientes afiliados todavía.</p>
+             )}
+          </div>
+        </div>
+      )}
       {/* FIXED BOTTOM NAVIGATION */}
       <div className="fixed bottom-0 inset-x-0 z-50 bg-white/90 backdrop-blur-xl border-t border-gray-200 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pb-safe">
         <div className="max-w-5xl mx-auto px-6 py-4 flex justify-center gap-10 items-center relative">
           {[
             { id: "panel", icon: Activity, label: "Panel" },
-            { id: "negocios", icon: Store, label: "Comercios", badge: myClients.length }
+            { id: "negocios", icon: Store, label: "Comercios", badge: myClients.length },
+            { id: "afiliados", icon: Users, label: "Afiliados", badge: myCustomers.length }
           ].map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -5507,6 +5664,29 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           </div>
           <DollarSign size={200} className="absolute -right-10 -bottom-20 text-white/5" />
         </div>
+        
+        {/* Peaje Gamificado Progress */}
+        <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 flex flex-col md:flex-row items-center gap-8">
+           <div className="flex-1 w-full">
+             <div className="flex justify-between items-end mb-2">
+               <h3 className="font-black text-[#0A1128] text-lg">Progreso de Peaje Gamificado</h3>
+               <span className="text-sm font-bold text-[#C5A184]">{clientInfo?.onboardedUsers || 0} / 50 Usuarios</span>
+             </div>
+             <div className="w-full bg-gray-100 h-4 rounded-full overflow-hidden">
+               <div className="bg-[#C5A184] h-full transition-all duration-1000" style={{ width: `${Math.min(((clientInfo?.onboardedUsers || 0) / 50) * 100, 100)}%` }}></div>
+             </div>
+             <p className="text-xs text-gray-500 mt-3">
+               Logra que 50 clientes se afilien usando tu código o QR y tu comisión B2B se reducirá automáticamente al 3% de forma permanente.
+             </p>
+           </div>
+           <div className="w-32 h-32 bg-gray-50 rounded-xl border-4 border-[#C5A184] flex items-center justify-center flex-shrink-0 text-center relative shadow-sm">
+              <div className="text-center">
+                <QrCode size={48} className="mx-auto text-gray-800" />
+                <p className="text-[10px] font-bold mt-1">Tu QR</p>
+              </div>
+           </div>
+        </div>
+
         </div>
         )}
 
@@ -8217,6 +8397,7 @@ export default function Home() {
       )}
 
       {view === "landing" && <LandingPageView setView={setView} />}
+      {view === "b2b-onboarding" && <B2BSelfOnboarding setView={setView} />}
       
       {view === "login" && (
         <LoginView 
