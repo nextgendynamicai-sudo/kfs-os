@@ -246,7 +246,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
                       const file = e.target.files?.[0];
                       if (file) {
                         try {
-                          const base64 = await compressImage(file, 600);
+                          const base64 = await compressImage(file, 400, 0.6);
                           setPaymentScreenshot(base64);
                         } catch (err) {
                           alert("Error al comprimir/cargar la imagen");

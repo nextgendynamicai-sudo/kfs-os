@@ -4206,7 +4206,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
     const file = e.target.files?.[0];
     if (file) {
       try {
-        const base64 = await compressImage(file, 400, 0.85);
+        const base64 = await compressImage(file, 200, 0.6);
         setSettings((prev: any) => ({ ...prev, profilePicUrl: base64 }));
       } catch (err) {
         alert("Error al comprimir/subir imagen");
@@ -4218,7 +4218,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
     const file = e.target.files?.[0];
     if (file) {
       try {
-        const base64 = await compressImage(file, 800, 0.85);
+        const base64 = await compressImage(file, 600, 0.6);
         setSettings((prev: any) => ({ ...prev, coverPhotoUrl: base64 }));
       } catch (err) {
         alert("Error al comprimir/subir imagen");
@@ -4374,7 +4374,7 @@ const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
   const handleKycUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const base64String = await compressImage(file, 600);
+      const base64String = await compressImage(file, 500, 0.6);
       setKycDoc(base64String);
     }
   };
@@ -4382,7 +4382,7 @@ const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
   const handleProductUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const base64String = await compressImage(file, 600);
+      const base64String = await compressImage(file, 400, 0.6);
       setProductImage(base64String);
     }
   };
@@ -4465,7 +4465,7 @@ const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
             </div>
             <h3 className="text-xl font-bold">3. ¡Todo Listo!</h3>
             <p className="text-sm text-gray-400 mb-6">El sistema base de datos, el POS y la tienda online están desplegados y 100% enlazados en tiempo real.</p>
-            <button onClick={() => finishOnboarding(currentUser.id)} className="w-full bg-[#C5A184] text-[#0A1128] py-4 rounded-xl font-black shadow-lg shadow-[#C5A184]/20 hover:scale-[1.02] transition-transform cursor-pointer">Ir a mi Panel de Control</button>
+            <button onClick={() => finishOnboarding(currentUser.id, kycDoc)} className="w-full bg-[#C5A184] text-[#0A1128] py-4 rounded-xl font-black shadow-lg shadow-[#C5A184]/20 hover:scale-[1.02] transition-transform cursor-pointer">Ir a mi Panel de Control</button>
           </div>
         )}
       </div>
@@ -5509,7 +5509,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         </div>
         )}
 
-        {activeTab === 'config' && <StorefrontCustomizer client={currentUser} updateStoreSettings={updateStoreSettings} />}
+        {activeTab === 'config' && <StorefrontCustomizer client={clientInfo} updateStoreSettings={updateStoreSettings} />}
 
         {/* ===== OPEN / CLOSE TOGGLE + DELIVERY CONFIG ===== */}
         {activeTab === 'config' && (

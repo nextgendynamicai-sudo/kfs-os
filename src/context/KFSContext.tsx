@@ -119,7 +119,7 @@ interface KFSContextType {
   addGlobalProduct: (product: any) => void;
   paySubscription: (clientId: string, reference: string) => void;
   approveSubscription: (clientId: string) => void;
-  finishOnboarding: (clientId: string) => void;
+  finishOnboarding: (clientId: string, kycDocBase64?: string) => void;
   hashPassword: (password: string) => string;
   logAction: (actor: string, action: string, details: string) => void;
   createTicket: (clientId: string, subject: string, description: string) => void;
@@ -329,8 +329,38 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       setIsDataLoaded(true);
     }
 
-    if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").catch(err => console.error("SW failed", err));
+    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").then((reg) => {
+        // Check for updates on mount
+        reg.update();
+
+        // Check for updates every 60 seconds
+        const interval = setInterval(() => {
+          reg.update();
+        }, 60000);
+
+        reg.addEventListener("updatefound", () => {
+          const installingWorker = reg.installing;
+          if (installingWorker) {
+            installingWorker.addEventListener("statechange", () => {
+              if (installingWorker.state === "installed" && navigator.serviceWorker.controller) {
+                console.log("[KFS SW] Nuevo Service Worker instalado. Recargando...");
+                window.location.reload();
+              }
+            });
+          }
+        });
+
+        return () => clearInterval(interval);
+      }).catch(err => console.error("SW failed", err));
+
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (!refreshing) {
+          refreshing = true;
+          window.location.reload();
+        }
+      });
     }
     return () => {
       window.removeEventListener("popstate", handlePopState);
@@ -341,51 +371,90 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   // Save DB to LocalStorage & Supabase Cloud
   useEffect(() => {
     if (!isClient || !isDataLoaded) return;
+    
     try {
       localStorage.setItem("kfs_os_db_prod", JSON.stringify(db));
+    } catch (lsError) {
+      console.warn("[KFS LocalStorage] Advertencia: Límite de cuota local excedido.", lsError);
+    }
+    
+    if (isRemoteUpdate.current) {
+      // Skip cloud push for remote updates to prevent infinite loop
+      isRemoteUpdate.current = false;
+      return;
+    }
+    
+    if (isSupabaseConfigured && networkState === "online") {
+      const syncId = "kfs-general-db-prod";
       
-      if (isRemoteUpdate.current) {
-        // Skip cloud push for remote updates to prevent infinite loop
-        isRemoteUpdate.current = false;
-        return;
-      }
-      
-      if (isSupabaseConfigured && networkState === "online") {
-        const syncId = "kfs-general-db-prod";
-        
-        // Anti-Collision Merge Strategy
-        supabase.from("kfs_store_states").select("db_state").eq("id", syncId).single().then(({ data }: any) => {
-          let mergedDb = { ...db };
-          if (data && data.db_state) {
-             const remote = data.db_state;
-             // Shallow merge arrays by ID to prevent dropping concurrent items
-             const mergeArray = (arr1: any[], arr2: any[]) => [...new Map([...(arr1||[]), ...(arr2||[])].map((i:any) => [i.id, i])).values()];
-             
-             mergedDb.orders = mergeArray(remote.orders, db.orders);
-             mergedDb.transactions = mergeArray(remote.transactions, db.transactions);
-             mergedDb.auditLogs = mergeArray(remote.auditLogs, db.auditLogs);
-             mergedDb.supportTickets = mergeArray(remote.supportTickets, db.supportTickets);
-             mergedDb.products = mergeArray(remote.products, db.products);
-          }
+      // Anti-Collision Merge Strategy
+      supabase.from("kfs_store_states").select("db_state").eq("id", syncId).single().then(({ data }: any) => {
+        let mergedDb = { ...db };
+        if (data && data.db_state) {
+           const remote = data.db_state;
+           // Shallow merge arrays by ID to prevent dropping concurrent items
+           const mergeArray = (arr1: any[], arr2: any[]) => [...new Map([...(arr1||[]), ...(arr2||[])].map((i:any) => [i.id || i.barcode || JSON.stringify(i), i])).values()];
+           
+           const mergeClients = (remoteClients: any[], localClients: any[]) => {
+             const map = new Map();
+             (remoteClients || []).forEach(c => map.set(c.id, c));
+             (localClients || []).forEach(c => {
+               const existing = map.get(c.id);
+               if (existing) {
+                 map.set(c.id, {
+                   ...existing,
+                   ...c,
+                   storeSettings: {
+                     ...(existing.storeSettings || {}),
+                     ...(c.storeSettings || {})
+                   }
+                 });
+               } else {
+                 map.set(c.id, c);
+               }
+             });
+             return Array.from(map.values());
+           };
 
-          supabase
-            .from("kfs_store_states")
-            .upsert({
-              id: syncId,
-              db_state: mergedDb,
-              updated_at: new Date().toISOString()
-            })
-            .then(({ error }: any) => {
-              if (error) {
-                console.warn("[KFS Cloud] Aviso: Sincronización asíncrona omitida. Verifique que haya ejecutado 'supabase_setup.sql' en su proyecto.", error.message || error.code || "");
-              } else {
-                console.log("[Supabase Cloud] Estado sincronizado asíncronamente con protección Anti-Colisión.");
-              }
-            });
-        });
-      }
-    } catch (error) {
-      // Ignorar bloqueos locales
+           mergedDb.orders = mergeArray(remote.orders, db.orders);
+           mergedDb.transactions = mergeArray(remote.transactions, db.transactions);
+           mergedDb.auditLogs = mergeArray(remote.auditLogs, db.auditLogs);
+           mergedDb.supportTickets = mergeArray(remote.supportTickets, db.supportTickets);
+           mergedDb.products = mergeArray(remote.products, db.products);
+           mergedDb.clients = mergeClients(remote.clients, db.clients);
+           mergedDb.promotoras = mergeArray(remote.promotoras, db.promotoras);
+           mergedDb.vendedores = mergeArray(remote.vendedores, db.vendedores);
+           mergedDb.customers = mergeArray(remote.customers, db.customers);
+           mergedDb.riders = mergeArray(remote.riders, db.riders);
+           mergedDb.expenses = mergeArray(remote.expenses, db.expenses);
+           mergedDb.posTerminals = mergeArray(remote.posTerminals, db.posTerminals);
+           mergedDb.zReports = mergeArray(remote.zReports, db.zReports);
+           mergedDb.vales = mergeArray(remote.vales, db.vales);
+           mergedDb.candidates = mergeArray(remote.candidates, db.candidates);
+           mergedDb.unlockedContacts = mergeArray(remote.unlockedContacts, db.unlockedContacts);
+           mergedDb.kreatekCore = { ...(remote.kreatekCore || {}), ...(db.kreatekCore || {}) };
+        }
+
+        supabase
+          .from("kfs_store_states")
+          .upsert({
+            id: syncId,
+            db_state: mergedDb,
+            updated_at: new Date().toISOString()
+          })
+          .then(({ error }: any) => {
+            if (error) {
+              console.warn("[KFS Cloud] Aviso: Sincronización asíncrona omitida. Verifique que haya ejecutado 'supabase_setup.sql' en su proyecto.", error.message || error.code || "");
+            } else {
+              console.log("[Supabase Cloud] Estado sincronizado asíncronamente con protección Anti-Colisión.");
+            }
+          })
+          .catch((err: any) => {
+            console.error("[Supabase Cloud] Error al sincronizar con la nube:", err);
+          });
+      }).catch((err: any) => {
+        console.error("[Supabase Cloud] Error al obtener el estado de la nube para merge:", err);
+      });
     }
   }, [db, isClient, networkState, currentUser, isDataLoaded]);
 
@@ -810,10 +879,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast("Producto Global KFS inyectado a la red.");
   };
 
-  const finishOnboarding = (clientId: string) => {
+  const finishOnboarding = (clientId: string, kycDocBase64?: string) => {
     setDb((prev: any) => ({
       ...prev,
-      clients: prev.clients.map((c: any) => c.id === clientId ? { ...c, isOnboarded: true } : c)
+      clients: prev.clients.map((c: any) => 
+        c.id === clientId ? { ...c, isOnboarded: true, kycDocumentUrl: kycDocBase64 || c.kycDocumentUrl || "" } : c
+      )
     }));
     showToast("¡Onboarding completado! Bienvenido a KFS OS.", "success");
   };
@@ -1565,6 +1636,15 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         c.id === clientId ? { ...c, storeSettings: { ...(c.storeSettings || {}), ...settings } } : c
       )
     }));
+    setCurrentUser((prev: any) => {
+      if (prev && prev.id === clientId) {
+        return {
+          ...prev,
+          storeSettings: { ...(prev.storeSettings || {}), ...settings }
+        };
+      }
+      return prev;
+    });
     showToast("Configuración de tienda actualizada exitosamente.");
   };
 

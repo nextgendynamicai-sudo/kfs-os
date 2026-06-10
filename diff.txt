@@ -1,0 +1,786 @@
+diff --git a/src/app/page.tsx b/src/app/page.tsx
+index 480545f..492e039 100644
+--- a/src/app/page.tsx
++++ b/src/app/page.tsx
+@@ -49,6 +49,243 @@ const Toast = ({ toast }: { toast: any }) => {
+   );
+ };
+ 
++// CvViewerModal Component
++const CvViewerModal = ({ isOpen, onClose, candidate }: any) => {
++  if (!isOpen || !candidate) return null;
++
++  const handlePrint = () => {
++    if (typeof window === "undefined") return;
++    const printContent = document.getElementById("printable-cv-area")?.innerHTML;
++    const cleanName = candidate.name.replace(/\s+/g, '_');
++    
++    // Create an iframe to print cleanly without resetting state or styling
++    const iframe = document.createElement('iframe');
++    iframe.style.position = 'fixed';
++    iframe.style.right = '0';
++    iframe.style.bottom = '0';
++    iframe.style.width = '0';
++    iframe.style.height = '0';
++    iframe.style.border = '0';
++    document.body.appendChild(iframe);
++
++    const doc = iframe.contentWindow?.document || iframe.contentDocument;
++    if (doc) {
++      doc.write(`
++        <html>
++          <head>
++            <title>CV_${cleanName}</title>
++            <style>
++              @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap');
++              body {
++                font-family: 'Outfit', sans-serif;
++                color: #0A1128;
++                background: white;
++                margin: 40px;
++                line-height: 1.5;
++                font-size: 14px;
++              }
++              .header {
++                border-bottom: 2px solid #C5A184;
++                padding-bottom: 20px;
++                margin-bottom: 25px;
++              }
++              .name {
++                font-size: 28px;
++                font-weight: 900;
++                color: #0A1128;
++                margin: 0;
++              }
++              .role {
++                font-size: 16px;
++                font-weight: 800;
++                color: #C5A184;
++                text-transform: uppercase;
++                letter-spacing: 1px;
++                margin-top: 5px;
++              }
++              .contact-info {
++                display: flex;
++                flex-wrap: wrap;
++                gap: 15px;
++                font-size: 12px;
++                color: #555;
++                margin-top: 10px;
++              }
++              .section-title {
++                font-size: 14px;
++                font-weight: 800;
++                text-transform: uppercase;
++                letter-spacing: 1px;
++                color: #0A1128;
++                border-bottom: 1px solid #eee;
++                padding-bottom: 5px;
++                margin-top: 25px;
++                margin-bottom: 12px;
++              }
++              .bio {
++                font-size: 13px;
++                color: #333;
++                text-align: justify;
++                white-space: pre-line;
++              }
++              .skills-container {
++                display: flex;
++                flex-wrap: wrap;
++                gap: 8px;
++              }
++              .skill-tag {
++                background: #F4F4F6;
++                border: 1px solid #E4E4E7;
++                color: #0A1128;
++                padding: 4px 10px;
++                border-radius: 8px;
++                font-size: 11px;
++                font-weight: 600;
++              }
++              .grid {
++                display: grid;
++                grid-template-cols: 1fr 1fr;
++                gap: 15px;
++                font-size: 12px;
++              }
++              .grid-item {
++                background: #F8F9FA;
++                padding: 10px 15px;
++                border-radius: 12px;
++                border: 1px solid #F1F3F5;
++              }
++              .grid-label {
++                font-weight: 800;
++                color: #C5A184;
++                text-transform: uppercase;
++                font-size: 9px;
++              }
++              .grid-value {
++                font-weight: 600;
++                color: #0A1128;
++                margin-top: 2px;
++              }
++              .footer {
++                margin-top: 40px;
++                border-top: 1px solid #eee;
++                padding-top: 15px;
++                text-align: center;
++                font-size: 10px;
++                color: #aaa;
++                font-weight: 600;
++              }
++              @media print {
++                body {
++                  margin: 20px;
++                }
++              }
++            </style>
++          </head>
++          <body>
++            ${printContent}
++          </body>
++        </html>
++      `);
++      doc.close();
++      
++      setTimeout(() => {
++        iframe.contentWindow?.focus();
++        iframe.contentWindow?.print();
++        document.body.removeChild(iframe);
++      }, 500);
++    }
++  };
++
++  return (
++    <div className="fixed inset-0 z-[10000] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
++      <div className="bg-white text-[#0A1128] rounded-[2rem] w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-white/20 animate-scale-up">
++        {/* Modal Actions */}
++        <div className="bg-gray-50 border-b border-gray-100 p-5 flex justify-between items-center shrink-0">
++          <div>
++            <h3 className="font-black text-lg text-[#0A1128]">Previsualizar CV Digital</h3>
++            <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Generador de PDF KFS OS</p>
++          </div>
++          <div className="flex gap-2">
++            <button
++              onClick={handlePrint}
++              className="bg-[#0A1128] text-white hover:bg-gray-800 px-4 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-md transition-colors"
++            >
++              🖨️ Imprimir / PDF
++            </button>
++            <button
++              onClick={onClose}
++              className="bg-gray-100 hover:bg-gray-200 text-gray-500 px-4 py-2 rounded-xl text-xs font-black cursor-pointer transition-colors animate-pulse"
++            >
++              Cerrar
++            </button>
++          </div>
++        </div>
++
++        {/* CV Render Area */}
++        <div className="p-8 overflow-y-auto flex-1 bg-white">
++          <div id="printable-cv-area" className="w-full">
++            <div className="header">
++              <h1 className="name">{candidate.name}</h1>
++              <div className="role">{candidate.role}</div>
++              <div className="contact-info">
++                <span>📞 Teléfono: {candidate.phone}</span>
++                <span>📧 Correo: {candidate.email}</span>
++                <span>📍 Ubicación: {candidate.answers?.location || "Caracas"}</span>
++              </div>
++            </div>
++
++            <div className="section-title">Perfil Profesional</div>
++            <div className="bio">{candidate.bio}</div>
++
++            <div className="section-title">Habilidades Técnicas</div>
++            <div className="skills-container">
++              {candidate.skills?.map((s: string) => (
++                <span key={s} className="skill-tag">{s}</span>
++              ))}
++              {(!candidate.skills || candidate.skills.length === 0) && (
++                <span className="text-xs text-gray-400 italic">Ninguna seleccionada</span>
++              )}
++            </div>
++
++            <div className="section-title">Micro-Encuesta KFS</div>
++            <div className="grid">
++              <div className="grid-item">
++                <div className="grid-label">Disponibilidad de Horario</div>
++                <div className="grid-value">
++                  {candidate.answers?.availability === "full-time" ? "Tiempo Completo (Full-time)" : 
++                   candidate.answers?.availability === "part-time" ? "Medio Tiempo (Part-time)" : "Fines de Semana"}
++                </div>
++              </div>
++              <div className="grid-item">
++                <div className="grid-label">Años de Experiencia</div>
++                <div className="grid-value">
++                  {candidate.answers?.experienceYears === "0-1" ? "Menos de 1 año" : 
++                   candidate.answers?.experienceYears === "1-3" ? "1 a 3 años" : "Más de 3 años"}
++                </div>
++              </div>
++              <div className="grid-item">
++                <div className="grid-label">Movilización / Vehículo</div>
++                <div className="grid-value">
++                  {candidate.answers?.hasVehicle === "no" ? "No posee transporte propio" : 
++                   candidate.answers?.hasVehicle === "moto" ? "Moto propia" : "Carro propio"}
++                </div>
++              </div>
++              <div className="grid-item">
++                <div className="grid-label">Ubicación Residencial</div>
++                <div className="grid-value">{candidate.answers?.location || "No especificada"}</div>
++              </div>
++            </div>
++
++            <div className="footer">
++              Sello de Validación Técnica KFS OS • ID Postulante: {candidate.id}
++            </div>
++          </div>
++        </div>
++      </div>
++    </div>
++  );
++};
++
+ // SMS Bank Notification Simulator (Smart Conciliator Sim with Live Terminal Logs)
+ const SMSConciliatorSimulator = () => {
+   const { smsConciliator, showToast, db } = useKFS();
+@@ -1620,7 +1857,7 @@ const RegisterCustomerForm = ({ onCancel }: { onCancel: () => void }) => {
+ }
+ // CustomerDashboard
+ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
+-  const { formatUSD, registerCandidate, showToast } = useKFS() as any;
++  const { formatUSD, registerCandidate, showToast, markNotificationsAsRead } = useKFS() as any;
+   const [subTab, setSubTab] = useState("profile"); // profile | jobs
+ 
+   if (!currentUser) return null;
+@@ -1650,6 +1887,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
+ 
+   // Candidate Form States
+   const currentCandidate = db.candidates?.find((c: any) => c.phone === currentUser.phone);
++  const unreadNotifsCount = currentCandidate?.notifications?.filter((n: any) => !n.read).length || 0;
+   
+   const [bio, setBio] = useState(currentCandidate?.bio || "");
+   const [email, setEmail] = useState(currentCandidate?.email || "");
+@@ -1672,6 +1910,9 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
+   const [regRefNum, setRegRefNum] = useState("");
+   const [regScreenshot, setRegScreenshot] = useState("");
+ 
++  const [useKfsCvBuilder, setUseKfsCvBuilder] = useState(currentCandidate?.useKfsCvBuilder || false);
++  const [showCvModal, setShowCvModal] = useState(false);
++
+   const availableSkills = [
+     "Cuadre de caja", "Uso de POS", "Atención al cliente", 
+     "Lector de código de barras", "Control de inventario", 
+@@ -1692,8 +1933,8 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
+       showToast("Por favor completa los campos obligatorios (Correo y Presentación).", "error");
+       return;
+     }
+-    if (!cvFile) {
+-      showToast("Debe cargar su Currículum Vitae en PDF o Imagen.", "error");
++    if (!useKfsCvBuilder && !cvFile) {
++      showToast("Debe cargar su Currículum Vitae en PDF/Imagen o activar el CV Digital KFS.", "error");
+       return;
+     }
+ 
+@@ -1723,9 +1964,10 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
+       answers,
+       status: currentCandidate?.status || "pending",
+       active: isActive,
+-      cvFile,
+-      cvFileType,
+-      cvFileName,
++      cvFile: useKfsCvBuilder ? "" : cvFile,
++      cvFileType: useKfsCvBuilder ? "" : cvFileType,
++      cvFileName: useKfsCvBuilder ? "" : cvFileName,
++      useKfsCvBuilder,
+       registrationPaymentStatus: nextStatus,
+       registrationPaymentRef: paymentRef,
+       registrationPaymentProof: paymentProof,
+@@ -1769,6 +2011,11 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
+             className={`flex-1 py-3 px-4 text-xs font-black uppercase tracking-wider rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 ${subTab === "jobs" ? "bg-[#C5A184] text-[#0A1128] shadow-lg" : "text-gray-400 hover:text-white hover:bg-white/5"}`}
+           >
+             <Briefcase size={16} /> Bolsa de Empleo KFS
++            {unreadNotifsCount > 0 && (
++              <span className="bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full animate-pulse">
++                {unreadNotifsCount}
++              </span>
++            )}
+           </button>
+         </div>
+ 
+@@ -1860,28 +2107,62 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
+                )}
+             </div>
+           </>
+-        ) : currentCandidate?.registrationPaymentStatus === "pending_approval" ? (
+-          <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 shadow-xl text-center space-y-6 max-w-2xl mx-auto animate-fade-in">
+-            <div className="w-20 h-20 bg-yellow-500/10 rounded-full border border-yellow-500/30 flex items-center justify-center mx-auto shadow-lg">
+-              <Clock size={36} className="text-yellow-400 animate-pulse" />
+-            </div>
+-            <div className="space-y-2">
+-              <h3 className="text-xl font-black text-white">Postulación en Espera de Verificación</h3>
+-              <p className="text-sm text-gray-400 leading-relaxed">
+-                Hemos recibido tu postulación laboral y tu reporte de pago de **$1.00 USD**. Nuestro equipo de soporte técnico de KFS OS está verificando la transferencia y auditando tu CV.
+-              </p>
+-              <p className="text-xs text-[#C5A184] font-mono mt-1">
+-                Referencia de pago de activación: <span className="font-bold">{currentCandidate.registrationPaymentRef}</span>
+-              </p>
+-            </div>
+-            <div className="pt-2 border-t border-white/10 text-xs text-gray-500">
+-              Tu perfil se activará en la bolsa de trabajo tan pronto como el pago sea conciliado.
+-            </div>
+-          </div>
+         ) : (
+-          /* Jobs Tab */
+-          <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 md:p-8 shadow-xl space-y-6">
+-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-6">
++          /* Jobs Tab Container */
++          <div className="space-y-6">
++            {/* Candidate Notifications Section */}
++            {currentCandidate?.notifications && currentCandidate.notifications.length > 0 && (
++              <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 space-y-4 animate-fade-in">
++                <div className="flex justify-between items-center border-b border-white/10 pb-3">
++                  <h4 className="text-sm font-black text-[#C5A184] uppercase tracking-wider flex items-center gap-2">
++                    <Bell size={16} /> Notificaciones de Empleo
++                  </h4>
++                  {unreadNotifsCount > 0 && (
++                    <button 
++                      type="button" 
++                      onClick={() => markNotificationsAsRead(currentCandidate.id)} 
++                      className="text-[10px] text-gray-400 hover:text-white underline cursor-pointer"
++                    >
++                      Marcar todas como leídas
++                    </button>
++                  )}
++                </div>
++                <div className="space-y-3 max-h-48 overflow-y-auto pr-2">
++                  {[...currentCandidate.notifications].reverse().map((n: any) => (
++                    <div key={n.id} className={`p-4 rounded-xl border transition-all text-xs ${n.read ? 'bg-black/35 border-white/5 text-gray-400' : 'bg-[#C5A184]/10 border-[#C5A184]/30 text-white font-bold'}`}>
++                      <div className="flex justify-between items-start gap-2">
++                        <span className="uppercase tracking-wider font-black">{n.title}</span>
++                        <span className="text-[9px] text-gray-500 font-mono shrink-0">{new Date(n.timestamp).toLocaleDateString()}</span>
++                      </div>
++                      <p className="mt-1 text-gray-300 font-normal leading-relaxed">{n.message}</p>
++                    </div>
++                  ))}
++                </div>
++              </div>
++            )}
++
++            {currentCandidate?.registrationPaymentStatus === "pending_approval" ? (
++              <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 shadow-xl text-center space-y-6 max-w-2xl mx-auto animate-fade-in">
++                <div className="w-20 h-20 bg-yellow-500/10 rounded-full border border-yellow-500/30 flex items-center justify-center mx-auto shadow-lg">
++                  <Clock size={36} className="text-yellow-400 animate-pulse" />
++                </div>
++                <div className="space-y-2">
++                  <h3 className="text-xl font-black text-white">Postulación en Espera de Verificación</h3>
++                  <p className="text-sm text-gray-400 leading-relaxed">
++                    Hemos recibido tu postulación laboral y tu reporte de pago de **$1.00 USD**. Nuestro equipo de soporte técnico de KFS OS está verificando la transferencia y auditando tu CV.
++                  </p>
++                  <p className="text-xs text-[#C5A184] font-mono mt-1">
++                    Referencia de pago de activación: <span className="font-bold">{currentCandidate.registrationPaymentRef}</span>
++                  </p>
++                </div>
++                <div className="pt-2 border-t border-white/10 text-xs text-gray-500">
++                  Tu perfil se activará en la bolsa de trabajo tan pronto como el pago sea conciliado.
++                </div>
++              </div>
++            ) : (
++              /* Jobs Tab Form Container */
++              <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 md:p-8 shadow-xl space-y-6">
++                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-6">
+               <div>
+                 <h3 className="text-2xl font-black text-[#C5A184] flex items-center gap-2">
+                   <Briefcase size={26} /> Mi Perfil Laboral
+@@ -1969,40 +2250,82 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
+               </div>
+ 
+               <div>
+-                <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider mb-2 block">Currículum Vitae (PDF o Imagen - Obligatorio)</label>
+-                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-white/5 border border-white/10 p-5 rounded-2xl">
+-                  <input
+-                    type="file"
+-                    accept="application/pdf,image/*"
+-                    onChange={async (e) => {
+-                      const file = e.target.files?.[0];
+-                      if (file) {
+-                        try {
+-                          setCvFileName(file.name);
+-                          setCvFileType(file.type);
+-                          const base64 = await readAsBase64(file);
+-                          setCvFile(base64);
+-                          showToast("Currículum cargado.", "success");
+-                        } catch (err) {
+-                          showToast("Error al leer el archivo.", "error");
++                <div className="flex justify-between items-center mb-2">
++                  <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider block">Currículum Vitae (Obligatorio)</label>
++                  <button
++                    type="button"
++                    onClick={() => setUseKfsCvBuilder(!useKfsCvBuilder)}
++                    className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${useKfsCvBuilder ? "bg-[#C5A184] text-[#0A1128]" : "bg-white/5 text-gray-400 hover:text-white"}`}
++                  >
++                    {useKfsCvBuilder ? "⚡ Usando CV Digital KFS" : "📄 Usar CV Digital KFS"}
++                  </button>
++                </div>
++                
++                {useKfsCvBuilder ? (
++                  <div className="bg-white/5 border border-white/10 p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4">
++                    <div>
++                      <p className="text-xs text-green-400 font-bold">✨ CV Digital Autogenerado KFS OS</p>
++                      <p className="text-[10px] text-gray-400 mt-0.5">Se generará un currículum formateado profesionalmente con tu Bio, Habilidades y Respuestas.</p>
++                    </div>
++                    <button
++                      type="button"
++                      onClick={() => setShowCvModal(true)}
++                      className="px-4 py-2 rounded-xl bg-[#0A1128] text-[#C5A184] border border-[#C5A184]/35 font-bold text-xs hover:bg-[#C5A184] hover:text-[#0A1128] transition-all cursor-pointer"
++                    >
++                      Previsualizar / Imprimir CV
++                    </button>
++                  </div>
++                ) : (
++                  <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-white/5 border border-white/10 p-5 rounded-2xl">
++                    <input
++                      type="file"
++                      accept="application/pdf,image/*"
++                      onChange={async (e) => {
++                        const file = e.target.files?.[0];
++                        if (file) {
++                          try {
++                            setCvFileName(file.name);
++                            setCvFileType(file.type);
++                            const base64 = await readAsBase64(file);
++                            setCvFile(base64);
++                            showToast("Currículum cargado.", "success");
++                          } catch (err) {
++                            showToast("Error al leer el archivo.", "error");
++                          }
+                         }
+-                      }
++                      }}
++                      className="text-xs text-gray-400 block w-full sm:w-auto"
++                    />
++                    {cvFileName && (
++                      <div className="flex items-center gap-2 text-xs font-bold text-green-400">
++                        <span>📄 {cvFileName}</span>
++                        <button 
++                          type="button" 
++                          onClick={() => window.open(cvFile, '_blank')} 
++                          className="text-[10px] text-green-300 underline cursor-pointer hover:text-white"
++                        >
++                          (Ver actual)
++                        </button>
++                      </div>
++                    )}
++                  </div>
++                )}
++                {showCvModal && (
++                  <CvViewerModal 
++                    isOpen={showCvModal} 
++                    onClose={() => setShowCvModal(false)} 
++                    candidate={{
++                      name: currentUser.name,
++                      phone: currentUser.phone,
++                      email: email || currentCandidate?.email || "correo@ejemplo.com",
++                      bio: bio || currentCandidate?.bio || "Bio...",
++                      role: selectedRole || currentCandidate?.role || "Cajero",
++                      skills: selectedSkills || currentCandidate?.skills || [],
++                      answers: answers || currentCandidate?.answers || {},
++                      id: currentCandidate?.id || "cand_demo"
+                     }}
+-                    className="text-xs text-gray-400 block w-full sm:w-auto"
+                   />
+-                  {cvFileName && (
+-                    <div className="flex items-center gap-2 text-xs font-bold text-green-400">
+-                      <span>📄 {cvFileName}</span>
+-                      <button 
+-                        type="button" 
+-                        onClick={() => window.open(cvFile, '_blank')} 
+-                        className="text-[10px] text-green-300 underline cursor-pointer hover:text-white"
+-                      >
+-                        (Ver actual)
+-                      </button>
+-                    </div>
+-                  )}
+-                </div>
++                )}
+               </div>
+ 
+               <div>
+@@ -2166,6 +2489,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
+               </div>
+             </form>
+           </div>
++          </div>
+         )}
+       </div>
+     </div>
+@@ -2178,6 +2502,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
+   const [searchPromotora, setSearchPromotora] = useState("");
+   const [searchClient, setSearchClient] = useState("");
+   const [searchVendedor, setSearchVendedor] = useState("");
++  const [viewingCandidateCv, setViewingCandidateCv] = useState<any | null>(null);
+ 
+   const [activeModal, setActiveModal] = useState<string | null>(null);
+   
+@@ -2515,12 +2840,18 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
+                         Referencia de Activación ($1): <span className="font-black text-green-700">{cand.registrationPaymentRef}</span>
+                       </p>
+                       <div className="flex gap-4 mt-2">
+-                        {cand.cvFile && (
++                        {(cand.cvFile || cand.useKfsCvBuilder) && (
+                           <button 
+-                            onClick={() => window.open(cand.cvFile, '_blank')}
++                            onClick={() => {
++                              if (cand.useKfsCvBuilder) {
++                                setViewingCandidateCv(cand);
++                              } else {
++                                window.open(cand.cvFile, '_blank');
++                              }
++                            }}
+                             className="text-[10px] font-black text-blue-700 underline cursor-pointer flex items-center gap-1"
+                           >
+-                            👁️ Abrir Currículum ({cand.cvFileType?.includes('pdf') ? 'PDF' : 'Imagen'})
++                            👁️ {cand.useKfsCvBuilder ? "Ver CV Digital KFS" : `Abrir Currículum (${cand.cvFileType?.includes('pdf') ? 'PDF' : 'Imagen'})`}
+                           </button>
+                         )}
+                         {cand.registrationPaymentProof && (
+@@ -2641,7 +2972,21 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
+                     </td>
+                     <td className="py-4 px-4 text-gray-500 font-mono text-xs">
+                       <span className="block">{cand.phone}</span>
+-                      <span>{cand.email}</span>
++                      <span className="block">{cand.email}</span>
++                      {(cand.cvFile || cand.useKfsCvBuilder) && (
++                        <button 
++                          onClick={() => {
++                            if (cand.useKfsCvBuilder) {
++                              setViewingCandidateCv(cand);
++                            } else {
++                              window.open(cand.cvFile, '_blank');
++                            }
++                          }}
++                          className="text-[9px] font-black text-blue-700 underline cursor-pointer block mt-1 text-left"
++                        >
++                          👁️ {cand.useKfsCvBuilder ? "Ver CV Digital" : "Ver CV Adjunto"}
++                        </button>
++                      )}
+                     </td>
+                     <td className="py-4 px-4 text-center">
+                       {cand.status === 'backed' ? (
+@@ -2959,6 +3304,13 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
+           </div>
+         </div>
+ 
++        {viewingCandidateCv && (
++          <CvViewerModal 
++            isOpen={!!viewingCandidateCv} 
++            onClose={() => setViewingCandidateCv(null)} 
++            candidate={viewingCandidateCv} 
++          />
++        )}
+       </div>
+     </div>
+   );
+@@ -3399,6 +3751,31 @@ const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
+ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
+   const { unlockCandidateContact, updateStoreSettings, hireCandidate, releaseCandidate, showToast } = useKFS() as any;
+   const [activeWidgetTab, setActiveWidgetTab] = useState("search"); // search | preset | unlocked
++
++  // Rating & Review Modal State
++  const [ratingCandidateId, setRatingCandidateId] = useState<string | null>(null);
++  const [ratingStars, setRatingStars] = useState(5);
++  const [ratingComment, setRatingComment] = useState("");
++  const [viewingCandidateCv, setViewingCandidateCv] = useState<any | null>(null);
++
++  const getAverageRating = (c: any) => {
++    if (!c.reviews || c.reviews.length === 0) return 0;
++    const sum = c.reviews.reduce((acc: number, r: any) => acc + r.rating, 0);
++    return Math.round((sum / c.reviews.length) * 10) / 10;
++  };
++
++  const renderStars = (rating: number) => {
++    const rounded = Math.round(rating);
++    return (
++      <div className="flex text-amber-500 gap-0.5">
++        {[1, 2, 3, 4, 5].map((star) => (
++          <span key={star} className="text-xs">
++            {star <= rounded ? "★" : "☆"}
++          </span>
++        ))}
++      </div>
++    );
++  };
+   
+   // Preset States
+   const storePreset = currentUser.storeSettings?.hiringPreset || {
+@@ -3658,6 +4035,18 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
+                         <h4 className="text-lg font-black text-[#0A1128] mt-1 filter blur-[4px] select-none">
+                           {cand.name}
+                         </h4>
++                        {(() => {
++                          const avg = getAverageRating(cand);
++                          if (avg === 0) return null;
++                          return (
++                            <div className="flex items-center gap-1.5 mt-1">
++                              {renderStars(avg)}
++                              <span className="text-[10px] font-bold text-gray-500">
++                                {avg} ({cand.reviews.length} {cand.reviews.length === 1 ? "reseña" : "reseñas"})
++                              </span>
++                            </div>
++                          );
++                        })()}
+                       </div>
+                       <div className="flex flex-col items-end gap-1">
+                         <span className={`text-xs font-black px-2.5 py-1 rounded-full ${cand.matchScore >= 80 ? 'bg-green-100 text-green-700' : cand.matchScore >= 50 ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700'}`}>
+@@ -3856,19 +4245,45 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
+                            cand.hiringState === 'interviewing' ? 'En Entrevista' : 'Libre'}
+                         </span>
+                       </div>
+-                      {cand.cvFile && (
++                      {(cand.cvFile || cand.useKfsCvBuilder) && (
+                         <div className="flex justify-between items-center text-xs font-bold pt-1">
+                           <span className="text-gray-400">Hoja de Vida (CV):</span>
+                           <button 
+                             type="button"
+-                            onClick={() => window.open(cand.cvFile, '_blank')}
++                            onClick={() => {
++                              if (cand.useKfsCvBuilder) {
++                                setViewingCandidateCv(cand);
++                              } else {
++                                window.open(cand.cvFile, '_blank');
++                              }
++                            }}
+                             className="text-[#C5A184] underline cursor-pointer text-[10px]"
+                           >
+-                            👁️ Descargar / Ver CV
++                            👁️ {cand.useKfsCvBuilder ? "Ver CV Digital KFS" : "Ver CV Adjunto"}
+                           </button>
+                         </div>
+                       )}
+                     </div>
++                    {cand.reviews && cand.reviews.length > 0 && (
++                      <div className="bg-gray-50 border border-gray-150 p-4 rounded-xl space-y-2">
++                        <p className="text-[10px] font-black uppercase text-gray-500 tracking-wider">Historial de Referencias KFS:</p>
++                        <div className="space-y-2 max-h-32 overflow-y-auto pr-1">
++                          {cand.reviews.map((r: any) => (
++                            <div key={r.id} className="p-3 bg-white border border-gray-200 rounded-lg text-[10px] space-y-1">
++                              <div className="flex justify-between items-center font-bold">
++                                <span className="text-[#0A1128]">{r.clientName}</span>
++                                <div className="flex items-center gap-1">
++                                  {renderStars(r.rating)}
++                                  <span className="text-gray-500 font-mono">({r.rating})</span>
++                                </div>
++                              </div>
++                              <p className="text-gray-600 leading-normal font-normal italic">"{r.comment}"</p>
++                              <div className="text-[8px] text-gray-400 text-right font-mono">{new Date(r.timestamp).toLocaleDateString()}</div>
++                            </div>
++                          ))}
++                        </div>
++                      </div>
++                    )}
+                   </div>
+ 
+                   <div className="mt-6 pt-4 border-t border-gray-100 space-y-3">
+@@ -3906,7 +4321,11 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
+                             🤝 Contratar
+                           </button>
+                           <button
+-                            onClick={() => releaseCandidate(cand.id, currentUser.id)}
++                            onClick={() => {
++                              setRatingCandidateId(cand.id);
++                              setRatingStars(5);
++                              setRatingComment("");
++                            }}
+                             className="w-1/2 py-2.5 bg-gray-600 hover:bg-gray-700 text-white rounded-xl font-black text-xs cursor-pointer shadow-md transition-colors"
+                           >
+                             🔓 Liberar Candidato
+@@ -3914,7 +4333,11 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
+                         </>
+                       ) : cand.hiringState === 'hired' && cand.interviewingClientId === currentUser.id ? (
+                         <button
+-                          onClick={() => releaseCandidate(cand.id, currentUser.id)}
++                          onClick={() => {
++                            setRatingCandidateId(cand.id);
++                            setRatingStars(5);
++                            setRatingComment("");
++                          }}
+                           className="w-full py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl font-black text-xs cursor-pointer shadow-md transition-colors"
+                         >
+                           🚪 Finalizar Contrato (Liberar a la Bolsa)
+@@ -3935,6 +4358,74 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
+           </div>
+         </div>
+       )}
++      {ratingCandidateId && (
++        <div className="fixed inset-0 z-[11000] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
++          <div className="bg-white text-[#0A1128] rounded-[2rem] p-8 w-full max-w-md shadow-2xl border border-white/20 animate-scale-up space-y-6">
++            <div className="text-center">
++              <h3 className="text-xl font-black text-[#0A1128]">Calificar Candidato</h3>
++              <p className="text-xs text-gray-500 mt-1">Comparte tu experiencia para ayudar a otros comercios de la red KFS.</p>
++            </div>
++
++            {/* Stars Selector */}
++            <div className="flex justify-center gap-2">
++              {[1, 2, 3, 4, 5].map((star) => (
++                <button
++                  key={star}
++                  type="button"
++                  onClick={() => setRatingStars(star)}
++                  className="text-3xl focus:outline-none hover:scale-110 transition-transform cursor-pointer text-amber-500"
++                >
++                  {star <= ratingStars ? "★" : "☆"}
++                </button>
++              ))}
++            </div>
++
++            {/* Comment Input */}
++            <div className="space-y-2">
++              <label className="text-[10px] font-black uppercase text-gray-500 tracking-wider block">Reseña / Referencia laboral</label>
++              <textarea
++                rows={3}
++                placeholder="Ej: Excelente actitud, muy rápido en el POS y puntual. Altamente recomendado."
++                value={ratingComment}
++                onChange={(e) => setRatingComment(e.target.value)}
++                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#C5A184] text-[#0A1128] font-bold"
++              />
++            </div>
++
++            {/* Buttons */}
++            <div className="flex gap-2">
++              <button
++                type="button"
++                onClick={() => {
++                  releaseCandidate(ratingCandidateId, currentUser.id);
++                  setRatingCandidateId(null);
++                }}
++                className="w-1/2 py-3 bg-gray-150 text-gray-500 rounded-xl font-bold text-xs transition-colors cursor-pointer text-center animate-pulse"
++              >
++                Omitir Calificación
++              </button>
++              <button
++                type="button"
++                onClick={() => {
++                  releaseCandidate(ratingCandidateId, currentUser.id, { rating: ratingStars, comment: ratingComment });
++                  setRatingCandidateId(null);
++                }}
++                className="w-1/2 py-3 bg-[#0A1128] hover:bg-gray-800 text-white rounded-xl font-black text-xs transition-colors cursor-pointer text-center shadow-md"
++              >
++                Enviar y Liberar
++              </button>
++            </div>
++          </div>
++        </div>
++      )}
++
++      {viewingCandidateCv && (
++        <CvViewerModal 
++          isOpen={!!viewingCandidateCv} 
++          onClose={() => setViewingCandidateCv(null)} 
++          candidate={viewingCandidateCv} 
++        />
++      )}
+     </div>
+   );
+ };
