@@ -2,7 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { supabase, isSupabaseConfigured } from "./supabase";
-import { playScannerBeep, speakText, getStoreCoords, getCustomerCoords } from "../lib/utils";
+import { playScannerBeep, speakText, getStoreCoords, getCustomerCoords, playSyncChime } from "../lib/utils";
+import { getIndexedDBValue, setIndexedDBValue } from "../lib/indexedDB";
 
 const VENEZUELAN_PRODUCTS_CATALOG: Record<string, { name: string; imgUrl: string; category: string; brand: string }> = {
   "7591006000016": { name: "Harina PAN Blanca (1kg)", imgUrl: "https://images.unsplash.com/photo-1608686207856-001b95cf60ca?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
@@ -509,6 +510,34 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
   const ghostTrapActive = useRef(true);
   const isRemoteUpdate = useRef(false);
+  const p2pChannelRef = useRef<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && "BroadcastChannel" in window) {
+      const channel = new BroadcastChannel("kfs-mesh-p2p");
+      p2pChannelRef.current = channel;
+
+      channel.onmessage = (event) => {
+        if (networkState === "mesh" && event.data && event.data.type === "db-sync") {
+          const remoteDb = event.data.db;
+          isRemoteUpdate.current = true;
+          setDb((prevDb: any) => {
+            const merged = mergeIncomingDb(prevDb, remoteDb, currentUserRef.current);
+            if (JSON.stringify(prevDb) !== JSON.stringify(merged)) {
+              playSyncChime();
+              showToast("P2P Mesh: Base de datos sincronizada localmente con otra estación.", "success");
+              return merged;
+            }
+            return prevDb;
+          });
+        }
+      };
+
+      return () => {
+        channel.close();
+      };
+    }
+  }, [networkState]);
 
   // Hydration and Boot timer
   useEffect(() => {
@@ -618,29 +647,50 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         setCurrentUser(JSON.parse(savedUser));
       }
       
-      const saved = localStorage.getItem("kfs_os_db_prod");
-      if (saved) {
-        let parsed = JSON.parse(saved);
-        if (parsed.kreatekCore?.wipeVersion !== CURRENT_WIPE_VERSION) {
-          console.log("[KFS] Database version mismatch. Resetting local database to 0.");
-          setDb(initialDB);
-          localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
-        } else {
-          // Ensure kfs-express client exists in stored DB
-          if (!parsed.clients) parsed.clients = [];
-          if (!parsed.clients.some((c: any) => c.id === "kfs-express")) {
-            parsed.clients.push(initialDB.clients[0]);
-          }
-          // Ensure default digital products exist
-          if (!parsed.products) parsed.products = [];
-          initialDB.products.forEach(dp => {
-            if (!parsed.products.some((p: any) => p.id === dp.id)) {
-              parsed.products.push(dp);
+      getIndexedDBValue("kfs_os_db_prod")
+        .then((savedDb) => {
+          let parsed = savedDb;
+          if (!parsed) {
+            // Check LocalStorage fallback for migration
+            const savedLocal = localStorage.getItem("kfs_os_db_prod");
+            if (savedLocal) {
+              try {
+                parsed = JSON.parse(savedLocal);
+                // Migrate to IndexedDB
+                setIndexedDBValue("kfs_os_db_prod", parsed);
+                localStorage.removeItem("kfs_os_db_prod");
+                console.log("[KFS Migration] Local database successfully migrated to IndexedDB.");
+              } catch (e) {
+                console.error("[KFS Migration] Failed to parse LocalStorage fallback", e);
+              }
             }
-          });
-          setDb(parsed);
-        }
-      }
+          }
+
+          if (parsed) {
+            if (parsed.kreatekCore?.wipeVersion !== CURRENT_WIPE_VERSION) {
+              console.log("[KFS] Database version mismatch. Resetting database to 0.");
+              setDb(initialDB);
+              setIndexedDBValue("kfs_os_db_prod", initialDB);
+            } else {
+              // Ensure kfs-express client exists in stored DB
+              if (!parsed.clients) parsed.clients = [];
+              if (!parsed.clients.some((c: any) => c.id === "kfs-express")) {
+                parsed.clients.push(initialDB.clients[0]);
+              }
+              // Ensure default digital products exist
+              if (!parsed.products) parsed.products = [];
+              initialDB.products.forEach(dp => {
+                if (!parsed.products.some((p: any) => p.id === dp.id)) {
+                  parsed.products.push(dp);
+                }
+              });
+              setDb(parsed);
+            }
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to read IndexedDB", err);
+        });
       
       if (isSupabaseConfigured && navigator.onLine) {
         const syncId = "kfs-general-db-prod";
@@ -877,11 +927,15 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!isClient || !isDataLoaded) return;
     
-    try {
-      localStorage.setItem("kfs_os_db_prod", JSON.stringify(db));
-    } catch (lsError) {
-      console.warn("[KFS LocalStorage] Advertencia: Límite de cuota local excedido.", lsError);
-    }
+    setIndexedDBValue("kfs_os_db_prod", db)
+      .then(() => {
+        if (networkState === "mesh" && p2pChannelRef.current) {
+          p2pChannelRef.current.postMessage({ type: "db-sync", db });
+        }
+      })
+      .catch((err) => {
+        console.warn("[KFS IndexedDB] Error al persistir base de datos offline", err);
+      });
     
     if (isRemoteUpdate.current) {
       // Skip cloud push for remote updates to prevent infinite loop
@@ -2300,8 +2354,22 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
     if (text.includes("mercantil")) bank = "Mercantil";
     else if (text.includes("banesco")) bank = "Banesco";
-    else if (text.includes("provincial")) bank = "Provincial";
+    else if (text.includes("provincial") || text.includes("bbva")) bank = "BBVA Provincial";
     else if (text.includes("venezuela") || text.includes("bdv")) bank = "Banco de Venezuela";
+    else if (text.includes("bancamiga")) bank = "Bancamiga";
+    else if (text.includes("bnc") || text.includes("nacional de credito")) bank = "BNC";
+    else if (text.includes("tesoro")) bank = "Banco del Tesoro";
+    else if (text.includes("bicentenario")) bank = "Banco Bicentenario";
+    else if (text.includes("banplus")) bank = "Banplus";
+    else if (text.includes("exterior")) bank = "Banco Exterior";
+    else if (text.includes("caroni")) bank = "Banco Caroní";
+    else if (text.includes("activo")) bank = "Banco Activo";
+    else if (text.includes("del sur") || text.includes("delsur")) bank = "Del Sur";
+    else if (text.includes("banfanb")) bank = "Banfanb";
+    else if (text.includes("mi banco") || text.includes("mibanco")) bank = "Mi Banco";
+    else if (text.includes("bancrecer")) bank = "Bancrecer";
+    else if (text.includes("sofitasa")) bank = "Sofitasa";
+    else if (text.includes("bod")) bank = "BOD";
     else if (text.includes("zinli")) bank = "Zinli";
     else if (text.includes("airtm")) bank = "AirTM";
     else if (text.includes("wally")) bank = "Wally Tech";
