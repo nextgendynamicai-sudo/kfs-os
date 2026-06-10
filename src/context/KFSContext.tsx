@@ -499,6 +499,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
               console.log("[Supabase Cloud] Fila no encontrada (BD vacía o borrada). Restableciendo local a 0.");
               setDb(initialDB);
               localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
+              setCurrentUser(null);
+              setOriginalUser(null);
+              setView("landing");
             }
           })
           .catch((err: any) => {
@@ -506,6 +509,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
             if (err && (err.code === 'PGRST116' || (err.message && err.message.includes('0 rows')))) {
               setDb(initialDB);
               localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
+              setCurrentUser(null);
+              setOriginalUser(null);
+              setView("landing");
             }
           })
           .finally(() => {
@@ -527,6 +533,13 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                       return prevDb;
                     });
                     console.log("[Supabase Realtime] Estado sincronizado en tiempo real con fusión local.");
+                  } else if (payload.eventType === 'DELETE' || !payload.new) {
+                    console.log("[Supabase Realtime] Fila eliminada (BD borrada). Restableciendo local a 0.");
+                    setDb(initialDB);
+                    localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
+                    setCurrentUser(null);
+                    setOriginalUser(null);
+                    setView("landing");
                   }
                 })
                 .subscribe();
@@ -547,6 +560,13 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                       }
                       return prevDb;
                     });
+                  } else if (error && error.code === 'PGRST116') {
+                    console.log("[Supabase Polling Fallback] Fila no encontrada (BD vacía o borrada). Restableciendo local a 0.");
+                    setDb(initialDB);
+                    localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
+                    setCurrentUser(null);
+                    setOriginalUser(null);
+                    setView("landing");
                   }
                 }).catch(() => {});
               }, 4000);
