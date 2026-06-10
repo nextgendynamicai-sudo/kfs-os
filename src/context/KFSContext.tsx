@@ -160,6 +160,12 @@ interface KFSContextType {
   updateRiderGPS: (riderId: string, lat: number, lng: number) => void;
   toggleBusinessOpen: (clientId: string) => void;
   updateBusinessConfig: (clientId: string, config: any) => void;
+  requestNotificationPermission: () => Promise<boolean>;
+  processPayroll: (vendedorId: string, baseSalaryUSD: number) => void;
+  requestPayout: (amountUSD: number, bankDetails: string) => Promise<any> | void;
+  riderCheckIn: (riderId: string) => void;
+  riderCheckOut: (riderId: string) => void;
+  markAsPickedUp: (txId: string) => void;
 }
 
 const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
@@ -873,8 +879,6 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  };
-
   const hashPassword = (password: string) => {
     return btoa(password).split('').reverse().join('');
   };
@@ -1432,7 +1436,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
               body: message,
               icon: "/icons/icon-192x192.png",
               vibrate: [200, 100, 200, 100, 200]
-            });
+            } as any);
           }).catch(() => {
             // Fallback a Notification API estándar (Desktop)
             new Notification(title, { body: message, icon: "/icons/icon-192x192.png" });
@@ -2982,7 +2986,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       networkState, setNetworkState, smsConciliator, registerCrmExpress,
       ghostTrapLocked, setGhostTrapLocked, createVale, payVale, processPayroll, registerPosTerminal, deletePosTerminal,
       queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings, updatePaymentMethods, toggleProductFeatured,
-      sendNotification, requestNotificationPermission, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, fundCustomerWallet, requestTopUp, validateTopUp, processMonthlyBilling, registerCustomer, blockClient, releaseClient, deleteClient,
+      sendNotification, requestNotificationPermission, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, fundCustomerWallet, requestTopUp, requestPayout, validateTopUp, processMonthlyBilling, registerCustomer, blockClient, releaseClient, deleteClient,
       registerCandidate, unlockCandidateContact, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, hireCandidate, releaseCandidate, toggleCandidateBacking, markNotificationsAsRead, updateCvBuilderOption,
       registerRider, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, updateRiderPagoMovil, confirmDelivery, markAsPickedUp, rateRider, updateRiderGPS, riderCheckIn, riderCheckOut,
       toggleBusinessOpen, updateBusinessConfig

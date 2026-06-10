@@ -7,7 +7,7 @@ import {
   ChevronRight, CheckCircle, CreditCard, Bell, X, Info,
   Store, Star, ChevronLeft, Clock, UserCheck, Palette,
   Zap, BookOpen, Printer, Smartphone, Settings, DownloadCloud, Terminal, Truck,
-  Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff
+  Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn
 } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from "recharts";
@@ -937,6 +937,8 @@ const Navbar = ({ title, showBack = false, onBack }: { title?: string, showBack?
         return { color: "bg-amber-500", border: "border-amber-400/50", label: "LOCAL MESH (P2P)", text: "text-amber-400" };
       case "offline":
         return { color: "bg-red-500", border: "border-red-400/50", label: "OFFLINE (STAND-ALONE)", text: "text-red-400" };
+      default:
+        return { color: "bg-green-500", border: "border-green-400/50", label: "ONLINE (NUBE)", text: "text-green-400" };
     }
   };
 
@@ -4260,6 +4262,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
   const [customizingClient, setCustomizingClient] = useState<any>(null);
   const { updateStoreSettings, replyTicket, validateTopUp } = useKFS() as any;
   const myClients = db.clients.filter((c: any) => c.promotoraId === currentUser.id);
+  const myPromotoraData = db.promotoras.find((p: any) => p.id === currentUser.id);
   const filteredClients = myClients.filter((c: any) => c.company.toLowerCase().includes(searchClient.toLowerCase()) || c.name.toLowerCase().includes(searchClient.toLowerCase()));
   const myCustomers = db.customers?.filter((c: any) => c.referred_by_promoter_id === currentUser.id) || [];
   
@@ -4270,6 +4273,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
 
   const [activeTab, setActiveTab] = useState("panel"); // panel | negocios | afiliados
   const [activeManual, setActiveManual] = useState<string | null>(null);
+  const [showPayoutModal, setShowPayoutModal] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-50 pb-24 font-sans text-[#0A1128] relative">
@@ -4648,6 +4652,19 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
             <RegisterCustomerForm onCancel={() => setShowCustomerRegister(false)} defaultReferralCode={currentUser.id} />
           </div>
         </div>
+      )}
+
+      {showPayoutModal && (
+        <PayoutModal
+          maxAmount={myPromotoraData?.passiveEarningsEUR || 0}
+          currency="EUR"
+          formatMoney={formatEUR}
+          onCancel={() => setShowPayoutModal(false)}
+          onConfirm={(amount: number, details: string) => {
+            settlePromotoraEarnings(currentUser.id);
+            setShowPayoutModal(false);
+          }}
+        />
       )}
 
       {/* FIXED BOTTOM NAVIGATION */}
@@ -6226,6 +6243,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   }}
                   userType="client"
                 />
+              </div>
               <button onClick={() => processMonthlyBilling(currentUser.id)} className="w-full bg-red-100 text-red-600 font-bold py-2 rounded-xl border border-red-200 text-xs cursor-pointer hover:bg-red-200">Simular Cobro Mensual (Dev)</button>
             </div>
           </div>
@@ -7351,6 +7369,19 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         </div>
       )}
 
+      {showPayoutModal && (
+        <PayoutModal
+          maxAmount={clientInfo.walletBalanceUSD || 0}
+          currency="USD"
+          formatMoney={formatUSD}
+          onCancel={() => setShowPayoutModal(false)}
+          onConfirm={(amount: number, details: string) => {
+            requestPayout(amount, details);
+            setShowPayoutModal(false);
+          }}
+        />
+      )}
+
     </div>
   );
 };
@@ -8122,7 +8153,6 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
           </div>
         </div>
       )}
-      )}
       {activeScreenshot && (
         <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
           <div className="bg-[#0A1128] border border-[#C5A184]/30 rounded-[2.5rem] w-full max-w-lg p-6 shadow-2xl relative flex flex-col items-center">
@@ -8135,19 +8165,6 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
             </div>
           </div>
         </div>
-      )}
-
-      {showPayoutModal && (
-        <PayoutModal
-          maxAmount={currentUser.salesUSD || 0}
-          currency="USD"
-          formatMoney={formatUSD}
-          onCancel={() => setShowPayoutModal(false)}
-          onConfirm={(amount: number, details: string) => {
-            requestPayout(amount, details);
-            setShowPayoutModal(false);
-          }}
-        />
       )}
     </div>
   );
@@ -8245,38 +8262,40 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
         )}
 
         {!activeStoreId ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-            {filteredClients.map((c: any) => {
-               const pCount = db.products.filter((p: any) => p.clientId === c.id).length;
-               return (
-                <div key={c.id} onClick={() => setActiveStoreId(c.id)} className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 cursor-pointer hover:-translate-y-1 transition-transform group">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-16 h-16 bg-[#0A1128]/5 rounded-2xl flex items-center justify-center group-hover:bg-[#C5A184]/10 transition-colors">
-                      <Store size={32} className="text-[#0A1128] group-hover:text-[#C5A184] transition-colors" />
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              {filteredClients.map((c: any) => {
+                 const pCount = db.products.filter((p: any) => p.clientId === c.id).length;
+                 return (
+                  <div key={c.id} onClick={() => setActiveStoreId(c.id)} className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 cursor-pointer hover:-translate-y-1 transition-transform group">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="w-16 h-16 bg-[#0A1128]/5 rounded-2xl flex items-center justify-center group-hover:bg-[#C5A184]/10 transition-colors">
+                        <Store size={32} className="text-[#0A1128] group-hover:text-[#C5A184] transition-colors" />
+                      </div>
+                      <div className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full flex items-center gap-1 text-xs font-black">
+                        <Star size={12} className="fill-yellow-600" /> {c.rating || "5.0"}
+                      </div>
                     </div>
-                    <div className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full flex items-center gap-1 text-xs font-black">
-                      <Star size={12} className="fill-yellow-600" /> {c.rating || "5.0"}
+                    <h3 className="text-xl font-black text-[#0A1128]">{c.company}</h3>
+                    <p className="text-sm text-gray-500 line-clamp-1">{c.address || "Comercio Afiliado"}</p>
+                    <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center text-xs font-bold text-gray-400">
+                      <span>{pCount} Productos</span>
+                      <span className="text-[#C5A184]">Entrar a la tienda &rarr;</span>
                     </div>
                   </div>
-                  <h3 className="text-xl font-black text-[#0A1128]">{c.company}</h3>
-                  <p className="text-sm text-gray-500 line-clamp-1">{c.address || "Comercio Afiliado"}</p>
-                  <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center text-xs font-bold text-gray-400">
-                    <span>{pCount} Productos</span>
-                    <span className="text-[#C5A184]">Entrar a la tienda &rarr;</span>
-                  </div>
+                 );
+              })}
+              {filteredClients.length === 0 && (
+                <div className="col-span-full bg-white rounded-3xl p-12 text-center text-gray-400 font-bold border border-gray-100 shadow-sm">
+                  No se encontraron comercios.
                 </div>
-               );
-            })}
-            {filteredClients.length === 0 && (
-              <div className="col-span-full bg-white rounded-3xl p-12 text-center text-gray-400 font-bold border border-gray-100 shadow-sm">
-                No se encontraron comercios.
-              </div>
-            )}
-          </div>
-          
-          <div className="mt-8">
-            <FlowExpressCatalog currentUser={currentUser} formatUSD={formatUSD} />
-          </div>
+              )}
+            </div>
+            
+            <div className="mt-8">
+              <FlowExpressCatalog currentUser={currentUser} formatUSD={formatUSD} />
+            </div>
+          </>
         ) : (
           <>
             <div className="flex items-center justify-between mb-4">
@@ -8783,9 +8802,9 @@ export default function Home() {
     toast, db, setDb, formatUSD, formatEUR, showToast,
     handleLogin, logout, registerClient, registerPromotora, approvePromotora, rejectPromotora, settlePromotoraEarnings, addProduct, addExpense, processPurchase,
     submitOnlineOrder, approveOrder, rejectOrder, dispatchOrder, generateZReport, registerCrmExpress,
-    paySubscription, approveSubscription,
+    paySubscription, approveSubscription, requestPayout,
     ghostTrapLocked, setGhostTrapLocked, triggerGhostTrap, logAction
-  } = useKFS();
+  } = useKFS() as any;
 
   const [ghostPassword, setGhostPassword] = useState("");
   const [ghostError, setGhostError] = useState("");
