@@ -1049,7 +1049,7 @@ const RegisterClientForm = ({ onRegister, onCancel, standalone = true }: any) =>
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const base64String = await compressImage(file, 400);
+      const base64String = await compressImage(file, 200, 0.6);
       setAvatar(base64String);
       setFormData(prev => ({ ...prev, avatar: base64String }));
     }
@@ -1116,7 +1116,7 @@ const RegisterPromotoraForm = ({ onRegister, onCancel }: any) => {
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const base64String = await compressImage(file, 400);
+      const base64String = await compressImage(file, 200, 0.6);
       setAvatar(base64String);
       setFormData(prev => ({ ...prev, avatar: base64String }));
     }
@@ -1882,7 +1882,7 @@ const RegisterRiderForm = ({ onCancel }: { onCancel: () => void }) => {
     if (!file) return;
     setUploading(prev => ({ ...prev, [key]: true }));
     try {
-      const base64 = await compressImage(file, 800, 0.85);
+      const base64 = await compressImage(file, 500, 0.6);
       setFormData(prev => ({ ...prev, [field]: base64 }));
     } catch {
       showToast("Error al subir documento", "error");
@@ -5339,7 +5339,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
     const file = e.target.files?.[0];
     if (file) {
       try {
-        const base64String = await compressImage(file, 600);
+        const base64String = await compressImage(file, 400, 0.6);
         setNewProd(prev => ({ ...prev, imgUrl: base64String }));
       } catch (error) {
         showToast("Error comprimiendo imagen", "error");
@@ -6572,7 +6572,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                     const file = e.target.files?.[0];
                     if (file) {
                       try {
-                        const base64String = await compressImage(file, 400);
+                        const base64String = await compressImage(file, 200, 0.6);
                         setNewVendedor(prev => ({ ...prev, avatar: base64String }));
                       } catch (error) {
                         // ignore error or showToast if available in scope
@@ -7016,7 +7016,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
     const file = e.target.files?.[0];
     if (file) {
       try {
-        const base64String = await compressImage(file, 600);
+        const base64String = await compressImage(file, 400, 0.6);
         setNewProd(prev => ({ ...prev, imgUrl: base64String }));
       } catch (error) {
         showToast("Error comprimiendo imagen", "error");
