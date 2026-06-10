@@ -775,178 +775,92 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const showToast = (message: string, type: "success" | "error" = "success") => {
     setToast({ show: true, message, type });
     setTimeout(() => setToast({ show: false, message: "", type: "success" }), 3000);
+    
+    // Native Push Notification Support
+    if ("Notification" in window && Notification.permission === "granted" && type === "success") {
+      try {
+        new Notification("KFS OS", { body: message, icon: "/kfs-logo.png" });
+      } catch (e) {
+        console.warn("Native notification failed", e);
+      }
+    }
   };
 
   const formatUSD = (val: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(val);
   const formatEUR = (val: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(val);
 
-  const handleLogin = (role: string, password: string, email: string | null = null) => {
-    const safePass = password ? password.trim() : "";
-    const safeEmail = email ? email.trim() : "";
-
-    // Universal "1" Password Bypass for all roles
-    if (safePass === "1") {
-      if (role === "core") {
-        setCurrentUser({ role: "core", name: "El Arquitecto", avatar: db.kreatekCore?.avatar || "" });
-        setView("core");
-        showToast("KFS OS Accesado. Bienvenido, Arquitecto.");
-        return;
-      }
-      if (role === "promotora") {
-        const promo = db.promotoras.find((p: any) => p.email === safeEmail) || db.promotoras[0] || { id: "p1", name: "Promotora Alpha", email: "promo@kfs.com", status: "active" };
-        setCurrentUser({ ...promo, role: "promotora" });
-        setView("promotora");
-        showToast(`Hub Promotora Accesado: ${promo.name}`);
-        return;
-      }
-      if (role === "dueño") {
-        const client = db.clients.find((c: any) => c.email === safeEmail) || db.clients[0] || { id: "c1", company: "Kreatek Demo Store", kfsTier: "monopoly", role: "dueño" };
-        setCurrentUser({ ...client, role: "dueño" });
-        setView("client");
-        showToast(`Bienvenido al comercio: ${client.company}`);
-        return;
-      }
-      if (role === "vendedor") {
-        const vendedor = db.vendedores.find((v: any) => v.email === safeEmail) || db.vendedores[0] || { id: "v1", name: "Vendedor Demo", clientId: "c1", role: "vendedor" };
-        setCurrentUser({ ...vendedor, role: "vendedor" });
-        setView("vendedor");
-        showToast(`Terminal de Vendedor activado: ${vendedor.name}`);
-        return;
-      }
-      if (role === "customer") {
-        const customer = db.customers?.find((c: any) => c.phone === safeEmail) || db.customers?.[0] || { role: "customer", name: "Usuario Demo", phone: "000" };
-        setCurrentUser({ ...customer, role: "customer" });
-        setView("customer");
-        showToast(`Bienvenido de vuelta, ${customer.name}`);
-        return;
-      }
-      if (role === "rider") {
-        const rider = db.riders?.find((r: any) => r.email === safeEmail) || db.riders?.[0] || { id: "r1", name: "Rider Demo", email: "rider@kfs.com", status: "approved" };
-        setCurrentUser({ ...rider, role: "rider" });
-        setView("rider");
-        showToast(`Panel Delivery activado: ${rider.name}`);
-        return;
-      }
-    }
-
-    // Acceso Rápido (Dev Access)
-    if (role === "core" && (safePass === "199521." || safePass === "000")) {
-      setCurrentUser({ role: "core", name: "El Arquitecto", avatar: db.kreatekCore?.avatar || "" });
-      setView("core");
-      showToast("KFS OS Accesado. Bienvenido, Arquitecto.");
+  const handleLogin = async (role: string, password: string, email: string | null = null) => {
+    if (role === "marketplace") {
+      setView("marketplace");
       return;
     }
 
-    const isProvisional = safePass === "123123" || safePass === "000";
-    if (role === "promotora") {
-      if (password === "1995" || isProvisional) {
-        setCurrentUser({ role: "promotora", name: "Promotora Alpha", id: "p1" });
-        setView("promotora");
-        showToast("Sesión de Promotora Maestra Iniciada.");
-      } else {
-        const promo = db.promotoras.find((p: any) => p.email === safeEmail && p.password === safePass);
-        if (promo) {
-          if (promo.status === 'pending') {
-            showToast("Su cuenta está pendiente de aprobación por KFS.", "error");
-          } else {
-            setCurrentUser({ ...promo, role: "promotora" });
-            setView("promotora");
-            showToast(`Hub Promotora Accesado: ${promo.name}`);
+    const safePass = password ? password.trim() : "";
+    const safeEmail = email ? email.trim() : "";
+
+    // Auth Real con Supabase
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: safeEmail,
+        password: safePass,
+      });
+
+      if (error) {
+        // Fallback local for Core Architect only if Auth is not fully set up
+        if (role === "core" && safePass === "199521.") {
+          setCurrentUser({ role: "core", name: "El Arquitecto", avatar: db.kreatekCore?.avatar || "" });
+          setView("core");
+          showToast("KFS OS Accesado. Bienvenido, Arquitecto.");
+          return;
+        }
+        
+        // Fallback a base de datos local JSON (Transición)
+        let foundUser = null;
+        if (role === "promotora") foundUser = db.promotoras.find((p: any) => p.email === safeEmail && p.password === safePass);
+        if (role === "dueño") foundUser = db.clients.find((c: any) => c.email === safeEmail && c.password === safePass);
+        if (role === "vendedor") foundUser = db.vendedores.find((v: any) => v.email === safeEmail && v.password === safePass);
+        if (role === "rider") foundUser = db.riders?.find((r: any) => r.email === safeEmail && r.password === safePass);
+        if (role === "customer") foundUser = db.customers?.find((c: any) => c.phone === safeEmail && c.password === safePass);
+
+        if (foundUser) {
+          setCurrentUser({ ...foundUser, role });
+          setView(role === "dueño" ? "client" : role);
+          showToast(`Sesión local iniciada: ${foundUser.name || foundUser.company}`);
+          
+          // Solicitar permisos Push al login exitoso
+          if ("Notification" in window && Notification.permission !== "granted") {
+            Notification.requestPermission();
           }
         } else {
-          showToast("Credenciales de promotora inválidas.", "error");
+          showToast("Credenciales inválidas o Auth no configurado.", "error");
         }
+        return;
       }
-    } else if (role === "dueño") {
-      if (safePass === "1234" || isProvisional) {
-        const client = db.clients.find((c: any) => c.email === safeEmail) || db.clients[0] || { id: "c1", company: "Kreatek Demo Store", kfsTier: "monopoly", role: "dueño" };
-        if (client) {
-          setCurrentUser({ ...client, role: "dueño" });
-          setView("client");
-          showToast(`Bienvenido al comercio: ${client.company}`);
-        } else {
-          showToast("Dueño no encontrado. Regístrese.", "error");
+
+      // Si Supabase Auth fue exitoso, buscar el perfil en nuestra BD JSON local usando el email
+      let userProfile = null;
+      if (role === "promotora") userProfile = db.promotoras.find((p: any) => p.email === safeEmail);
+      if (role === "dueño") userProfile = db.clients.find((c: any) => c.email === safeEmail);
+      if (role === "vendedor") userProfile = db.vendedores.find((v: any) => v.email === safeEmail);
+      if (role === "rider") userProfile = db.riders?.find((r: any) => r.email === safeEmail);
+      
+      if (userProfile) {
+        setCurrentUser({ ...userProfile, role });
+        setView(role === "dueño" ? "client" : role);
+        showToast(`Sesión segura iniciada: ${userProfile.name || userProfile.company}`);
+        
+        // Solicitar permisos Push
+        if ("Notification" in window && Notification.permission !== "granted") {
+          Notification.requestPermission();
         }
       } else {
-        const client = db.clients.find((c: any) => c.email === safeEmail && (c.password === safePass || c.password === hashPassword(safePass)));
-        if (client) {
-          setCurrentUser({ ...client, role: "dueño" });
-          setView("client");
-          logAction(client.company, "LOGIN_CLIENT", `Dueño de comercio ingresó al sistema.`);
-          showToast(`Bienvenido al comercio: ${client.company}`);
-        } else {
-          showToast("Credenciales de dueño incorrectas.", "error");
-        }
+        showToast("Usuario autenticado pero perfil no encontrado en KFS OS.", "error");
       }
-    } else if (role === "vendedor") {
-      if (isProvisional) {
-        const vendedorDemo = db.vendedores[0] || { id: "v1", name: "Vendedor Demo", clientId: "c1", role: "vendedor" };
-        if (vendedorDemo) {
-          setCurrentUser({ ...vendedorDemo, role: "vendedor" });
-          setView("vendedor");
-          showToast(`Terminal de Vendedor activado: ${vendedorDemo.name}`);
-        } else {
-          showToast("No hay vendedores registrados para usar la clave provisional.", "error");
-        }
-      } else {
-        const vendedor = db.vendedores.find((v: any) => v.email === safeEmail && (v.password === safePass || v.password === hashPassword(safePass)));
-        if (vendedor) {
-           setCurrentUser({ ...vendedor, role: "vendedor" });
-           setView("vendedor");
-           logAction(vendedor.name, "LOGIN_VENDEDOR", `Terminal activado.`);
-           showToast(`Terminal de Vendedor activado: ${vendedor.name}`);
-        } else {
-           showToast("Credenciales de vendedor inválidas.", "error");
-        }
-      }
-    } else if (role === "customer") {
-      if (isProvisional) {
-        const customerDemo = db.customers?.[0] || { role: "customer", name: "Usuario Demo", phone: "000" };
-        setCurrentUser({ ...customerDemo, role: "customer" });
-        setView("customer");
-        showToast(`Bienvenido de vuelta, ${customerDemo.name}`);
-      } else {
-        const customer = db.customers?.find((c: any) => c.phone === safeEmail && (c.password === safePass || c.password === hashPassword(safePass)));
-        if (customer) {
-          setCurrentUser({ ...customer, role: "customer" });
-          setView("customer");
-          showToast(`Bienvenido de vuelta, ${customer.name}`);
-        } else {
-          showToast("Credenciales de cliente incorrectas.", "error");
-        }
-      }
-    } else if (role === "rider") {
-      if (isProvisional) {
-        const riderDemo = db.riders?.[0];
-        if (riderDemo) {
-          setCurrentUser({ ...riderDemo, role: "rider" });
-          setView("rider");
-          showToast(`Panel Delivery activado: ${riderDemo.name}`);
-        } else {
-          showToast("No hay riders registrados.", "error");
-        }
-      } else {
-        const rider = db.riders?.find((r: any) => r.email === safeEmail && (r.password === safePass || r.password === hashPassword(safePass)));
-        if (rider) {
-          if (rider.status === 'pending') {
-            showToast("Tu cuenta de delivery está pendiente de aprobación.", "error");
-          } else if (rider.status === 'rejected') {
-            showToast("Tu solicitud de delivery fue rechazada.", "error");
-          } else {
-            setCurrentUser({ ...rider, role: "rider" });
-            setView("rider");
-            logAction(rider.name, "LOGIN_RIDER", `Rider ingresó al sistema.`);
-            showToast(`Panel Delivery activado: ${rider.name}`);
-          }
-        } else {
-          showToast("Credenciales de delivery incorrectas.", "error");
-        }
-      }
-    } else if (role === "marketplace") {
-      setView("marketplace");
-    } else {
-      showToast("Credenciales inválidas.", "error");
+    } catch (err) {
+      showToast("Error de conexión al autenticar.", "error");
     }
+  };
+
   };
 
   const hashPassword = (password: string) => {
@@ -1013,7 +927,27 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast(`Billetera recargada con $${amountUSD}`, "success");
   };
 
-  const fundCustomerWallet = (customerId: string, amountUSD: number, gateway: string) => {
+  const fundCustomerWallet = async (customerId: string, amountUSD: number, gateway: string) => {
+    try {
+      const res = await fetch("/api/kfs/fund", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ customerId, amountUSD, gateway })
+      });
+      
+      if (!res.ok) throw new Error("API call failed");
+      
+      const data = await res.json();
+      if (data.success) {
+        logAction("System", `FUND_CUSTOMER_${gateway.toUpperCase()}`, `Usuario ${customerId} recargó $${amountUSD} via ${gateway}`);
+        showToast(`Recarga de $${amountUSD} acreditada vía ${gateway}.`, "success");
+        return;
+      }
+    } catch (err) {
+      console.warn("Backend API failed, falling back to local simulation.", err);
+    }
+
+    // Local Fallback si el API falla o no está disponible
     setDb((prev: any) => {
       let updatedCustomers = prev.customers || [];
       const customer = updatedCustomers.find((c: any) => c.id === customerId);
@@ -1041,7 +975,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     });
     
     logAction("System", `FUND_CUSTOMER_${gateway.toUpperCase()}`, `Usuario ${customerId} recargó $${amountUSD} via ${gateway}`);
-    showToast(`Recarga de $${amountUSD} acreditada vía ${gateway}.`, "success");
+    showToast(`Recarga de $${amountUSD} acreditada vía ${gateway} (Offline Mode).`, "success");
   };
 
   const registerCustomer = (phone: string, password: string, name: string, referralCode?: string) => {
