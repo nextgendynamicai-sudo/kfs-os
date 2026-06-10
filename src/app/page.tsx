@@ -7,11 +7,12 @@ import {
   ChevronRight, CheckCircle, CreditCard, Bell, X, Info,
   Store, Star, ChevronLeft, Clock, UserCheck, Palette,
   Zap, BookOpen, Printer, Smartphone, Settings, DownloadCloud, Terminal, Truck,
-  Briefcase, FileText, Award, Check, ArrowUpRight
+  Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff
 } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { CheckoutModal } from "../components/CheckoutModal";
+import { TopUpModal } from "../components/TopUpModal";
 import { PayoutModal } from "../components/PayoutModal";
 import { ReceiptModal } from "../components/ReceiptModal";
 import { DualWalletCard } from "../components/DualWalletCard";
@@ -20,6 +21,9 @@ import { B2BSelfOnboarding } from "../components/B2BSelfOnboarding";
 import { useP2PTransfer } from "../hooks/useP2PTransfer";
 import { compressImage, readAsBase64, playPremiumChime, playSyncChime, playCashDrawerSound } from "../lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import dynamic from 'next/dynamic';
+
+const LiveMap = dynamic(() => import('../components/LiveMap'), { ssr: false });
 
 // Theme and Global Constants
 const KREATEK_COLORS = {
@@ -1047,8 +1051,9 @@ const Navbar = ({ title, showBack = false, onBack }: { title?: string, showBack?
 };
 
 const RegisterClientForm = ({ onRegister, onCancel, standalone = true }: any) => {
-  const [formData, setFormData] = useState({ name: "", idCard: "", company: "", avgBilling: "", phone: "", email: "", password: "", address: "", kfsFeePercentage: 0.03, avatar: "" });
+  const [formData, setFormData] = useState({ name: "", idCard: "", company: "", avgBilling: "", phone: "", email: "", password: "", address: "", kfsFeePercentage: 0.03, avatar: "", kycCedula: "" });
   const [avatar, setAvatar] = useState<string>("");
+  const [kycCedula, setKycCedula] = useState<string>("");
   const [acceptedToS, setAcceptedToS] = useState(false);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1057,6 +1062,15 @@ const RegisterClientForm = ({ onRegister, onCancel, standalone = true }: any) =>
       const base64String = await compressImage(file, 200, 0.6);
       setAvatar(base64String);
       setFormData(prev => ({ ...prev, avatar: base64String }));
+    }
+  };
+
+  const handleCedulaChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const base64String = await compressImage(file, 200, 0.6);
+      setKycCedula(base64String);
+      setFormData(prev => ({ ...prev, kycCedula: base64String }));
     }
   };
 
@@ -1077,6 +1091,20 @@ const RegisterClientForm = ({ onRegister, onCancel, standalone = true }: any) =>
           )}
         </label>
         <span className={`text-[10px] font-bold uppercase tracking-wider ${standalone ? "text-gray-400" : "text-gray-500"}`}>Logo / Foto Comercio</span>
+      </div>
+
+      <div className="flex flex-col items-center gap-2 mb-4">
+        <label className={`relative w-full h-20 rounded-xl border-2 border-dashed border-[#C5A184]/50 cursor-pointer overflow-hidden flex items-center justify-center transition-colors group ${standalone ? "bg-[#0A1128]/40 hover:bg-[#0A1128]/60" : "bg-gray-50 hover:bg-gray-100"}`}>
+          <input type="file" accept="image/*" className="hidden" onChange={handleCedulaChange} required />
+          {kycCedula ? (
+            <img src={kycCedula} className="w-full h-full object-cover opacity-80" alt="Cédula" />
+          ) : (
+            <div className={`text-center transition-colors ${standalone ? "text-gray-400 group-hover:text-white" : "text-gray-500 group-hover:text-[#0A1128]"}`}>
+              <Camera size={24} className="mx-auto" />
+              <span className="text-[10px] font-bold block mt-1">Subir Cédula del Representante (KYC)</span>
+            </div>
+          )}
+        </label>
       </div>
 
       <input required placeholder="Nombre Completo" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({...formData, name: e.target.value})} />
@@ -1115,8 +1143,9 @@ const RegisterClientForm = ({ onRegister, onCancel, standalone = true }: any) =>
 
 // Setup Promotora Form
 const RegisterPromotoraForm = ({ onRegister, onCancel }: any) => {
-  const [formData, setFormData] = useState({ name: "", email: "", password: "", binanceId: "", pagoMovil: "", avatar: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", password: "", binanceId: "", pagoMovil: "", avatar: "", kycCedula: "", kycAddress: "" });
   const [avatar, setAvatar] = useState<string>("");
+  const [kycCedula, setKycCedula] = useState<string>("");
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -1124,6 +1153,15 @@ const RegisterPromotoraForm = ({ onRegister, onCancel }: any) => {
       const base64String = await compressImage(file, 200, 0.6);
       setAvatar(base64String);
       setFormData(prev => ({ ...prev, avatar: base64String }));
+    }
+  };
+
+  const handleCedulaChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const base64String = await compressImage(file, 200, 0.6);
+      setKycCedula(base64String);
+      setFormData(prev => ({ ...prev, kycCedula: base64String }));
     }
   };
 
@@ -1146,7 +1184,22 @@ const RegisterPromotoraForm = ({ onRegister, onCancel }: any) => {
         <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Foto de Perfil</span>
       </div>
 
+      <div className="flex flex-col items-center gap-2 mb-4">
+        <label className="relative w-full h-20 rounded-xl border-2 border-dashed border-[#C5A184]/50 cursor-pointer overflow-hidden flex items-center justify-center bg-[#0A1128]/40 hover:bg-[#0A1128]/60 transition-colors group">
+          <input type="file" accept="image/*" className="hidden" onChange={handleCedulaChange} required />
+          {kycCedula ? (
+            <img src={kycCedula} className="w-full h-full object-cover opacity-80" alt="Cédula" />
+          ) : (
+            <div className="text-center text-gray-400 group-hover:text-white transition-colors">
+              <Camera size={24} className="mx-auto" />
+              <span className="text-[10px] font-bold block mt-1">Subir Foto de Cédula (Obligatorio)</span>
+            </div>
+          )}
+        </label>
+      </div>
+
       <input required placeholder="Nombre Completo" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({...formData, name: e.target.value})} />
+      <textarea required placeholder="Dirección Completa (KYC)" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({...formData, kycAddress: e.target.value})} />
       <input required type="email" placeholder="Correo Electrónico" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({...formData, email: e.target.value})} />
       <input required type="password" placeholder="Crear Clave de Acceso" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({...formData, password: e.target.value})} />
       <input required placeholder="Binance ID (Ej: 184592...)" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({...formData, binanceId: e.target.value})} />
@@ -1826,12 +1879,23 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
   );
 };
 
-const RegisterCustomerForm = ({ onCancel }: { onCancel: () => void }) => {
+const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCancel: () => void, defaultReferralCode?: string }) => {
   const [name, setName] = useState("");
   const [phonePrefix, setPhonePrefix] = useState("+58");
   const [phoneBody, setPhoneBody] = useState("");
   const [password, setPassword] = useState("");
+  const [kycPhoto, setKycPhoto] = useState<string>("");
+  const [kycCedula, setKycCedula] = useState<string>("");
+  const [kycAddress, setKycAddress] = useState("");
   const { registerCustomer } = useKFS() as any;
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>, setter: any) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const base64 = await compressImage(file, 200, 0.6);
+      setter(base64);
+    }
+  };
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
@@ -1840,7 +1904,7 @@ const RegisterCustomerForm = ({ onCancel }: { onCancel: () => void }) => {
       rawBody = rawBody.slice(1);
     }
     const fullPhone = phonePrefix + rawBody;
-    registerCustomer(fullPhone, password, name);
+    registerCustomer(fullPhone, password, name, defaultReferralCode || undefined, kycPhoto, kycCedula, kycAddress);
   };
 
   return (
@@ -1866,6 +1930,33 @@ const RegisterCustomerForm = ({ onCancel }: { onCancel: () => void }) => {
         </select>
         <input required type="text" placeholder="Número Telefónico (Ej: 4141234567)" value={phoneBody} onChange={e=>setPhoneBody(e.target.value)} className="flex-1 bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184] transition-all" />
       </div>
+
+      <div className="flex gap-4 mb-2">
+        <label className="flex-1 relative h-24 rounded-xl border-2 border-dashed border-[#C5A184]/50 cursor-pointer overflow-hidden flex items-center justify-center bg-[#0A1128]/40 hover:bg-[#0A1128]/60 transition-colors group">
+          <input type="file" accept="image/*" className="hidden" onChange={e => handlePhotoUpload(e, setKycPhoto)} required />
+          {kycPhoto ? (
+            <img src={kycPhoto} className="w-full h-full object-cover opacity-80" alt="Selfie" />
+          ) : (
+            <div className="text-center text-gray-400 group-hover:text-white transition-colors">
+              <Camera size={20} className="mx-auto" />
+              <span className="text-[10px] font-bold block mt-1">Selfie (Obligatorio)</span>
+            </div>
+          )}
+        </label>
+        <label className="flex-1 relative h-24 rounded-xl border-2 border-dashed border-[#C5A184]/50 cursor-pointer overflow-hidden flex items-center justify-center bg-[#0A1128]/40 hover:bg-[#0A1128]/60 transition-colors group">
+          <input type="file" accept="image/*" className="hidden" onChange={e => handlePhotoUpload(e, setKycCedula)} required />
+          {kycCedula ? (
+            <img src={kycCedula} className="w-full h-full object-cover opacity-80" alt="Cédula" />
+          ) : (
+            <div className="text-center text-gray-400 group-hover:text-white transition-colors">
+              <FileText size={20} className="mx-auto" />
+              <span className="text-[10px] font-bold block mt-1">Cédula (Obligatorio)</span>
+            </div>
+          )}
+        </label>
+      </div>
+      
+      <textarea required placeholder="Dirección Residencial Completa" value={kycAddress} onChange={e=>setKycAddress(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184] transition-all text-sm h-20 resize-none" />
 
       <input required type="password" placeholder="Crear Contraseña" value={password} onChange={e=>setPassword(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184] transition-all" />
       <div className="flex gap-2 pt-2">
@@ -1976,8 +2067,10 @@ const RegisterRiderForm = ({ onCancel }: { onCancel: () => void }) => {
 };
 
 const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
-  const { formatUSD, registerCandidate, showToast, markNotificationsAsRead } = useKFS() as any;
+  const { formatUSD, registerCandidate, showToast, markNotificationsAsRead, requestTopUp } = useKFS() as any;
   const [subTab, setSubTab] = useState("profile"); // profile | jobs
+  const [isTopUpOpen, setIsTopUpOpen] = useState(false);
+  const [topUpAmount, setTopUpAmount] = useState("");
   
   const { transferP2P } = useP2PTransfer();
   const [p2pRecipient, setP2pRecipient] = useState("");
@@ -2145,7 +2238,22 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
         {subTab === "profile" ? (
           <>
             {/* Overdrive Dual Wallet Card */}
-            <DualWalletCard currentUser={currentUser} formatUSD={formatUSD} />
+            <DualWalletCard 
+              currentUser={currentUser} 
+              formatUSD={formatUSD} 
+              onRequestTopUp={(amount) => { setTopUpAmount(amount.toString()); setIsTopUpOpen(true); }}
+            />
+            
+            <TopUpModal 
+              isOpen={isTopUpOpen} 
+              onClose={() => setIsTopUpOpen(false)}
+              amount={topUpAmount}
+              setAmount={setTopUpAmount}
+              onSubmit={(amount: number, ref: string, img: string) => {
+                requestTopUp(currentUser.id, 'customer', amount, ref, img);
+              }}
+              userType="customer"
+            />
 
             {/* P2P Transfer Form */}
             <div className="bg-gradient-to-tr from-[#0A1128]/85 to-[#141E3A]/85 backdrop-blur-xl border border-[#C5A184]/20 rounded-[2.5rem] p-6 sm:p-8 shadow-2xl space-y-5">
@@ -2246,20 +2354,41 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                    {logisticsTxs.map((tx: any) => {
                      const p = db.products.find((prod: any) => prod.id === tx.productId);
                      const isDispatched = tx.shippingStatus === 'dispatched';
+                     const isPickedUp = tx.shippingStatus === 'picked_up';
                      const isDelivered = tx.shippingStatus === 'delivered';
                      return (
-                       <div key={tx.id} className={`${isDelivered ? 'bg-gray-800/50 border-gray-700' : isDispatched ? 'bg-green-500/10 border-green-500/20' : 'bg-blue-500/10 border-blue-500/20'} border p-5 rounded-2xl space-y-4`}>
-                         <div className="flex justify-between items-start">
-                           <div>
-                             <h4 className={`font-bold ${isDelivered ? 'text-gray-400' : isDispatched ? 'text-green-400' : 'text-blue-400'}`}>{p?.name || "Producto Online"}</h4>
-                             <p className={`text-xs mt-1 ${isDelivered ? 'text-gray-500' : isDispatched ? 'text-green-200/70' : 'text-blue-200/70'}`}>
-                               {isDelivered ? '✅ Entregado' : isDispatched ? '📦 Tu paquete está en camino hacia ti' : '⏳ Pago Aprobado. Vendedor empacando'}
-                             </p>
-                           </div>
-                           {isDelivered ? <CheckCircle className="text-gray-500" /> : isDispatched ? <Truck className="text-green-400 animate-bounce" /> : <Package className="text-blue-400 animate-pulse" />}
-                         </div>
+                        <div key={tx.id} className={`${isDelivered ? 'bg-gray-800/50 border-gray-700' : isPickedUp ? 'bg-purple-500/10 border-purple-500/20' : isDispatched ? 'bg-green-500/10 border-green-500/20' : 'bg-blue-500/10 border-blue-500/20'} border p-5 rounded-2xl space-y-4 relative overflow-hidden`}>
+                          <div className="flex justify-between items-start relative z-10">
+                            <div>
+                              <h4 className={`font-bold ${isDelivered ? 'text-gray-400' : isPickedUp ? 'text-purple-400' : isDispatched ? 'text-green-400' : 'text-blue-400'}`}>{p?.name || "Producto Online"}</h4>
+                              <p className={`text-xs mt-1 ${isDelivered ? 'text-gray-500' : isPickedUp ? 'text-purple-200/70' : isDispatched ? 'text-green-200/70' : 'text-blue-200/70'}`}>
+                                {isDelivered ? '✅ Entregado' : isPickedUp ? '🛵 Tu Rider recogió el pedido y va en camino.' : isDispatched ? '📦 Tu paquete fue asignado a un Rider y está esperando recolección.' : '⏳ Pago Aprobado. Vendedor empacando'}
+                              </p>
+                            </div>
+                            {isDelivered ? <CheckCircle className="text-gray-500" /> : isPickedUp ? <MapPin className="text-purple-400 animate-bounce" /> : isDispatched ? <Truck className="text-green-400 animate-pulse" /> : <Package className="text-blue-400 animate-pulse" />}
+                          </div>
 
-                         {/* Rider Info */}
+                          {/* Live Map */}
+                          {isPickedUp && (
+                            <div className="mt-4">
+                               <LiveMap 
+                                  role="customer"
+                                  storePos={{ lat: 10.4850, lng: -66.8900 }} // Fake store pos
+                                  customerPos={{ lat: 10.4900, lng: -66.9000 }} // Fake customer pos
+                                  riderPos={
+                                    (() => {
+                                      const r = db.riders?.find((r: any) => r.id === tx.assignedRiderId);
+                                      return r?.lastLat && r?.lastLng ? { lat: r.lastLat, lng: r.lastLng } : { lat: 10.4880, lng: -66.8950 };
+                                    })()
+                                  }
+                                  className="h-48"
+                               />
+                               <div className="flex justify-between items-center mt-3 bg-black/60 rounded-lg px-3 py-2 border border-purple-500/20 backdrop-blur-md">
+                                 <p className="text-[10px] text-gray-300 font-bold flex items-center gap-1.5"><Clock size={12} className="text-purple-400"/> ETA Estimado</p>
+                                 <p className="text-xs font-black text-white">~ 12 min</p>
+                               </div>
+                            </div>
+                          )}
                          {tx.assignedRiderName && (
                            <div className="bg-black/30 rounded-xl p-3 flex items-center justify-between border border-white/5">
                              <div className="flex items-center gap-3">
@@ -2762,13 +2891,15 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
 
 // CoreDashboard
 const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePromotoraEarnings, showToast, formatUSD, formatEUR, currentUser, logout, approveSubscription }: any) => {
-  const { impersonateClient, registerClient, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, toggleCandidateBacking, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness } = useKFS() as any;
+  const { impersonateClient, registerClient, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, toggleCandidateBacking, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, validateTopUp } = useKFS() as any;
   const [searchPromotora, setSearchPromotora] = useState("");
   const [searchClient, setSearchClient] = useState("");
   const [searchVendedor, setSearchVendedor] = useState("");
   const [viewingCandidateCv, setViewingCandidateCv] = useState<any | null>(null);
+  const [viewingKycPhoto, setViewingKycPhoto] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("panel"); // panel | red | soporte | auditoria
   const { isSupabaseConfigured } = useKFS() as any;
+  const pendingTopUps = db.topups?.filter((t: any) => t.status === 'pending') || [];
 
   const handleWipeDatabase = async () => {
     if (confirm("🚨 ¿ESTÁS SEGURO? Esta acción borrará permanentemente todos los comercios, promotoras, transacciones, y restablecerá todo a $0.00 en Supabase y localmente.")) {
@@ -2799,7 +2930,8 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
         supportTickets: [],
         candidates: [],
         unlockedContacts: [],
-        riders: []
+        riders: [],
+        topups: []
       };
       setDb(cleared);
       localStorage.setItem("kfs_os_db_prod", JSON.stringify(cleared));
@@ -3641,6 +3773,50 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
               </button>
             </div>
 
+            {/* Validaciones Financieras */}
+            {pendingTopUps.length > 0 && (
+              <div className="bg-green-50/50 rounded-[2rem] shadow-sm border border-green-200 p-8 mb-8 animate-fade-in">
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl font-black text-green-900 flex items-center gap-2"><DollarSign className="text-green-500"/> Validaciones Financieras Pendientes</h3>
+                </div>
+                <div className="space-y-4">
+                  {pendingTopUps.map((t: any) => {
+                    const user = t.userType === 'client' ? db.clients?.find((c:any) => c.id === t.userId) : db.customers?.find((c:any) => c.id === t.userId);
+                    const name = t.userType === 'client' ? user?.company : user?.name;
+                    return (
+                      <div key={t.id} className="bg-white border border-green-100 rounded-2xl p-5 flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="flex items-center gap-4">
+                          {t.screenshotBase64 && (
+                            <a href={t.screenshotBase64} target="_blank" rel="noreferrer" className="w-16 h-16 rounded-xl overflow-hidden border border-gray-200 block hover:scale-105 transition-transform shrink-0 shadow-sm">
+                              <img src={t.screenshotBase64} alt="Comprobante" className="w-full h-full object-cover" />
+                            </a>
+                          )}
+                          <div>
+                            <p className="font-bold text-sm text-[#0A1128]">{name} <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded-full text-gray-500 uppercase ml-2">{t.userType}</span></p>
+                            <p className="text-xs text-gray-500 font-mono mt-1">Ref: {t.paymentReference} | {new Date(t.timestamp).toLocaleString()}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4 w-full md:w-auto">
+                          <div className="text-right flex-1 md:flex-none">
+                            <p className="text-[10px] text-gray-400 uppercase font-black">Monto a Acreditar</p>
+                            <p className="text-xl font-black text-green-600">${t.amountUSD.toFixed(2)}</p>
+                          </div>
+                          <div className="flex gap-2">
+                            <button onClick={() => validateTopUp(t.id, 'rejected', currentUser.id)} className="w-10 h-10 rounded-xl bg-red-50 hover:bg-red-500 hover:text-white text-red-500 flex items-center justify-center transition-colors cursor-pointer border border-red-200">
+                              <X size={18} />
+                            </button>
+                            <button onClick={() => validateTopUp(t.id, 'approved', currentUser.id)} className="w-10 h-10 rounded-xl bg-green-50 hover:bg-green-500 hover:text-white text-green-600 flex items-center justify-center transition-colors cursor-pointer border border-green-200">
+                              <CheckCircle size={18} />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Ghost Trap Forensics */}
             <div className="bg-red-50/30 rounded-[2rem] shadow-sm border border-red-100 p-8 mb-8">
               <div className="flex justify-between items-center mb-6">
@@ -3777,6 +3953,80 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
           </div>
         )}
 
+        {activeTab === "kyc" && (
+          <div className="space-y-8 flex flex-col">
+            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
+              <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><FileText className="text-[#C5A184]"/> Bóveda KYC (Know Your Customer)</h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black">
+                    <tr>
+                      <th className="py-4 px-4 rounded-tl-xl">Usuario / Entidad</th>
+                      <th className="py-4 px-4">Rol</th>
+                      <th className="py-4 px-4">Dirección Fiscal/Residencial</th>
+                      <th className="py-4 px-4 text-center">Docs</th>
+                      <th className="py-4 px-4 text-right rounded-tr-xl">Estado KYC</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* Clientes */}
+                    {db.clients?.map((client: any) => (
+                      <tr key={client.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                        <td className="py-4 px-4 font-bold text-[#0A1128]">{client.name} <span className="text-xs text-gray-500 font-normal block">{client.company}</span></td>
+                        <td className="py-4 px-4 text-xs font-bold text-[#C5A184]">Dueño</td>
+                        <td className="py-4 px-4 text-xs text-gray-600 max-w-xs truncate" title={client.kyc_address || client.address}>{client.kyc_address || client.address || "N/A"}</td>
+                        <td className="py-4 px-4 text-center">
+                          <div className="flex justify-center gap-2">
+                            {client.kyc_photo || client.avatar ? <img src={client.kyc_photo || client.avatar} onClick={() => setViewingKycPhoto(client.kyc_photo || client.avatar)} className="w-10 h-10 aspect-square object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-gray-200" alt="Selfie" title="Ver Selfie/Logo" /> : <span className="p-2.5 text-gray-300 border border-dashed border-gray-200 rounded-lg"><Camera size={16}/></span>}
+                            {client.kyc_id_card_img ? <img src={client.kyc_id_card_img} onClick={() => setViewingKycPhoto(client.kyc_id_card_img)} className="w-10 h-10 aspect-square object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-gray-200" alt="Cédula" title="Ver Cédula/RIF" /> : <span className="p-2.5 text-gray-300 border border-dashed border-gray-200 rounded-lg"><FileText size={16}/></span>}
+                          </div>
+                        </td>
+                        <td className="py-4 px-4 text-right">
+                          <span className={`text-[10px] px-2 py-1 rounded-md font-bold uppercase ${client.kyc_status === 'verified' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>{client.kyc_status || 'verified'}</span>
+                        </td>
+                      </tr>
+                    ))}
+                    {/* Promotoras */}
+                    {db.promotoras?.map((promo: any) => (
+                      <tr key={promo.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                        <td className="py-4 px-4 font-bold text-[#0A1128]">{promo.name}</td>
+                        <td className="py-4 px-4 text-xs font-bold text-indigo-600">Promotora</td>
+                        <td className="py-4 px-4 text-xs text-gray-600 max-w-xs truncate" title={promo.kyc_address}>{promo.kyc_address || "N/A"}</td>
+                        <td className="py-4 px-4 text-center">
+                          <div className="flex justify-center gap-2">
+                            {promo.kyc_photo || promo.avatar ? <img src={promo.kyc_photo || promo.avatar} onClick={() => setViewingKycPhoto(promo.kyc_photo || promo.avatar)} className="w-10 h-10 aspect-square object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-gray-200" alt="Selfie" title="Ver Selfie" /> : <span className="p-2.5 text-gray-300 border border-dashed border-gray-200 rounded-lg"><Camera size={16}/></span>}
+                            {promo.kyc_id_card_img ? <img src={promo.kyc_id_card_img} onClick={() => setViewingKycPhoto(promo.kyc_id_card_img)} className="w-10 h-10 aspect-square object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-gray-200" alt="Cédula" title="Ver Cédula" /> : <span className="p-2.5 text-gray-300 border border-dashed border-gray-200 rounded-lg"><FileText size={16}/></span>}
+                          </div>
+                        </td>
+                        <td className="py-4 px-4 text-right">
+                          <span className={`text-[10px] px-2 py-1 rounded-md font-bold uppercase ${promo.kyc_status === 'verified' ? 'bg-green-100 text-green-700' : promo.kyc_status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-600'}`}>{promo.kyc_status || 'verified'}</span>
+                        </td>
+                      </tr>
+                    ))}
+                    {/* Customers */}
+                    {db.customers?.map((cust: any) => (
+                      <tr key={cust.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                        <td className="py-4 px-4 font-bold text-[#0A1128]">{cust.name} <span className="text-xs text-gray-500 font-normal block">{cust.phone}</span></td>
+                        <td className="py-4 px-4 text-xs font-bold text-gray-600">Usuario</td>
+                        <td className="py-4 px-4 text-xs text-gray-600 max-w-xs truncate" title={cust.kyc_address}>{cust.kyc_address || "N/A"}</td>
+                        <td className="py-4 px-4 text-center">
+                          <div className="flex justify-center gap-2">
+                            {cust.kyc_photo ? <img src={cust.kyc_photo} onClick={() => setViewingKycPhoto(cust.kyc_photo)} className="w-10 h-10 aspect-square object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-gray-200" alt="Selfie" title="Ver Selfie" /> : <span className="p-2.5 text-gray-300 border border-dashed border-gray-200 rounded-lg"><Camera size={16}/></span>}
+                            {cust.kyc_id_card_img ? <img src={cust.kyc_id_card_img} onClick={() => setViewingKycPhoto(cust.kyc_id_card_img)} className="w-10 h-10 aspect-square object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-gray-200" alt="Cédula" title="Ver Cédula" /> : <span className="p-2.5 text-gray-300 border border-dashed border-gray-200 rounded-lg"><FileText size={16}/></span>}
+                          </div>
+                        </td>
+                        <td className="py-4 px-4 text-right">
+                          <span className={`text-[10px] px-2 py-1 rounded-md font-bold uppercase ${cust.kyc_status === 'verified' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>{cust.kyc_status || 'verified'}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Tactical Actions Modals */}
         {activeModal === 'store' && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
@@ -3853,6 +4103,20 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                 <input type="text" placeholder="Título Breve" value={notifTitle} onChange={e => setNotifTitle(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold text-red-600" />
                 <textarea placeholder="Mensaje de impacto..." value={notifMsg} onChange={e => setNotifMsg(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold h-24 resize-none" />
                 <button onClick={() => { if(notifTitle && notifMsg) { sendNotification(notifTarget, notifTitle, notifMsg); setActiveModal(null); } }} className="w-full bg-red-600 text-white py-4 rounded-xl font-black shadow-lg flex justify-center gap-2 items-center"><Bell size={20}/> Broadcast Instantáneo</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {viewingKycPhoto && (
+          <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+            <div className="relative max-w-3xl w-full flex flex-col items-center">
+              <button onClick={() => setViewingKycPhoto(null)} className="absolute -top-12 right-0 text-white hover:text-red-400 transition-colors cursor-pointer"><X size={32}/></button>
+              <img src={viewingKycPhoto} alt="Visor KYC" className="w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl bg-white/5" />
+              <div className="mt-6 flex gap-4 w-full max-w-sm">
+                <a href={viewingKycPhoto} download="kfs_kyc_document.jpg" className="flex-1 bg-[#C5A184] text-[#0A1128] py-3 rounded-xl font-black text-center shadow-[0_0_20px_rgba(197,161,132,0.4)] hover:scale-105 transition-transform flex items-center justify-center gap-2 cursor-pointer">
+                  <DownloadCloud size={20}/> Descargar Documento
+                </a>
               </div>
             </div>
           </div>
@@ -3958,7 +4222,8 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             { id: "panel", icon: Activity, label: "Panel" },
             { id: "red", icon: Store, label: "Red KFS", badge: (db.riders?.filter((r: any) => r.status === "pending") || []).length },
             { id: "soporte", icon: Bell, label: "Soporte", badge: (db.clients.filter((c: any) => c.subscription?.status === 'pending_verification').length + (db.candidates?.filter((c: any) => c.registrationPaymentStatus === 'pending_approval').length || 0) + (db.unlockedContacts?.filter((u: any) => u.status === 'pending_approval').length || 0) + (db.supportTickets || []).filter((t: any) => t.status === 'open').length) },
-            { id: "auditoria", icon: Shield, label: "Auditoría" }
+            { id: "auditoria", icon: Shield, label: "Auditoría" },
+            { id: "kyc", icon: FileText, label: "Bóveda KYC" }
           ].map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -3990,12 +4255,18 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 // Promotora Dashboard
 const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settlePromotoraEarnings, formatUSD, formatEUR, logout }: any) => {
   const [showRegister, setShowRegister] = useState(false);
+  const [showCustomerRegister, setShowCustomerRegister] = useState(false);
   const [searchClient, setSearchClient] = useState("");
   const [customizingClient, setCustomizingClient] = useState<any>(null);
-  const { updateStoreSettings, replyTicket } = useKFS() as any;
+  const { updateStoreSettings, replyTicket, validateTopUp } = useKFS() as any;
   const myClients = db.clients.filter((c: any) => c.promotoraId === currentUser.id);
   const filteredClients = myClients.filter((c: any) => c.company.toLowerCase().includes(searchClient.toLowerCase()) || c.name.toLowerCase().includes(searchClient.toLowerCase()));
   const myCustomers = db.customers?.filter((c: any) => c.referred_by_promoter_id === currentUser.id) || [];
+  
+  const pendingTopUps = db.topups?.filter((t: any) => t.status === 'pending' && (
+    (t.userType === 'client' && myClients.find((c:any) => c.id === t.userId)) ||
+    (t.userType === 'customer' && myCustomers.find((c:any) => c.id === t.userId))
+  )) || [];
 
   const [activeTab, setActiveTab] = useState("panel"); // panel | negocios | afiliados
   const [activeManual, setActiveManual] = useState<string | null>(null);
@@ -4053,6 +4324,47 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
              <Users size={100} className="absolute -right-10 -bottom-10 text-white/5" />
           </div>
         </div>
+
+        {pendingTopUps.length > 0 && (
+          <div className="bg-[#0A1128] rounded-[2rem] shadow-sm border border-green-500/30 p-8 text-white mt-8 animate-fade-in">
+            <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-green-400"><DollarSign className="text-green-400"/> Recargas Pendientes por Validar</h3>
+            <div className="space-y-4">
+              {pendingTopUps.map((t: any) => {
+                const user = t.userType === 'client' ? myClients.find((c:any) => c.id === t.userId) : myCustomers.find((c:any) => c.id === t.userId);
+                const name = t.userType === 'client' ? user?.company : user?.name;
+                return (
+                  <div key={t.id} className="bg-white/5 border border-white/10 rounded-2xl p-5 flex flex-col md:flex-row justify-between items-center gap-6">
+                    <div className="flex items-center gap-4">
+                      {t.screenshotBase64 && (
+                        <a href={t.screenshotBase64} target="_blank" rel="noreferrer" className="w-16 h-16 rounded-xl overflow-hidden border border-white/20 block hover:scale-105 transition-transform">
+                          <img src={t.screenshotBase64} alt="Comprobante" className="w-full h-full object-cover" />
+                        </a>
+                      )}
+                      <div>
+                        <p className="font-bold text-sm text-gray-200">{name} <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded-full text-[#C5A184] uppercase ml-2">{t.userType}</span></p>
+                        <p className="text-xs text-gray-400 font-mono mt-1">Ref: {t.paymentReference} | {new Date(t.timestamp).toLocaleString()}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-4 w-full md:w-auto">
+                      <div className="text-right flex-1 md:flex-none">
+                        <p className="text-[10px] text-gray-500 uppercase font-black">Monto a Acreditar</p>
+                        <p className="text-xl font-black text-green-400">${t.amountUSD.toFixed(2)}</p>
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => validateTopUp(t.id, 'rejected', currentUser.id)} className="w-10 h-10 rounded-xl bg-red-500/20 hover:bg-red-500 hover:text-white text-red-500 flex items-center justify-center transition-colors cursor-pointer border border-red-500/50">
+                          <X size={18} />
+                        </button>
+                        <button onClick={() => validateTopUp(t.id, 'approved', currentUser.id)} className="w-10 h-10 rounded-xl bg-green-500/20 hover:bg-green-500 hover:text-white text-green-500 flex items-center justify-center transition-colors cursor-pointer border border-green-500/50">
+                          <CheckCircle size={18} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         <div className="bg-[#0A1128] rounded-[2rem] shadow-sm border border-red-500/20 p-8 text-white mt-8">
           <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-red-400"><Bell className="text-red-400"/> Tickets de Mis Comercios</h3>
@@ -4269,23 +4581,37 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
       )}
       {activeTab === "afiliados" && (
         <div className="space-y-6">
+          {/* Captación de Clientes Panel */}
           <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 relative overflow-hidden text-[#0A1128]">
-             <h3 className="text-xl font-black mb-4">Mi Código QR de Afiliación (B2C)</h3>
-             <div className="flex flex-col md:flex-row gap-6 items-center">
-                <div className="w-40 h-40 bg-gray-100 rounded-xl flex items-center justify-center border-4 border-[#C5A184]">
+             <h3 className="text-xl font-black mb-4">Captación de Clientes</h3>
+             <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
+                <div className="w-40 h-40 bg-gray-100 rounded-xl flex items-center justify-center border-4 border-[#C5A184] flex-shrink-0">
                    {/* Mock QR */}
                    <div className="text-center">
                      <QrCode size={64} className="mx-auto text-gray-800" />
                      <p className="text-xs font-bold mt-2">Scan Me</p>
                    </div>
                 </div>
-                <div>
+                <div className="flex-1">
                    <p className="text-sm text-gray-600 mb-2">Pide a tus clientes que escaneen este código o ingresen tu ID al registrarse para quedar enlazados a tu perfil.</p>
-                   <p className="bg-gray-100 px-4 py-2 rounded-lg font-mono font-bold inline-block text-lg border border-gray-300">{currentUser.id}</p>
-                   <p className="text-xs text-green-600 font-bold mt-3"><CheckCircle size={12} className="inline mr-1" /> Ganas el 0.5% de todas sus compras por 30 días.</p>
+                   <p className="bg-gray-100 px-4 py-2 rounded-lg font-mono font-black inline-block text-lg border border-gray-300 text-indigo-900 tracking-wider mb-4">{currentUser.id}</p>
+                   
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div className="bg-green-50 border border-green-100 p-4 rounded-xl">
+                       <p className="text-xs text-green-700 font-bold uppercase tracking-wider mb-1">Bono por Adquisición</p>
+                       <p className="text-2xl font-black text-green-600">${(currentUser.customerAcquisitionBonusUSD || 0).toFixed(2)}</p>
+                       <p className="text-[10px] text-green-600/80 mt-1">Ganas $1.00 USD cuando tu referido recarga sus primeros $5.00 USD en la billetera.</p>
+                     </div>
+                     <div className="flex items-center">
+                       <button onClick={() => setShowCustomerRegister(true)} className="w-full bg-[#0A1128] text-white py-4 rounded-xl font-black shadow-lg hover:bg-gray-800 transition-colors flex justify-center items-center gap-2 cursor-pointer">
+                         <UserPlus size={20}/> Registrar Cliente en Vivo
+                       </button>
+                     </div>
+                   </div>
                 </div>
              </div>
           </div>
+
           <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
              <h3 className="text-lg font-black mb-4">Mis Clientes Afiliados ({myCustomers.length})</h3>
              {myCustomers.length > 0 ? (
@@ -4298,7 +4624,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
                       </div>
                       <div className="text-right">
                         <p className="text-[10px] text-green-600 font-bold uppercase">Afiliado</p>
-                        <p className="text-[10px] text-gray-400">{new Date(c.createdAt).toLocaleDateString()}</p>
+                        <p className="text-[10px] text-gray-400">{c.hasRecharged ? "Recargado" : "Pendiente Recarga"}</p>
                       </div>
                    </div>
                  ))}
@@ -4309,6 +4635,21 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
           </div>
         </div>
       )}
+
+      {/* Customer Register Modal */}
+      {showCustomerRegister && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative p-2 shadow-2xl">
+            <button onClick={() => setShowCustomerRegister(false)} className="absolute top-6 right-6 z-50 text-gray-400 hover:text-black cursor-pointer"><X size={24}/></button>
+            <div className="p-4 border-b border-gray-100 mb-4">
+               <h3 className="text-xl font-black text-center text-[#0A1128]">Registro Rápido de Cliente</h3>
+               <p className="text-xs text-center text-gray-500 mt-1">Este cliente quedará atado a tu ID: <span className="font-mono font-bold text-indigo-600">{currentUser.id}</span></p>
+            </div>
+            <RegisterCustomerForm onCancel={() => setShowCustomerRegister(false)} defaultReferralCode={currentUser.id} />
+          </div>
+        </div>
+      )}
+
       {/* FIXED BOTTOM NAVIGATION */}
       <div className="fixed bottom-0 inset-x-0 z-50 bg-white/90 backdrop-blur-xl border-t border-gray-200 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pb-safe">
         <div className="max-w-5xl mx-auto px-6 py-4 flex justify-center gap-10 items-center relative">
@@ -5326,6 +5667,8 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   const [showAddVendedor, setShowAddVendedor] = useState(false);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [showPayoutModal, setShowPayoutModal] = useState(false);
+  const [showPayrollModal, setShowPayrollModal] = useState<any>(null); // Holds vendedor obj
+  const [payrollBaseSalary, setPayrollBaseSalary] = useState("");
   const [searchVendedor, setSearchVendedor] = useState("");
   
   const [newProd, setNewProd] = useState({ name: "", price: "", cost: "", stock: "", imgUrl: "", category: "Alimentos", barcode: "", description: "" });
@@ -5339,7 +5682,8 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   const [ticketSubject, setTicketSubject] = useState("");
   const [ticketMsg, setTicketMsg] = useState("");
   const [fundAmount, setFundAmount] = useState("");
-  const { createTicket, fundWallet, processMonthlyBilling, createVale, payVale, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating, registerPosTerminal, deletePosTerminal, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, toggleBusinessOpen, updateBusinessConfig } = useKFS() as any;
+  const [isTopUpOpen, setIsTopUpOpen] = useState(false);
+  const { createTicket, fundWallet, processMonthlyBilling, requestTopUp, createVale, payVale, processPayroll, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating, registerPosTerminal, deletePosTerminal, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, toggleBusinessOpen, updateBusinessConfig } = useKFS() as any;
   const [deliveryRadiusKm, setDeliveryRadiusKm] = useState(clientInfo?.deliveryRadiusKm || 5);
 
   const handleCSVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -5871,8 +6215,17 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             <div className="space-y-2">
               <div className="flex gap-2">
                 <input type="number" placeholder="Monto $USD" value={fundAmount} onChange={e=>setFundAmount(e.target.value)} className="w-1/2 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 font-bold" />
-                <button onClick={() => { if(fundAmount) { fundWallet(currentUser.id, parseFloat(fundAmount)); setFundAmount(""); } }} className="w-1/2 bg-green-600 text-white font-black rounded-xl cursor-pointer hover:bg-green-700">Recargar Saldo</button>
-              </div>
+                <button onClick={() => { if(fundAmount) { setIsTopUpOpen(true); } }} className="w-1/2 bg-green-600 text-white font-black rounded-xl cursor-pointer hover:bg-green-700">Recargar Saldo</button>
+                <TopUpModal 
+                  isOpen={isTopUpOpen} 
+                  onClose={() => setIsTopUpOpen(false)}
+                  amount={fundAmount}
+                  setAmount={setFundAmount}
+                  onSubmit={(amount: number, ref: string, img: string) => {
+                    requestTopUp(currentUser.id, 'client', amount, ref, img);
+                  }}
+                  userType="client"
+                />
               <button onClick={() => processMonthlyBilling(currentUser.id)} className="w-full bg-red-100 text-red-600 font-bold py-2 rounded-xl border border-red-200 text-xs cursor-pointer hover:bg-red-200">Simular Cobro Mensual (Dev)</button>
             </div>
           </div>
@@ -5907,7 +6260,12 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                     <span className="text-xs text-gray-500 font-mono">{v.email}</span>
                   </div>
                 </div>
-                <span className="bg-green-100 text-green-700 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider">Activo</span>
+                <div className="flex items-center gap-3">
+                  <span className="bg-green-100 text-green-700 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider hidden sm:inline-block">Activo</span>
+                  <button onClick={() => setShowPayrollModal(v)} className="bg-[#0A1128] text-[#C5A184] border border-[#C5A184]/50 text-[10px] font-black px-3 py-1.5 rounded-lg hover:bg-[#C5A184] hover:text-[#0A1128] transition-colors cursor-pointer uppercase tracking-wider">
+                    Liquidar Nómina
+                  </button>
+                </div>
               </div>
             ))}
             {myVendedores.length === 0 && <p className="text-sm text-gray-400 text-center py-4">Sin empleados. Añada vendedores para usar los terminales móviles.</p>}
@@ -6933,6 +7291,66 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
       </div>
 
       </div>
+      
+      {showPayrollModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+          <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-2xl max-w-md w-full animate-scale-in border border-gray-100">
+            <h3 className="text-xl font-black mb-1 flex items-center gap-2 text-[#0A1128]"><DollarSign className="text-blue-500"/> Liquidación de Nómina</h3>
+            <p className="text-xs text-gray-500 mb-6">Empleado: {showPayrollModal.name}</p>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Salario / Comisión Base ($)</label>
+                <div className="relative">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
+                  <input type="number" step="0.01" className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-8 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" placeholder="0.00" value={payrollBaseSalary} onChange={(e) => setPayrollBaseSalary(e.target.value)} />
+                </div>
+              </div>
+
+              <div className="bg-orange-50 border border-orange-100 p-4 rounded-xl space-y-2">
+                <span className="text-[10px] text-orange-600 font-black uppercase tracking-widest block">Vales Pendientes por Descontar</span>
+                {(db.vales || []).filter((v: any) => v.targetId === showPayrollModal.id && v.status === "pending").map((v: any) => (
+                  <div key={v.id} className="flex justify-between items-center text-xs text-orange-800">
+                    <span>{v.date.slice(0,10)} - Adelanto</span>
+                    <span className="font-bold">-${v.totalDueUSD.toFixed(2)}</span>
+                  </div>
+                ))}
+                {(db.vales || []).filter((v: any) => v.targetId === showPayrollModal.id && v.status === "pending").length === 0 && (
+                  <span className="text-xs text-orange-800/60 block">No hay vales pendientes.</span>
+                )}
+              </div>
+              
+              <div className="flex justify-between items-center bg-[#0A1128] p-4 rounded-xl text-white">
+                <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Total Neto a Pagar</span>
+                <span className="text-xl font-black text-[#C5A184]">
+                  ${Math.max(0, parseFloat(payrollBaseSalary || "0") - (db.vales || []).filter((v: any) => v.targetId === showPayrollModal.id && v.status === "pending").reduce((acc: number, v: any) => acc + v.totalDueUSD, 0)).toFixed(2)}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6">
+              <button onClick={() => { setShowPayrollModal(null); setPayrollBaseSalary(""); }} className="flex-1 px-4 py-3 border border-gray-200 text-gray-600 text-sm font-bold rounded-xl hover:bg-gray-50 transition-colors cursor-pointer">
+                Cancelar
+              </button>
+              <button 
+                onClick={() => {
+                  if (!payrollBaseSalary) {
+                    showToast("Ingresa un monto base", "error");
+                    return;
+                  }
+                  processPayroll(showPayrollModal.id, parseFloat(payrollBaseSalary));
+                  setShowPayrollModal(null);
+                  setPayrollBaseSalary("");
+                }} 
+                className="flex-1 px-4 py-3 bg-[#0A1128] text-[#C5A184] text-sm font-black uppercase tracking-wider rounded-xl hover:bg-gray-800 transition-colors cursor-pointer border border-[#C5A184]/30 shadow-lg"
+              >
+                Aprobar Pago
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
@@ -7092,7 +7510,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
   const [smsInput, setSmsInput] = useState("");
   const [searchProduct, setSearchProduct] = useState("");
   const [activeScreenshot, setActiveScreenshot] = useState<string | null>(null);
-  const { queryGlobalBarcode, smsConciliator, rates } = useKFS();
+  const { queryGlobalBarcode, smsConciliator, rates, networkState, requestNotificationPermission } = useKFS() as any;
 
   // Hardware Barcode Scanner Listener
   useEffect(() => {
@@ -7322,6 +7740,9 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
         </div>
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
           <div className="flex items-center gap-2">
+            <button onClick={requestNotificationPermission} className="flex items-center gap-1.5 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 px-3 py-1.5 rounded-xl transition-colors text-xs font-bold" title="Activar Alertas Nativas">
+              <Bell size={14} />
+            </button>
             <button onClick={() => showToast("Comando TFHKA Reporte X enviado...", "success")} className="flex items-center gap-1.5 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 px-3 py-1.5 rounded-xl transition-colors text-xs font-bold">
               Reporte X
             </button>
@@ -7336,6 +7757,18 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
       </nav>
       <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-6 animate-fade-in">
         
+        {networkState === "offline" && (
+          <div className="bg-red-500/20 border border-red-500/50 rounded-2xl p-4 flex items-center justify-between animate-pulse">
+            <div className="flex items-center gap-3">
+              <WifiOff className="text-red-400" size={24} />
+              <div>
+                <h3 className="font-black text-red-400">Modo Offline Activo</h3>
+                <p className="text-xs text-red-300 font-medium">Las ventas se guardarán localmente en la cola segura y se sincronizarán al recuperar la conexión.</p>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border border-white/10">
           <div className="relative z-10">
             <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><Activity size={14} className="text-green-500" /> Sesión Operativa</p>
@@ -7979,7 +8412,7 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
 // RIDER DASHBOARD
 // ==========================================
 const RiderDashboard = ({ db, currentUser, logout }: any) => {
-  const { updateRiderPagoMovil, showToast, formatUSD, confirmDelivery, updateRiderGPS } = useKFS() as any;
+  const { updateRiderPagoMovil, showToast, formatUSD, confirmDelivery, markAsPickedUp, updateRiderGPS, riderCheckIn, riderCheckOut } = useKFS() as any;
   const [activeTab, setActiveTab] = useState("overview");
   const [editingPM, setEditingPM] = useState(false);
   const [pmForm, setPmForm] = useState({ banco: "", telefono: "", cedula: "" });
@@ -8054,7 +8487,32 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
       {/* Main Content Area */}
       <div className="max-w-2xl mx-auto px-4 -mt-6 relative z-20 space-y-4 animate-fade-in">
 
-
+        {/* Check-In / Check-Out Widget */}
+        <div className="bg-white rounded-[2rem] p-6 shadow-md border border-gray-100 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="text-center md:text-left w-full md:w-auto">
+            <h3 className="font-black text-sm text-[#0A1128] uppercase tracking-wider mb-1 flex items-center justify-center md:justify-start gap-2">
+              <Clock size={16} className={riderInfo.isWorking ? "text-green-500" : "text-gray-400"} />
+              Disponibilidad
+            </h3>
+            <p className="text-xs text-gray-500 font-bold">Horas acumuladas: <span className="text-[#C5A184] font-black">{(riderInfo.totalHours || 0).toFixed(1)} h</span></p>
+            {riderInfo.isWorking && riderInfo.sessionStart && (
+               <p className="text-[10px] text-green-600 font-bold mt-1 animate-pulse bg-green-50 px-2 py-1 rounded-md inline-block">
+                 En turno desde: {new Date(riderInfo.sessionStart).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+               </p>
+            )}
+          </div>
+          <div className="w-full md:w-auto">
+            {riderInfo.isWorking ? (
+              <button onClick={() => riderCheckOut(riderInfo.id)} className="w-full bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl font-black shadow-lg shadow-red-500/30 transition-all cursor-pointer flex justify-center items-center gap-2">
+                <LogOut size={18}/> Desconectarse
+              </button>
+            ) : (
+              <button onClick={() => riderCheckIn(riderInfo.id)} className="w-full bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl font-black shadow-lg shadow-green-500/30 transition-all cursor-pointer flex justify-center items-center gap-2">
+                <LogIn size={18}/> Conectarse
+              </button>
+            )}
+          </div>
+        </div>
         {/* TAB: Overview */}
         {activeTab === "overview" && (
           <div className="space-y-4">
@@ -8149,9 +8607,9 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
                     <div className="text-right">
                       <p className="font-black text-green-400">+$2.00</p>
                       <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${
-                        tx.shippingStatus === "dispatched" ? "bg-blue-500/20 text-blue-400" : "bg-green-500/20 text-green-400"
+                        tx.shippingStatus === "dispatched" ? "bg-blue-500/20 text-blue-400" : tx.shippingStatus === "picked_up" ? "bg-purple-500/20 text-purple-400" : "bg-green-500/20 text-green-400"
                       }`}>
-                        {tx.shippingStatus === "dispatched" ? "🛵 En camino" : "✅ Completado"}
+                        {tx.shippingStatus === "dispatched" ? "🛵 Asignado" : tx.shippingStatus === "picked_up" ? "📦 En camino" : "✅ Completado"}
                       </span>
                     </div>
                   </div>
@@ -8168,6 +8626,18 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
                           <p className="text-[10px] text-orange-200/70 mt-0.5">📍 {tx.deliveryReference}</p>
                         )}
                       </div>
+                      {/* Navigation Map */}
+                      {(tx.shippingStatus === "dispatched" || tx.shippingStatus === "picked_up") && (
+                        <div className="mt-4 mb-2">
+                           <LiveMap 
+                              role="rider"
+                              storePos={{ lat: 10.4850, lng: -66.8900 }} // Fake store pos
+                              customerPos={{ lat: 10.4900, lng: -66.9000 }} // Fake customer pos
+                              riderPos={ riderInfo?.lastLat && riderInfo?.lastLng ? { lat: riderInfo.lastLat, lng: riderInfo.lastLng } : { lat: 10.4880, lng: -66.8950 } }
+                              className="h-48"
+                           />
+                        </div>
+                      )}
                       {/* Navigation Button */}
                       <a
                         href={mapsUrl!}
@@ -8198,7 +8668,15 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
                   )}
 
                   {/* Confirmar Entrega */}
-                  {tx.shippingStatus !== "delivered" && (
+                  {tx.shippingStatus === "dispatched" && (
+                    <button
+                      onClick={() => markAsPickedUp(tx.id)}
+                      className="w-full py-3 bg-purple-600 hover:bg-purple-500 active:scale-95 text-white font-black rounded-xl transition-all text-sm cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-purple-500/30 mb-2"
+                    >
+                      <Package size={16}/> Marcar Recogido (En Tránsito)
+                    </button>
+                  )}
+                  {(tx.shippingStatus === "picked_up" || tx.shippingStatus === "dispatched") && (
                     <button
                       onClick={() => confirmDelivery(tx.id)}
                       className="w-full py-3 bg-green-500 hover:bg-green-400 active:scale-95 text-white font-black rounded-xl transition-all text-sm cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-green-500/30"

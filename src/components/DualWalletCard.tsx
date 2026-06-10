@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { DollarSign, Clock, Zap, ArrowUpRight, Gift } from "lucide-react";
-import { useWalletEngine } from "../hooks/useWalletEngine";
 
 interface DualWalletCardProps {
   currentUser: any;
   formatUSD: (val: number) => string;
+  onRequestTopUp?: (amount: number, promoterId?: string) => void;
 }
 
-export function DualWalletCard({ currentUser, formatUSD }: DualWalletCardProps) {
-  const { rechargeCustomerWallet } = useWalletEngine();
+export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualWalletCardProps) {
   const [timeLeftStr, setTimeLeftStr] = useState<string>("");
   const [isExpired, setIsExpired] = useState<boolean>(false);
   const [selectedPromoter, setSelectedPromoter] = useState<string>("");
@@ -46,7 +45,9 @@ export function DualWalletCard({ currentUser, formatUSD }: DualWalletCardProps) 
   }, [expiry, kPointsBalance]);
 
   const handleSimulatedRecharge = (amount: number) => {
-    rechargeCustomerWallet(currentUser.phone, amount, selectedPromoter || currentUser.referred_by_promoter_id);
+    if (onRequestTopUp) {
+      onRequestTopUp(amount, selectedPromoter || currentUser.referred_by_promoter_id);
+    }
   };
 
   return (

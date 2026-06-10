@@ -130,6 +130,8 @@ interface KFSContextType {
   closeTicket: (ticketId: string) => void;
   fundWallet: (clientId: string, amountUSD: number) => void;
   fundCustomerWallet: (customerId: string, amountUSD: number, gateway: string) => void;
+  requestTopUp: (userId: string, userType: 'client' | 'customer', amountUSD: number, paymentReference: string, screenshotBase64: string) => void;
+  validateTopUp: (topupId: string, status: 'approved' | 'rejected', approverId: string) => void;
   processMonthlyBilling: (clientId: string) => void;
   registerCustomer: (phone: string, password: string, name: string, referralCode?: string) => void;
   blockClient: (clientId: string) => void;
@@ -937,6 +939,86 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast(`Billetera recargada con $${amountUSD}`, "success");
   };
 
+  const requestTopUp = (userId: string, userType: 'client' | 'customer', amountUSD: number, paymentReference: string, screenshotBase64: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      topups: [...(prev.topups || []), {
+        id: `topup_${Date.now()}`,
+        userId,
+        userType,
+        amountUSD,
+        paymentReference,
+        screenshotBase64,
+        status: "pending",
+        timestamp: new Date().toISOString()
+      }]
+    }));
+    showToast("Recarga solicitada. En espera de validación.", "success");
+  };
+
+  const validateTopUp = (topupId: string, status: 'approved' | 'rejected', approverId: string) => {
+    setDb((prev: any) => {
+      const topup = (prev.topups || []).find((t: any) => t.id === topupId);
+      if (!topup || topup.status !== 'pending') return prev;
+
+      if (status === 'approved') {
+        if (topup.userType === 'client') {
+          prev.clients = prev.clients.map((c: any) => 
+            c.id === topup.userId ? { ...c, walletBalanceUSD: (c.walletBalanceUSD || 0) + topup.amountUSD } : c
+          );
+        } else {
+          // Customer logic with K-Points
+          let bonusKP = 0;
+          let promoterCommissionUSD = 0;
+
+          if (topup.amountUSD === 5) {
+            bonusKP = 2000;
+            promoterCommissionUSD = 1.00;
+          } else if (topup.amountUSD === 10) {
+            bonusKP = 5000;
+            promoterCommissionUSD = 1.50;
+          } else if (topup.amountUSD === 20) {
+            bonusKP = 12000;
+            promoterCommissionUSD = 2.00;
+          }
+          const expiryDateStr = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString();
+
+          prev.customers = prev.customers.map((c: any) => {
+            if (c.id === topup.userId) {
+              const targetPromoterId = c.referred_by_promoter_id;
+              if (targetPromoterId && promoterCommissionUSD > 0) {
+                const rateUSD = prev.rates?.USD || 36.45;
+                const rateEUR = prev.rates?.EUR || 39.20;
+                const commissionEUR = (promoterCommissionUSD * rateUSD) / rateEUR;
+                prev.promotoras = (prev.promotoras || []).map((p: any) => 
+                  p.id === targetPromoterId ? { ...p, passiveEarningsEUR: (p.passiveEarningsEUR || 0) + commissionEUR } : p
+                );
+              }
+
+              return {
+                ...c,
+                real_balance: (c.real_balance || 0) + topup.amountUSD,
+                k_points_balance: (c.k_points_balance || 0) + bonusKP,
+                k_points_expiry: bonusKP > 0 ? expiryDateStr : c.k_points_expiry
+              };
+            }
+            return c;
+          });
+        }
+        setTimeout(() => showToast(`Recarga aprobada. +$${topup.amountUSD}`, "success"), 100);
+      } else {
+        setTimeout(() => showToast("Recarga rechazada.", "error"), 100);
+      }
+
+      return {
+        ...prev,
+        topups: (prev.topups || []).map((t: any) =>
+          t.id === topupId ? { ...t, status, approverId, validatedAt: new Date().toISOString() } : t
+        )
+      };
+    });
+  };
+
   const fundCustomerWallet = async (customerId: string, amountUSD: number, gateway: string) => {
     try {
       const res = await fetch("/api/kfs/fund", {
@@ -964,8 +1046,15 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       if (!customer) return prev;
 
       let referringCustomerBonusId = null;
-      if (!customer.hasRecharged && customer.referred_by_customer_id) {
-         referringCustomerBonusId = customer.referred_by_customer_id;
+      let referringPromoterBonusId = null;
+
+      if (!customer.hasRecharged) {
+         if (customer.referred_by_customer_id) {
+           referringCustomerBonusId = customer.referred_by_customer_id;
+         }
+         if (customer.referred_by_promoter_id && amountUSD >= 5) {
+           referringPromoterBonusId = customer.referred_by_promoter_id;
+         }
       }
 
       updatedCustomers = updatedCustomers.map((c: any) => {
@@ -978,9 +1067,24 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         return c;
       });
 
+      let updatedPromotoras = prev.promotoras || [];
+      if (referringPromoterBonusId) {
+        updatedPromotoras = updatedPromotoras.map((p: any) => {
+          if (p.id === referringPromoterBonusId) {
+            return { 
+              ...p, 
+              customerAcquisitionBonusUSD: (p.customerAcquisitionBonusUSD || 0) + 1,
+              earningsEUR: (p.earningsEUR || 0) + (1 * rates.USD) / rates.EUR
+            };
+          }
+          return p;
+        });
+      }
+
       return {
         ...prev,
-        customers: updatedCustomers
+        customers: updatedCustomers,
+        promotoras: updatedPromotoras
       };
     });
     
@@ -988,7 +1092,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast(`Recarga de $${amountUSD} acreditada vía ${gateway} (Offline Mode).`, "success");
   };
 
-  const registerCustomer = async (phone: string, password: string, name: string, referralCode?: string) => {
+  const registerCustomer = async (phone: string, password: string, name: string, referralCode?: string, kycPhoto?: string, kycCedula?: string, kycAddress?: string) => {
     const existing = db.customers?.find((c: any) => c.phone === phone);
     if (existing) {
       showToast("Este número de teléfono ya está registrado.", "error");
@@ -1032,6 +1136,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       referred_by_promoter_id,
       referred_by_merchant_id,
       referred_by_customer_id,
+      kyc_photo: kycPhoto || "",
+      kyc_id_card_img: kycCedula || "",
+      kyc_address: kycAddress || "",
+      kyc_status: "verified",
       createdAt: new Date().toISOString()
     };
 
@@ -1182,6 +1290,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       isOnboarded: false,
       acceptedToS: true,
       kycDocumentUrl: "",
+      kyc_photo: clientData.kycPhoto || "",
+      kyc_id_card_img: clientData.kycCedula || "",
+      kyc_address: clientData.kycAddress || "",
+      kyc_status: "verified",
       walletBalanceUSD: 0,
       subscription: {
         plan: "kfs_pro",
@@ -1235,7 +1347,19 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       if (error) showToast("Aviso Supabase: " + error.message, "error");
     } catch (e) {}
     
-    const newPromo = { ...promoData, password: hashPassword(promoData.password), id: `p${Date.now()}`, setups: 0, earningsEUR: 0, status: 'pending' };
+    const newPromo = { 
+      ...promoData, 
+      password: hashPassword(promoData.password), 
+      id: `p${Date.now()}`, 
+      setups: 0, 
+      earningsEUR: 0, 
+      status: 'pending',
+      kyc_photo: promoData.kycPhoto || "",
+      kyc_id_card_img: promoData.kycCedula || "",
+      kyc_address: promoData.kycAddress || "",
+      kyc_status: "pending",
+      customerAcquisitionBonusUSD: 0
+    };
     setDb((prev: any) => ({ ...prev, promotoras: [...prev.promotoras, newPromo] }));
     logAction("System", "REGISTER_PROMOTORA", `Promotora solicitó registro: ${promoData.name}`);
     showToast("Solicitud enviada. En espera de aprobación.");
@@ -1268,9 +1392,56 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast("Regalías liquidadas y saldo reseteado a 0.", "success");
   };
 
+  const requestNotificationPermission = async () => {
+    if (!("Notification" in window)) {
+      showToast("Tu navegador no soporta notificaciones Push nativas.", "error");
+      return false;
+    }
+    if (Notification.permission === "granted") {
+      showToast("Permisos Push ya estaban concedidos.", "success");
+      return true;
+    }
+    try {
+      const permission = await Notification.requestPermission();
+      if (permission === "granted") {
+        showToast("Notificaciones Push nativas activadas.", "success");
+        return true;
+      } else {
+        showToast("Permiso de notificaciones denegado.", "error");
+        return false;
+      }
+    } catch (e) {
+      console.error("Error pidiendo permisos Push:", e);
+      return false;
+    }
+  };
+
   const sendNotification = (audience: string, title: string, message: string) => {
     const newNotif = { id: `notif${Date.now()}`, audience, title, message, date: new Date().toISOString() };
     setDb((prev: any) => ({ ...prev, notifications: [...(prev.notifications || []), newNotif] }));
+    
+    // Native Web Push Notification (PWA)
+    if ("Notification" in window && Notification.permission === "granted") {
+      // Validar si el usuario actual pertenece a la audiencia
+      const isTarget = audience === "all" || audience === "global" || audience === currentUser?.role;
+      if (isTarget) {
+        try {
+          // Intentar usar service worker si está disponible para soporte móvil
+          navigator.serviceWorker?.ready.then(registration => {
+            registration.showNotification(title, {
+              body: message,
+              icon: "/icons/icon-192x192.png",
+              vibrate: [200, 100, 200, 100, 200]
+            });
+          }).catch(() => {
+            // Fallback a Notification API estándar (Desktop)
+            new Notification(title, { body: message, icon: "/icons/icon-192x192.png" });
+          });
+        } catch (e) {
+          console.warn("No se pudo lanzar la Notificación nativa", e);
+        }
+      }
+    }
     showToast("Notificación Push enviada a la red.");
   };
 
@@ -2110,6 +2281,37 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast(`Abono registrado para vale: ${valeId}`);
   };
 
+  const processPayroll = (vendedorId: string, baseSalaryUSD: number) => {
+    setDb((prev: any) => {
+      const pendingVales = (prev.vales || []).filter((v: any) => v.targetId === vendedorId && v.status === "pending");
+      let totalDeductions = 0;
+      const updatedVales = (prev.vales || []).map((v: any) => {
+        if (v.targetId === vendedorId && v.status === "pending") {
+          totalDeductions += v.totalDueUSD;
+          return { ...v, status: "paid", totalDueUSD: 0 };
+        }
+        return v;
+      });
+      
+      const netPayout = Math.max(0, baseSalaryUSD - totalDeductions);
+      
+      const newLog = {
+        id: `payroll_${Date.now()}`,
+        date: new Date().toISOString(),
+        actor: "System",
+        action: "PROCESS_PAYROLL",
+        details: `Nómina liquidada para vendedor ${vendedorId}. Base: $${baseSalaryUSD.toFixed(2)}. Descuentos: $${totalDeductions.toFixed(2)}. Neto: $${netPayout.toFixed(2)}.`
+      };
+
+      return {
+        ...prev,
+        vales: updatedVales,
+        auditLogs: [...(prev.auditLogs || []), newLog]
+      };
+    });
+    showToast(`Nómina liquidada. Descuentos aplicados automáticamente.`, "success");
+  };
+
   const registerPosTerminal = (posData: any) => {
     const newPos = {
       ...posData,
@@ -2544,6 +2746,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       associatedBusinesses: [],
       deliveriesCompleted: 0,
       totalEarningsUSD: 0,
+      isWorking: false,
+      sessionStart: null,
+      totalHours: 0,
       createdAt: new Date().toISOString()
     };
     setDb((prev: any) => ({
@@ -2674,6 +2879,40 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
   // ========== DELIVERY LIFECYCLE ==========
 
+  const riderCheckIn = (riderId: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      riders: (prev.riders || []).map((r: any) =>
+        r.id === riderId ? { ...r, isWorking: true, sessionStart: Date.now() } : r
+      )
+    }));
+    showToast("Check-In exitoso. Sesión iniciada.", "success");
+  };
+
+  const riderCheckOut = (riderId: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      riders: (prev.riders || []).map((r: any) => {
+        if (r.id === riderId && r.sessionStart) {
+          const hoursWorked = (Date.now() - r.sessionStart) / (1000 * 60 * 60);
+          return { ...r, isWorking: false, sessionStart: null, totalHours: (r.totalHours || 0) + hoursWorked };
+        }
+        return r;
+      })
+    }));
+    showToast("Check-Out exitoso. Horas registradas.", "success");
+  };
+
+  const markAsPickedUp = (txId: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      transactions: (prev.transactions || []).map((tx: any) =>
+        tx.id === txId ? { ...tx, shippingStatus: "picked_up", pickedUpAt: new Date().toISOString() } : tx
+      )
+    }));
+    showToast("Pedido marcado como RECOGIDO. El cliente ha sido notificado.", "success");
+  };
+
   const confirmDelivery = (txId: string) => {
     setDb((prev: any) => ({
       ...prev,
@@ -2741,12 +2980,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       addProduct, addExpense, processPurchase, submitOnlineOrder, approveOrder, rejectOrder, dispatchOrder, generateZReport,
       originalUser, impersonateClient, stopImpersonating,
       networkState, setNetworkState, smsConciliator, registerCrmExpress,
-      ghostTrapLocked, setGhostTrapLocked, createVale, payVale, registerPosTerminal, deletePosTerminal,
+      ghostTrapLocked, setGhostTrapLocked, createVale, payVale, processPayroll, registerPosTerminal, deletePosTerminal,
       queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings, updatePaymentMethods, toggleProductFeatured,
-      sendNotification, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, fundCustomerWallet, processMonthlyBilling, registerCustomer, blockClient, releaseClient, deleteClient,
+      sendNotification, requestNotificationPermission, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, fundCustomerWallet, requestTopUp, validateTopUp, processMonthlyBilling, registerCustomer, blockClient, releaseClient, deleteClient,
       registerCandidate, unlockCandidateContact, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, hireCandidate, releaseCandidate, toggleCandidateBacking, markNotificationsAsRead, updateCvBuilderOption,
-      registerRider, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, updateRiderPagoMovil,
-      confirmDelivery, rateRider, updateRiderGPS, toggleBusinessOpen, updateBusinessConfig
+      registerRider, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, updateRiderPagoMovil, confirmDelivery, markAsPickedUp, rateRider, updateRiderGPS, riderCheckIn, riderCheckOut,
+      toggleBusinessOpen, updateBusinessConfig
     }}>
       {children}
     </KFSContext.Provider>

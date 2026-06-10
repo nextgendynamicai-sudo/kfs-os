@@ -12,6 +12,11 @@ CREATE TABLE IF NOT EXISTS public.kfs_users (
     full_name VARCHAR(255),
     phone VARCHAR(50),
     status VARCHAR(50) DEFAULT 'active',
+    kyc_photo TEXT,
+    kyc_id_card_img TEXT,
+    kyc_address TEXT,
+    kyc_status VARCHAR(50) DEFAULT 'pending',
+    customer_acquisition_bonus_usd DECIMAL(12,2) DEFAULT 0.0,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
