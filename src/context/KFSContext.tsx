@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { supabase, isSupabaseConfigured } from "./supabase";
+import { playScannerBeep, speakText, getStoreCoords, getCustomerCoords } from "../lib/utils";
 
 const VENEZUELAN_PRODUCTS_CATALOG: Record<string, { name: string; imgUrl: string; category: string; brand: string }> = {
   "7591006000016": { name: "Harina PAN Blanca (1kg)", imgUrl: "https://images.unsplash.com/photo-1608686207856-001b95cf60ca?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
@@ -41,9 +42,78 @@ const CURRENT_WIPE_VERSION = 4;
 
 const initialDB = {
   promotoras: [] as any[],
-  clients: [] as any[],
+  clients: [
+    {
+      id: "kfs-express",
+      company: "Arquitecto Flow Express",
+      email: "arquitecto@kfs.com",
+      password: "==gLxlTN9kTM", // hash of "199521."
+      address: "Soporte Central KFS",
+      rating: 5.0,
+      reviewCount: 0,
+      kfsFeePercentage: 0.01,
+      fee_tier: "1%",
+      is_founder: true,
+      kfsFeesOwedUSD: 0,
+      isOnboarded: true,
+      walletBalanceUSD: 0,
+      salesUSD: 0,
+      storeSettings: {
+        bioText: "En esta tienda podrás canjear tus KF Points. Mira todo lo que tenemos para ti",
+        themeColor: "#C5A184",
+        typography: "font-sans",
+        layoutType: "grid",
+        profilePicUrl: "https://cdn-icons-png.flaticon.com/512/3063/3063822.png"
+      }
+    }
+  ] as any[],
   vendedores: [] as any[],
-  products: [] as any[],
+  products: [
+    {
+      id: "prod_dig_1",
+      clientId: "kfs-express",
+      name: "Curso Express",
+      priceUSD: 0.50,
+      costUSD: 0.0,
+      stock: 9999,
+      category: "Servicios",
+      description: "Aprende los fundamentos del float financiero y la liquidez prepagada en 15 minutos.",
+      image: "https://images.unsplash.com/photo-1541658016709-82535e94bc69?w=500&auto=format&fit=crop&q=60"
+    },
+    {
+      id: "prod_dig_2",
+      clientId: "kfs-express",
+      name: "Plantillas Legales SENIAT (B2B)",
+      priceUSD: 5.00,
+      costUSD: 0.0,
+      stock: 9999,
+      category: "Servicios",
+      description: "Contratos de co-pago y formatos de facturación fiscal listos para imprimir y usar.",
+      image: "https://images.unsplash.com/photo-1450133064473-71024230f91b?w=500&auto=format&fit=crop&q=60"
+    },
+    {
+      id: "prod_dig_3",
+      clientId: "kfs-express",
+      name: "Asesoría 1-a-1 Kreatek",
+      priceUSD: 8.00,
+      costUSD: 0.0,
+      stock: 9999,
+      category: "Servicios",
+      description: "Sesión estratégica remota con un asesor especializado en escalamiento y optimización de caja.",
+      image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=500&auto=format&fit=crop&q=60"
+    },
+    {
+      id: "prod_dig_4",
+      clientId: "kfs-express",
+      name: "Modelo IA + Guía de Negocio",
+      priceUSD: 10.00,
+      costUSD: 0.0,
+      stock: 9999,
+      category: "Servicios",
+      description: "Script generativo de IA para descripciones de tienda e integraciones de API BCV.",
+      image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60"
+    }
+  ] as any[],
   transactions: [] as any[],
   orders: [] as any[],
   expenses: [] as any[],
@@ -469,29 +539,78 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     window.addEventListener("popstate", handlePopState);
 
     
-    // Sincronización con el Banco Central de Venezuela (API Route)
-    fetch("/api/bcv")
-      .then(res => res.json())
-      .then(data => {
-        if (data.USD && data.EUR) {
-          const isWeekend = new Date().getDay() === 0 || new Date().getDay() === 6;
-          // [SUNDDE Compliance] Mantenemos la tasa BCV oficial limpia para exhibición.
-          // El 'Weekend Shield' operará en otra capa si es necesario.
-          const finalUSD = data.USD; 
-          const finalEUR = data.EUR;
-          
-          setRates({ USD: finalUSD, EUR: finalEUR, isWeekend });
-          console.log(`BCV Rates Synced Oficiales:`, { USD: finalUSD, EUR: finalEUR });
+    // Sincronización con el Banco Central de Venezuela (API Route) con Polling de 30s
+    const fetchBcvRates = () => {
+      fetch("/api/bcv")
+        .then(res => res.json())
+        .then(data => {
+          if (data.USD && data.EUR) {
+            const isWeekend = new Date().getDay() === 0 || new Date().getDay() === 6;
+            const finalUSD = data.USD; 
+            const finalEUR = data.EUR;
+            
+            setRates((prev: any) => {
+              if (prev.USD !== finalUSD || prev.EUR !== finalEUR) {
+                speakText("Tasa del Banco Central de Venezuela actualizada.");
+                showToast(`Tasa BCV actualizada: Bs. ${finalUSD.toFixed(2)} (USD) / Bs. ${finalEUR.toFixed(2)} (EUR)`, "success");
+                return { USD: finalUSD, EUR: finalEUR, isWeekend };
+              }
+              return prev;
+            });
+          }
+        })
+        .catch(err => {
+          console.error("Fallo al obtener BCV en polling", err);
+        });
+    };
+
+    fetchBcvRates();
+    const bcvInterval = setInterval(fetchBcvRates, 30000);
+
+    const riderSimInterval = setInterval(() => {
+      setDb((prev: any) => {
+        let updated = false;
+        const newRiders = (prev.riders || []).map((r: any) => {
+          const activeTx = (prev.transactions || []).find(
+            (tx: any) => tx.assignedRiderId === r.id && tx.shippingStatus === "picked_up"
+          );
+          if (activeTx) {
+            const storePos = getStoreCoords(activeTx.clientId);
+            const customerPos = getCustomerCoords(activeTx.customerPhone || "default_cust");
+            const currentLat = r.lastLat || storePos.lat;
+            const currentLng = r.lastLng || storePos.lng;
+            const dLat = customerPos.lat - currentLat;
+            const dLng = customerPos.lng - currentLng;
+            const dist = Math.sqrt(dLat * dLat + dLng * dLng);
+            const step = 0.00045; // movement speed step
+            if (dist > step) {
+              updated = true;
+              return {
+                ...r,
+                lastLat: currentLat + (dLat / dist) * step,
+                lastLng: currentLng + (dLng / dist) * step,
+                lastLocationAt: new Date().toISOString()
+              };
+            } else if (dist > 0.00001) {
+              updated = true;
+              return {
+                ...r,
+                lastLat: customerPos.lat,
+                lastLng: customerPos.lng,
+                lastLocationAt: new Date().toISOString()
+              };
+            }
+          }
+          return r;
+        });
+        if (updated) {
+          return { ...prev, riders: newRiders };
         }
-      })
-      .catch(err => {
-        const isWeekend = new Date().getDay() === 0 || new Date().getDay() === 6;
-        setRates({ ...MOCK_BCV_RATES, isWeekend });
-        console.error("Fallo al obtener BCV, usando mock oficial", err);
-      })
-      .finally(() => {
-        setIsBooting(false);
+        return prev;
       });
+    }, 2000);
+
+    setIsBooting(false);
 
     try {
       const savedUser = localStorage.getItem("kfs_os_current_user");
@@ -501,12 +620,24 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       
       const saved = localStorage.getItem("kfs_os_db_prod");
       if (saved) {
-        const parsed = JSON.parse(saved);
+        let parsed = JSON.parse(saved);
         if (parsed.kreatekCore?.wipeVersion !== CURRENT_WIPE_VERSION) {
           console.log("[KFS] Database version mismatch. Resetting local database to 0.");
           setDb(initialDB);
           localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
         } else {
+          // Ensure kfs-express client exists in stored DB
+          if (!parsed.clients) parsed.clients = [];
+          if (!parsed.clients.some((c: any) => c.id === "kfs-express")) {
+            parsed.clients.push(initialDB.clients[0]);
+          }
+          // Ensure default digital products exist
+          if (!parsed.products) parsed.products = [];
+          initialDB.products.forEach(dp => {
+            if (!parsed.products.some((p: any) => p.id === dp.id)) {
+              parsed.products.push(dp);
+            }
+          });
           setDb(parsed);
         }
       }
@@ -736,6 +867,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     return () => {
       window.removeEventListener("popstate", handlePopState);
       clearInterval(expiryInterval);
+      clearInterval(bcvInterval);
+      if (typeof riderSimInterval !== "undefined") clearInterval(riderSimInterval);
     };
   }, []);
 
@@ -1447,6 +1580,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       }
     }
     showToast("Notificación Push enviada a la red.");
+    speakText("Nueva alerta.");
   };
 
   const assignPromotoraToClient = (clientId: string, promotoraId: string) => {
@@ -1870,6 +2004,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     });
     
     showToast(`Compra procesada. Recibo ${receiptNumber}`);
+    speakText("Venta aprobada.");
     
     if (typeof window !== "undefined") {
       window.dispatchEvent(new CustomEvent("kfs-purchase", { detail: { ...product, finalTotalUSD: totalUSD } }));
@@ -1964,7 +2099,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast("Orden enviada a revisión del comercio.");
   };
 
-  const approveOrder = (orderId: string) => {
+  const approveOrder = (orderId: string, silent: boolean = false) => {
     const order = db.orders.find((o: any) => o.id === orderId);
     if (!order) return;
 
@@ -2080,8 +2215,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         }
       };
     });
-
     showToast("Pago validado y orden procesada.");
+    if (!silent) speakText("Venta aprobada.");
   };
 
   const rejectOrder = (orderId: string) => {
@@ -2101,6 +2236,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     });
     setGhostTrapLocked(true);
     showToast("¡CRÍTICO! Intento de rechazo de orden online interceptado. Terminal bloqueado.", "error");
+    speakText("Intento de fraude. Caja bloqueada.");
   };
 
   const dispatchOrder = (txId: string) => {
@@ -2204,6 +2340,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     const pendingOrder = db.orders.find((o: any) => o.paymentReference === reference && o.status === 'pending');
 
     if (pendingOrder) {
+      speakText("Pago verificado.");
       approveOrder(pendingOrder.id);
       return {
         matched: true,

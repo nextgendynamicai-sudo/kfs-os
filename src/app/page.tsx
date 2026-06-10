@@ -19,7 +19,8 @@ import { DualWalletCard } from "../components/DualWalletCard";
 import { FlowExpressCatalog } from "../components/FlowExpressCatalog";
 import { B2BSelfOnboarding } from "../components/B2BSelfOnboarding";
 import { useP2PTransfer } from "../hooks/useP2PTransfer";
-import { compressImage, readAsBase64, playPremiumChime, playSyncChime, playCashDrawerSound } from "../lib/utils";
+import { compressImage, readAsBase64, playPremiumChime, playSyncChime, playCashDrawerSound, playScannerBeep, getStoreCoords, getCustomerCoords } from "../lib/utils";
+import { AnimatedCounter } from "../components/AnimatedCounter";
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from 'next/dynamic';
 
@@ -932,13 +933,13 @@ const Navbar = ({ title, showBack = false, onBack }: { title?: string, showBack?
   const getNetworkDetails = () => {
     switch (networkState) {
       case "online":
-        return { color: "bg-green-500", border: "border-green-400/50", label: "ONLINE (NUBE)", text: "text-green-400" };
+        return { color: "bg-green-500 shadow-[0_0_8px_#22c55e]", border: "border-green-500/50 shadow-[0_0_15px_rgba(34,197,94,0.25)] bg-green-950/20 hover:bg-green-900/30 text-green-400", label: "ONLINE (NUBE)", text: "text-green-400" };
       case "mesh":
-        return { color: "bg-amber-500", border: "border-amber-400/50", label: "LOCAL MESH (P2P)", text: "text-amber-400" };
+        return { color: "bg-amber-500 shadow-[0_0_8px_#f59e0b]", border: "border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.25)] bg-amber-950/20 hover:bg-amber-900/30 text-amber-400", label: "LOCAL MESH (P2P)", text: "text-amber-400" };
       case "offline":
-        return { color: "bg-red-500", border: "border-red-400/50", label: "OFFLINE (STAND-ALONE)", text: "text-red-400" };
+        return { color: "bg-red-500 shadow-[0_0_8px_#ef4444] animate-pulse", border: "border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.25)] bg-red-950/20 hover:bg-red-900/30 text-red-400 animate-pulse", label: "OFFLINE (STAND-ALONE)", text: "text-red-400" };
       default:
-        return { color: "bg-green-500", border: "border-green-400/50", label: "ONLINE (NUBE)", text: "text-green-400" };
+        return { color: "bg-green-500 shadow-[0_0_8px_#22c55e]", border: "border-green-500/50 shadow-[0_0_15px_rgba(34,197,94,0.25)] bg-green-950/20 hover:bg-green-900/30 text-green-400", label: "ONLINE (NUBE)", text: "text-green-400" };
     }
   };
 
@@ -2375,12 +2376,12 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                             <div className="mt-4">
                                <LiveMap 
                                   role="customer"
-                                  storePos={{ lat: 10.4850, lng: -66.8900 }} // Fake store pos
-                                  customerPos={{ lat: 10.4900, lng: -66.9000 }} // Fake customer pos
+                                  storePos={getStoreCoords(tx.clientId)}
+                                  customerPos={getCustomerCoords(tx.customerPhone || "default_cust")}
                                   riderPos={
                                     (() => {
                                       const r = db.riders?.find((r: any) => r.id === tx.assignedRiderId);
-                                      return r?.lastLat && r?.lastLng ? { lat: r.lastLat, lng: r.lastLng } : { lat: 10.4880, lng: -66.8950 };
+                                      return r?.lastLat && r?.lastLng ? { lat: r.lastLat, lng: r.lastLng } : getStoreCoords(tx.clientId);
                                     })()
                                   }
                                   className="h-48"
@@ -3063,7 +3064,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                 <div className="relative z-10">
                   <span className="text-[#C5A184] text-[10px] font-black uppercase tracking-widest mb-1 block">Facturación Global</span>
                   <div className="flex items-baseline gap-2 mt-1">
-                    <h2 className="text-4xl font-black text-green-400">{formatUSD(globalSalesUSD)}</h2>
+                    <h2 className="text-4xl font-black text-green-400"><AnimatedCounter value={globalSalesUSD} format={formatUSD} /></h2>
                   </div>
                 </div>
                 <TrendingUp size={80} className="absolute -right-5 -bottom-5 text-white/5" />
@@ -3072,7 +3073,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                 <div className="relative z-10">
                   <span className="text-red-400 text-[10px] font-black uppercase tracking-widest mb-1 block">Deuda Total x Cobrar</span>
                   <div className="flex items-baseline gap-2 mt-1">
-                    <h2 className="text-4xl font-black text-red-500">{formatUSD(globalDebtUSD)}</h2>
+                    <h2 className="text-4xl font-black text-red-500"><AnimatedCounter value={globalDebtUSD} format={formatUSD} /></h2>
                   </div>
                 </div>
                 <Activity size={80} className="absolute -right-5 -bottom-5 text-white/5" />
@@ -6001,10 +6002,10 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           <div className="relative z-10 w-full flex flex-col md:flex-row md:justify-between md:items-end gap-6">
             <div>
               <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-4">Ganancia Neta (USD)</p>
-              <h2 className="text-6xl md:text-8xl font-black tracking-tighter mb-4">{formatUSD(netProfitUSD)}</h2>
+              <h2 className="text-6xl md:text-8xl font-black tracking-tighter mb-4"><AnimatedCounter value={netProfitUSD} format={formatUSD} /></h2>
               <div className="flex gap-4 text-sm font-bold text-gray-400">
-                <span>Ventas Brutas: <span className="text-green-400">{formatUSD(grossSalesUSD)}</span></span>
-                <span>Gastos: <span className="text-red-400">-{formatUSD(totalExpensesUSD)}</span></span>
+                <span>Ventas Brutas: <span className="text-green-400"><AnimatedCounter value={grossSalesUSD} format={formatUSD} /></span></span>
+                <span>Gastos: <span className="text-red-400">-<AnimatedCounter value={totalExpensesUSD} format={formatUSD} /></span></span>
               </div>
             </div>
             <div className="flex flex-col gap-3">
@@ -7680,6 +7681,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
   };
 
   const handleScanSuccess = async (prodIdOrBarcode: string) => {
+    playScannerBeep();
     // Intercept PDF417 Cédula Scanner
     if (prodIdOrBarcode.startsWith("PDF417:")) {
       const payload = prodIdOrBarcode.substring(7); // remove prefix
@@ -8650,9 +8652,9 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
                         <div className="mt-4 mb-2">
                            <LiveMap 
                               role="rider"
-                              storePos={{ lat: 10.4850, lng: -66.8900 }} // Fake store pos
-                              customerPos={{ lat: 10.4900, lng: -66.9000 }} // Fake customer pos
-                              riderPos={ riderInfo?.lastLat && riderInfo?.lastLng ? { lat: riderInfo.lastLat, lng: riderInfo.lastLng } : { lat: 10.4880, lng: -66.8950 } }
+                              storePos={getStoreCoords(tx.clientId)}
+                              customerPos={getCustomerCoords(tx.customerPhone || "default_cust")}
+                              riderPos={ riderInfo?.lastLat && riderInfo?.lastLng ? { lat: riderInfo.lastLat, lng: riderInfo.lastLng } : getStoreCoords(tx.clientId) }
                               className="h-48"
                            />
                         </div>

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -46,8 +46,53 @@ const MapFitter = ({ positions }: { positions: [number, number][] }) => {
 };
 
 export default function LiveMap({ riderPos, storePos, customerPos, className = "h-64" }: any) {
+  const [animatedRiderPos, setAnimatedRiderPos] = useState(riderPos);
+  const animationRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    if (!riderPos) return;
+    
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
+
+    // Capture starting position from current state or fallback to target
+    const startLat = animatedRiderPos ? animatedRiderPos.lat : riderPos.lat;
+    const startLng = animatedRiderPos ? animatedRiderPos.lng : riderPos.lng;
+    const endLat = riderPos.lat;
+    const endLng = riderPos.lng;
+    
+    const duration = 1800; // smooth interpolation slightly faster than 2s update rate to catch up
+    const startTime = performance.now();
+
+    const step = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // easeInOutQuad easing for high premium feel
+      const ease = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+      
+      const nextLat = startLat + (endLat - startLat) * ease;
+      const nextLng = startLng + (endLng - startLng) * ease;
+      
+      setAnimatedRiderPos({ lat: nextLat, lng: nextLng });
+
+      if (progress < 1) {
+        animationRef.current = requestAnimationFrame(step);
+      }
+    };
+
+    animationRef.current = requestAnimationFrame(step);
+
+    return () => {
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+      }
+    };
+  }, [riderPos?.lat, riderPos?.lng]);
+
   const positions: [number, number][] = [];
-  if (riderPos) positions.push([riderPos.lat, riderPos.lng]);
+  if (animatedRiderPos) positions.push([animatedRiderPos.lat, animatedRiderPos.lng]);
   if (storePos) positions.push([storePos.lat, storePos.lng]);
   if (customerPos) positions.push([customerPos.lat, customerPos.lng]);
 
@@ -74,8 +119,8 @@ export default function LiveMap({ riderPos, storePos, customerPos, className = "
           </Marker>
         )}
         
-        {riderPos && (
-          <Marker position={[riderPos.lat, riderPos.lng]} icon={riderIcon} zIndexOffset={1000}>
+        {animatedRiderPos && (
+          <Marker position={[animatedRiderPos.lat, animatedRiderPos.lng]} icon={riderIcon} zIndexOffset={1000}>
             <Popup><strong>Tu Rider</strong><br/>Moviéndose en vivo...</Popup>
           </Marker>
         )}

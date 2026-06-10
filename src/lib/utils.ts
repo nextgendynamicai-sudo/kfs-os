@@ -130,8 +130,91 @@ export const playCashDrawerSound = () => {
     gainNode.connect(ctx.destination);
     
     osc.start();
-    osc.stop(ctx.currentTime + 0.3);
+    osc.stop(ctx.currentTime + 0.25);
   } catch (e) {}
+};
+
+export const playScannerBeep = () => {
+  if (typeof window === "undefined") return;
+  try {
+    if (typeof navigator !== "undefined" && navigator.vibrate) {
+      navigator.vibrate(50);
+    }
+    const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+    if (!AudioContextClass) return;
+    const ctx = new AudioContextClass();
+    
+    const osc = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    
+    osc.type = "sine";
+    osc.frequency.setValueAtTime(1200, ctx.currentTime);
+    
+    gainNode.gain.setValueAtTime(0, ctx.currentTime);
+    gainNode.gain.linearRampToValueAtTime(0.25, ctx.currentTime + 0.005); // sharp attack
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.07); // short beep
+    
+    osc.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    
+    osc.start();
+    osc.stop(ctx.currentTime + 0.08);
+  } catch (e) {
+    console.error("Scanner beep audio error", e);
+  }
+};
+
+export const speakText = (text: string) => {
+  if (typeof window === "undefined" || !window.speechSynthesis) return;
+  try {
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "es-VE";
+    
+    // Find a Spanish voice if possible
+    const voices = window.speechSynthesis.getVoices();
+    const esVoice = voices.find(v => v.lang.startsWith("es-VE")) || 
+                    voices.find(v => v.lang.startsWith("es")) ||
+                    voices.find(v => v.lang.includes("Spanish"));
+    if (esVoice) {
+      utterance.voice = esVoice;
+    }
+    
+    utterance.rate = 1.05; // Slightly faster but clean and direct
+    utterance.pitch = 1.0;
+    
+    window.speechSynthesis.speak(utterance);
+  } catch (e) {
+    console.error("Speech synthesis failed", e);
+  }
+};
+
+export const getStoreCoords = (clientId: string): { lat: number; lng: number } => {
+  let hash = 0;
+  const str = clientId || "default_store";
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  // Lat: 10.4700 to 10.4900
+  // Lng: -66.9200 to -66.8600 (Caracas area)
+  const lat = 10.4700 + (Math.abs(hash % 1000) / 1000) * 0.0200;
+  const lng = -66.9200 + (Math.abs((hash >> 8) % 1000) / 1000) * 0.0600;
+  return { lat, lng };
+};
+
+export const getCustomerCoords = (phoneOrId: string): { lat: number; lng: number } => {
+  let hash = 0;
+  const str = phoneOrId || "default_customer";
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  // Lat: 10.4900 to 10.5100 (slightly North of stores)
+  // Lng: -66.9200 to -66.8600 (Caracas area)
+  const lat = 10.4900 + (Math.abs(hash % 1000) / 1000) * 0.0200;
+  const lng = -66.9200 + (Math.abs((hash >> 8) % 1000) / 1000) * 0.0600;
+  return { lat, lng };
 };
 
 
