@@ -397,6 +397,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const currentUserRef = useRef(currentUser);
   useEffect(() => {
     currentUserRef.current = currentUser;
+    if (currentUser) {
+      localStorage.setItem("kfs_os_current_user", JSON.stringify(currentUser));
+    } else {
+      localStorage.removeItem("kfs_os_current_user");
+    }
   }, [currentUser]);
   const [originalUser, setOriginalUser] = useState<any>(null);
 
@@ -481,6 +486,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       });
 
     try {
+      const savedUser = localStorage.getItem("kfs_os_current_user");
+      if (savedUser) {
+        setCurrentUser(JSON.parse(savedUser));
+      }
+      
       const saved = localStorage.getItem("kfs_os_db_prod");
       if (saved) {
         const parsed = JSON.parse(saved);

@@ -8338,6 +8338,9 @@ export default function Home() {
     );
   }
 
+  const protectedViews = ["core", "client", "promotora", "vendedor", "customer", "rider"];
+  const safeView = (!currentUser && protectedViews.includes(view)) ? "landing" : view;
+
   return (
     <div className="min-h-screen bg-[#0A1128]">
       <Toast toast={toast} />
@@ -8418,10 +8421,10 @@ export default function Home() {
         </div>
       )}
 
-      {view === "landing" && <LandingPageView setView={setView} />}
-      {view === "b2b-onboarding" && <B2BSelfOnboarding setView={setView} />}
+      {safeView === "landing" && <LandingPageView setView={setView} />}
+      {safeView === "b2b-onboarding" && <B2BSelfOnboarding setView={setView} />}
       
-      {view === "login" && (
+      {safeView === "login" && (
         <LoginView 
           handleLogin={handleLogin} 
           registerClient={registerClient} 
@@ -8432,7 +8435,7 @@ export default function Home() {
           logout={logout}
         />
       )}
-      {view === "marketplace" && (
+      {safeView === "marketplace" && (
         <MarketplaceView 
           db={db} 
           submitOnlineOrder={submitOnlineOrder} 
@@ -8441,7 +8444,7 @@ export default function Home() {
           currentUser={currentUser}
         />
       )}
-      {view === "customer" && (
+      {safeView === "customer" && (
         <CustomerDashboard 
           db={db}
           currentUser={currentUser}
@@ -8449,7 +8452,7 @@ export default function Home() {
           setView={setView}
         />
       )}
-      {view === "core" && (
+      {safeView === "core" && (
         <CoreDashboard 
           db={db} 
           setDb={setDb} 
@@ -8464,7 +8467,7 @@ export default function Home() {
           approveSubscription={approveSubscription}
         />
       )}
-      {view === "promotora" && (
+      {safeView === "promotora" && (
         <PromotoraDashboard 
           db={db} 
           setDb={setDb} 
@@ -8477,7 +8480,7 @@ export default function Home() {
           requestPayout={requestPayout}
         />
       )}
-      {view === "client" && (
+      {safeView === "client" && (
         <ClientDashboard 
           db={db} 
           setDb={setDb} 
@@ -8495,7 +8498,7 @@ export default function Home() {
           requestPayout={requestPayout}
         />
       )}
-      {view === "vendedor" && (
+      {safeView === "vendedor" && (
         <VendedorDashboard 
           db={db} 
           setDb={setDb} 
@@ -8511,7 +8514,7 @@ export default function Home() {
           registerCrmExpress={registerCrmExpress}
         />
       )}
-      {view === "rider" && (
+      {safeView === "rider" && (
         <RiderDashboard
           db={db}
           currentUser={currentUser}
