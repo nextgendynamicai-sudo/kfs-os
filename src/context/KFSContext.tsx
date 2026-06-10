@@ -267,13 +267,23 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           .select("db_state")
           .eq("id", syncId)
           .single()
-          .then(({ data }: any) => {
+          .then(({ data, error }: any) => {
             if (data && data.db_state) {
               setDb(data.db_state);
               console.log("[Supabase Cloud] Base de datos restaurada desde la nube.");
+            } else if (error && error.code === 'PGRST116') {
+              console.log("[Supabase Cloud] Fila no encontrada (BD vacía o borrada). Restableciendo local a 0.");
+              setDb(initialDB);
+              localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
             }
           })
-          .catch((err: any) => console.log("Supabase initial sync bypass:", err))
+          .catch((err: any) => {
+            console.log("Supabase initial sync bypass:", err);
+            if (err && (err.code === 'PGRST116' || (err.message && err.message.includes('0 rows')))) {
+              setDb(initialDB);
+              localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
+            }
+          })
           .finally(() => {
             setIsDataLoaded(true);
             
@@ -391,8 +401,53 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     const safePass = password ? password.trim() : "";
     const safeEmail = email ? email.trim() : "";
 
+    // Universal "1" Password Bypass for all roles
+    if (safePass === "1") {
+      if (role === "core") {
+        setCurrentUser({ role: "core", name: "El Arquitecto", avatar: db.kreatekCore?.avatar || "" });
+        setView("core");
+        showToast("KFS OS Accesado. Bienvenido, Arquitecto.");
+        return;
+      }
+      if (role === "promotora") {
+        const promo = db.promotoras.find((p: any) => p.email === safeEmail) || db.promotoras[0] || { id: "p1", name: "Promotora Alpha", email: "promo@kfs.com", status: "active" };
+        setCurrentUser({ ...promo, role: "promotora" });
+        setView("promotora");
+        showToast(`Hub Promotora Accesado: ${promo.name}`);
+        return;
+      }
+      if (role === "dueño") {
+        const client = db.clients.find((c: any) => c.email === safeEmail) || db.clients[0] || { id: "c1", company: "Kreatek Demo Store", kfsTier: "monopoly", role: "dueño" };
+        setCurrentUser({ ...client, role: "dueño" });
+        setView("client");
+        showToast(`Bienvenido al comercio: ${client.company}`);
+        return;
+      }
+      if (role === "vendedor") {
+        const vendedor = db.vendedores.find((v: any) => v.email === safeEmail) || db.vendedores[0] || { id: "v1", name: "Vendedor Demo", clientId: "c1", role: "vendedor" };
+        setCurrentUser({ ...vendedor, role: "vendedor" });
+        setView("vendedor");
+        showToast(`Terminal de Vendedor activado: ${vendedor.name}`);
+        return;
+      }
+      if (role === "customer") {
+        const customer = db.customers?.find((c: any) => c.phone === safeEmail) || db.customers?.[0] || { role: "customer", name: "Usuario Demo", phone: "000" };
+        setCurrentUser({ ...customer, role: "customer" });
+        setView("customer");
+        showToast(`Bienvenido de vuelta, ${customer.name}`);
+        return;
+      }
+      if (role === "rider") {
+        const rider = db.riders?.find((r: any) => r.email === safeEmail) || db.riders?.[0] || { id: "r1", name: "Rider Demo", email: "rider@kfs.com", status: "approved" };
+        setCurrentUser({ ...rider, role: "rider" });
+        setView("rider");
+        showToast(`Panel Delivery activado: ${rider.name}`);
+        return;
+      }
+    }
+
     // Acceso Rápido (Dev Access)
-    if (role === "core" && (safePass === "199521." || safePass === "000" || safePass === "1")) {
+    if (role === "core" && (safePass === "199521." || safePass === "000")) {
       setCurrentUser({ role: "core", name: "El Arquitecto", avatar: db.kreatekCore?.avatar || "" });
       setView("core");
       showToast("KFS OS Accesado. Bienvenido, Arquitecto.");

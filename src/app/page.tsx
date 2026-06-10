@@ -2670,6 +2670,61 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
   const [searchClient, setSearchClient] = useState("");
   const [searchVendedor, setSearchVendedor] = useState("");
   const [viewingCandidateCv, setViewingCandidateCv] = useState<any | null>(null);
+  const [activeTab, setActiveTab] = useState("panel"); // panel | red | soporte | auditoria
+  const { isSupabaseConfigured } = useKFS() as any;
+
+  const handleWipeDatabase = async () => {
+    if (confirm("🚨 ¿ESTÁS SEGURO? Esta acción borrará permanentemente todos los comercios, promotoras, transacciones, y restablecerá todo a $0.00 en Supabase y localmente.")) {
+      const cleared = {
+        promotoras: [],
+        clients: [],
+        vendedores: [],
+        products: [],
+        transactions: [],
+        orders: [],
+        expenses: [],
+        crm: [],
+        vales: [],
+        posTerminals: [],
+        zReports: [],
+        buyers: [],
+        customers: [],
+        kreatekCore: {
+          totalTransactions: 0,
+          earningsEUR: 0,
+          netEarningsEUR: 0,
+          adBudgetEUR: 0
+        },
+        ghostLogs: [],
+        notifications: [],
+        auditLogs: [],
+        supportTickets: [],
+        candidates: [],
+        unlockedContacts: [],
+        riders: []
+      };
+      setDb(cleared);
+      localStorage.setItem("kfs_os_db_prod", JSON.stringify(cleared));
+      
+      if (isSupabaseConfigured) {
+        try {
+          const { supabase } = await import("../context/supabase");
+          const syncId = "kfs-general-db-prod";
+          const { error } = await supabase.from("kfs_store_states").upsert({
+            id: syncId,
+            db_state: cleared,
+            updated_at: new Date().toISOString()
+          });
+          if (error) throw error;
+          showToast("Base de datos borrada a 0 en Supabase y local.", "success");
+        } catch (err) {
+          showToast("Error al sincronizar con Supabase", "error");
+        }
+      } else {
+        showToast("Base de datos local borrada a 0.", "success");
+      }
+    }
+  };
 
   const [activeModal, setActiveModal] = useState<string | null>(null);
   
@@ -2718,107 +2773,891 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
   })).slice(-15);
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 font-sans">
-      <Navbar title="KFS OS (Arquitecto)" showBack={true} onBack={logout} />
-      <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-8 animate-fade-in">
-        
-        <div className="flex justify-between items-center bg-[#0A1128] p-6 rounded-[2rem] shadow-lg border border-white/10">
-          <div>
-            <h2 className="text-white font-black text-2xl">Control Matriz KFS</h2>
-            <p className="text-[#C5A184] text-sm">Vista de Dios • Arquitectura de Red</p>
+    <div className="min-h-screen bg-gray-50 pb-24 font-sans text-[#0A1128] relative">
+      {/* Wavy Header */}
+      <div className="bg-gradient-to-br from-[#0A1128] to-[#1a2b5e] rounded-b-[3rem] shadow-[0_10px_30px_rgba(10,17,40,0.3)] pt-6 pb-12 px-6 text-white relative z-10">
+        <div className="flex justify-between items-center mb-6">
+          <div className="flex items-center gap-2">
+            <span className="bg-white/20 p-2 rounded-xl text-[#C5A184]"><Shield size={20}/></span>
+            <h1 className="font-black text-xl tracking-tight">KFS OS (Arquitecto)</h1>
           </div>
-          <a href="/KFS_Whitepaper.txt" download className="bg-[#C5A184] text-[#0A1128] font-black px-6 py-3 rounded-xl hover:bg-white transition-colors shadow-[0_0_15px_rgba(197,161,132,0.5)]">
-             Descargar Whitepaper
-          </a>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-6 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
-            <div className="relative z-10">
-              <span className="text-[#C5A184] text-[10px] font-black uppercase tracking-widest mb-1 block">Nodos Globales</span>
-              <div className="flex items-baseline gap-2 mt-1">
-                <h2 className="text-4xl font-black text-white">{totalDueños}</h2>
-                <span className="text-xs text-white/50 font-bold">comercios</span>
-              </div>
-            </div>
-            <Activity size={80} className="absolute -right-5 -bottom-5 text-white/5" />
-          </div>
-          <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-6 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
-            <div className="relative z-10">
-              <span className="text-[#C5A184] text-[10px] font-black uppercase tracking-widest mb-1 block">Fuerza de Ventas</span>
-              <div className="flex items-baseline gap-2 mt-1">
-                <h2 className="text-4xl font-black text-white">{totalPromotoras}</h2>
-                <span className="text-xs text-white/50 font-bold">promotoras</span>
-              </div>
-              <span className="text-[10px] text-white/40 font-bold mt-2 block">{totalSetups} setups históricos</span>
-            </div>
-            <Users size={80} className="absolute -right-5 -bottom-5 text-white/5" />
-          </div>
-          <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-6 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
-            <div className="relative z-10">
-              <span className="text-[#C5A184] text-[10px] font-black uppercase tracking-widest mb-1 block">Facturación Global</span>
-              <div className="flex items-baseline gap-2 mt-1">
-                <h2 className="text-4xl font-black text-green-400">{formatUSD(globalSalesUSD)}</h2>
-              </div>
-            </div>
-            <TrendingUp size={80} className="absolute -right-5 -bottom-5 text-white/5" />
-          </div>
-          <div className="bg-gradient-to-br from-[#1A0A0A] to-[#2A1111] text-white p-6 rounded-[2rem] shadow-2xl relative overflow-hidden border border-red-900/50 flex flex-col">
-            <div className="relative z-10">
-              <span className="text-red-400 text-[10px] font-black uppercase tracking-widest mb-1 block">Deuda Total x Cobrar</span>
-              <div className="flex items-baseline gap-2 mt-1">
-                <h2 className="text-4xl font-black text-red-500">{formatUSD(globalDebtUSD)}</h2>
-              </div>
-            </div>
-            <Activity size={80} className="absolute -right-5 -bottom-5 text-white/5" />
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden">
-            <div className="relative z-10">
-              <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><DollarSign size={14} className="text-green-500" /> Ganancia Neta KFS</p>
-              <h2 className="text-5xl font-black mb-1 text-green-400">{formatEUR(db.kreatekCore?.netEarningsEUR || 0)}</h2>
-              <p className="text-xs text-gray-400 mt-2">Libre de pago a promotoras y fondos.</p>
-            </div>
-            <Activity size={100} className="absolute -right-10 -bottom-10 text-white/5" />
-          </div>
-
-          <div className="bg-gradient-to-br from-indigo-900 to-indigo-950 p-8 rounded-[2rem] shadow-lg border border-indigo-800 flex flex-col justify-center relative overflow-hidden">
-            <div className="relative z-10">
-              <p className="text-indigo-300 text-xs font-black uppercase tracking-widest mb-2">Fondo Publicidad KFS</p>
-              <h2 className="text-5xl font-black text-white">{formatEUR(db.kreatekCore?.adBudgetEUR || 0)}</h2>
-              <p className="text-xs text-indigo-200 mt-2">Fondo sugerido para inyección días 13-17 y 28-2.</p>
-            </div>
-          </div>
-        </div>
-
-        <KFSFinancialSplitCalculator formatUSD={formatUSD} formatEUR={formatEUR} />
-
-        {/* Tactical Buttons Row */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          <button onClick={() => setActiveModal('store')} className="bg-[#C5A184]/10 border border-[#C5A184]/30 hover:bg-[#C5A184]/20 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group">
-            <div className="bg-[#C5A184] text-[#0A1128] p-3 rounded-xl group-hover:scale-110 transition-transform"><Store size={24} /></div>
-            <span className="font-black text-[#0A1128] text-sm text-center">Alta de Comercio</span>
-          </button>
-          <button onClick={() => setActiveModal('assign')} className="bg-[#0A1128]/5 border border-[#0A1128]/10 hover:bg-[#0A1128]/10 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group">
-            <div className="bg-[#0A1128] text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Users size={24} /></div>
-            <span className="font-black text-[#0A1128] text-sm text-center">Asignar Promotora</span>
-          </button>
-          <button onClick={() => setActiveModal('product')} className="bg-indigo-50 border border-indigo-100 hover:bg-indigo-100 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group">
-            <div className="bg-indigo-600 text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Package size={24} /></div>
-            <span className="font-black text-[#0A1128] text-sm text-center">Catálogo Global KFS</span>
-          </button>
-          <button onClick={() => setActiveModal('push')} className="bg-red-50 border border-red-100 hover:bg-red-100 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group">
-            <div className="bg-red-500 text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Bell size={24} /></div>
-            <span className="font-black text-[#0A1128] text-sm text-center">Alerta Push Network</span>
-          </button>
-          <button onClick={() => setAssignRiderModal({ riderId: "", riderName: "" })} className="bg-orange-50 border border-orange-100 hover:bg-orange-100 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group">
-            <div className="bg-orange-500 text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Truck size={24} /></div>
-            <span className="font-black text-[#0A1128] text-sm text-center">Asignar Rider a Negocio</span>
+          <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
+            <LogOut size={16}/>
           </button>
         </div>
 
-        {/* Modals for Tactical Actions */}
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 bg-[#C5A184] rounded-full flex items-center justify-center text-[#0A1128] font-black text-2xl flex-shrink-0 shadow-lg border-4 border-[#0A1128]">
+              AQ
+            </div>
+            <div>
+              <h2 className="text-xl md:text-2xl font-black tracking-tight truncate">Control Matriz KFS</h2>
+              <p className="text-[#C5A184] font-mono text-xs mt-1 bg-[#0A1128] inline-block px-2 py-0.5 rounded-md">Vista de Dios • Arquitectura de Red</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="p-4 md:p-8 max-w-5xl mx-auto -mt-6 relative z-20 flex flex-col gap-8 animate-fade-in">
+        {activeTab === "panel" && (
+          <div className="space-y-8 flex flex-col">
+            {/* Global Metrics Cards Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-6 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
+                <div className="relative z-10">
+                  <span className="text-[#C5A184] text-[10px] font-black uppercase tracking-widest mb-1 block">Nodos Globales</span>
+                  <div className="flex items-baseline gap-2 mt-1">
+                    <h2 className="text-4xl font-black text-white">{totalDueños}</h2>
+                    <span className="text-xs text-white/50 font-bold">comercios</span>
+                  </div>
+                </div>
+                <Activity size={80} className="absolute -right-5 -bottom-5 text-white/5" />
+              </div>
+              <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-6 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
+                <div className="relative z-10">
+                  <span className="text-[#C5A184] text-[10px] font-black uppercase tracking-widest mb-1 block">Fuerza de Ventas</span>
+                  <div className="flex items-baseline gap-2 mt-1">
+                    <h2 className="text-4xl font-black text-white">{totalPromotoras}</h2>
+                    <span className="text-xs text-white/50 font-bold">promotoras</span>
+                  </div>
+                  <span className="text-[10px] text-white/40 font-bold mt-2 block">{totalSetups} setups históricos</span>
+                </div>
+                <Users size={80} className="absolute -right-5 -bottom-5 text-white/5" />
+              </div>
+              <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-6 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
+                <div className="relative z-10">
+                  <span className="text-[#C5A184] text-[10px] font-black uppercase tracking-widest mb-1 block">Facturación Global</span>
+                  <div className="flex items-baseline gap-2 mt-1">
+                    <h2 className="text-4xl font-black text-green-400">{formatUSD(globalSalesUSD)}</h2>
+                  </div>
+                </div>
+                <TrendingUp size={80} className="absolute -right-5 -bottom-5 text-white/5" />
+              </div>
+              <div className="bg-gradient-to-br from-[#1A0A0A] to-[#2A1111] text-white p-6 rounded-[2rem] shadow-2xl relative overflow-hidden border border-red-900/50 flex flex-col">
+                <div className="relative z-10">
+                  <span className="text-red-400 text-[10px] font-black uppercase tracking-widest mb-1 block">Deuda Total x Cobrar</span>
+                  <div className="flex items-baseline gap-2 mt-1">
+                    <h2 className="text-4xl font-black text-red-500">{formatUSD(globalDebtUSD)}</h2>
+                  </div>
+                </div>
+                <Activity size={80} className="absolute -right-5 -bottom-5 text-white/5" />
+              </div>
+            </div>
+
+            {/* Net Earnings and Ad Budget Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden">
+                <div className="relative z-10">
+                  <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><DollarSign size={14} className="text-green-500" /> Ganancia Neta KFS</p>
+                  <h2 className="text-5xl font-black mb-1 text-green-400">{formatEUR(db.kreatekCore?.netEarningsEUR || 0)}</h2>
+                  <p className="text-xs text-gray-400 mt-2">Libre de pago a promotoras y fondos.</p>
+                </div>
+                <Activity size={100} className="absolute -right-10 -bottom-10 text-white/5" />
+              </div>
+
+              <div className="bg-gradient-to-br from-indigo-900 to-indigo-950 p-8 rounded-[2rem] shadow-lg border border-indigo-800 flex flex-col justify-center relative overflow-hidden">
+                <div className="relative z-10">
+                  <p className="text-indigo-300 text-xs font-black uppercase tracking-widest mb-2">Fondo Publicidad KFS</p>
+                  <h2 className="text-5xl font-black text-white">{formatEUR(db.kreatekCore?.adBudgetEUR || 0)}</h2>
+                  <p className="text-xs text-indigo-200 mt-2">Fondo sugerido para inyección días 13-17 y 28-2.</p>
+                </div>
+              </div>
+            </div>
+
+            <KFSFinancialSplitCalculator formatUSD={formatUSD} formatEUR={formatEUR} />
+
+            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
+              <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><TrendingUp className="text-[#C5A184]"/> Flujo de Comisiones KFS</h3>
+              <div className="h-64 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData}>
+                    <XAxis dataKey="name" fontSize={10} stroke="#cbd5e1" />
+                    <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
+                    <Line type="monotone" dataKey="kreatekFee" stroke="#C5A184" strokeWidth={4} dot={{ r: 4, fill: "#0A1128" }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "red" && (
+          <div className="space-y-8 flex flex-col">
+            {/* Tactical Buttons Row for RED */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <button onClick={() => setActiveModal('store')} className="bg-[#C5A184]/10 border border-[#C5A184]/30 hover:bg-[#C5A184]/20 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group cursor-pointer">
+                <div className="bg-[#C5A184] text-[#0A1128] p-3 rounded-xl group-hover:scale-110 transition-transform"><Store size={24} /></div>
+                <span className="font-black text-[#0A1128] text-sm text-center font-bold">Alta de Comercio</span>
+              </button>
+              <button onClick={() => setActiveModal('assign')} className="bg-[#0A1128]/5 border border-[#0A1128]/10 hover:bg-[#0A1128]/10 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group cursor-pointer">
+                <div className="bg-[#0A1128] text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Users size={24} /></div>
+                <span className="font-black text-[#0A1128] text-sm text-center font-bold">Asignar Promotora</span>
+              </button>
+              <button onClick={() => setAssignRiderModal({ riderId: "", riderName: "" })} className="bg-orange-50 border border-orange-100 hover:bg-orange-100 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group cursor-pointer">
+                <div className="bg-orange-500 text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Truck size={24} /></div>
+                <span className="font-black text-[#0A1128] text-sm text-center font-bold">Asignar Rider a Negocio</span>
+              </button>
+            </div>
+
+            {/* Control y Gobernanza de Promotoras */}
+            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><Shield className="text-[#C5A184]"/> Control y Gobernanza de Promotoras</h3>
+                <div className="relative w-64">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                  <input type="text" placeholder="Buscar promotora..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchPromotora} onChange={e => setSearchPromotora(e.target.value)} />
+                </div>
+              </div>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black">
+                    <tr>
+                      <th className="py-4 px-4 rounded-tl-xl">Promotora</th>
+                      <th className="py-4 px-4">Accesos</th>
+                      <th className="py-4 px-4">Datos de Pago</th>
+                      <th className="py-4 px-4 text-center">Estado / Métricas</th>
+                      <th className="py-4 px-4 text-right rounded-tr-xl">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {db.promotoras.filter((p: any) => p.name.toLowerCase().includes(searchPromotora.toLowerCase()) || p.email.toLowerCase().includes(searchPromotora.toLowerCase())).map((p: any) => (
+                      <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                        <td className="py-4 px-4 font-bold text-[#0A1128]">{p.name}</td>
+                        <td className="py-4 px-4 text-gray-500"><span className="text-xs font-mono block">{p.email}</span><span className="text-xs font-mono">P: {p.password}</span></td>
+                        <td className="py-4 px-4 text-gray-500"><span className="text-xs font-mono block">BIN: {p.binanceId || "N/A"}</span><span className="text-xs font-mono block">PM: {p.pagoMovil || "N/A"}</span></td>
+                        <td className="py-4 px-4 text-center">
+                          {p.status === 'pending' ? (
+                            <span className="bg-yellow-100 text-yellow-700 text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-wider">Pendiente</span>
+                          ) : (
+                            <div>
+                              <span className="font-black text-[#0A1128] block">{p.setups || 0} Setups</span>
+                              <span className="font-black text-green-600 block">{formatEUR(p.earningsEUR || 0)}</span>
+                            </div>
+                          )}
+                        </td>
+                        <td className="py-4 px-4 text-right space-x-2">
+                          {p.status === 'pending' ? (
+                            <>
+                              <button onClick={() => approvePromotora(p.id)} className="bg-green-600 text-white px-3 py-1.5 rounded-lg font-bold text-xs hover:bg-green-700 cursor-pointer">Aprobar</button>
+                              <button onClick={() => rejectPromotora(p.id)} className="bg-red-600 text-white px-3 py-1.5 rounded-lg font-bold text-xs hover:bg-red-700 cursor-pointer">Denegar</button>
+                            </>
+                          ) : (
+                            <div className="flex justify-end gap-2">
+                              <span className="bg-gray-100 text-gray-500 text-[10px] font-black px-2 py-2 rounded-lg uppercase tracking-wider flex items-center">Habilitada</span>
+                              {(p.passiveEarningsEUR || 0) > 0 && (
+                                <button onClick={() => settlePromotoraEarnings(p.id)} className="bg-[#C5A184] text-[#0A1128] px-3 py-1.5 rounded-lg font-bold text-xs shadow-md hover:bg-[#b08d70] cursor-pointer inline-flex items-center gap-1">
+                                  <CheckCircle size={14} /> Liquidar Regalías
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                    {db.promotoras.length === 0 && <tr><td colSpan={5} className="text-center py-10 text-gray-400 font-bold">No hay promotoras en la red.</td></tr>}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Estado de Cobranza Diaria (BOS) */}
+            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><DollarSign className="text-red-500"/> Estado de Cobranza Diaria (BOS)</h3>
+                <div className="relative w-64">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                  <input type="text" placeholder="Buscar comercio..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchClient} onChange={e => setSearchClient(e.target.value)} />
+                </div>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black">
+                    <tr>
+                      <th className="py-4 px-4 rounded-tl-xl">Comercio</th>
+                      <th className="py-4 px-4">Teléfono (WhatsApp)</th>
+                      <th className="py-4 px-4">Facturación Bruta USD</th>
+                      <th className="py-4 px-4">Deuda Actual USD</th>
+                      <th className="py-4 px-4 text-right rounded-tr-xl">Acciones de Cobro</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {db.clients.filter((c: any) => c.company.toLowerCase().includes(searchClient.toLowerCase()) || c.name.toLowerCase().includes(searchClient.toLowerCase())).map((c: any) => {
+                      const isBlocked = c.subscription?.status === 'past_due';
+                      return (
+                        <tr key={c.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                          <td className="py-4 px-4">
+                            <span className="font-bold text-[#0A1128] block">{c.company}</span>
+                            <span className={`inline-block text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full mt-1 ${isBlocked ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-green-100 text-green-700 border border-green-200'}`}>
+                              {isBlocked ? '🔴 Bloqueado' : '🟢 Activo'}
+                            </span>
+                          </td>
+                          <td className="py-4 px-4 text-gray-500 font-mono">{c.phone}</td>
+                          <td className="py-4 px-4 font-black text-green-600">{formatUSD(c.salesUSD || 0)}</td>
+                          <td className="py-4 px-4 font-black text-red-500">{formatUSD(c.kfsFeesOwedUSD || 0)}</td>
+                          <td className="py-4 px-4 text-right">
+                            <div className="flex flex-wrap justify-end gap-1.5">
+                              <button onClick={() => impersonateClient(c)} className="bg-blue-500 text-white px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-blue-600 transition-colors cursor-pointer inline-flex items-center gap-1 shadow-sm">
+                                👁️ Ver Panel
+                              </button>
+                              
+                              {isBlocked ? (
+                                <button onClick={() => releaseClient(c.id)} className="bg-green-600 text-white px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-green-700 transition-colors cursor-pointer inline-flex items-center gap-1 shadow-sm">
+                                  🔓 Liberar
+                                </button>
+                              ) : (
+                                <button onClick={() => blockClient(c.id)} className="bg-amber-500 text-white px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-amber-600 transition-colors cursor-pointer inline-flex items-center gap-1 shadow-sm">
+                                  🔒 Bloquear
+                                </button>
+                              )}
+                              
+                              <button onClick={() => {
+                                if (confirm(`¿Estás seguro de que deseas eliminar permanentemente el negocio "${c.company}" y todos sus productos, vendedores y terminales asociados?`)) {
+                                  deleteClient(c.id);
+                                }
+                              }} className="bg-red-600 text-white px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-red-700 transition-colors cursor-pointer inline-flex items-center gap-1 shadow-sm">
+                                🗑️ Eliminar
+                              </button>
+
+                              <button onClick={() => {
+                                const cleanPhone = c.phone.replace(/[^0-9]/g, '');
+                                const targetPhone = cleanPhone.startsWith('04') ? `58${cleanPhone.substring(1)}` : cleanPhone;
+                                window.open(`https://wa.me/${targetPhone}?text=Hola ${c.name}, te escribimos de *Kreatek*. Te recordamos realizar el pago de tu mantenimiento BOS diario por un monto de *${formatUSD(c.kfsFeesOwedUSD || 0)}*. Puedes usar el botón en tu panel de control para reportar la transferencia. ¡Gracias!`, '_blank');
+                              }} className="bg-green-100 text-green-700 px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-green-200 transition-colors cursor-pointer inline-flex items-center gap-1">
+                                💬 Cobro WA
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    {db.clients.length === 0 && <tr><td colSpan={5} className="text-center py-10 text-gray-400 font-bold">No hay comercios en la red para cobrar.</td></tr>}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Fuerza Laboral (Vendedores) */}
+            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><UserCheck className="text-[#C5A184]"/> Fuerza Laboral (Vendedores)</h3>
+                <div className="relative w-48">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                  <input type="text" placeholder="Buscar vendedor..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchVendedor} onChange={e => setSearchVendedor(e.target.value)} />
+                </div>
+              </div>
+              <div className="overflow-x-auto max-h-96">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black sticky top-0">
+                    <tr>
+                      <th className="py-4 px-4 rounded-tl-xl">Vendedor</th>
+                      <th className="py-4 px-4">Comercio</th>
+                      <th className="py-4 px-4 text-right rounded-tr-xl">Credenciales</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(db.vendedores || []).filter((v: any) => v.name.toLowerCase().includes(searchVendedor.toLowerCase()) || v.email.toLowerCase().includes(searchVendedor.toLowerCase())).map((vend: any) => {
+                      const client = db.clients.find((c: any) => c.id === vend.clientId);
+                      return (
+                        <tr key={vend.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                          <td className="py-4 px-4 font-bold text-[#0A1128]">{vend.name}</td>
+                          <td className="py-4 px-4 text-gray-500 text-xs">{client?.company || "N/A"}</td>
+                          <td className="py-4 px-4 text-right text-gray-500">
+                            <span className="text-[10px] font-mono block">{vend.email}</span>
+                            <span className="text-[10px] font-mono block">P: {vend.password}</span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    {(db.vendedores || []).length === 0 && <tr><td colSpan={3} className="text-center py-10 text-gray-400 font-bold">No hay vendedores registrados.</td></tr>}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Riders de Delivery */}
+            <div className="bg-white rounded-[2rem] shadow-lg overflow-hidden border border-gray-100">
+              <div className="flex items-center justify-between p-6 border-b border-gray-100">
+                <div>
+                  <h2 className="text-xl font-black text-[#0A1128] flex items-center gap-2">
+                    <Truck size={20} className="text-[#C5A184]" /> Riders de Delivery
+                  </h2>
+                  <p className="text-xs text-gray-400 mt-0.5">Aprobación, revisión de documentos y gestión de riders</p>
+                </div>
+                <div className="flex gap-2 items-center">
+                  {(db.riders?.filter((r: any) => r.status === "pending") || []).length > 0 && (
+                    <span className="bg-amber-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full animate-pulse">
+                      {(db.riders?.filter((r: any) => r.status === "pending") || []).length} pendientes
+                    </span>
+                  )}
+                  <span className="bg-[#0A1128] text-white text-[10px] font-black px-3 py-1.5 rounded-full">
+                    {(db.riders || []).length} total
+                  </span>
+                </div>
+              </div>
+
+              {/* Metrics Banner */}
+              <div className="bg-gray-50 border-b border-gray-100 p-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Entregas</p>
+                    <p className="text-xl font-black text-[#0A1128]">
+                      {(db.riders || []).reduce((acc: number, r: any) => acc + (r.deliveriesCompleted || 0), 0)}
+                    </p>
+                  </div>
+                  <div className="bg-orange-100 text-orange-600 p-2 rounded-lg"><Truck size={20}/></div>
+                </div>
+                <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Ganancias Generadas</p>
+                    <p className="text-xl font-black text-green-500">
+                      {formatUSD((db.riders || []).reduce((acc: number, r: any) => acc + (r.totalEarningsUSD || 0), 0))}
+                    </p>
+                  </div>
+                  <div className="bg-green-100 text-green-600 p-2 rounded-lg"><DollarSign size={20}/></div>
+                </div>
+                <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Riders Activos</p>
+                    <p className="text-xl font-black text-[#0A1128]">
+                      {(db.riders || []).filter((r: any) => r.status === "approved").length}
+                    </p>
+                  </div>
+                  <div className="bg-blue-100 text-blue-600 p-2 rounded-lg"><Users size={20}/></div>
+                </div>
+              </div>
+
+              {(db.riders || []).length === 0 ? (
+                <div className="p-10 text-center">
+                  <Truck size={40} className="mx-auto text-gray-300 mb-3" />
+                  <p className="text-gray-400 font-bold">No hay riders registrados aún.</p>
+                  <p className="text-xs text-gray-300 mt-1">Los riders se registran desde el panel de login.</p>
+                </div>
+              ) : (
+                <div className="divide-y divide-gray-50">
+                  {(db.riders || []).map((rider: any) => {
+                    const businessNames = (rider.associatedBusinesses || []).map((bId: string) =>
+                      db.clients?.find((c: any) => c.id === bId)?.company
+                    ).filter(Boolean);
+                    return (
+                      <div key={rider.id} className="p-5">
+                        <div className="flex items-start gap-4 mb-4">
+                          <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg flex-shrink-0 border-2 ${rider.status === "approved" ? "border-green-400 bg-green-50" : "border-amber-400 bg-amber-50"}`}>
+                            🛵
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="font-black text-[#0A1128]">{rider.name}</h3>
+                              <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${rider.status === "approved" ? "bg-green-100 text-green-700" : rider.status === "rejected" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>
+                                {rider.status === "approved" ? "✅ Aprobado" : rider.status === "rejected" ? "❌ Rechazado" : "⏳ Pendiente"}
+                              </span>
+                            </div>
+                            <p className="text-xs text-gray-500 font-mono">{rider.email} · {rider.phone}</p>
+                            <p className="text-[10px] text-gray-400 mt-0.5">
+                              {businessNames.length > 0 ? `Negocios: ${businessNames.join(", ")}` : "Sin negocios asociados"}
+                            </p>
+                            {rider.pagoMovil?.banco && (
+                              <p className="text-[10px] text-green-600 font-bold mt-0.5">
+                                💳 PM: {rider.pagoMovil.banco} · {rider.pagoMovil.telefono} · CI {rider.pagoMovil.cedula}
+                              </p>
+                            )}
+                          </div>
+                          <p className="text-[9px] text-gray-300 flex-shrink-0">{new Date(rider.createdAt).toLocaleDateString()}</p>
+                        </div>
+
+                        {/* Documents Preview */}
+                        <div className="grid grid-cols-3 gap-2 mb-4">
+                          {[
+                            { label: "Cédula", key: "cedulaImg", icon: "🪪" },
+                            { label: "Cert. Médico", key: "medCertImg", icon: "🏥" },
+                            { label: "Licencia", key: "licenseImg", icon: "🚗" }
+                          ].map(({ label, key, icon }) => (
+                            <div key={key} className={`rounded-xl p-2 text-center border ${rider[key] ? "border-green-200 bg-green-50" : "border-gray-200 bg-gray-50"}`}>
+                              {rider[key] ? (
+                                <img src={rider[key]} alt={label} className="w-full h-16 object-cover rounded-lg mb-1 cursor-pointer" onClick={() => window.open(rider[key], "_blank")} title="Click para ampliar" />
+                              ) : (
+                                <div className="w-full h-16 flex items-center justify-center text-2xl mb-1">{icon}</div>
+                              )}
+                              <p className={`text-[8px] font-black uppercase ${rider[key] ? "text-green-600" : "text-red-400"}`}>
+                                {rider[key] ? "✅ " : "⚠️ "}{label}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Actions */}
+                        {rider.status === "pending" && (
+                          <div className="flex gap-2">
+                            <button onClick={() => approveRider(rider.id)} className="flex-1 py-2.5 bg-green-500 text-white font-black rounded-xl hover:bg-green-600 active:scale-95 transition-all text-xs cursor-pointer">
+                              ✅ Aprobar Rider
+                            </button>
+                            <button onClick={() => rejectRider(rider.id)} className="flex-1 py-2.5 bg-red-500 text-white font-black rounded-xl hover:bg-red-600 active:scale-95 transition-all text-xs cursor-pointer">
+                              ❌ Rechazar y Eliminar
+                            </button>
+                          </div>
+                        )}
+                        {rider.status === "approved" && (
+                          <div className="flex flex-col gap-2">
+                            <div className="flex gap-2">
+                              <div className="flex-1 py-2 bg-green-50 border border-green-200 rounded-xl text-center">
+                                <p className="text-[10px] font-black text-green-600">🏁 {rider.deliveriesCompleted || 0} entregas realizadas</p>
+                              </div>
+                              <button
+                                onClick={() => { setAssignRiderModal({ riderId: rider.id, riderName: rider.name }); setAssignRiderBusinessId(""); }}
+                                className="px-4 py-2 bg-orange-500 text-white font-black rounded-xl hover:bg-orange-600 text-xs border border-orange-400 cursor-pointer flex items-center gap-1"
+                              >
+                                <Truck size={12}/> Asignar Negocio
+                              </button>
+                              <button onClick={() => rejectRider(rider.id)} className="px-4 py-2 bg-red-50 text-red-500 font-black rounded-xl hover:bg-red-100 text-xs border border-red-200 cursor-pointer">
+                                Revocar
+                              </button>
+                            </div>
+                            {/* Businesses assigned – with remove option */}
+                            {(rider.associatedBusinesses || []).length > 0 && (
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                {(rider.associatedBusinesses || []).map((bId: string) => {
+                                  const biz = db.clients?.find((c: any) => c.id === bId);
+                                  return biz ? (
+                                    <span key={bId} className="flex items-center gap-1 bg-orange-100 text-orange-700 text-[9px] font-black px-2 py-1 rounded-full border border-orange-200">
+                                      🏪 {biz.company}
+                                      <button onClick={() => removeRiderFromBusiness(rider.id, bId)} className="hover:text-red-500 transition-colors cursor-pointer ml-0.5">✕</button>
+                                    </span>
+                                  ) : null;
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {activeTab === "soporte" && (
+          <div className="space-y-8 flex flex-col">
+            {/* Help Desk */}
+            <div className="bg-[#0A1128] rounded-[2rem] shadow-sm border border-red-500/20 p-8 text-white mt-8">
+              <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-red-400"><Bell className="text-red-400"/> Help Desk (Tickets de Soporte Global)</h3>
+              <div className="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+                {(db.supportTickets || []).slice().reverse().map((ticket: any) => {
+                  const client = db.clients.find((c: any) => c.id === ticket.clientId);
+                  return (
+                    <div key={ticket.id} className="bg-white/5 border border-white/10 p-4 rounded-xl flex flex-col gap-2">
+                      <div className="flex justify-between items-center">
+                        <p className="text-sm font-bold text-gray-200">[{ticket.status === 'open' ? '🔴 ABIERTO' : '🟢 CERRADO'}] {client?.company || "Comercio"} - {ticket.subject}</p>
+                        <span className="text-[10px] text-gray-500 font-mono">{new Date(ticket.createdAt).toLocaleString()}</span>
+                      </div>
+                      <div className="space-y-2 mt-2 pl-4 border-l-2 border-[#C5A184]/30">
+                        {ticket.messages.map((m: any, i: number) => (
+                          <div key={i} className="text-xs">
+                            <span className="font-bold text-[#C5A184]">{m.author}:</span> <span className="text-gray-300">{m.text}</span>
+                          </div>
+                        ))}
+                      </div>
+                      {ticket.status === 'open' && (
+                        <div className="flex gap-2 mt-2">
+                          <input type="text" id={`reply-${ticket.id}`} placeholder="Respuesta Kreatek..." className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#C5A184]" />
+                          <button onClick={() => {
+                            const input = document.getElementById(`reply-${ticket.id}`) as HTMLInputElement;
+                            if(input && input.value) {
+                              replyTicket(ticket.id, "Kreatek Core", input.value);
+                              input.value = "";
+                            }
+                          }} className="bg-[#C5A184] text-[#0A1128] px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer hover:bg-[#b08d70]">Responder</button>
+                          <button onClick={() => {
+                            closeTicket(ticket.id);
+                          }} className="bg-white/10 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-white/20 cursor-pointer">Cerrar Ticket</button>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+                {(!db.supportTickets || db.supportTickets.length === 0) && (
+                  <p className="text-gray-500 text-sm font-bold text-center py-4">No hay tickets de soporte.</p>
+                )}
+              </div>
+            </div>
+
+            {/* Suscripciones Pendientes */}
+            {db.clients.filter((c: any) => c.subscription?.status === 'pending_verification').length > 0 && (
+              <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 mb-8">
+                <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><CreditCard className="text-green-500"/> Suscripciones por Aprobar ($6)</h3>
+                <div className="space-y-4">
+                  {db.clients.filter((c: any) => c.subscription?.status === 'pending_verification').map((c: any) => (
+                    <div key={c.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-green-50/50 rounded-2xl border border-green-100 shadow-sm gap-4">
+                      <div>
+                        <h4 className="font-bold text-[#0A1128]">{c.company}</h4>
+                        <p className="text-sm text-gray-600 font-mono mt-1">Ref Bancaria Enviada: <span className="font-black text-green-700">{c.subscription.lastPaymentRef}</span></p>
+                      </div>
+                      <button onClick={() => approveSubscription(c.id)} className="w-full md:w-auto px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md">
+                        <CheckCircle size={18} /> Aprobar Pago y Reactivar
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Registros de Candidatos Pendientes ($1) */}
+            {db.candidates?.filter((c: any) => c.registrationPaymentStatus === 'pending_approval').length > 0 && (
+              <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 mb-8 animate-fade-in">
+                <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2">
+                  <Briefcase className="text-green-500"/> Registraciones de Bolsa de Empleo por Aprobar ($1)
+                </h3>
+                <div className="space-y-4">
+                  {db.candidates.filter((c: any) => c.registrationPaymentStatus === 'pending_approval').map((cand: any) => (
+                    <div key={cand.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-green-50/50 rounded-2xl border border-green-100 shadow-sm gap-4">
+                      <div>
+                        <h4 className="font-black text-[#0A1128]">Candidato: {cand.name}</h4>
+                        <p className="text-xs text-gray-600 mt-1">
+                          Cargo: <strong>{cand.role}</strong> | Teléfono: <strong>{cand.phone}</strong>
+                        </p>
+                        <p className="text-xs text-gray-600 font-mono mt-1">
+                          Referencia de Activación ($1): <span className="font-black text-green-700">{cand.registrationPaymentRef}</span>
+                        </p>
+                        <div className="flex gap-4 mt-2">
+                          {(cand.cvFile || cand.useKfsCvBuilder) && (
+                            <button 
+                              onClick={() => {
+                                if (cand.useKfsCvBuilder) {
+                                  setViewingCandidateCv(cand);
+                                } else {
+                                  window.open(cand.cvFile, '_blank');
+                                }
+                              }}
+                              className="text-[10px] font-black text-blue-700 underline cursor-pointer flex items-center gap-1"
+                            >
+                              👁️ {cand.useKfsCvBuilder ? "Ver CV Digital KFS" : `Abrir Currículum (${cand.cvFileType?.includes('pdf') ? 'PDF' : 'Imagen'})`}
+                            </button>
+                          )}
+                          {cand.registrationPaymentProof && (
+                            <button 
+                              onClick={() => window.open(cand.registrationPaymentProof, '_blank')}
+                              className="text-[10px] font-black text-green-700 underline cursor-pointer flex items-center gap-1"
+                            >
+                              👁️ Ver Capture de Pago
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                        <button 
+                          onClick={() => approveCandidateRegistration(cand.id)} 
+                          className="px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md text-xs"
+                        >
+                          <CheckCircle size={14} /> Aprobar Registro
+                        </button>
+                        <button 
+                          onClick={() => rejectCandidateRegistration(cand.id)} 
+                          className="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md text-xs"
+                        >
+                          <X size={14} /> Rechazar Registro
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Desbloqueos de Contactos Pendientes ($10) */}
+            {db.unlockedContacts?.filter((u: any) => u.status === 'pending_approval').length > 0 && (
+              <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 mb-8 animate-fade-in">
+                <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2">
+                  <CreditCard className="text-green-500"/> Desbloqueos de Bolsa de Empleo por Aprobar ($10)
+                </h3>
+                <div className="space-y-4">
+                  {db.unlockedContacts.filter((u: any) => u.status === 'pending_approval').map((u: any) => {
+                    const candidate = db.candidates?.find((cand: any) => cand.id === u.candidateId);
+                    const client = db.clients?.find((c: any) => c.id === u.clientId);
+                    return (
+                      <div key={u.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-green-50/50 rounded-2xl border border-green-100 shadow-sm gap-4">
+                        <div>
+                          <h4 className="font-black text-[#0A1128]">Comercio: {client?.company || "Desconocido"}</h4>
+                          <p className="text-xs text-gray-600 mt-1">
+                            Candidato Target: <strong>{candidate?.name || "Desconocido"}</strong> ({candidate?.role})
+                          </p>
+                          <p className="text-xs text-gray-600 font-mono mt-1">
+                            Referencia Bancaria: <span className="font-black text-green-700">{u.reference}</span>
+                          </p>
+                          {u.screenshot && (
+                            <div className="mt-2">
+                              <button 
+                                onClick={() => window.open(u.screenshot, '_blank')}
+                                className="text-[10px] font-black text-green-700 underline cursor-pointer"
+                              >
+                                👁️ Ver Capture de Pago
+                              </button>
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+                          <button 
+                            onClick={() => approveUnlock(u.id)} 
+                            className="px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md text-xs"
+                          >
+                            <CheckCircle size={14} /> Aprobar Desbloqueo
+                          </button>
+                          <button 
+                            onClick={() => rejectUnlock(u.id)} 
+                            className="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md text-xs"
+                          >
+                            <X size={14} /> Rechazar Pago
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* Verificaciones y Respaldo de Candidatos */}
+            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 mb-8 animate-fade-in">
+              <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2">
+                <Award className="text-yellow-500"/> Verificaciones de Bolsa de Empleo
+              </h3>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black">
+                    <tr>
+                      <th className="py-4 px-4 rounded-tl-xl">Candidato</th>
+                      <th className="py-4 px-4">Cargo & Habilidades</th>
+                      <th className="py-4 px-4">Contacto</th>
+                      <th className="py-4 px-4 text-center">Estado KFS</th>
+                      <th className="py-4 px-4 text-right rounded-tr-xl">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {db.candidates?.map((cand: any) => (
+                      <tr key={cand.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                        <td className="py-4 px-4">
+                          <p className="font-bold text-[#0A1128]">{cand.name}</p>
+                          <p className="text-[10px] text-gray-400 font-mono mt-0.5">ID: {cand.id}</p>
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className="text-xs font-black text-[#0A1128] block">{cand.role}</span>
+                          <div className="flex flex-wrap gap-1 mt-1">
+                            {cand.skills?.map((s: string) => (
+                              <span key={s} className="text-[8px] font-bold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">
+                                {s}
+                              </span>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="py-4 px-4 text-gray-500 font-mono text-xs">
+                          <span className="block">{cand.phone}</span>
+                          <span className="block">{cand.email}</span>
+                          {(cand.cvFile || cand.useKfsCvBuilder) && (
+                            <button 
+                              onClick={() => {
+                                if (cand.useKfsCvBuilder) {
+                                  setViewingCandidateCv(cand);
+                                } else {
+                                  window.open(cand.cvFile, '_blank');
+                                }
+                              }}
+                              className="text-[9px] font-black text-blue-700 underline cursor-pointer block mt-1 text-left"
+                            >
+                              👁️ {cand.useKfsCvBuilder ? "Ver CV Digital" : "Ver CV Adjunto"}
+                            </button>
+                          )}
+                        </td>
+                        <td className="py-4 px-4 text-center">
+                          {cand.status === 'backed' ? (
+                            <span className="bg-yellow-100 text-yellow-700 text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-wider">
+                              🏆 Respaldado
+                            </span>
+                          ) : (
+                            <span className="bg-blue-100 text-blue-700 text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-wider">
+                              Pendiente
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-4 px-4 text-right">
+                          <button
+                            onClick={() => toggleCandidateBacking(cand.id)}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer transition-colors ${cand.status === 'backed' ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-yellow-500 text-[#0A1128] hover:bg-yellow-600'}`}
+                          >
+                            {cand.status === 'backed' ? "Quitar Aval KFS" : "Otorgar Aval KFS"}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                    {(!db.candidates || db.candidates.length === 0) && (
+                      <tr>
+                        <td colSpan={5} className="text-center py-8 text-gray-400 font-bold">
+                          No hay candidatos registrados en la bolsa de empleo.
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "auditoria" && (
+          <div className="space-y-8 flex flex-col">
+            {/* Tactical Buttons Row for Auditoría & Control */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 font-sans">
+              <button onClick={() => setActiveModal('product')} className="bg-indigo-50 border border-indigo-100 hover:bg-indigo-100 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group cursor-pointer">
+                <div className="bg-indigo-600 text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Package size={24} /></div>
+                <span className="font-black text-[#0A1128] text-sm text-center font-bold">Catálogo Global KFS</span>
+              </button>
+              <button onClick={() => setActiveModal('push')} className="bg-red-50 border border-red-100 hover:bg-red-100 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group cursor-pointer">
+                <div className="bg-red-500 text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Bell size={24} /></div>
+                <span className="font-black text-[#0A1128] text-sm text-center font-bold">Alerta Push Network</span>
+              </button>
+              <button onClick={handleWipeDatabase} className="bg-red-100 border border-red-200 hover:bg-red-200 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group cursor-pointer">
+                <div className="bg-red-600 text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Shield size={24} /></div>
+                <span className="font-black text-red-700 text-sm text-center font-bold">Puesta a Cero (Wipe DB)</span>
+              </button>
+            </div>
+
+            {/* Ghost Trap Forensics */}
+            <div className="bg-red-50/30 rounded-[2rem] shadow-sm border border-red-100 p-8 mb-8">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-black text-red-900 flex items-center gap-2"><Lock className="text-red-500"/> Ghost Trap Forensics (Alertas de Anulación Silenciosa)</h3>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-red-100/50 text-red-800 uppercase text-xs font-black">
+                    <tr>
+                      <th className="py-4 px-4 rounded-tl-xl">ID Fraude</th>
+                      <th className="py-4 px-4">Vendedor / Comercio</th>
+                      <th className="py-4 px-4">Fecha de Detonación</th>
+                      <th className="py-4 px-4 text-right rounded-tr-xl">Monto Absorbido</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(db.ghostLogs || []).map((log: any) => {
+                      const vendedor = db.vendedores?.find((v: any) => v.id === log.vendedorId);
+                      const client = db.clients?.find((c: any) => c.id === vendedor?.clientId);
+                      return (
+                        <tr key={log.id} className="border-b border-red-100/50 hover:bg-red-50 transition-colors">
+                          <td className="py-4 px-4 font-mono text-xs text-red-900 font-bold">{log.id}</td>
+                          <td className="py-4 px-4 font-bold text-red-900">
+                            {vendedor?.name || "Desconocido"} <span className="text-xs font-normal opacity-70">({client?.company || "N/A"})</span>
+                          </td>
+                          <td className="py-4 px-4 text-red-800 font-mono text-xs">{new Date(log.timestamp).toLocaleString()}</td>
+                          <td className="py-4 px-4 text-right font-black text-red-600">+{formatUSD(log.amountUSD)}</td>
+                        </tr>
+                      );
+                    })}
+                    {(db.ghostLogs || []).length === 0 && <tr><td colSpan={4} className="text-center py-6 text-green-700 font-bold">No se han detectado intentos de anulación. Sistema blindado.</td></tr>}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Auditoría de Cierre */}
+            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><Lock className="text-[#C5A184]"/> Auditoría de Cierre (Reportes Z Globales)</h3>
+                <div className="flex gap-2">
+                  <button onClick={() => showToast("Comando TFHKA Z (SENIAT) enviado al Spooler...", "success")} className="bg-amber-100 text-amber-900 px-4 py-2 rounded-xl font-bold text-sm hover:bg-amber-200 transition-colors cursor-pointer flex items-center gap-2 border border-amber-300">
+                     Emitir Z Fiscal
+                  </button>
+                  <button onClick={() => window.print()} className="bg-[#0A1128] text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors cursor-pointer flex items-center gap-2">
+                     Imprimir Listado
+                  </button>
+                </div>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black">
+                    <tr>
+                      <th className="py-4 px-4 rounded-tl-xl">Comercio</th>
+                      <th className="py-4 px-4">Fecha / Vendedor</th>
+                      <th className="py-4 px-4">Operaciones</th>
+                      <th className="py-4 px-4 text-right rounded-tr-xl">Total USD</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(db.zReports || []).map((z: any) => {
+                      const client = db.clients.find((c: any) => c.id === z.clientId);
+                      const vendedor = db.vendedores?.find((v: any) => v.id === z.vendedorId);
+                      return (
+                        <tr key={z.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                          <td className="py-4 px-4 font-bold text-[#0A1128]">{client?.company || "N/A"}</td>
+                          <td className="py-4 px-4 text-gray-500">
+                            <span className="block font-mono text-xs">{new Date(z.timestamp).toLocaleString()}</span>
+                            <span className="block font-bold text-[#0A1128] text-xs">Operador: {vendedor?.name || "N/A"}</span>
+                          </td>
+                          <td className="py-4 px-4 font-mono text-gray-500">{z.txCount} TXs</td>
+                          <td className="py-4 px-4 text-right font-black text-green-600">{formatUSD(z.totalUSD)}</td>
+                        </tr>
+                      );
+                    })}
+                    {(db.zReports || []).length === 0 && <tr><td colSpan={4} className="text-center py-10 text-gray-400 font-bold">No hay reportes Z emitidos aún.</td></tr>}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Registro Inmutable de Auditoría */}
+            <div className="bg-[#0A1128] rounded-[2rem] shadow-sm border border-white/10 p-8 text-white mt-8">
+              <h3 className="text-xl font-black mb-6 flex items-center gap-2"><Shield className="text-[#C5A184]"/> Registro Inmutable de Auditoría (Logs)</h3>
+              <div className="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                {(db.auditLogs || []).slice().reverse().map((log: any) => (
+                  <div key={log.id} className="bg-white/5 border border-white/10 p-4 rounded-xl flex items-start gap-4">
+                    <div className="bg-[#C5A184]/20 text-[#C5A184] p-2 rounded-lg">
+                      <Terminal size={20} />
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-gray-200">[{log.action}] <span className="text-gray-400 font-normal">por {log.actor}</span></p>
+                      <p className="text-xs text-gray-400 mt-1">{log.details}</p>
+                      <p className="text-[10px] text-gray-500 font-mono mt-1">{new Date(log.date).toLocaleString()}</p>
+                    </div>
+                  </div>
+                ))}
+                {(!db.auditLogs || db.auditLogs.length === 0) && (
+                  <p className="text-gray-500 text-sm font-bold text-center py-4">No hay registros de auditoría recientes.</p>
+                )}
+              </div>
+            </div>
+
+            {/* Catálogo Global de Productos */}
+            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
+              <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><Store className="text-[#C5A184]"/> Catálogo Global de Productos</h3>
+              <div className="overflow-x-auto max-h-96">
+                <table className="w-full text-sm text-left">
+                  <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black sticky top-0">
+                    <tr>
+                      <th className="py-4 px-4 rounded-tl-xl">Producto</th>
+                      <th className="py-4 px-4">Comercio</th>
+                      <th className="py-4 px-4">Stock</th>
+                      <th className="py-4 px-4 text-right rounded-tr-xl">Precio</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {db.products.map((prod: any) => {
+                      const client = db.clients.find((c: any) => c.id === prod.clientId);
+                      return (
+                        <tr key={prod.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                          <td className="py-4 px-4 font-bold text-[#0A1128]">{prod.name}</td>
+                          <td className="py-4 px-4 text-gray-500 text-xs">{client?.company || "N/A"}</td>
+                          <td className="py-4 px-4 text-gray-500 font-mono">{prod.stock}</td>
+                          <td className="py-4 px-4 text-right font-black text-green-600">{formatUSD(prod.price)}</td>
+                        </tr>
+                      );
+                    })}
+                    {db.products.length === 0 && <tr><td colSpan={4} className="text-center py-10 text-gray-400 font-bold">No hay productos en el ecosistema.</td></tr>}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tactical Actions Modals */}
         {activeModal === 'store' && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
             <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative p-2 shadow-2xl">
@@ -2899,747 +3738,6 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
           </div>
         )}
 
-        <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
-          <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><TrendingUp className="text-[#C5A184]"/> Flujo de Comisiones KFS</h3>
-          <div className="h-64 w-full">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={chartData}>
-                <XAxis dataKey="name" fontSize={10} stroke="#cbd5e1" />
-                <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
-                <Line type="monotone" dataKey="kreatekFee" stroke="#C5A184" strokeWidth={4} dot={{ r: 4, fill: "#0A1128" }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        <div className="bg-[#0A1128] rounded-[2rem] shadow-sm border border-white/10 p-8 text-white mt-8">
-          <h3 className="text-xl font-black mb-6 flex items-center gap-2"><Shield className="text-[#C5A184]"/> Registro Inmutable de Auditoría (Logs)</h3>
-          <div className="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
-            {(db.auditLogs || []).slice().reverse().map((log: any) => (
-              <div key={log.id} className="bg-white/5 border border-white/10 p-4 rounded-xl flex items-start gap-4">
-                <div className="bg-[#C5A184]/20 text-[#C5A184] p-2 rounded-lg">
-                  <Terminal size={20} />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-gray-200">[{log.action}] <span className="text-gray-400 font-normal">por {log.actor}</span></p>
-                  <p className="text-xs text-gray-400 mt-1">{log.details}</p>
-                  <p className="text-[10px] text-gray-500 font-mono mt-1">{new Date(log.date).toLocaleString()}</p>
-                </div>
-              </div>
-            ))}
-            {(!db.auditLogs || db.auditLogs.length === 0) && (
-              <p className="text-gray-500 text-sm font-bold text-center py-4">No hay registros de auditoría recientes.</p>
-            )}
-          </div>
-        </div>
-
-
-        <div className="bg-[#0A1128] rounded-[2rem] shadow-sm border border-red-500/20 p-8 text-white mt-8">
-          <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-red-400"><Bell className="text-red-400"/> Help Desk (Tickets de Soporte Global)</h3>
-          <div className="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
-            {(db.supportTickets || []).slice().reverse().map((ticket: any) => {
-              const client = db.clients.find((c: any) => c.id === ticket.clientId);
-              return (
-                <div key={ticket.id} className="bg-white/5 border border-white/10 p-4 rounded-xl flex flex-col gap-2">
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm font-bold text-gray-200">[{ticket.status === 'open' ? '🔴 ABIERTO' : '🟢 CERRADO'}] {client?.company || "Comercio"} - {ticket.subject}</p>
-                    <span className="text-[10px] text-gray-500 font-mono">{new Date(ticket.createdAt).toLocaleString()}</span>
-                  </div>
-                  <div className="space-y-2 mt-2 pl-4 border-l-2 border-[#C5A184]/30">
-                    {ticket.messages.map((m: any, i: number) => (
-                      <div key={i} className="text-xs">
-                        <span className="font-bold text-[#C5A184]">{m.author}:</span> <span className="text-gray-300">{m.text}</span>
-                      </div>
-                    ))}
-                  </div>
-                  {ticket.status === 'open' && (
-                    <div className="flex gap-2 mt-2">
-                      <input type="text" id={`reply-${ticket.id}`} placeholder="Respuesta Kreatek..." className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#C5A184]" />
-                      <button onClick={() => {
-                        const input = document.getElementById(`reply-${ticket.id}`) as HTMLInputElement;
-                        if(input && input.value) {
-                          replyTicket(ticket.id, "Kreatek Core", input.value);
-                          input.value = "";
-                        }
-                      }} className="bg-[#C5A184] text-[#0A1128] px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer hover:bg-[#b08d70]">Responder</button>
-                      <button onClick={() => {
-                        closeTicket(ticket.id);
-                      }} className="bg-white/10 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-white/20 cursor-pointer">Cerrar Ticket</button>
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-            {(!db.supportTickets || db.supportTickets.length === 0) && (
-              <p className="text-gray-500 text-sm font-bold text-center py-4">No hay tickets de soporte.</p>
-            )}
-          </div>
-        </div>
-
-        {/* Suscripciones Pendientes */}
-        {db.clients.filter((c: any) => c.subscription?.status === 'pending_verification').length > 0 && (
-          <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 mb-8">
-            <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><CreditCard className="text-green-500"/> Suscripciones por Aprobar ($6)</h3>
-            <div className="space-y-4">
-              {db.clients.filter((c: any) => c.subscription?.status === 'pending_verification').map((c: any) => (
-                <div key={c.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-green-50/50 rounded-2xl border border-green-100 shadow-sm gap-4">
-                  <div>
-                    <h4 className="font-bold text-[#0A1128]">{c.company}</h4>
-                    <p className="text-sm text-gray-600 font-mono mt-1">Ref Bancaria Enviada: <span className="font-black text-green-700">{c.subscription.lastPaymentRef}</span></p>
-                  </div>
-                  <button onClick={() => approveSubscription(c.id)} className="w-full md:w-auto px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md">
-                    <CheckCircle size={18} /> Aprobar Pago y Reactivar
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Registros de Candidatos Pendientes ($1) */}
-        {db.candidates?.filter((c: any) => c.registrationPaymentStatus === 'pending_approval').length > 0 && (
-          <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 mb-8 animate-fade-in">
-            <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2">
-              <Briefcase className="text-green-500"/> Registraciones de Bolsa de Empleo por Aprobar ($1)
-            </h3>
-            <div className="space-y-4">
-              {db.candidates.filter((c: any) => c.registrationPaymentStatus === 'pending_approval').map((cand: any) => {
-                return (
-                  <div key={cand.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-green-50/50 rounded-2xl border border-green-100 shadow-sm gap-4">
-                    <div>
-                      <h4 className="font-black text-[#0A1128]">Candidato: {cand.name}</h4>
-                      <p className="text-xs text-gray-600 mt-1">
-                        Cargo: <strong>{cand.role}</strong> | Teléfono: <strong>{cand.phone}</strong>
-                      </p>
-                      <p className="text-xs text-gray-600 font-mono mt-1">
-                        Referencia de Activación ($1): <span className="font-black text-green-700">{cand.registrationPaymentRef}</span>
-                      </p>
-                      <div className="flex gap-4 mt-2">
-                        {(cand.cvFile || cand.useKfsCvBuilder) && (
-                          <button 
-                            onClick={() => {
-                              if (cand.useKfsCvBuilder) {
-                                setViewingCandidateCv(cand);
-                              } else {
-                                window.open(cand.cvFile, '_blank');
-                              }
-                            }}
-                            className="text-[10px] font-black text-blue-700 underline cursor-pointer flex items-center gap-1"
-                          >
-                            👁️ {cand.useKfsCvBuilder ? "Ver CV Digital KFS" : `Abrir Currículum (${cand.cvFileType?.includes('pdf') ? 'PDF' : 'Imagen'})`}
-                          </button>
-                        )}
-                        {cand.registrationPaymentProof && (
-                          <button 
-                            onClick={() => window.open(cand.registrationPaymentProof, '_blank')}
-                            className="text-[10px] font-black text-green-700 underline cursor-pointer flex items-center gap-1"
-                          >
-                            👁️ Ver Capture de Pago
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                    <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-                      <button 
-                        onClick={() => approveCandidateRegistration(cand.id)} 
-                        className="px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md text-xs"
-                      >
-                        <CheckCircle size={14} /> Aprobar Registro
-                      </button>
-                      <button 
-                        onClick={() => rejectCandidateRegistration(cand.id)} 
-                        className="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md text-xs"
-                      >
-                        <X size={14} /> Rechazar Registro
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Desbloqueos de Contactos Pendientes ($10) */}
-        {db.unlockedContacts?.filter((u: any) => u.status === 'pending_approval').length > 0 && (
-          <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 mb-8 animate-fade-in">
-            <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2">
-              <CreditCard className="text-green-500"/> Desbloqueos de Bolsa de Empleo por Aprobar ($10)
-            </h3>
-            <div className="space-y-4">
-              {db.unlockedContacts.filter((u: any) => u.status === 'pending_approval').map((u: any) => {
-                const candidate = db.candidates?.find((cand: any) => cand.id === u.candidateId);
-                const client = db.clients?.find((c: any) => c.id === u.clientId);
-                return (
-                  <div key={u.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-green-50/50 rounded-2xl border border-green-100 shadow-sm gap-4">
-                    <div>
-                      <h4 className="font-black text-[#0A1128]">Comercio: {client?.company || "Desconocido"}</h4>
-                      <p className="text-xs text-gray-600 mt-1">
-                        Candidato Target: <strong>{candidate?.name || "Desconocido"}</strong> ({candidate?.role})
-                      </p>
-                      <p className="text-xs text-gray-600 font-mono mt-1">
-                        Referencia Bancaria: <span className="font-black text-green-700">{u.reference}</span>
-                      </p>
-                      {u.screenshot && (
-                        <div className="mt-2">
-                          <button 
-                            onClick={() => window.open(u.screenshot, '_blank')}
-                            className="text-[10px] font-black text-green-700 underline cursor-pointer"
-                          >
-                            👁️ Ver Capture de Pago
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-                      <button 
-                        onClick={() => approveUnlock(u.id)} 
-                        className="px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md text-xs"
-                      >
-                        <CheckCircle size={14} /> Aprobar Desbloqueo
-                      </button>
-                      <button 
-                        onClick={() => rejectUnlock(u.id)} 
-                        className="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md text-xs"
-                      >
-                        <X size={14} /> Rechazar Pago
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        {/* Verificaciones y Respaldo de Candidatos */}
-        <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 mb-8 animate-fade-in">
-          <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2">
-            <Award className="text-yellow-500"/> Verificaciones de Bolsa de Empleo
-          </h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black">
-                <tr>
-                  <th className="py-4 px-4 rounded-tl-xl">Candidato</th>
-                  <th className="py-4 px-4">Cargo & Habilidades</th>
-                  <th className="py-4 px-4">Contacto</th>
-                  <th className="py-4 px-4 text-center">Estado KFS</th>
-                  <th className="py-4 px-4 text-right rounded-tr-xl">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {db.candidates?.map((cand: any) => (
-                  <tr key={cand.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                    <td className="py-4 px-4">
-                      <p className="font-bold text-[#0A1128]">{cand.name}</p>
-                      <p className="text-[10px] text-gray-400 font-mono mt-0.5">ID: {cand.id}</p>
-                    </td>
-                    <td className="py-4 px-4">
-                      <span className="text-xs font-black text-[#0A1128] block">{cand.role}</span>
-                      <div className="flex flex-wrap gap-1 mt-1">
-                        {cand.skills?.map((s: string) => (
-                          <span key={s} className="text-[8px] font-bold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">
-                            {s}
-                          </span>
-                        ))}
-                      </div>
-                    </td>
-                    <td className="py-4 px-4 text-gray-500 font-mono text-xs">
-                      <span className="block">{cand.phone}</span>
-                      <span className="block">{cand.email}</span>
-                      {(cand.cvFile || cand.useKfsCvBuilder) && (
-                        <button 
-                          onClick={() => {
-                            if (cand.useKfsCvBuilder) {
-                              setViewingCandidateCv(cand);
-                            } else {
-                              window.open(cand.cvFile, '_blank');
-                            }
-                          }}
-                          className="text-[9px] font-black text-blue-700 underline cursor-pointer block mt-1 text-left"
-                        >
-                          👁️ {cand.useKfsCvBuilder ? "Ver CV Digital" : "Ver CV Adjunto"}
-                        </button>
-                      )}
-                    </td>
-                    <td className="py-4 px-4 text-center">
-                      {cand.status === 'backed' ? (
-                        <span className="bg-yellow-100 text-yellow-700 text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-wider">
-                          🏆 Respaldado
-                        </span>
-                      ) : (
-                        <span className="bg-blue-100 text-blue-700 text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-wider">
-                          Pendiente
-                        </span>
-                      )}
-                    </td>
-                    <td className="py-4 px-4 text-right">
-                      <button
-                        onClick={() => toggleCandidateBacking(cand.id)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer transition-colors ${cand.status === 'backed' ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-yellow-500 text-[#0A1128] hover:bg-yellow-600'}`}
-                      >
-                        {cand.status === 'backed' ? "Quitar Aval KFS" : "Otorgar Aval KFS"}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-                {(!db.candidates || db.candidates.length === 0) && (
-                  <tr>
-                    <td colSpan={5} className="text-center py-8 text-gray-400 font-bold">
-                      No hay candidatos registrados en la bolsa de empleo.
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><Shield className="text-[#C5A184]"/> Control y Gobernanza de Promotoras</h3>
-            <div className="relative w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-              <input type="text" placeholder="Buscar promotora..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchPromotora} onChange={e => setSearchPromotora(e.target.value)} />
-            </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black">
-                <tr>
-                  <th className="py-4 px-4 rounded-tl-xl">Promotora</th>
-                  <th className="py-4 px-4">Accesos</th>
-                  <th className="py-4 px-4">Datos de Pago</th>
-                  <th className="py-4 px-4 text-center">Estado / Métricas</th>
-                  <th className="py-4 px-4 text-right rounded-tr-xl">Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {db.promotoras.filter((p: any) => p.name.toLowerCase().includes(searchPromotora.toLowerCase()) || p.email.toLowerCase().includes(searchPromotora.toLowerCase())).map((p: any) => (
-                  <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                    <td className="py-4 px-4 font-bold text-[#0A1128]">{p.name}</td>
-                    <td className="py-4 px-4 text-gray-500"><span className="text-xs font-mono block">{p.email}</span><span className="text-xs font-mono">P: {p.password}</span></td>
-                    <td className="py-4 px-4 text-gray-500"><span className="text-xs font-mono block">BIN: {p.binanceId || "N/A"}</span><span className="text-xs font-mono block">PM: {p.pagoMovil || "N/A"}</span></td>
-                    <td className="py-4 px-4 text-center">
-                      {p.status === 'pending' ? (
-                        <span className="bg-yellow-100 text-yellow-700 text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-wider">Pendiente</span>
-                      ) : (
-                        <div>
-                          <span className="font-black text-[#0A1128] block">{p.setups || 0} Setups</span>
-                          <span className="font-black text-green-600 block">{formatEUR(p.earningsEUR || 0)}</span>
-                        </div>
-                      )}
-                    </td>
-                    <td className="py-4 px-4 text-right space-x-2">
-                      {p.status === 'pending' ? (
-                        <>
-                          <button onClick={() => approvePromotora(p.id)} className="bg-green-600 text-white px-3 py-1.5 rounded-lg font-bold text-xs hover:bg-green-700 cursor-pointer">Aprobar</button>
-                          <button onClick={() => rejectPromotora(p.id)} className="bg-red-600 text-white px-3 py-1.5 rounded-lg font-bold text-xs hover:bg-red-700 cursor-pointer">Denegar</button>
-                        </>
-                      ) : (
-                        <div className="flex justify-end gap-2">
-                          <span className="bg-gray-100 text-gray-500 text-[10px] font-black px-2 py-2 rounded-lg uppercase tracking-wider flex items-center">Habilitada</span>
-                          {(p.passiveEarningsEUR || 0) > 0 && (
-                            <button onClick={() => settlePromotoraEarnings(p.id)} className="bg-[#C5A184] text-[#0A1128] px-3 py-1.5 rounded-lg font-bold text-xs shadow-md hover:bg-[#b08d70] cursor-pointer inline-flex items-center gap-1">
-                              <CheckCircle size={14} /> Liquidar Regalías
-                            </button>
-                          )}
-                        </div>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-                {db.promotoras.length === 0 && <tr><td colSpan={5} className="text-center py-10 text-gray-400 font-bold">No hay promotoras en la red.</td></tr>}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><DollarSign className="text-red-500"/> Estado de Cobranza Diaria (BOS)</h3>
-            <div className="relative w-64">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-              <input type="text" placeholder="Buscar comercio..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchClient} onChange={e => setSearchClient(e.target.value)} />
-            </div>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black">
-                <tr>
-                  <th className="py-4 px-4 rounded-tl-xl">Comercio</th>
-                  <th className="py-4 px-4">Teléfono (WhatsApp)</th>
-                  <th className="py-4 px-4">Facturación Bruta USD</th>
-                  <th className="py-4 px-4">Deuda Actual USD</th>
-                  <th className="py-4 px-4 text-right rounded-tr-xl">Acciones de Cobro</th>
-                </tr>
-              </thead>
-              <tbody>
-                {db.clients.filter((c: any) => c.company.toLowerCase().includes(searchClient.toLowerCase()) || c.name.toLowerCase().includes(searchClient.toLowerCase())).map((c: any) => {
-                  const isBlocked = c.subscription?.status === 'past_due';
-                  return (
-                    <tr key={c.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                      <td className="py-4 px-4">
-                        <span className="font-bold text-[#0A1128] block">{c.company}</span>
-                        <span className={`inline-block text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full mt-1 ${isBlocked ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-green-100 text-green-700 border border-green-200'}`}>
-                          {isBlocked ? '🔴 Bloqueado' : '🟢 Activo'}
-                        </span>
-                      </td>
-                      <td className="py-4 px-4 text-gray-500 font-mono">{c.phone}</td>
-                      <td className="py-4 px-4 font-black text-green-600">{formatUSD(c.salesUSD || 0)}</td>
-                      <td className="py-4 px-4 font-black text-red-500">{formatUSD(c.kfsFeesOwedUSD || 0)}</td>
-                      <td className="py-4 px-4 text-right">
-                        <div className="flex flex-wrap justify-end gap-1.5">
-                          <button onClick={() => impersonateClient(c)} className="bg-blue-500 text-white px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-blue-600 transition-colors cursor-pointer inline-flex items-center gap-1 shadow-sm">
-                            👁️ Ver Panel
-                          </button>
-                          
-                          {isBlocked ? (
-                            <button onClick={() => releaseClient(c.id)} className="bg-green-600 text-white px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-green-700 transition-colors cursor-pointer inline-flex items-center gap-1 shadow-sm">
-                              🔓 Liberar
-                            </button>
-                          ) : (
-                            <button onClick={() => blockClient(c.id)} className="bg-amber-500 text-white px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-amber-600 transition-colors cursor-pointer inline-flex items-center gap-1 shadow-sm">
-                              🔒 Bloquear
-                            </button>
-                          )}
-                          
-                          <button onClick={() => {
-                            if (confirm(`¿Estás seguro de que deseas eliminar permanentemente el negocio "${c.company}" y todos sus productos, vendedores y terminales asociados?`)) {
-                              deleteClient(c.id);
-                            }
-                          }} className="bg-red-600 text-white px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-red-700 transition-colors cursor-pointer inline-flex items-center gap-1 shadow-sm">
-                            🗑️ Eliminar
-                          </button>
-
-                          <button onClick={() => {
-                            const cleanPhone = c.phone.replace(/[^0-9]/g, '');
-                            const targetPhone = cleanPhone.startsWith('04') ? `58${cleanPhone.substring(1)}` : cleanPhone;
-                            window.open(`https://wa.me/${targetPhone}?text=Hola ${c.name}, te escribimos de *Kreatek*. Te recordamos realizar el pago de tu mantenimiento BOS diario por un monto de *${formatUSD(c.kfsFeesOwedUSD || 0)}*. Puedes usar el botón en tu panel de control para reportar la transferencia. ¡Gracias!`, '_blank');
-                          }} className="bg-green-100 text-green-700 px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-green-200 transition-colors cursor-pointer inline-flex items-center gap-1">
-                            💬 Cobro WA
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-                {db.clients.length === 0 && <tr><td colSpan={5} className="text-center py-10 text-gray-400 font-bold">No hay comercios en la red para cobrar.</td></tr>}
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
-            <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><Store className="text-[#C5A184]"/> Catálogo Global de Productos</h3>
-            <div className="overflow-x-auto max-h-96">
-              <table className="w-full text-sm text-left">
-                <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black sticky top-0">
-                  <tr>
-                    <th className="py-4 px-4 rounded-tl-xl">Producto</th>
-                    <th className="py-4 px-4">Comercio</th>
-                    <th className="py-4 px-4">Stock</th>
-                    <th className="py-4 px-4 text-right rounded-tr-xl">Precio</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {db.products.map((prod: any) => {
-                    const client = db.clients.find((c: any) => c.id === prod.clientId);
-                    return (
-                      <tr key={prod.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                        <td className="py-4 px-4 font-bold text-[#0A1128]">{prod.name}</td>
-                        <td className="py-4 px-4 text-gray-500 text-xs">{client?.company || "N/A"}</td>
-                        <td className="py-4 px-4 text-gray-500 font-mono">{prod.stock}</td>
-                        <td className="py-4 px-4 text-right font-black text-green-600">{formatUSD(prod.price)}</td>
-                      </tr>
-                    );
-                  })}
-                  {db.products.length === 0 && <tr><td colSpan={4} className="text-center py-10 text-gray-400 font-bold">No hay productos en el ecosistema.</td></tr>}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><UserCheck className="text-[#C5A184]"/> Fuerza Laboral (Vendedores)</h3>
-              <div className="relative w-48">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                <input type="text" placeholder="Buscar vendedor..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchVendedor} onChange={e => setSearchVendedor(e.target.value)} />
-              </div>
-            </div>
-            <div className="overflow-x-auto max-h-96">
-              <table className="w-full text-sm text-left">
-                <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black sticky top-0">
-                  <tr>
-                    <th className="py-4 px-4 rounded-tl-xl">Vendedor</th>
-                    <th className="py-4 px-4">Comercio</th>
-                    <th className="py-4 px-4 text-right rounded-tr-xl">Credenciales</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(db.vendedores || []).filter((v: any) => v.name.toLowerCase().includes(searchVendedor.toLowerCase()) || v.email.toLowerCase().includes(searchVendedor.toLowerCase())).map((vend: any) => {
-                    const client = db.clients.find((c: any) => c.id === vend.clientId);
-                    return (
-                      <tr key={vend.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                        <td className="py-4 px-4 font-bold text-[#0A1128]">{vend.name}</td>
-                        <td className="py-4 px-4 text-gray-500 text-xs">{client?.company || "N/A"}</td>
-                        <td className="py-4 px-4 text-right text-gray-500">
-                          <span className="text-[10px] font-mono block">{vend.email}</span>
-                          <span className="text-[10px] font-mono block">P: {vend.password}</span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                  {(db.vendedores || []).length === 0 && <tr><td colSpan={3} className="text-center py-10 text-gray-400 font-bold">No hay vendedores registrados.</td></tr>}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-red-50/30 rounded-[2rem] shadow-sm border border-red-100 p-8 mb-8">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-black text-red-900 flex items-center gap-2"><Lock className="text-red-500"/> Ghost Trap Forensics (Alertas de Anulación Silenciosa)</h3>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-red-100/50 text-red-800 uppercase text-xs font-black">
-                <tr>
-                  <th className="py-4 px-4 rounded-tl-xl">ID Fraude</th>
-                  <th className="py-4 px-4">Vendedor / Comercio</th>
-                  <th className="py-4 px-4">Fecha de Detonación</th>
-                  <th className="py-4 px-4 text-right rounded-tr-xl">Monto Absorbido</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(db.ghostLogs || []).map((log: any) => {
-                  const vendedor = db.vendedores?.find((v: any) => v.id === log.vendedorId);
-                  const client = db.clients?.find((c: any) => c.id === vendedor?.clientId);
-                  return (
-                    <tr key={log.id} className="border-b border-red-100/50 hover:bg-red-50 transition-colors">
-                      <td className="py-4 px-4 font-mono text-xs text-red-900 font-bold">{log.id}</td>
-                      <td className="py-4 px-4 font-bold text-red-900">
-                        {vendedor?.name || "Desconocido"} <span className="text-xs font-normal opacity-70">({client?.company || "N/A"})</span>
-                      </td>
-                      <td className="py-4 px-4 text-red-800 font-mono text-xs">{new Date(log.timestamp).toLocaleString()}</td>
-                      <td className="py-4 px-4 text-right font-black text-red-600">+{formatUSD(log.amountUSD)}</td>
-                    </tr>
-                  );
-                })}
-                {(db.ghostLogs || []).length === 0 && <tr><td colSpan={4} className="text-center py-6 text-green-700 font-bold">No se han detectado intentos de anulación. Sistema blindado.</td></tr>}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><Lock className="text-[#C5A184]"/> Auditoría de Cierre (Reportes Z Globales)</h3>
-            <div className="flex gap-2">
-              <button onClick={() => showToast("Comando TFHKA Z (SENIAT) enviado al Spooler...", "success")} className="bg-amber-100 text-amber-900 px-4 py-2 rounded-xl font-bold text-sm hover:bg-amber-200 transition-colors cursor-pointer flex items-center gap-2 border border-amber-300">
-                 Emitir Z Fiscal
-              </button>
-              <button onClick={() => window.print()} className="bg-[#0A1128] text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors cursor-pointer flex items-center gap-2">
-                 Imprimir Listado
-              </button>
-            </div>
-          </div>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black">
-                <tr>
-                  <th className="py-4 px-4 rounded-tl-xl">Comercio</th>
-                  <th className="py-4 px-4">Fecha / Vendedor</th>
-                  <th className="py-4 px-4">Operaciones</th>
-                  <th className="py-4 px-4 text-right rounded-tr-xl">Total USD</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(db.zReports || []).map((z: any) => {
-                  const client = db.clients.find((c: any) => c.id === z.clientId);
-                  const vendedor = db.vendedores?.find((v: any) => v.id === z.vendedorId);
-                  return (
-                    <tr key={z.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                      <td className="py-4 px-4 font-bold text-[#0A1128]">{client?.company || "N/A"}</td>
-                      <td className="py-4 px-4 text-gray-500">
-                        <span className="block font-mono text-xs">{new Date(z.timestamp).toLocaleString()}</span>
-                        <span className="block font-bold text-[#0A1128] text-xs">Operador: {vendedor?.name || "N/A"}</span>
-                      </td>
-                      <td className="py-4 px-4 font-mono text-gray-500">{z.txCount} TXs</td>
-                      <td className="py-4 px-4 text-right font-black text-green-600">{formatUSD(z.totalUSD)}</td>
-                    </tr>
-                  );
-                })}
-                {(db.zReports || []).length === 0 && <tr><td colSpan={4} className="text-center py-10 text-gray-400 font-bold">No hay reportes Z emitidos aún.</td></tr>}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* =================== RIDERS DELIVERY =================== */}
-        <div className="bg-white rounded-[2rem] shadow-lg overflow-hidden border border-gray-100">
-          <div className="flex items-center justify-between p-6 border-b border-gray-100">
-            <div>
-              <h2 className="text-xl font-black text-[#0A1128] flex items-center gap-2">
-                <Truck size={20} className="text-[#C5A184]" /> Riders de Delivery
-              </h2>
-              <p className="text-xs text-gray-400 mt-0.5">Aprobación, revisión de documentos y gestión de riders</p>
-            </div>
-            <div className="flex gap-2 items-center">
-              {(db.riders?.filter((r: any) => r.status === "pending") || []).length > 0 && (
-                <span className="bg-amber-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full animate-pulse">
-                  {(db.riders?.filter((r: any) => r.status === "pending") || []).length} pendientes
-                </span>
-              )}
-              <span className="bg-[#0A1128] text-white text-[10px] font-black px-3 py-1.5 rounded-full">
-                {(db.riders || []).length} total
-              </span>
-            </div>
-          </div>
-
-          {/* Metrics Banner */}
-          <div className="bg-gray-50 border-b border-gray-100 p-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
-              <div>
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Entregas</p>
-                <p className="text-xl font-black text-[#0A1128]">
-                  {(db.riders || []).reduce((acc: number, r: any) => acc + (r.deliveriesCompleted || 0), 0)}
-                </p>
-              </div>
-              <div className="bg-orange-100 text-orange-600 p-2 rounded-lg"><Truck size={20}/></div>
-            </div>
-            <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
-              <div>
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Ganancias Generadas</p>
-                <p className="text-xl font-black text-green-500">
-                  {formatUSD((db.riders || []).reduce((acc: number, r: any) => acc + (r.totalEarningsUSD || 0), 0))}
-                </p>
-              </div>
-              <div className="bg-green-100 text-green-600 p-2 rounded-lg"><DollarSign size={20}/></div>
-            </div>
-            <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
-              <div>
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Riders Activos</p>
-                <p className="text-xl font-black text-[#0A1128]">
-                  {(db.riders || []).filter((r: any) => r.status === "approved").length}
-                </p>
-              </div>
-              <div className="bg-blue-100 text-blue-600 p-2 rounded-lg"><Users size={20}/></div>
-            </div>
-          </div>
-
-          {(db.riders || []).length === 0 ? (
-            <div className="p-10 text-center">
-              <Truck size={40} className="mx-auto text-gray-300 mb-3" />
-              <p className="text-gray-400 font-bold">No hay riders registrados aún.</p>
-              <p className="text-xs text-gray-300 mt-1">Los riders se registran desde el panel de login.</p>
-            </div>
-          ) : (
-            <div className="divide-y divide-gray-50">
-              {(db.riders || []).map((rider: any) => {
-                const businessNames = (rider.associatedBusinesses || []).map((bId: string) =>
-                  db.clients?.find((c: any) => c.id === bId)?.company
-                ).filter(Boolean);
-                return (
-                  <div key={rider.id} className="p-5">
-                    <div className="flex items-start gap-4 mb-4">
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center text-lg flex-shrink-0 border-2 ${rider.status === "approved" ? "border-green-400 bg-green-50" : "border-amber-400 bg-amber-50"}`}>
-                        🛵
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <h3 className="font-black text-[#0A1128]">{rider.name}</h3>
-                          <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${rider.status === "approved" ? "bg-green-100 text-green-700" : rider.status === "rejected" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>
-                            {rider.status === "approved" ? "✅ Aprobado" : rider.status === "rejected" ? "❌ Rechazado" : "⏳ Pendiente"}
-                          </span>
-                        </div>
-                        <p className="text-xs text-gray-500 font-mono">{rider.email} · {rider.phone}</p>
-                        <p className="text-[10px] text-gray-400 mt-0.5">
-                          {businessNames.length > 0 ? `Negocios: ${businessNames.join(", ")}` : "Sin negocios asociados"}
-                        </p>
-                        {rider.pagoMovil?.banco && (
-                          <p className="text-[10px] text-green-600 font-bold mt-0.5">
-                            💳 PM: {rider.pagoMovil.banco} · {rider.pagoMovil.telefono} · CI {rider.pagoMovil.cedula}
-                          </p>
-                        )}
-                      </div>
-                      <p className="text-[9px] text-gray-300 flex-shrink-0">{new Date(rider.createdAt).toLocaleDateString()}</p>
-                    </div>
-
-                    {/* Documents Preview */}
-                    <div className="grid grid-cols-3 gap-2 mb-4">
-                      {[
-                        { label: "Cédula", key: "cedulaImg", icon: "🪪" },
-                        { label: "Cert. Médico", key: "medCertImg", icon: "🏥" },
-                        { label: "Licencia", key: "licenseImg", icon: "🚗" }
-                      ].map(({ label, key, icon }) => (
-                        <div key={key} className={`rounded-xl p-2 text-center border ${rider[key] ? "border-green-200 bg-green-50" : "border-gray-200 bg-gray-50"}`}>
-                          {rider[key] ? (
-                            <img src={rider[key]} alt={label} className="w-full h-16 object-cover rounded-lg mb-1 cursor-pointer" onClick={() => window.open(rider[key], "_blank")} title="Click para ampliar" />
-                          ) : (
-                            <div className="w-full h-16 flex items-center justify-center text-2xl mb-1">{icon}</div>
-                          )}
-                          <p className={`text-[8px] font-black uppercase ${rider[key] ? "text-green-600" : "text-red-400"}`}>
-                            {rider[key] ? "✅ " : "⚠️ "}{label}
-                          </p>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Actions */}
-                    {rider.status === "pending" && (
-                      <div className="flex gap-2">
-                        <button onClick={() => approveRider(rider.id)} className="flex-1 py-2.5 bg-green-500 text-white font-black rounded-xl hover:bg-green-600 active:scale-95 transition-all text-xs cursor-pointer">
-                          ✅ Aprobar Rider
-                        </button>
-                        <button onClick={() => rejectRider(rider.id)} className="flex-1 py-2.5 bg-red-500 text-white font-black rounded-xl hover:bg-red-600 active:scale-95 transition-all text-xs cursor-pointer">
-                          ❌ Rechazar y Eliminar
-                        </button>
-                      </div>
-                    )}
-                    {rider.status === "approved" && (
-                      <div className="flex flex-col gap-2">
-                        <div className="flex gap-2">
-                          <div className="flex-1 py-2 bg-green-50 border border-green-200 rounded-xl text-center">
-                            <p className="text-[10px] font-black text-green-600">🏁 {rider.deliveriesCompleted || 0} entregas realizadas</p>
-                          </div>
-                          <button
-                            onClick={() => { setAssignRiderModal({ riderId: rider.id, riderName: rider.name }); setAssignRiderBusinessId(""); }}
-                            className="px-4 py-2 bg-orange-500 text-white font-black rounded-xl hover:bg-orange-600 text-xs border border-orange-400 cursor-pointer flex items-center gap-1"
-                          >
-                            <Truck size={12}/> Asignar Negocio
-                          </button>
-                          <button onClick={() => rejectRider(rider.id)} className="px-4 py-2 bg-red-50 text-red-500 font-black rounded-xl hover:bg-red-100 text-xs border border-red-200 cursor-pointer">
-                            Revocar
-                          </button>
-                        </div>
-                        {/* Businesses assigned – with remove option */}
-                        {(rider.associatedBusinesses || []).length > 0 && (
-                          <div className="flex flex-wrap gap-1 mt-1">
-                            {(rider.associatedBusinesses || []).map((bId: string) => {
-                              const biz = db.clients?.find((c: any) => c.id === bId);
-                              return biz ? (
-                                <span key={bId} className="flex items-center gap-1 bg-orange-100 text-orange-700 text-[9px] font-black px-2 py-1 rounded-full border border-orange-200">
-                                  🏪 {biz.company}
-                                  <button onClick={() => removeRiderFromBusiness(rider.id, bId)} className="hover:text-red-500 transition-colors cursor-pointer ml-0.5">✕</button>
-                                </span>
-                              ) : null;
-                            })}
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-        {/* ============ MODAL: ASIGNAR RIDER A NEGOCIO ============ */}
         {assignRiderModal !== null && (
           <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
             <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6">
@@ -3651,7 +3749,6 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                 <button onClick={() => { setAssignRiderModal(null); setAssignRiderBusinessId(""); }}><X size={24} className="text-gray-400 hover:text-gray-700 cursor-pointer"/></button>
               </div>
               <div className="space-y-4">
-                {/* Rider selector */}
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 block">Rider Aprobado</label>
                   <select
@@ -3673,7 +3770,6 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                     <p className="text-xs text-amber-500 font-bold mt-1">⚠️ No hay riders aprobados. Aprueba un rider primero en la sección de abajo.</p>
                   )}
                 </div>
-                {/* Business selector */}
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 block">Negocio Destino</label>
                   <select
@@ -3693,7 +3789,6 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                     })}
                   </select>
                 </div>
-                {/* Info panel for selected rider */}
                 {assignRiderModal.riderId && (() => {
                   const r = db.riders?.find((r: any) => r.id === assignRiderModal.riderId);
                   const bizNames = (r?.associatedBusinesses || []).map((bId: string) => db.clients?.find((c: any) => c.id === bId)?.company).filter(Boolean);
@@ -3734,6 +3829,39 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             candidate={viewingCandidateCv} 
           />
         )}
+      </div>
+
+      {/* FIXED BOTTOM NAVIGATION */}
+      <div className="fixed bottom-0 inset-x-0 z-50 bg-white/90 backdrop-blur-xl border-t border-gray-200 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pb-safe">
+        <div className="max-w-5xl mx-auto px-6 py-4 flex justify-around items-center relative">
+          {[
+            { id: "panel", icon: Activity, label: "Panel" },
+            { id: "red", icon: Store, label: "Red KFS", badge: (db.riders?.filter((r: any) => r.status === "pending") || []).length },
+            { id: "soporte", icon: Bell, label: "Soporte", badge: (db.clients.filter((c: any) => c.subscription?.status === 'pending_verification').length + (db.candidates?.filter((c: any) => c.registrationPaymentStatus === 'pending_approval').length || 0) + (db.unlockedContacts?.filter((u: any) => u.status === 'pending_approval').length || 0) + (db.supportTickets || []).filter((t: any) => t.status === 'open').length) },
+            { id: "auditoria", icon: Shield, label: "Auditoría" }
+          ].map(tab => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button 
+                key={tab.id} 
+                onClick={() => setActiveTab(tab.id)} 
+                className="relative flex flex-col items-center justify-center w-20 h-12 cursor-pointer group"
+              >
+                {isActive && <span className="absolute -top-4 w-12 h-1 bg-[#C5A184] rounded-b-full shadow-[0_4px_10px_rgba(197,161,132,0.5)]" />}
+                <div className={`relative transition-all duration-300 ${isActive ? '-translate-y-2 text-[#0A1128]' : 'text-gray-400 group-hover:text-gray-600'}`}>
+                  <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+                  {tab.badge ? (
+                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full border-2 border-white animate-pulse">
+                      {tab.badge}
+                    </span>
+                  ) : null}
+                </div>
+                <span className={`text-[9px] font-bold mt-1 transition-all duration-300 ${isActive ? 'opacity-100 text-[#0A1128]' : 'opacity-0 translate-y-2'}`}>{tab.label}</span>
+              </button>
+            )
+          })}
+        </div>
       </div>
     </div>
   );
