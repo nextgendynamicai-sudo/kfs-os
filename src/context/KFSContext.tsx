@@ -156,13 +156,17 @@ interface KFSContextType {
   updateBusinessConfig: (clientId: string, config: any) => void;
 }
 
-const mergeIncomingDb = (localDb: any, remoteDb: any, currentUserId: string | null) => {
+const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
   if (!remoteDb) return localDb;
   if (!localDb) return remoteDb;
   
   let mergedDb = { ...localDb };
   
-  const mergeArrayIncoming = (localArr: any[], remoteArr: any[]) => {
+  const mergeArrayIncoming = (
+    localArr: any[], 
+    remoteArr: any[], 
+    checkAuthority?: (item: any) => boolean
+  ) => {
     const map = new Map();
     // Start with remote state as base
     (remoteArr || []).forEach(i => {
@@ -172,18 +176,31 @@ const mergeIncomingDb = (localDb: any, remoteDb: any, currentUserId: string | nu
     // Overlay local state items
     (localArr || []).forEach(i => {
       const key = i.id || i.barcode || JSON.stringify(i);
-      map.set(key, i);
+      const existing = map.get(key);
+      const isNew = !existing;
+      const isAuthority = checkAuthority ? checkAuthority(i) : true;
+      
+      if (isNew || isAuthority) {
+        map.set(key, i);
+      }
     });
     return Array.from(map.values());
   };
 
+  // 1. Clients
   const mergeClientsIncoming = (localClients: any[], remoteClients: any[]) => {
     const map = new Map();
     (remoteClients || []).forEach(c => map.set(c.id, c));
     (localClients || []).forEach(c => {
-      const isCurrentMerchant = currentUserId && c.id === currentUserId;
-      if (isCurrentMerchant) {
-        const existing = map.get(c.id);
+      const existing = map.get(c.id);
+      const isNew = !existing;
+      const isAuthority = currentUser && (
+        currentUser.role === "core" ||
+        (currentUser.role === "dueño" && c.id === currentUser.id) ||
+        (currentUser.role === "vendedor" && c.id === currentUser.clientId) ||
+        (currentUser.role === "promotora" && c.promotoraId === currentUser.id)
+      );
+      if (isNew || isAuthority) {
         if (existing) {
           map.set(c.id, {
             ...existing,
@@ -201,35 +218,158 @@ const mergeIncomingDb = (localDb: any, remoteDb: any, currentUserId: string | nu
     return Array.from(map.values());
   };
 
+  // 2. Products
   const mergeProductsIncoming = (localProducts: any[], remoteProducts: any[]) => {
     const map = new Map();
     (remoteProducts || []).forEach(p => map.set(p.id, p));
     (localProducts || []).forEach(p => {
-      const isOurProduct = currentUserId && p.clientId === currentUserId;
-      if (isOurProduct) {
+      const existing = map.get(p.id);
+      const isNew = !existing;
+      const isAuthority = currentUser && (
+        currentUser.role === "core" ||
+        (currentUser.role === "dueño" && p.clientId === currentUser.id) ||
+        (currentUser.role === "vendedor" && p.clientId === currentUser.clientId)
+      );
+      if (isNew || isAuthority) {
         map.set(p.id, p);
       }
     });
     return Array.from(map.values());
   };
 
-  mergedDb.orders = mergeArrayIncoming(localDb.orders, remoteDb.orders);
-  mergedDb.transactions = mergeArrayIncoming(localDb.transactions, remoteDb.transactions);
+  // 3. Promotoras
+  const checkPromotoraAuthority = (p: any) => {
+    return !!(currentUser && (
+      currentUser.role === "core" ||
+      (currentUser.role === "promotora" && p.id === currentUser.id)
+    ));
+  };
+
+  // 4. Riders
+  const checkRiderAuthority = (r: any) => {
+    return !!(currentUser && (
+      currentUser.role === "core" ||
+      (currentUser.role === "rider" && r.id === currentUser.id) ||
+      (currentUser.role === "dueño" && r.assignedClientId === currentUser.id)
+    ));
+  };
+
+  // 5. Vendedores
+  const checkVendedorAuthority = (v: any) => {
+    return !!(currentUser && (
+      currentUser.role === "core" ||
+      (currentUser.role === "dueño" && v.clientId === currentUser.id) ||
+      (currentUser.role === "vendedor" && v.id === currentUser.id)
+    ));
+  };
+
+  // 6. Customers
+  const checkCustomerAuthority = (c: any) => {
+    return !!(currentUser && (
+      currentUser.role === "core" ||
+      (currentUser.role === "customer" && (c.id === currentUser.id || c.phone === currentUser.phone))
+    ));
+  };
+
+  // 7. Orders
+  const checkOrderAuthority = (o: any) => {
+    return !!(currentUser && (
+      currentUser.role === "core" ||
+      (currentUser.role === "dueño" && o.clientId === currentUser.id) ||
+      (currentUser.role === "vendedor" && o.clientId === currentUser.clientId) ||
+      (currentUser.role === "rider" && o.riderId === currentUser.id) ||
+      (currentUser.role === "customer" && o.customerPhone === currentUser.phone)
+    ));
+  };
+
+  // 8. Support Tickets
+  const checkTicketAuthority = (t: any) => {
+    return !!(currentUser && (
+      currentUser.role === "core" ||
+      (currentUser.role === "dueño" && t.clientId === currentUser.id) ||
+      (currentUser.role === "vendedor" && t.clientId === currentUser.clientId)
+    ));
+  };
+
+  // 9. Expenses
+  const checkExpenseAuthority = (e: any) => {
+    return !!(currentUser && (
+      currentUser.role === "core" ||
+      (currentUser.role === "dueño" && e.clientId === currentUser.id) ||
+      (currentUser.role === "vendedor" && e.clientId === currentUser.clientId)
+    ));
+  };
+
+  // 10. POS Terminals
+  const checkPosAuthority = (pt: any) => {
+    return !!(currentUser && (
+      currentUser.role === "core" ||
+      (currentUser.role === "dueño" && pt.clientId === currentUser.id)
+    ));
+  };
+
+  // 11. Z Reports
+  const checkZReportAuthority = (z: any) => {
+    return !!(currentUser && (
+      currentUser.role === "core" ||
+      (currentUser.role === "dueño" && z.clientId === currentUser.id) ||
+      (currentUser.role === "vendedor" && z.clientId === currentUser.clientId)
+    ));
+  };
+
+  // 12. Vales
+  const checkValeAuthority = (v: any) => {
+    return !!(currentUser && (
+      currentUser.role === "core" ||
+      (currentUser.role === "dueño" && v.clientId === currentUser.id) ||
+      (currentUser.role === "vendedor" && v.clientId === currentUser.clientId)
+    ));
+  };
+
+  // 13. Candidates
+  const checkCandidateAuthority = (c: any) => {
+    return !!(currentUser && (
+      currentUser.role === "core" ||
+      currentUser.role === "dueño" ||
+      (currentUser.role === "customer" && (c.id === currentUser.id || c.phone === currentUser.phone))
+    ));
+  };
+
+  // 14. Unlocked Contacts
+  const checkUnlockAuthority = (u: any) => {
+    return !!(currentUser && (
+      currentUser.role === "core" ||
+      (currentUser.role === "dueño" && u.clientId === currentUser.id)
+    ));
+  };
+
+  mergedDb.orders = mergeArrayIncoming(localDb.orders, remoteDb.orders, checkOrderAuthority);
+  mergedDb.transactions = mergeArrayIncoming(localDb.transactions, remoteDb.transactions, checkOrderAuthority);
   mergedDb.auditLogs = mergeArrayIncoming(localDb.auditLogs, remoteDb.auditLogs);
-  mergedDb.supportTickets = mergeArrayIncoming(localDb.supportTickets, remoteDb.supportTickets);
+  mergedDb.supportTickets = mergeArrayIncoming(localDb.supportTickets, remoteDb.supportTickets, checkTicketAuthority);
   mergedDb.products = mergeProductsIncoming(localDb.products, remoteDb.products);
   mergedDb.clients = mergeClientsIncoming(localDb.clients, remoteDb.clients);
-  mergedDb.promotoras = mergeArrayIncoming(localDb.promotoras, remoteDb.promotoras);
-  mergedDb.vendedores = mergeArrayIncoming(localDb.vendedores, remoteDb.vendedores);
-  mergedDb.customers = mergeArrayIncoming(localDb.customers, remoteDb.customers);
-  mergedDb.riders = mergeArrayIncoming(localDb.riders, remoteDb.riders);
-  mergedDb.expenses = mergeArrayIncoming(localDb.expenses, remoteDb.expenses);
-  mergedDb.posTerminals = mergeArrayIncoming(localDb.posTerminals, remoteDb.posTerminals);
-  mergedDb.zReports = mergeArrayIncoming(localDb.zReports, remoteDb.zReports);
-  mergedDb.vales = mergeArrayIncoming(localDb.vales, remoteDb.vales);
-  mergedDb.candidates = mergeArrayIncoming(localDb.candidates, remoteDb.candidates);
-  mergedDb.unlockedContacts = mergeArrayIncoming(localDb.unlockedContacts, remoteDb.unlockedContacts);
-  mergedDb.kreatekCore = { ...(remoteDb.kreatekCore || {}), ...(localDb.kreatekCore || {}) };
+  mergedDb.promotoras = mergeArrayIncoming(localDb.promotoras, remoteDb.promotoras, checkPromotoraAuthority);
+  mergedDb.vendedores = mergeArrayIncoming(localDb.vendedores, remoteDb.vendedores, checkVendedorAuthority);
+  mergedDb.customers = mergeArrayIncoming(localDb.customers, remoteDb.customers, checkCustomerAuthority);
+  mergedDb.riders = mergeArrayIncoming(localDb.riders, remoteDb.riders, checkRiderAuthority);
+  mergedDb.expenses = mergeArrayIncoming(localDb.expenses, remoteDb.expenses, checkExpenseAuthority);
+  mergedDb.posTerminals = mergeArrayIncoming(localDb.posTerminals, remoteDb.posTerminals, checkPosAuthority);
+  mergedDb.zReports = mergeArrayIncoming(localDb.zReports, remoteDb.zReports, checkZReportAuthority);
+  mergedDb.vales = mergeArrayIncoming(localDb.vales, remoteDb.vales, checkValeAuthority);
+  mergedDb.candidates = mergeArrayIncoming(localDb.candidates, remoteDb.candidates, checkCandidateAuthority);
+  mergedDb.unlockedContacts = mergeArrayIncoming(localDb.unlockedContacts, remoteDb.unlockedContacts, checkUnlockAuthority);
+  
+  // merge kreatekCore with max-value safety
+  const localCore = localDb.kreatekCore || {};
+  const remoteCore = remoteDb.kreatekCore || {};
+  mergedDb.kreatekCore = {
+    totalTransactions: Math.max(localCore.totalTransactions || 0, remoteCore.totalTransactions || 0),
+    earningsEUR: Math.max(localCore.earningsEUR || 0, remoteCore.earningsEUR || 0),
+    netEarningsEUR: Math.max(localCore.netEarningsEUR || 0, remoteCore.netEarningsEUR || 0),
+    adBudgetEUR: Math.max(localCore.adBudgetEUR || 0, remoteCore.adBudgetEUR || 0),
+    avatar: localCore.avatar || remoteCore.avatar
+  };
 
   return mergedDb;
 };
@@ -352,8 +492,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           .then(({ data, error }: any) => {
             if (data && data.db_state) {
               setDb((prevDb: any) => {
-                const currentUserId = currentUserRef.current?.id;
-                return mergeIncomingDb(prevDb, data.db_state, currentUserId);
+                return mergeIncomingDb(prevDb, data.db_state, currentUserRef.current);
               });
               console.log("[Supabase Cloud] Base de datos restaurada desde la nube y fusionada con estado local.");
             } else if (error && error.code === 'PGRST116') {
@@ -381,8 +520,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                     const remote = payload.new.db_state;
                     isRemoteUpdate.current = true;
                     setDb((prevDb: any) => {
-                      const currentUserId = currentUserRef.current?.id;
-                      const merged = mergeIncomingDb(prevDb, remote, currentUserId);
+                      const merged = mergeIncomingDb(prevDb, remote, currentUserRef.current);
                       if (JSON.stringify(prevDb) !== JSON.stringify(merged)) {
                         return merged;
                       }
@@ -401,8 +539,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                   }
                   if (data && data.db_state) {
                     setDb((prevDb: any) => {
-                      const currentUserId = currentUserRef.current?.id;
-                      const merged = mergeIncomingDb(prevDb, data.db_state, currentUserId);
+                      const merged = mergeIncomingDb(prevDb, data.db_state, currentUserRef.current);
                       if (JSON.stringify(prevDb) !== JSON.stringify(merged)) {
                         isRemoteUpdate.current = true;
                         console.log("[Supabase Polling Fallback] Data entrante detectada. Sincronizando con fusión local...");
@@ -486,8 +623,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         let mergedDb = { ...db };
         if (data && data.db_state) {
           const remote = data.db_state;
-          const currentUserId = currentUserRef.current?.id;
-          mergedDb = mergeIncomingDb(db, remote, currentUserId);
+          mergedDb = mergeIncomingDb(db, remote, currentUserRef.current);
         }
 
         supabase
