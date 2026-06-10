@@ -37,6 +37,8 @@ const MOCK_BCV_RATES = {
   isWeekend: false
 };
 
+const CURRENT_WIPE_VERSION = 2;
+
 const initialDB = {
   promotoras: [] as any[],
   clients: [] as any[],
@@ -55,7 +57,8 @@ const initialDB = {
     totalTransactions: 0,
     earningsEUR: 0,
     netEarningsEUR: 0,
-    adBudgetEUR: 0
+    adBudgetEUR: 0,
+    wipeVersion: CURRENT_WIPE_VERSION
   },
   ghostLogs: [] as any[],
   notifications: [] as any[],
@@ -478,7 +481,14 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     try {
       const saved = localStorage.getItem("kfs_os_db_prod");
       if (saved) {
-        setDb(JSON.parse(saved));
+        const parsed = JSON.parse(saved);
+        if (parsed.kreatekCore?.wipeVersion !== CURRENT_WIPE_VERSION) {
+          console.log("[KFS] Database version mismatch. Resetting local database to 0.");
+          setDb(initialDB);
+          localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
+        } else {
+          setDb(parsed);
+        }
       }
       
       if (isSupabaseConfigured && navigator.onLine) {
@@ -491,10 +501,20 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           .single()
           .then(({ data, error }: any) => {
             if (data && data.db_state) {
-              setDb((prevDb: any) => {
-                return mergeIncomingDb(prevDb, data.db_state, currentUserRef.current);
-              });
-              console.log("[Supabase Cloud] Base de datos restaurada desde la nube y fusionada con estado local.");
+              const remote = data.db_state;
+              if (remote.kreatekCore?.wipeVersion !== CURRENT_WIPE_VERSION) {
+                console.log("[Supabase Cloud] Versión de BD antigua detectada. Forzando reinicio local y en la nube.");
+                setDb(initialDB);
+                localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
+                setCurrentUser(null);
+                setOriginalUser(null);
+                setView("landing");
+              } else {
+                setDb((prevDb: any) => {
+                  return mergeIncomingDb(prevDb, remote, currentUserRef.current);
+                });
+                console.log("[Supabase Cloud] Base de datos restaurada desde la nube y fusionada con estado local.");
+              }
             } else if (error && error.code === 'PGRST116') {
               console.log("[Supabase Cloud] Fila no encontrada (BD vacía o borrada). Restableciendo local a 0.");
               setDb(initialDB);
@@ -524,15 +544,24 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'kfs_store_states', filter: `id=eq.${syncId}` }, (payload: any) => {
                   if (payload.new && payload.new.db_state) {
                     const remote = payload.new.db_state;
-                    isRemoteUpdate.current = true;
-                    setDb((prevDb: any) => {
-                      const merged = mergeIncomingDb(prevDb, remote, currentUserRef.current);
-                      if (JSON.stringify(prevDb) !== JSON.stringify(merged)) {
-                        return merged;
-                      }
-                      return prevDb;
-                    });
-                    console.log("[Supabase Realtime] Estado sincronizado en tiempo real con fusión local.");
+                    if (remote.kreatekCore?.wipeVersion !== CURRENT_WIPE_VERSION) {
+                      console.log("[Supabase Realtime] Versión de BD antigua recibida. Forzando reinicio.");
+                      setDb(initialDB);
+                      localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
+                      setCurrentUser(null);
+                      setOriginalUser(null);
+                      setView("landing");
+                    } else {
+                      isRemoteUpdate.current = true;
+                      setDb((prevDb: any) => {
+                        const merged = mergeIncomingDb(prevDb, remote, currentUserRef.current);
+                        if (JSON.stringify(prevDb) !== JSON.stringify(merged)) {
+                          return merged;
+                        }
+                        return prevDb;
+                      });
+                      console.log("[Supabase Realtime] Estado sincronizado en tiempo real con fusión local.");
+                    }
                   } else if (payload.eventType === 'DELETE' || !payload.new) {
                     console.log("[Supabase Realtime] Fila eliminada (BD borrada). Restableciendo local a 0.");
                     setDb(initialDB);
@@ -551,15 +580,25 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                     console.error("Supabase RLS Error:", error);
                   }
                   if (data && data.db_state) {
-                    setDb((prevDb: any) => {
-                      const merged = mergeIncomingDb(prevDb, data.db_state, currentUserRef.current);
-                      if (JSON.stringify(prevDb) !== JSON.stringify(merged)) {
-                        isRemoteUpdate.current = true;
-                        console.log("[Supabase Polling Fallback] Data entrante detectada. Sincronizando con fusión local...");
-                        return merged;
-                      }
-                      return prevDb;
-                    });
+                    const remote = data.db_state;
+                    if (remote.kreatekCore?.wipeVersion !== CURRENT_WIPE_VERSION) {
+                      console.log("[Supabase Polling Fallback] Versión de BD antigua detectada. Forzando reinicio.");
+                      setDb(initialDB);
+                      localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
+                      setCurrentUser(null);
+                      setOriginalUser(null);
+                      setView("landing");
+                    } else {
+                      setDb((prevDb: any) => {
+                        const merged = mergeIncomingDb(prevDb, remote, currentUserRef.current);
+                        if (JSON.stringify(prevDb) !== JSON.stringify(merged)) {
+                          isRemoteUpdate.current = true;
+                          console.log("[Supabase Polling Fallback] Data entrante detectada. Sincronizando con fusión local...");
+                          return merged;
+                        }
+                        return prevDb;
+                      });
+                    }
                   } else if (error && error.code === 'PGRST116') {
                     console.log("[Supabase Polling Fallback] Fila no encontrada (BD vacía o borrada). Restableciendo local a 0.");
                     setDb(initialDB);

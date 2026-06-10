@@ -2697,7 +2697,8 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
           totalTransactions: 0,
           earningsEUR: 0,
           netEarningsEUR: 0,
-          adBudgetEUR: 0
+          adBudgetEUR: 0,
+          wipeVersion: 2
         },
         ghostLogs: [],
         notifications: [],
