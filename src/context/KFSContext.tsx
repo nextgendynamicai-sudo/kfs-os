@@ -156,6 +156,84 @@ interface KFSContextType {
   updateBusinessConfig: (clientId: string, config: any) => void;
 }
 
+const mergeIncomingDb = (localDb: any, remoteDb: any, currentUserId: string | null) => {
+  if (!remoteDb) return localDb;
+  if (!localDb) return remoteDb;
+  
+  let mergedDb = { ...localDb };
+  
+  const mergeArrayIncoming = (localArr: any[], remoteArr: any[]) => {
+    const map = new Map();
+    // Start with remote state as base
+    (remoteArr || []).forEach(i => {
+      const key = i.id || i.barcode || JSON.stringify(i);
+      map.set(key, i);
+    });
+    // Overlay local state items
+    (localArr || []).forEach(i => {
+      const key = i.id || i.barcode || JSON.stringify(i);
+      map.set(key, i);
+    });
+    return Array.from(map.values());
+  };
+
+  const mergeClientsIncoming = (localClients: any[], remoteClients: any[]) => {
+    const map = new Map();
+    (remoteClients || []).forEach(c => map.set(c.id, c));
+    (localClients || []).forEach(c => {
+      const isCurrentMerchant = currentUserId && c.id === currentUserId;
+      if (isCurrentMerchant) {
+        const existing = map.get(c.id);
+        if (existing) {
+          map.set(c.id, {
+            ...existing,
+            ...c,
+            storeSettings: {
+              ...(existing.storeSettings || {}),
+              ...(c.storeSettings || {})
+            }
+          });
+        } else {
+          map.set(c.id, c);
+        }
+      }
+    });
+    return Array.from(map.values());
+  };
+
+  const mergeProductsIncoming = (localProducts: any[], remoteProducts: any[]) => {
+    const map = new Map();
+    (remoteProducts || []).forEach(p => map.set(p.id, p));
+    (localProducts || []).forEach(p => {
+      const isOurProduct = currentUserId && p.clientId === currentUserId;
+      if (isOurProduct) {
+        map.set(p.id, p);
+      }
+    });
+    return Array.from(map.values());
+  };
+
+  mergedDb.orders = mergeArrayIncoming(localDb.orders, remoteDb.orders);
+  mergedDb.transactions = mergeArrayIncoming(localDb.transactions, remoteDb.transactions);
+  mergedDb.auditLogs = mergeArrayIncoming(localDb.auditLogs, remoteDb.auditLogs);
+  mergedDb.supportTickets = mergeArrayIncoming(localDb.supportTickets, remoteDb.supportTickets);
+  mergedDb.products = mergeProductsIncoming(localDb.products, remoteDb.products);
+  mergedDb.clients = mergeClientsIncoming(localDb.clients, remoteDb.clients);
+  mergedDb.promotoras = mergeArrayIncoming(localDb.promotoras, remoteDb.promotoras);
+  mergedDb.vendedores = mergeArrayIncoming(localDb.vendedores, remoteDb.vendedores);
+  mergedDb.customers = mergeArrayIncoming(localDb.customers, remoteDb.customers);
+  mergedDb.riders = mergeArrayIncoming(localDb.riders, remoteDb.riders);
+  mergedDb.expenses = mergeArrayIncoming(localDb.expenses, remoteDb.expenses);
+  mergedDb.posTerminals = mergeArrayIncoming(localDb.posTerminals, remoteDb.posTerminals);
+  mergedDb.zReports = mergeArrayIncoming(localDb.zReports, remoteDb.zReports);
+  mergedDb.vales = mergeArrayIncoming(localDb.vales, remoteDb.vales);
+  mergedDb.candidates = mergeArrayIncoming(localDb.candidates, remoteDb.candidates);
+  mergedDb.unlockedContacts = mergeArrayIncoming(localDb.unlockedContacts, remoteDb.unlockedContacts);
+  mergedDb.kreatekCore = { ...(remoteDb.kreatekCore || {}), ...(localDb.kreatekCore || {}) };
+
+  return mergedDb;
+};
+
 const KFSContext = createContext<KFSContextType | undefined>(undefined);
 
 export function KFSProvider({ children }: { children: React.ReactNode }) {
@@ -171,6 +249,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   };
 
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const currentUserRef = useRef(currentUser);
+  useEffect(() => {
+    currentUserRef.current = currentUser;
+  }, [currentUser]);
   const [originalUser, setOriginalUser] = useState<any>(null);
 
 
@@ -269,8 +351,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           .single()
           .then(({ data, error }: any) => {
             if (data && data.db_state) {
-              setDb(data.db_state);
-              console.log("[Supabase Cloud] Base de datos restaurada desde la nube.");
+              setDb((prevDb: any) => {
+                const currentUserId = currentUserRef.current?.id;
+                return mergeIncomingDb(prevDb, data.db_state, currentUserId);
+              });
+              console.log("[Supabase Cloud] Base de datos restaurada desde la nube y fusionada con estado local.");
             } else if (error && error.code === 'PGRST116') {
               console.log("[Supabase Cloud] Fila no encontrada (BD vacía o borrada). Restableciendo local a 0.");
               setDb(initialDB);
@@ -293,9 +378,17 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
               channel
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'kfs_store_states', filter: `id=eq.${syncId}` }, (payload: any) => {
                   if (payload.new && payload.new.db_state) {
-                    isRemoteUpdate.current = true; // Flag remote update to prevent circular save
-                    setDb(payload.new.db_state);
-                    console.log("[Supabase Realtime] Estado sincronizado en tiempo real desde la nube.");
+                    const remote = payload.new.db_state;
+                    isRemoteUpdate.current = true;
+                    setDb((prevDb: any) => {
+                      const currentUserId = currentUserRef.current?.id;
+                      const merged = mergeIncomingDb(prevDb, remote, currentUserId);
+                      if (JSON.stringify(prevDb) !== JSON.stringify(merged)) {
+                        return merged;
+                      }
+                      return prevDb;
+                    });
+                    console.log("[Supabase Realtime] Estado sincronizado en tiempo real con fusión local.");
                   }
                 })
                 .subscribe();
@@ -305,14 +398,15 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                 supabase.from("kfs_store_states").select("db_state").eq("id", syncId).single().then(({ data, error }: any) => {
                   if (error && error.code === '42501') {
                     console.error("Supabase RLS Error:", error);
-                    // No spammeamos el toast cada 4 segundos, solo mostramos en consola
                   }
                   if (data && data.db_state) {
                     setDb((prevDb: any) => {
-                      if (JSON.stringify(prevDb) !== JSON.stringify(data.db_state)) {
+                      const currentUserId = currentUserRef.current?.id;
+                      const merged = mergeIncomingDb(prevDb, data.db_state, currentUserId);
+                      if (JSON.stringify(prevDb) !== JSON.stringify(merged)) {
                         isRemoteUpdate.current = true;
-                        console.log("[Supabase Polling Fallback] Data entrante detectada. Sincronizando...");
-                        return data.db_state;
+                        console.log("[Supabase Polling Fallback] Data entrante detectada. Sincronizando con fusión local...");
+                        return merged;
                       }
                       return prevDb;
                     });
@@ -391,48 +485,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       supabase.from("kfs_store_states").select("db_state").eq("id", syncId).single().then(({ data }: any) => {
         let mergedDb = { ...db };
         if (data && data.db_state) {
-           const remote = data.db_state;
-           // Shallow merge arrays by ID to prevent dropping concurrent items
-           const mergeArray = (arr1: any[], arr2: any[]) => [...new Map([...(arr1||[]), ...(arr2||[])].map((i:any) => [i.id || i.barcode || JSON.stringify(i), i])).values()];
-           
-           const mergeClients = (remoteClients: any[], localClients: any[]) => {
-             const map = new Map();
-             (remoteClients || []).forEach(c => map.set(c.id, c));
-             (localClients || []).forEach(c => {
-               const existing = map.get(c.id);
-               if (existing) {
-                 map.set(c.id, {
-                   ...existing,
-                   ...c,
-                   storeSettings: {
-                     ...(existing.storeSettings || {}),
-                     ...(c.storeSettings || {})
-                   }
-                 });
-               } else {
-                 map.set(c.id, c);
-               }
-             });
-             return Array.from(map.values());
-           };
-
-           mergedDb.orders = mergeArray(remote.orders, db.orders);
-           mergedDb.transactions = mergeArray(remote.transactions, db.transactions);
-           mergedDb.auditLogs = mergeArray(remote.auditLogs, db.auditLogs);
-           mergedDb.supportTickets = mergeArray(remote.supportTickets, db.supportTickets);
-           mergedDb.products = mergeArray(remote.products, db.products);
-           mergedDb.clients = mergeClients(remote.clients, db.clients);
-           mergedDb.promotoras = mergeArray(remote.promotoras, db.promotoras);
-           mergedDb.vendedores = mergeArray(remote.vendedores, db.vendedores);
-           mergedDb.customers = mergeArray(remote.customers, db.customers);
-           mergedDb.riders = mergeArray(remote.riders, db.riders);
-           mergedDb.expenses = mergeArray(remote.expenses, db.expenses);
-           mergedDb.posTerminals = mergeArray(remote.posTerminals, db.posTerminals);
-           mergedDb.zReports = mergeArray(remote.zReports, db.zReports);
-           mergedDb.vales = mergeArray(remote.vales, db.vales);
-           mergedDb.candidates = mergeArray(remote.candidates, db.candidates);
-           mergedDb.unlockedContacts = mergeArray(remote.unlockedContacts, db.unlockedContacts);
-           mergedDb.kreatekCore = { ...(remote.kreatekCore || {}), ...(db.kreatekCore || {}) };
+          const remote = data.db_state;
+          const currentUserId = currentUserRef.current?.id;
+          mergedDb = mergeIncomingDb(db, remote, currentUserId);
         }
 
         supabase
