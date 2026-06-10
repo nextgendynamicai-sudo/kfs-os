@@ -994,6 +994,10 @@ const Navbar = ({ title, showBack = false, onBack }: { title?: string, showBack?
                         updated.promotoras = prev.promotoras.map((p: any) => p.id === currentUser.id ? { ...p, avatar: base64String } : p);
                       } else if (currentUser.role === "vendedor") {
                         updated.vendedores = prev.vendedores.map((v: any) => v.id === currentUser.id ? { ...v, avatar: base64String } : v);
+                      } else if (currentUser.role === "customer") {
+                        updated.customers = (prev.customers || []).map((c: any) => c.id === currentUser.id ? { ...c, avatar: base64String } : c);
+                      } else if (currentUser.role === "rider") {
+                        updated.riders = (prev.riders || []).map((r: any) => r.id === currentUser.id ? { ...r, avatar: base64String } : r);
                       } else if (currentUser.role === "core") {
                         updated.kreatekCore = { ...updated.kreatekCore, avatar: base64String };
                       }
@@ -4198,20 +4202,71 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
     updateStoreSettings(client.id, settings);
   };
 
+  const handleProfilePicUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      try {
+        const base64 = await compressImage(file, 400, 0.85);
+        setSettings((prev: any) => ({ ...prev, profilePicUrl: base64 }));
+      } catch (err) {
+        alert("Error al comprimir/subir imagen");
+      }
+    }
+  };
+
+  const handleCoverPhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      try {
+        const base64 = await compressImage(file, 800, 0.85);
+        setSettings((prev: any) => ({ ...prev, coverPhotoUrl: base64 }));
+      } catch (err) {
+        alert("Error al comprimir/subir imagen");
+      }
+    }
+  };
+
   return (
     <div className="bg-white p-6 md:p-8 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col gap-6 h-full">
       <h4 className="font-black text-[#0A1128] text-lg flex items-center gap-2"><Palette className="text-[#C5A184]"/> Personalizar Tienda</h4>
       <p className="text-xs text-gray-500">Ajusta la apariencia visual de tu vitrina pública en Flow Express.</p>
       
       <div className="space-y-4 pt-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Logo / Foto de Perfil (URL)</label>
-            <input type="text" value={settings.profilePicUrl} onChange={e => setSettings({...settings, profilePicUrl: e.target.value})} placeholder="https://..." className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C5A184]" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="flex flex-col gap-2">
+            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Logo / Foto de Perfil</label>
+            <div className="flex items-center gap-4 bg-gray-50 border border-gray-250 p-4 rounded-2xl relative overflow-hidden">
+              <label className="relative w-16 h-16 rounded-full border-2 border-dashed border-gray-300 cursor-pointer overflow-hidden flex items-center justify-center bg-white hover:bg-gray-100 transition-colors group flex-shrink-0 shadow-sm">
+                <input type="file" accept="image/*" className="hidden" onChange={handleProfilePicUpload} />
+                {settings.profilePicUrl ? (
+                  <img src={settings.profilePicUrl} className="w-full h-full object-cover" alt="Profile" />
+                ) : (
+                  <Camera size={20} className="text-gray-400 group-hover:text-gray-600" />
+                )}
+              </label>
+              <div className="flex-grow">
+                <p className="text-xs font-bold text-[#0A1128]">Subir desde Galería</p>
+                <p className="text-[9px] text-gray-400 mt-0.5 leading-normal">Se guardará directamente en tu base de datos KFS.</p>
+              </div>
+            </div>
           </div>
-          <div>
-            <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Banner Portada (URL)</label>
-            <input type="text" value={settings.coverPhotoUrl} onChange={e => setSettings({...settings, coverPhotoUrl: e.target.value})} placeholder="https://..." className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C5A184]" />
+
+          <div className="flex flex-col gap-2">
+            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Banner de Portada</label>
+            <div className="flex items-center gap-4 bg-gray-50 border border-gray-250 p-4 rounded-2xl relative overflow-hidden">
+              <label className="relative w-24 h-16 rounded-xl border-2 border-dashed border-gray-300 cursor-pointer overflow-hidden flex items-center justify-center bg-white hover:bg-gray-100 transition-colors group flex-shrink-0 shadow-sm">
+                <input type="file" accept="image/*" className="hidden" onChange={handleCoverPhotoUpload} />
+                {settings.coverPhotoUrl ? (
+                  <img src={settings.coverPhotoUrl} className="w-full h-full object-cover" alt="Cover" />
+                ) : (
+                  <Camera size={20} className="text-gray-400 group-hover:text-gray-600" />
+                )}
+              </label>
+              <div className="flex-grow">
+                <p className="text-xs font-bold text-[#0A1128]">Subir desde Galería</p>
+                <p className="text-[9px] text-gray-400 mt-0.5 leading-normal">Banner panorámico para tu Flow Express.</p>
+              </div>
+            </div>
           </div>
         </div>
 
