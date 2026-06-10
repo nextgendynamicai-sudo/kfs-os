@@ -7840,6 +7840,10 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
               </div>
             )}
           </div>
+          
+          <div className="mt-8">
+            <FlowExpressCatalog currentUser={currentUser} formatUSD={formatUSD} />
+          </div>
         ) : (
           <>
             <div className="flex items-center justify-between mb-4">

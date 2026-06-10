@@ -61,6 +61,11 @@ export function FlowExpressCatalog({ currentUser, formatUSD }: FlowExpressCatalo
   ];
 
   const handlePurchase = (product: ProductItem) => {
+    if (!currentUser) {
+      alert("Debes iniciar sesión para adquirir productos.");
+      return;
+    }
+
     const userKP = currentUser.k_points_balance || 0;
     const userReal = currentUser.real_balance || 0;
 
@@ -94,6 +99,7 @@ export function FlowExpressCatalog({ currentUser, formatUSD }: FlowExpressCatalo
   };
 
   const handleModalRecharge = (amount: number) => {
+    if (!currentUser) return;
     rechargeCustomerWallet(currentUser.phone, amount, currentUser.referred_by_promoter_id);
     setShowRechargeModal(false);
   };
