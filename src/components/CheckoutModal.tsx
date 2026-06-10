@@ -15,6 +15,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
   const [customerName, setCustomerName] = useState("");
   const [customerRif, setCustomerRif] = useState("");
   const [paymentScreenshot, setPaymentScreenshot] = useState("");
+  const [kPointsToBurn, setKPointsToBurn] = useState(0);
   
   const [splitMethod1, setSplitMethod1] = useState("cash_usd");
   const [splitAmount1, setSplitAmount1] = useState("");
@@ -27,9 +28,15 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
   const price = product.priceUSD;
   const iva = applyIva ? price * 0.16 : 0;
   const igtf = isForeign ? (price + iva) * 0.03 : 0;
-  const total = price + iva + igtf;
+  
+  // Calcular descuento por K-Points (100 puntos = $0.10 -> 1 punto = $0.001)
+  const discountUSD = kPointsToBurn * 0.001;
+  const total = Math.max(0, price + iva + igtf - discountUSD);
+  
   const totalBs = total * (rates?.USD || 36.45);
   const storeOwner = db.clients?.find((c: any) => c.id === product?.clientId);
+  const foundCustomer = db.customers?.find((c: any) => c.phone === customerPhone);
+  const availableKPoints = foundCustomer?.k_points_balance || 0;
 
   const handleConfirm = async () => {
     if (isOnline && !paymentReference) {
@@ -94,7 +101,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
       return;
     }
 
-    onConfirm(paymentMethod, applyIva, paymentReference, customerPhone, customerName, customerRif, paymentScreenshot);
+    onConfirm(paymentMethod, applyIva, paymentReference, customerPhone, customerName, customerRif, paymentScreenshot, kPointsToBurn);
   };
 
   if (isProcessingPos) {
@@ -281,9 +288,31 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
             <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 block">
               {isOnline ? "Tu Teléfono de Contacto" : "Teléfono del Cliente (WhatsApp)"}
             </label>
-            <input type="text" placeholder="Ej: 04141234567" value={customerPhone} onChange={e => setCustomerPhone(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C5A184]" />
+            <input type="text" placeholder="Ej: 04141234567" value={customerPhone} onChange={e => { setCustomerPhone(e.target.value); setKPointsToBurn(0); }} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C5A184]" />
             <p className="text-[10px] text-gray-400 mt-1">Opcional. {isOnline ? "Para que el comercio te contacte." : "Para enviar el recibo electrónico por WhatsApp."}</p>
           </div>
+
+          {availableKPoints > 0 && (
+            <div className="bg-purple-50 p-4 rounded-xl border border-purple-200 space-y-2 animate-fade-in">
+              <label className="text-[10px] font-black text-purple-900 uppercase tracking-widest flex justify-between">
+                <span>Quemar K-Points Disponibles</span>
+                <span>Max: {availableKPoints}</span>
+              </label>
+              <input 
+                type="range" 
+                min="0" 
+                max={Math.min(availableKPoints, (price + iva + igtf) / 0.001)} 
+                step="10" 
+                value={kPointsToBurn} 
+                onChange={(e) => setKPointsToBurn(parseInt(e.target.value) || 0)}
+                className="w-full accent-purple-600"
+              />
+              <div className="flex justify-between text-xs font-bold text-purple-800">
+                <span>{kPointsToBurn} Puntos</span>
+                <span>Descuento: -${discountUSD.toFixed(2)}</span>
+              </div>
+            </div>
+          )}
           
           <label className="flex items-center gap-3 p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
             <input type="checkbox" checked={applyIva} onChange={e => setApplyIva(e.target.checked)} className="w-5 h-5 text-[#C5A184] rounded focus:ring-[#C5A184]" />
@@ -307,6 +336,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
             <div className="flex justify-between text-sm font-bold text-gray-600"><span>Subtotal:</span> <span>{formatUSD(price)}</span></div>
             {applyIva && <div className="flex justify-between text-sm font-bold text-gray-600"><span>IVA (16%):</span> <span className="text-red-500">+{formatUSD(iva)}</span></div>}
             {isForeign && <div className="flex justify-between text-sm font-bold text-gray-600"><span>IGTF (3%):</span> <span className="text-red-500">+{formatUSD(igtf)}</span></div>}
+            {kPointsToBurn > 0 && <div className="flex justify-between text-sm font-bold text-purple-600"><span>Descuento K-Points:</span> <span>-{formatUSD(discountUSD)}</span></div>}
             <div className="flex justify-between text-lg font-black text-[#0A1128] pt-2 border-t border-gray-200 mt-2"><span>Total a Pagar:</span> <span>{formatUSD(total)}</span></div>
           </div>
 

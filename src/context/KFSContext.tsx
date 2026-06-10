@@ -978,12 +978,24 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast(`Recarga de $${amountUSD} acreditada vía ${gateway} (Offline Mode).`, "success");
   };
 
-  const registerCustomer = (phone: string, password: string, name: string, referralCode?: string) => {
+  const registerCustomer = async (phone: string, password: string, name: string, referralCode?: string) => {
     const existing = db.customers?.find((c: any) => c.phone === phone);
     if (existing) {
       showToast("Este número de teléfono ya está registrado.", "error");
       return;
     }
+
+    try {
+      // Usamos un correo ficticio o real para Auth, ya que el Auth tradicional requiere email.
+      // Si Supabase Phone Auth está activo, se usaría signInWithOtp, pero usamos email simulado.
+      const pseudoEmail = `${phone}@kfs-user.com`;
+      const { error } = await supabase.auth.signUp({
+        email: pseudoEmail,
+        password: password,
+        options: { data: { full_name: name, role: "customer", phone } }
+      });
+      if (error) console.warn("Supabase Auth error (Customer)", error.message);
+    } catch (e) {}
 
     let referred_by_promoter_id = null;
     let referred_by_merchant_id = null;
@@ -1077,14 +1089,73 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast("Ciclo de Facturación Procesado", "success");
   };
 
+  const requestPayout = async (amountUSD: number, bankDetails: string) => {
+    if (!currentUser || (currentUser.role !== 'dueño' && currentUser.role !== 'promotora')) {
+      showToast("No autorizado para solicitar retiros.", "error");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/kfs/payout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId: currentUser.id, role: currentUser.role, amountUSD, bankDetails })
+      });
+      
+      const data = await res.json();
+      if (data.success) {
+        showToast("Solicitud de retiro enviada. Pendiente de aprobación.", "success");
+        // Local state mutation for immediate UI update
+        setDb((prev: any) => {
+           let updatedClients = prev.clients || [];
+           let updatedPromotoras = prev.promotoras || [];
+           
+           if (currentUser.role === 'dueño') {
+             updatedClients = updatedClients.map((c: any) => c.id === currentUser.id ? { ...c, salesUSD: Math.max(0, c.salesUSD - amountUSD), pendingPayoutUSD: (c.pendingPayoutUSD || 0) + amountUSD } : c);
+             setCurrentUser({ ...currentUser, salesUSD: Math.max(0, currentUser.salesUSD - amountUSD), pendingPayoutUSD: (currentUser.pendingPayoutUSD || 0) + amountUSD });
+           } else {
+             updatedPromotoras = updatedPromotoras.map((p: any) => p.id === currentUser.id ? { ...p, passiveEarningsEUR: Math.max(0, p.passiveEarningsEUR - amountUSD), pendingPayoutEUR: (p.pendingPayoutEUR || 0) + amountUSD } : p);
+             setCurrentUser({ ...currentUser, passiveEarningsEUR: Math.max(0, currentUser.passiveEarningsEUR - amountUSD), pendingPayoutEUR: (currentUser.pendingPayoutEUR || 0) + amountUSD });
+           }
+
+           return { ...prev, clients: updatedClients, promotoras: updatedPromotoras, payouts: [...(prev.payouts || []), { id: data.payoutId || `payout_${Date.now()}`, userId: currentUser.id, role: currentUser.role, amountUSD, bankDetails, status: 'pending', createdAt: new Date().toISOString() }] };
+        });
+      } else {
+        showToast(data.error || "Error al solicitar retiro", "error");
+      }
+    } catch (err) {
+      showToast("Error de conexión con el servidor de pagos", "error");
+    }
+  };
+
   const logout = () => {
     setCurrentUser(null);
     setView("login");
   };
 
-  const registerClient = (clientData: any, promotoraId: string, kfsFeePercentage: number) => {
+  const registerClient = async (clientData: any, promotoraId: string, kfsFeePercentage: number) => {
     const nextMonth = new Date();
     nextMonth.setMonth(nextMonth.getMonth() + 1);
+
+    // Supabase Auth Integration
+    try {
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: clientData.email,
+        password: clientData.password,
+        options: {
+          data: {
+            full_name: clientData.company,
+            role: "dueño"
+          }
+        }
+      });
+      if (authError) {
+        showToast("Error en registro Supabase: " + authError.message, "error");
+        // We continue with local mock anyway for the demo fallback if needed, but in prod we'd return.
+      }
+    } catch (e) {
+      console.warn("Supabase Auth not configured for signups", e);
+    }
 
     const newClient = { 
       ...clientData, 
@@ -1144,7 +1215,16 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     if (view !== "promotora") setView("login");
   };
 
-  const registerPromotora = (promoData: any) => {
+  const registerPromotora = async (promoData: any) => {
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: promoData.email,
+        password: promoData.password,
+        options: { data: { full_name: promoData.name, role: "promotora" } }
+      });
+      if (error) showToast("Aviso Supabase: " + error.message, "error");
+    } catch (e) {}
+    
     const newPromo = { ...promoData, password: hashPassword(promoData.password), id: `p${Date.now()}`, setups: 0, earningsEUR: 0, status: 'pending' };
     setDb((prev: any) => ({ ...prev, promotoras: [...prev.promotoras, newPromo] }));
     logAction("System", "REGISTER_PROMOTORA", `Promotora solicitó registro: ${promoData.name}`);
@@ -1304,7 +1384,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast("Egreso registrado contablemente.");
   };
 
-  const processPurchase = (product: any, paymentMethod: string = "cash", applyIva: boolean = false, customerPhone: string = "", customerName: string = "", customerRif: string = "") => {
+  const processPurchase = (product: any, paymentMethod: string = "cash", applyIva: boolean = false, customerPhone: string = "", customerName: string = "", customerRif: string = "", kPointsToBurn: number = 0) => {
     if (product.stock !== undefined && product.stock <= 0) {
       showToast("Producto agotado", "error");
       return null;
@@ -1316,7 +1396,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     const ivaUSD = applyIva ? basePriceUSD * 0.16 : 0;
     const isForeign = ['zinli', 'wally_tech', 'airtm', 'ubbi_app', 'cash_usd', 'cash_eur', 'binance', 'nfc_web'].includes(paymentMethod);
     const igtfUSD = isForeign ? (basePriceUSD + ivaUSD) * 0.03 : 0;
-    const totalUSD = basePriceUSD + ivaUSD + igtfUSD;
+    
+    const discountUSD = kPointsToBurn * 0.001;
+    const totalUSD = Math.max(0, basePriceUSD + ivaUSD + igtfUSD - discountUSD);
+    
     const receiptNumber = `REC-${Date.now().toString().slice(-4)}`;
 
     if (['real_balance', 'k_points', 'hybrid'].includes(paymentMethod)) {
@@ -1417,10 +1500,22 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       }
 
       const updatedCustomers = (prev.customers || []).map((c: any) => {
-        if (c.phone === customerPhone && ['real_balance', 'k_points', 'hybrid'].includes(paymentMethod)) {
-          const newReal = (c.real_balance || 0) - realNeeded;
-          const newKP = (c.k_points_balance || 0) - pointsUsed + cashbackKP;
-          const newExpiry = cashbackKP > 0 ? new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString() : (newKP <= 0 ? null : c.k_points_expiry);
+        if (c.phone === customerPhone) {
+          let newReal = c.real_balance || 0;
+          let newKP = c.k_points_balance || 0;
+          let kExpiry = c.k_points_expiry;
+          
+          if (['real_balance', 'k_points', 'hybrid'].includes(paymentMethod)) {
+            newReal -= realNeeded;
+            newKP -= pointsUsed;
+          }
+          if (kPointsToBurn > 0) {
+            newKP = Math.max(0, newKP - kPointsToBurn);
+          }
+          
+          newKP += cashbackKP;
+          const newExpiry = cashbackKP > 0 ? new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString() : (newKP <= 0 ? null : kExpiry);
+          
           return {
             ...c,
             real_balance: newReal,
@@ -1637,7 +1732,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     return transactionObj;
   };
 
-  const submitOnlineOrder = (product: any, paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone: string = "", customerName: string = "", customerRif: string = "", paymentScreenshot: string = "") => {
+  const submitOnlineOrder = (product: any, paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone: string = "", customerName: string = "", customerRif: string = "", paymentScreenshot: string = "", kPointsToBurn: number = 0) => {
     if (product.stock !== undefined && product.stock <= 0) {
       showToast("Producto agotado", "error");
       return;
@@ -1647,7 +1742,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     const ivaUSD = applyIva ? priceUSD * 0.16 : 0;
     const isForeign = ['zinli', 'wally_tech', 'airtm', 'ubbi_app', 'cash_usd', 'cash_eur', 'binance'].includes(paymentMethod);
     const igtfUSD = isForeign ? (priceUSD + ivaUSD) * 0.03 : 0;
-    const totalUSD = priceUSD + ivaUSD + igtfUSD;
+    
+    const discountUSD = kPointsToBurn * 0.001;
+    const totalUSD = Math.max(0, priceUSD + ivaUSD + igtfUSD - discountUSD);
 
     setDb((prev: any) => {
       const updatedProducts = prev.products.map((p: any) => 
@@ -1758,11 +1855,35 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           }];
         }
       }
+      
+      let updatedCustomers = prev.customers || [];
+      if (order.customerPhone) {
+        updatedCustomers = updatedCustomers.map((c: any) => {
+          if (c.phone === order.customerPhone) {
+            let newKP = c.k_points_balance || 0;
+            if (order.kPointsToBurn > 0) {
+              newKP = Math.max(0, newKP - order.kPointsToBurn);
+            }
+            // 1% cashback on online orders
+            const cashbackKP = Math.round(order.amountUSD * 0.01 * 1000);
+            newKP += cashbackKP;
+            const newExpiry = cashbackKP > 0 ? new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString() : (newKP <= 0 ? null : c.k_points_expiry);
+            
+            return {
+              ...c,
+              k_points_balance: newKP,
+              k_points_expiry: newExpiry
+            };
+          }
+          return c;
+        });
+      }
 
       return {
         ...prev,
         clients: updatedClients,
         promotoras: updatedPromotoras,
+        customers: updatedCustomers,
         crm: updatedCrm,
         orders: prev.orders.filter((o: any) => o.id !== orderId),
         transactions: [...prev.transactions, transactionObj],

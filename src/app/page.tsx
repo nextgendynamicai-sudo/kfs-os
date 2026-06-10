@@ -886,7 +886,7 @@ const KreatekLogo = ({ className = "h-8 w-auto" }: { className?: string }) => {
 
 // Navbar Component with state-aware interactive P2P Telemetry and profile avatar
 const Navbar = ({ title, showBack = false, onBack }: { title?: string, showBack?: boolean, onBack?: () => void }) => {
-  const { networkState, setNetworkState, showToast, currentUser, setCurrentUser, setDb, db, logout, setView } = useKFS();
+  const { networkState, setNetworkState, showToast, currentUser, setCurrentUser, setDb, db, logout, setView, requestPayout } = useKFS() as any;
   const [isSyncing, setIsSyncing] = useState(false);
 
   const handleBack = () => {
@@ -5316,7 +5316,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
   );
 };
 
-const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showToast, formatUSD, formatEUR, logout, approveOrder, rejectOrder, dispatchOrder, paySubscription }: any) => {
+const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showToast, formatUSD, formatEUR, logout, approveOrder, rejectOrder, dispatchOrder, paySubscription, requestPayout }: any) => {
   const { finishOnboarding } = useKFS();
   const clientInfo = db.clients?.find((c: any) => c.id === currentUser.id) || currentUser;
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -6123,11 +6123,20 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="bg-[#0A1128] text-white p-6 rounded-2xl border border-[#C5A184]/30 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-32 h-32 bg-[#C5A184]/10 rounded-full blur-3xl" />
-              <h4 className="text-[10px] font-black uppercase text-[#C5A184] mb-2 font-mono">Meta Mensual (Expansión)</h4>
+              <h4 className="text-[10px] font-black uppercase text-[#C5A184] mb-2 font-mono">Caja & Ganancias Disponibles</h4>
               <p className="text-3xl font-black mb-1">${formatUSD(currentUser.salesUSD || 0)} <span className="text-sm font-light text-gray-400">/ $1,000</span></p>
-              <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden mt-4">
+              <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden mt-4 mb-4">
                 <div className="bg-[#C5A184] h-full" style={{ width: `${Math.min(100, ((currentUser.salesUSD || 0) / 1000) * 100)}%` }} />
               </div>
+              <button 
+                onClick={() => {
+                  const amount = parseFloat(window.prompt("Monto a retirar en USD:", "0") || "0");
+                  if (amount > 0) requestPayout(amount, "Datos bancarios en perfil");
+                }}
+                className="w-full py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-black uppercase tracking-wider transition-colors"
+              >
+                Solicitar Retiro
+              </button>
             </div>
             <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
               <h4 className="text-[10px] font-black uppercase text-gray-500 mb-2 font-mono">Categorías Fuertes</h4>
@@ -7295,8 +7304,8 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
     setShowScanner(false);
   };
 
-  const handleConfirmCheckout = (paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone: string, customerName: string, customerRif: string) => {
-    const tx = processPurchase(checkoutProduct, paymentMethod, applyIva, customerPhone, customerName, customerRif);
+  const handleConfirmCheckout = (paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone: string, customerName: string, customerRif: string, paymentScreenshot?: string, kPointsToBurn: number = 0) => {
+    const tx = processPurchase(checkoutProduct, paymentMethod, applyIva, customerPhone, customerName, customerRif, kPointsToBurn);
     if (tx) {
       setReceiptTx(tx);
     }
@@ -7707,8 +7716,8 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
   const [activeStoreId, setActiveStoreId] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
 
-  const handleConfirmCheckout = (paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone: string, customerName: string, customerRif: string, paymentScreenshot?: string) => {
-    submitOnlineOrder(checkoutProduct, paymentMethod, applyIva, paymentReference, customerPhone, customerName, customerRif, paymentScreenshot);
+  const handleConfirmCheckout = (paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone: string, customerName: string, customerRif: string, paymentScreenshot?: string, kPointsToBurn: number = 0) => {
+    submitOnlineOrder(checkoutProduct, paymentMethod, applyIva, paymentReference, customerPhone, customerName, customerRif, paymentScreenshot, kPointsToBurn);
     setCheckoutProduct(null);
   };
   
@@ -8469,6 +8478,7 @@ export default function Home() {
           rejectOrder={rejectOrder}
           dispatchOrder={dispatchOrder}
           paySubscription={paySubscription}
+          requestPayout={requestPayout}
         />
       )}
       {view === "vendedor" && (
