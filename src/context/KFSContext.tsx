@@ -516,8 +516,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
   const [currentUser, setCurrentUser] = useState<any>(null);
   const currentUserRef = useRef(currentUser);
+  const hasRestoredRef = useRef(false);
   useEffect(() => {
     currentUserRef.current = currentUser;
+    if (!hasRestoredRef.current) return;
     if (currentUser) {
       localStorage.setItem("kfs_os_current_user", JSON.stringify(currentUser));
     } else {
@@ -686,9 +688,14 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
     try {
       const savedUser = localStorage.getItem("kfs_os_current_user");
-      if (savedUser) {
-        setCurrentUser(JSON.parse(savedUser));
+      if (savedUser && savedUser !== "undefined" && savedUser !== "null") {
+        try {
+          setCurrentUser(JSON.parse(savedUser));
+        } catch (e) {
+          console.error("[KFS Context] Error parsing saved user session:", e);
+        }
       }
+      hasRestoredRef.current = true;
       
       getIndexedDBValue("kfs_os_db_prod")
         .then((savedDb) => {
