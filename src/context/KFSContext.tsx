@@ -506,16 +506,19 @@ const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
 
   if (deletedKeys.size > 0) {
     mergedDb.clients = mergedDb.clients?.filter((c: any) => !deletedKeys.has(c.id));
-    mergedDb.products = mergedDb.products?.filter((p: any) => !deletedKeys.has(p.clientId));
-    mergedDb.vendedores = mergedDb.vendedores?.filter((v: any) => !deletedKeys.has(v.clientId));
-    mergedDb.posTerminals = mergedDb.posTerminals?.filter((pt: any) => !deletedKeys.has(pt.clientId));
-    mergedDb.transactions = mergedDb.transactions?.filter((tx: any) => !deletedKeys.has(tx.clientId));
-    mergedDb.orders = mergedDb.orders?.filter((o: any) => !deletedKeys.has(o.clientId));
-    mergedDb.supportTickets = mergedDb.supportTickets?.filter((t: any) => !deletedKeys.has(t.clientId));
-    mergedDb.expenses = mergedDb.expenses?.filter((e: any) => !deletedKeys.has(e.clientId));
-    mergedDb.zReports = mergedDb.zReports?.filter((z: any) => !deletedKeys.has(z.clientId));
-    mergedDb.vales = mergedDb.vales?.filter((v: any) => !deletedKeys.has(v.clientId));
-    mergedDb.unlockedContacts = mergedDb.unlockedContacts?.filter((u: any) => !deletedKeys.has(u.clientId));
+    mergedDb.products = mergedDb.products?.filter((p: any) => !deletedKeys.has(p.clientId) && !deletedKeys.has(p.id));
+    mergedDb.vendedores = mergedDb.vendedores?.filter((v: any) => !deletedKeys.has(v.clientId) && !deletedKeys.has(v.id));
+    mergedDb.posTerminals = mergedDb.posTerminals?.filter((pt: any) => !deletedKeys.has(pt.clientId) && !deletedKeys.has(pt.id));
+    mergedDb.transactions = mergedDb.transactions?.filter((tx: any) => !deletedKeys.has(tx.clientId) && !deletedKeys.has(tx.id));
+    mergedDb.orders = mergedDb.orders?.filter((o: any) => !deletedKeys.has(o.clientId) && !deletedKeys.has(o.id));
+    mergedDb.supportTickets = mergedDb.supportTickets?.filter((t: any) => !deletedKeys.has(t.clientId) && !deletedKeys.has(t.id));
+    mergedDb.expenses = mergedDb.expenses?.filter((e: any) => !deletedKeys.has(e.clientId) && !deletedKeys.has(e.id));
+    mergedDb.zReports = mergedDb.zReports?.filter((z: any) => !deletedKeys.has(z.clientId) && !deletedKeys.has(z.id));
+    mergedDb.vales = mergedDb.vales?.filter((v: any) => !deletedKeys.has(v.clientId) && !deletedKeys.has(v.id));
+    mergedDb.unlockedContacts = mergedDb.unlockedContacts?.filter((u: any) => !deletedKeys.has(u.clientId) && !deletedKeys.has(u.id));
+    mergedDb.riders = mergedDb.riders?.filter((r: any) => !deletedKeys.has(r.id));
+    mergedDb.candidates = mergedDb.candidates?.filter((c: any) => !deletedKeys.has(c.id));
+    mergedDb.promotoras = mergedDb.promotoras?.filter((p: any) => !deletedKeys.has(p.id));
   }
 
   return mergedDb;
@@ -1704,7 +1707,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const rejectPromotora = (id: string) => {
     setDb((prev: any) => ({
       ...prev,
-      promotoras: prev.promotoras.filter((p: any) => p.id !== id)
+      promotoras: prev.promotoras.filter((p: any) => p.id !== id),
+      kreatekCore: {
+        ...(prev.kreatekCore || {}),
+        deletedKeys: [...(prev.kreatekCore?.deletedKeys || []), id]
+      }
     }));
     showToast("Solicitud rechazada y eliminada.");
   };
@@ -2410,10 +2417,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         orders: prev.orders.filter((o: any) => o.id !== orderId),
         transactions: [...prev.transactions, transactionObj],
         kreatekCore: {
-          totalTransactions: (prev.kreatekCore.totalTransactions || 0) + 1,
-          earningsEUR: (prev.kreatekCore.earningsEUR || 0) + kreatekTotalFeeEUR,
-          netEarningsEUR: (prev.kreatekCore.netEarningsEUR || 0) + finalNetEUR,
-          adBudgetEUR: (prev.kreatekCore.adBudgetEUR || 0) + adBudgetEUR
+          ...prev.kreatekCore,
+          totalTransactions: (prev.kreatekCore?.totalTransactions || 0) + 1,
+          earningsEUR: (prev.kreatekCore?.earningsEUR || 0) + kreatekTotalFeeEUR,
+          netEarningsEUR: (prev.kreatekCore?.netEarningsEUR || 0) + finalNetEUR,
+          adBudgetEUR: (prev.kreatekCore?.adBudgetEUR || 0) + adBudgetEUR,
+          deletedKeys: [...(prev.kreatekCore?.deletedKeys || []), orderId]
         }
       };
     });
@@ -2433,7 +2442,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       return {
         ...prev,
         products: updatedProducts,
-        orders: prev.orders.filter((o: any) => o.id !== orderId)
+        orders: prev.orders.filter((o: any) => o.id !== orderId),
+        kreatekCore: {
+          ...prev.kreatekCore,
+          deletedKeys: [...(prev.kreatekCore?.deletedKeys || []), orderId]
+        }
       };
     });
     setGhostTrapLocked(true);
@@ -2688,7 +2701,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const deletePosTerminal = (posId: string) => {
     setDb((prev: any) => ({
       ...prev,
-      posTerminals: (prev.posTerminals || []).filter((p: any) => p.id !== posId)
+      posTerminals: (prev.posTerminals || []).filter((p: any) => p.id !== posId),
+      kreatekCore: {
+        ...(prev.kreatekCore || {}),
+        deletedKeys: [...(prev.kreatekCore?.deletedKeys || []), posId]
+      }
     }));
     showToast("Terminal POS eliminado", "success");
   };
