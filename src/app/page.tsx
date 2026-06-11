@@ -3430,9 +3430,9 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                           ].map(({ label, key, icon }) => (
                             <div key={key} className={`rounded-xl p-2 text-center border ${rider[key] ? "border-green-200 bg-green-50" : "border-gray-200 bg-gray-50"}`}>
                               {rider[key] ? (
-                                <img src={rider[key]} alt={label} className="w-full h-16 object-cover rounded-lg mb-1 cursor-pointer" onClick={() => window.open(rider[key], "_blank")} title="Click para ampliar" />
+                                <img src={rider[key]} alt={label} className="w-full aspect-square object-cover rounded-lg mb-1 cursor-pointer" onClick={() => window.open(rider[key], "_blank")} title="Click para ampliar" />
                               ) : (
-                                <div className="w-full h-16 flex items-center justify-center text-2xl mb-1">{icon}</div>
+                                <div className="w-full aspect-square flex items-center justify-center text-2xl mb-1 bg-gray-100 rounded-lg">{icon}</div>
                               )}
                               <p className={`text-[8px] font-black uppercase ${rider[key] ? "text-green-600" : "text-red-400"}`}>
                                 {rider[key] ? "✅ " : "⚠️ "}{label}

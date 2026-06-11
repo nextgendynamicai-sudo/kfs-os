@@ -488,14 +488,35 @@ const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
   // merge kreatekCore with max-value safety
   const localCore = localDb.kreatekCore || {};
   const remoteCore = remoteDb.kreatekCore || {};
+  
+  const deletedKeys = new Set([
+    ...(localCore.deletedKeys || []),
+    ...(remoteCore.deletedKeys || [])
+  ]);
+
   mergedDb.kreatekCore = {
     totalTransactions: Math.max(localCore.totalTransactions || 0, remoteCore.totalTransactions || 0),
     earningsEUR: Math.max(localCore.earningsEUR || 0, remoteCore.earningsEUR || 0),
     netEarningsEUR: Math.max(localCore.netEarningsEUR || 0, remoteCore.netEarningsEUR || 0),
     adBudgetEUR: Math.max(localCore.adBudgetEUR || 0, remoteCore.adBudgetEUR || 0),
     avatar: localCore.avatar || remoteCore.avatar,
-    wipeVersion: localCore.wipeVersion || remoteCore.wipeVersion || CURRENT_WIPE_VERSION
+    wipeVersion: localCore.wipeVersion || remoteCore.wipeVersion || CURRENT_WIPE_VERSION,
+    deletedKeys: Array.from(deletedKeys)
   };
+
+  if (deletedKeys.size > 0) {
+    mergedDb.clients = mergedDb.clients?.filter((c: any) => !deletedKeys.has(c.id));
+    mergedDb.products = mergedDb.products?.filter((p: any) => !deletedKeys.has(p.clientId));
+    mergedDb.vendedores = mergedDb.vendedores?.filter((v: any) => !deletedKeys.has(v.clientId));
+    mergedDb.posTerminals = mergedDb.posTerminals?.filter((pt: any) => !deletedKeys.has(pt.clientId));
+    mergedDb.transactions = mergedDb.transactions?.filter((tx: any) => !deletedKeys.has(tx.clientId));
+    mergedDb.orders = mergedDb.orders?.filter((o: any) => !deletedKeys.has(o.clientId));
+    mergedDb.supportTickets = mergedDb.supportTickets?.filter((t: any) => !deletedKeys.has(t.clientId));
+    mergedDb.expenses = mergedDb.expenses?.filter((e: any) => !deletedKeys.has(e.clientId));
+    mergedDb.zReports = mergedDb.zReports?.filter((z: any) => !deletedKeys.has(z.clientId));
+    mergedDb.vales = mergedDb.vales?.filter((v: any) => !deletedKeys.has(v.clientId));
+    mergedDb.unlockedContacts = mergedDb.unlockedContacts?.filter((u: any) => !deletedKeys.has(u.clientId));
+  }
 
   return mergedDb;
 };
@@ -720,15 +741,16 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
               setDb(initialDB);
               setIndexedDBValue("kfs_os_db_prod", initialDB);
             } else {
-              // Ensure kfs-express client exists in stored DB
+              // Ensure kfs-express client exists in stored DB only if not deleted
               if (!parsed.clients) parsed.clients = [];
-              if (!parsed.clients.some((c: any) => c.id === "kfs-express")) {
+              const deletedKeys = parsed.kreatekCore?.deletedKeys || [];
+              if (!parsed.clients.some((c: any) => c.id === "kfs-express") && !deletedKeys.includes("kfs-express")) {
                 parsed.clients.push(initialDB.clients[0]);
               }
               // Ensure default digital products exist
               if (!parsed.products) parsed.products = [];
-              initialDB.products.forEach(dp => {
-                if (!parsed.products.some((p: any) => p.id === dp.id)) {
+              initialDB.products.forEach((dp: any) => {
+                if (!parsed.products.some((p: any) => p.id === dp.id) && !deletedKeys.includes(dp.clientId)) {
                   parsed.products.push(dp);
                 }
               });
@@ -771,13 +793,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                   }
                 } else if (error && error.code === 'PGRST116') {
                   setDb((prevDb: any) => {
-                    if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION && prevDb.transactions?.length === 0) return prevDb;
-                    console.log("[Supabase Cloud] Fila no encontrada (BD vacía o borrada). Restableciendo local a 0.");
-                    localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
-                    setCurrentUser(null);
-                    setOriginalUser(null);
-                    if (currentUserRef.current) setView("landing");
-                    return initialDB;
+                    console.log("[Supabase Cloud] Fila no encontrada (BD vacía o borrada). Restaurando nube con estado local.");
+                    supabase.from("kfs_store_states").upsert({ id: syncId, db_state: prevDb, updated_at: new Date().toISOString() }).then(() => {});
+                    return prevDb;
                   });
                 }
               })
@@ -785,12 +803,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                 console.log("Supabase initial sync bypass:", err);
                 if (err && (err.code === 'PGRST116' || (err.message && err.message.includes('0 rows')))) {
                   setDb((prevDb: any) => {
-                    if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION && prevDb.transactions?.length === 0) return prevDb;
-                    localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
-                    setCurrentUser(null);
-                    setOriginalUser(null);
-                    if (currentUserRef.current) setView("landing");
-                    return initialDB;
+                    console.log("[Supabase Cloud] Fila no encontrada en catch (BD vacía o borrada). Restaurando nube con estado local.");
+                    supabase.from("kfs_store_states").upsert({ id: syncId, db_state: prevDb, updated_at: new Date().toISOString() }).then(() => {});
+                    return prevDb;
                   });
                 }
               })
@@ -833,13 +848,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                         }
                       } else if (payload.eventType === 'DELETE' || !payload.new) {
                         setDb((prevDb: any) => {
-                          if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION && prevDb.transactions?.length === 0) return prevDb;
-                          console.log("[Supabase Realtime] Fila eliminada (BD borrada). Restableciendo local a 0.");
-                          localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
-                          setCurrentUser(null);
-                          setOriginalUser(null);
-                          if (currentUserRef.current) setView("landing");
-                          return initialDB;
+                          console.log("[Supabase Realtime] Fila eliminada. Restaurando nube con estado local activo.");
+                          supabase.from("kfs_store_states").upsert({ id: syncId, db_state: prevDb, updated_at: new Date().toISOString() }).then(() => {});
+                          return prevDb;
                         });
                       }
                     })
@@ -854,13 +865,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                         }
                         if (error.code === 'PGRST116') {
                           setDb((prevDb: any) => {
-                            if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION && prevDb.transactions?.length === 0) return prevDb;
-                            console.log("[Supabase Polling Fallback] Fila no encontrada (BD vacía o borrada). Restableciendo local a 0.");
-                            localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
-                            setCurrentUser(null);
-                            setOriginalUser(null);
-                            if (currentUserRef.current) setView("landing");
-                            return initialDB;
+                            console.log("[Supabase Polling Fallback] Fila no encontrada. Restaurando nube con estado local.");
+                            supabase.from("kfs_store_states").upsert({ id: syncId, db_state: prevDb, updated_at: new Date().toISOString() }).then(() => {});
+                            return prevDb;
                           });
                         }
                         return;
@@ -1874,7 +1881,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       clients: prev.clients.filter((c: any) => c.id !== clientId),
       products: prev.products.filter((p: any) => p.clientId !== clientId),
       vendedores: prev.vendedores.filter((v: any) => v.clientId !== clientId),
-      posTerminals: prev.posTerminals.filter((pt: any) => pt.clientId !== clientId)
+      posTerminals: prev.posTerminals.filter((pt: any) => pt.clientId !== clientId),
+      kreatekCore: {
+        ...(prev.kreatekCore || {}),
+        deletedKeys: [...(prev.kreatekCore?.deletedKeys || []), clientId]
+      }
     }));
     logAction("System", "DELETE_CLIENT", `Comercio ${clientId} eliminado de la red.`);
     showToast("Comercio y sus datos asociados eliminados.", "error");
@@ -3132,7 +3143,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const rejectRider = (riderId: string) => {
     setDb((prev: any) => ({
       ...prev,
-      riders: (prev.riders || []).filter((r: any) => r.id !== riderId)
+      riders: (prev.riders || []).filter((r: any) => r.id !== riderId),
+      kreatekCore: {
+        ...(prev.kreatekCore || {}),
+        deletedKeys: [...(prev.kreatekCore?.deletedKeys || []), riderId]
+      }
     }));
     logAction("Core", "REJECT_RIDER", `Rider ${riderId} rechazado y eliminado.`);
     showToast("Solicitud de rider rechazada y eliminada.", "error");
