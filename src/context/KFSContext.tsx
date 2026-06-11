@@ -1883,17 +1883,27 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   };
 
   const deleteClient = (clientId: string) => {
-    setDb((prev: any) => ({
-      ...prev,
-      clients: prev.clients.filter((c: any) => c.id !== clientId),
-      products: prev.products.filter((p: any) => p.clientId !== clientId),
-      vendedores: prev.vendedores.filter((v: any) => v.clientId !== clientId),
-      posTerminals: prev.posTerminals.filter((pt: any) => pt.clientId !== clientId),
-      kreatekCore: {
-        ...(prev.kreatekCore || {}),
-        deletedKeys: [...(prev.kreatekCore?.deletedKeys || []), clientId]
-      }
-    }));
+    setDb((prev: any) => {
+      const safeFilter = (arr: any, key: string, id: string) => Array.isArray(arr) ? arr.filter((item: any) => item?.[key] !== id) : [];
+      return {
+        ...prev,
+        clients: safeFilter(prev.clients, 'id', clientId),
+        products: safeFilter(prev.products, 'clientId', clientId),
+        vendedores: safeFilter(prev.vendedores, 'clientId', clientId),
+        posTerminals: safeFilter(prev.posTerminals, 'clientId', clientId),
+        transactions: safeFilter(prev.transactions, 'clientId', clientId),
+        orders: safeFilter(prev.orders, 'clientId', clientId),
+        supportTickets: safeFilter(prev.supportTickets, 'clientId', clientId),
+        expenses: safeFilter(prev.expenses, 'clientId', clientId),
+        zReports: safeFilter(prev.zReports, 'clientId', clientId),
+        vales: safeFilter(prev.vales, 'clientId', clientId),
+        unlockedContacts: safeFilter(prev.unlockedContacts, 'clientId', clientId),
+        kreatekCore: {
+          ...(prev.kreatekCore || {}),
+          deletedKeys: Array.isArray(prev.kreatekCore?.deletedKeys) ? [...new Set([...prev.kreatekCore.deletedKeys, clientId])] : [clientId]
+        }
+      };
+    });
     logAction("System", "DELETE_CLIENT", `Comercio ${clientId} eliminado de la red.`);
     showToast("Comercio y sus datos asociados eliminados.", "error");
   };
@@ -3160,10 +3170,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const rejectRider = (riderId: string) => {
     setDb((prev: any) => ({
       ...prev,
-      riders: (prev.riders || []).filter((r: any) => r.id !== riderId),
+      riders: Array.isArray(prev.riders) ? prev.riders.filter((r: any) => r?.id !== riderId) : [],
       kreatekCore: {
         ...(prev.kreatekCore || {}),
-        deletedKeys: [...(prev.kreatekCore?.deletedKeys || []), riderId]
+        deletedKeys: Array.isArray(prev.kreatekCore?.deletedKeys) ? [...new Set([...prev.kreatekCore.deletedKeys, riderId])] : [riderId]
       }
     }));
     logAction("Core", "REJECT_RIDER", `Rider ${riderId} rechazado y eliminado.`);
