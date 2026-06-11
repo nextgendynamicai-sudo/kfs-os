@@ -1,7 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
-import { supabase, isSupabaseConfigured } from "./supabase";
+import { supabase, isSupabaseConfigured, uploadAsset } from "./supabase";
 import { playScannerBeep, speakText, getStoreCoords, getCustomerCoords, playSyncChime } from "../lib/utils";
 import { getIndexedDBValue, setIndexedDBValue } from "../lib/indexedDB";
 
@@ -257,8 +257,10 @@ const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
       map.set(key, i);
     });
     // Overlay local state items
+    const localKeys = new Set();
     (localArr || []).forEach(i => {
       const key = i.id || i.barcode || JSON.stringify(i);
+      localKeys.add(key);
       const existing = map.get(key);
       const isNew = !existing;
       const isAuthority = checkAuthority ? checkAuthority(i) : true;
@@ -267,6 +269,15 @@ const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
         map.set(key, i);
       }
     });
+    // Handle deletions: if item is remote but not local, and current user has authority, remove it
+    if (checkAuthority) {
+      (remoteArr || []).forEach(i => {
+        const key = i.id || i.barcode || JSON.stringify(i);
+        if (!localKeys.has(key) && checkAuthority(i)) {
+          map.delete(key);
+        }
+      });
+    }
     return Array.from(map.values());
   };
 
@@ -274,7 +285,9 @@ const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
   const mergeClientsIncoming = (localClients: any[], remoteClients: any[]) => {
     const map = new Map();
     (remoteClients || []).forEach(c => map.set(c.id, c));
+    const localKeys = new Set();
     (localClients || []).forEach(c => {
+      localKeys.add(c.id);
       const existing = map.get(c.id);
       const isNew = !existing;
       const isAuthority = currentUser && (
@@ -298,6 +311,20 @@ const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
         }
       }
     });
+    // Handle client deletions
+    (remoteClients || []).forEach(c => {
+      if (!localKeys.has(c.id)) {
+        const isAuthority = currentUser && (
+          currentUser.role === "core" ||
+          (currentUser.role === "dueño" && c.id === currentUser.id) ||
+          (currentUser.role === "vendedor" && c.id === currentUser.clientId) ||
+          (currentUser.role === "promotora" && c.promotoraId === currentUser.id)
+        );
+        if (isAuthority) {
+          map.delete(c.id);
+        }
+      }
+    });
     return Array.from(map.values());
   };
 
@@ -305,7 +332,9 @@ const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
   const mergeProductsIncoming = (localProducts: any[], remoteProducts: any[]) => {
     const map = new Map();
     (remoteProducts || []).forEach(p => map.set(p.id, p));
+    const localKeys = new Set();
     (localProducts || []).forEach(p => {
+      localKeys.add(p.id);
       const existing = map.get(p.id);
       const isNew = !existing;
       const isAuthority = currentUser && (
@@ -315,6 +344,19 @@ const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
       );
       if (isNew || isAuthority) {
         map.set(p.id, p);
+      }
+    });
+    // Handle product deletions
+    (remoteProducts || []).forEach(p => {
+      if (!localKeys.has(p.id)) {
+        const isAuthority = currentUser && (
+          currentUser.role === "core" ||
+          (currentUser.role === "dueño" && p.clientId === currentUser.id) ||
+          (currentUser.role === "vendedor" && p.clientId === currentUser.clientId)
+        );
+        if (isAuthority) {
+          map.delete(p.id);
+        }
       }
     });
     return Array.from(map.values());
@@ -511,6 +553,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const ghostTrapActive = useRef(true);
   const isRemoteUpdate = useRef(false);
   const p2pChannelRef = useRef<any>(null);
+  const lastRemoteUpdatedAtRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined" && "BroadcastChannel" in window) {
@@ -697,11 +740,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         
         supabase
           .from("kfs_store_states")
-          .select("db_state")
+          .select("db_state, updated_at")
           .eq("id", syncId)
           .single()
           .then(({ data, error }: any) => {
             if (data && data.db_state) {
+              lastRemoteUpdatedAtRef.current = data.updated_at;
               const remote = data.db_state;
               const remoteVersion = remote.kreatekCore?.wipeVersion || 0;
               if (remoteVersion > CURRENT_WIPE_VERSION) {
@@ -757,6 +801,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
               channel
                 .on('postgres_changes', { event: '*', schema: 'public', table: 'kfs_store_states', filter: `id=eq.${syncId}` }, (payload: any) => {
                   if (payload.new && payload.new.db_state) {
+                    lastRemoteUpdatedAtRef.current = payload.new.updated_at;
                     const remote = payload.new.db_state;
                     const remoteVersion = remote.kreatekCore?.wipeVersion || 0;
                     if (remoteVersion > CURRENT_WIPE_VERSION) {
@@ -799,50 +844,66 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
               // Polling Fallback para Móviles (Garantiza 100% Real-Time si fallan WebSockets)
               setInterval(() => {
-                supabase.from("kfs_store_states").select("db_state").eq("id", syncId).single().then(({ data, error }: any) => {
-                  if (error && error.code === '42501') {
-                    console.error("Supabase RLS Error:", error);
-                  }
-                  if (data && data.db_state) {
-                    const remote = data.db_state;
-                    const remoteVersion = remote.kreatekCore?.wipeVersion || 0;
-                    if (remoteVersion > CURRENT_WIPE_VERSION) {
-                      console.log("[Supabase Polling Fallback] Versión de la nube es más reciente. Recargando...");
-                      if (typeof window !== "undefined") window.location.reload();
-                    } else if (remoteVersion < CURRENT_WIPE_VERSION) {
+                supabase.from("kfs_store_states").select("updated_at").eq("id", syncId).single().then(({ data, error }: any) => {
+                  if (error) {
+                    if (error.code === '42501') {
+                      console.error("Supabase RLS Error:", error);
+                    }
+                    if (error.code === 'PGRST116') {
                       setDb((prevDb: any) => {
-                        if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION) return prevDb;
-                        console.log("[Supabase Polling Fallback] Versión de BD antigua detectada. Forzando reinicio.");
+                        if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION && prevDb.transactions?.length === 0) return prevDb;
+                        console.log("[Supabase Polling Fallback] Fila no encontrada (BD vacía o borrada). Restableciendo local a 0.");
                         localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
                         setCurrentUser(null);
                         setOriginalUser(null);
                         if (currentUserRef.current) setView("landing");
                         return initialDB;
                       });
-                    } else {
-                      setDb((prevDb: any) => {
-                        const merged = mergeIncomingDb(prevDb, remote, currentUserRef.current);
-                        if (JSON.stringify(prevDb) !== JSON.stringify(merged)) {
-                          isRemoteUpdate.current = true;
-                          console.log("[Supabase Polling Fallback] Data entrante detectada. Sincronizando con fusión local...");
-                          return merged;
-                        }
-                        return prevDb;
-                      });
                     }
-                  } else if (error && error.code === 'PGRST116') {
-                    setDb((prevDb: any) => {
-                      if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION && prevDb.transactions?.length === 0) return prevDb;
-                      console.log("[Supabase Polling Fallback] Fila no encontrada (BD vacía o borrada). Restableciendo local a 0.");
-                      localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
-                      setCurrentUser(null);
-                      setOriginalUser(null);
-                      if (currentUserRef.current) setView("landing");
-                      return initialDB;
+                    return;
+                  }
+
+                  if (data && data.updated_at) {
+                    if (lastRemoteUpdatedAtRef.current && data.updated_at === lastRemoteUpdatedAtRef.current) {
+                      // No change, skip downloading db_state!
+                      return;
+                    }
+
+                    // Remote version changed, let's fetch db_state
+                    supabase.from("kfs_store_states").select("db_state, updated_at").eq("id", syncId).single().then(({ data: fullData }: any) => {
+                      if (fullData && fullData.db_state) {
+                        lastRemoteUpdatedAtRef.current = fullData.updated_at;
+                        const remote = fullData.db_state;
+                        const remoteVersion = remote.kreatekCore?.wipeVersion || 0;
+                        if (remoteVersion > CURRENT_WIPE_VERSION) {
+                          console.log("[Supabase Polling Fallback] Versión de la nube es más reciente. Recargando...");
+                          if (typeof window !== "undefined") window.location.reload();
+                        } else if (remoteVersion < CURRENT_WIPE_VERSION) {
+                          setDb((prevDb: any) => {
+                            if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION) return prevDb;
+                            console.log("[Supabase Polling Fallback] Versión de BD antigua detectada. Forzando reinicio.");
+                            localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
+                            setCurrentUser(null);
+                            setOriginalUser(null);
+                            if (currentUserRef.current) setView("landing");
+                            return initialDB;
+                          });
+                        } else {
+                          setDb((prevDb: any) => {
+                            const merged = mergeIncomingDb(prevDb, remote, currentUserRef.current);
+                            if (JSON.stringify(prevDb) !== JSON.stringify(merged)) {
+                              isRemoteUpdate.current = true;
+                              console.log("[Supabase Polling Fallback] Data entrante detectada. Sincronizando con fusión local...");
+                              return merged;
+                            }
+                            return prevDb;
+                          });
+                        }
+                      }
                     });
                   }
                 }).catch(() => {});
-              }, 4000);
+              }, 12000);
             }
           });
       } else {
@@ -946,33 +1007,68 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     if (isSupabaseConfigured && networkState === "online") {
       const syncId = "kfs-general-db-prod";
       
-      // Anti-Collision Merge Strategy
-      supabase.from("kfs_store_states").select("db_state").eq("id", syncId).single().then(({ data }: any) => {
-        let mergedDb = { ...db };
-        if (data && data.db_state) {
-          const remote = data.db_state;
-          mergedDb = mergeIncomingDb(db, remote, currentUserRef.current);
-        }
-
-        supabase
-          .from("kfs_store_states")
-          .upsert({
-            id: syncId,
-            db_state: mergedDb,
-            updated_at: new Date().toISOString()
-          })
-          .then(({ error }: any) => {
-            if (error) {
-              console.warn("[KFS Cloud] Aviso: Sincronización asíncrona omitida. Verifique que haya ejecutado 'supabase_setup.sql' en su proyecto.", error.message || error.code || "");
-            } else {
-              console.log("[Supabase Cloud] Estado sincronizado asíncronamente con protección Anti-Colisión.");
+      // Anti-Collision Merge Strategy - check updated_at first
+      supabase.from("kfs_store_states").select("updated_at").eq("id", syncId).single().then(({ data }: any) => {
+        const remoteUpdatedAt = data?.updated_at;
+        if (remoteUpdatedAt && lastRemoteUpdatedAtRef.current && remoteUpdatedAt === lastRemoteUpdatedAtRef.current) {
+          // No concurrent updates, safe to upsert directly
+          const nextUpdatedAt = new Date().toISOString();
+          supabase
+            .from("kfs_store_states")
+            .upsert({
+              id: syncId,
+              db_state: db,
+              updated_at: nextUpdatedAt
+            })
+            .then(({ error }: any) => {
+              if (error) {
+                console.warn("[KFS Cloud] Aviso: Sincronización asíncrona omitida. Verifique que haya ejecutado 'supabase_setup.sql' en su proyecto.", error.message || error.code || "");
+              } else {
+                lastRemoteUpdatedAtRef.current = nextUpdatedAt;
+                console.log("[Supabase Cloud] Estado sincronizado directamente (sin colisión).");
+              }
+            })
+            .catch((err: any) => {
+              console.error("[Supabase Cloud] Error al sincronizar con la nube:", err);
+            });
+        } else {
+          // Concurrent updates exist, or initial state. Need to fetch full db_state for merge.
+          supabase.from("kfs_store_states").select("db_state, updated_at").eq("id", syncId).single().then(({ data: fullData }: any) => {
+            let mergedDb = { ...db };
+            if (fullData && fullData.db_state) {
+              lastRemoteUpdatedAtRef.current = fullData.updated_at;
+              const remote = fullData.db_state;
+              mergedDb = mergeIncomingDb(db, remote, currentUserRef.current);
             }
-          })
-          .catch((err: any) => {
-            console.error("[Supabase Cloud] Error al sincronizar con la nube:", err);
+            const nextUpdatedAt = new Date().toISOString();
+            supabase
+              .from("kfs_store_states")
+              .upsert({
+                id: syncId,
+                db_state: mergedDb,
+                updated_at: nextUpdatedAt
+              })
+              .then(({ error }: any) => {
+                if (error) {
+                  console.warn("[KFS Cloud] Aviso: Sincronización asíncrona omitida. Verifique que haya ejecutado 'supabase_setup.sql' en su proyecto.", error.message || error.code || "");
+                } else {
+                  lastRemoteUpdatedAtRef.current = nextUpdatedAt;
+                  if (JSON.stringify(db) !== JSON.stringify(mergedDb)) {
+                    isRemoteUpdate.current = true;
+                    setDb(mergedDb);
+                  }
+                  console.log("[Supabase Cloud] Estado sincronizado asíncronamente con protección Anti-Colisión y Merge.");
+                }
+              })
+              .catch((err: any) => {
+                console.error("[Supabase Cloud] Error al sincronizar con la nube (merge path):", err);
+              });
+          }).catch((err: any) => {
+            console.error("[Supabase Cloud] Error al obtener el estado de la nube para merge:", err);
           });
+        }
       }).catch((err: any) => {
-        console.error("[Supabase Cloud] Error al obtener el estado de la nube para merge:", err);
+        console.error("[Supabase Cloud] Error al obtener el updated_at de la nube:", err);
       });
     }
   }, [db, isClient, networkState, currentUser, isDataLoaded]);
@@ -1130,7 +1226,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast(`Billetera recargada con $${amountUSD}`, "success");
   };
 
-  const requestTopUp = (userId: string, userType: 'client' | 'customer', amountUSD: number, paymentReference: string, screenshotBase64: string) => {
+  const requestTopUp = async (userId: string, userType: 'client' | 'customer', amountUSD: number, paymentReference: string, screenshotBase64: string) => {
+    const screenshotUrl = screenshotBase64 && screenshotBase64.startsWith("data:")
+      ? await uploadAsset(`topups/${userId}_${Date.now()}.png`, screenshotBase64)
+      : screenshotBase64;
+
     setDb((prev: any) => ({
       ...prev,
       topups: [...(prev.topups || []), {
@@ -1139,7 +1239,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         userType,
         amountUSD,
         paymentReference,
-        screenshotBase64,
+        screenshotBase64: screenshotUrl,
         status: "pending",
         timestamp: new Date().toISOString()
       }]
@@ -1443,6 +1543,14 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   };
 
   const registerClient = async (clientData: any, promotoraId: string, kfsFeePercentage: number) => {
+    const avatarUrl = clientData.avatar && clientData.avatar.startsWith("data:")
+      ? await uploadAsset(`avatars/client_${Date.now()}.png`, clientData.avatar)
+      : clientData.avatar;
+
+    const kycUrl = clientData.kycCedula && clientData.kycCedula.startsWith("data:")
+      ? await uploadAsset(`kyc/client_cedula_${Date.now()}.png`, clientData.kycCedula)
+      : clientData.kycCedula;
+
     const nextMonth = new Date();
     nextMonth.setMonth(nextMonth.getMonth() + 1);
 
@@ -1468,6 +1576,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
     const newClient = { 
       ...clientData, 
+      avatar: avatarUrl,
       password: hashPassword(clientData.password),
       id: `c${Date.now()}`, 
       salesUSD: 0, 
@@ -1482,7 +1591,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       acceptedToS: true,
       kycDocumentUrl: "",
       kyc_photo: clientData.kycPhoto || "",
-      kyc_id_card_img: clientData.kycCedula || "",
+      kyc_id_card_img: kycUrl || "",
       kyc_address: clientData.kycAddress || "",
       kyc_status: "verified",
       walletBalanceUSD: 0,
@@ -1529,6 +1638,14 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   };
 
   const registerPromotora = async (promoData: any) => {
+    const avatarUrl = promoData.avatar && promoData.avatar.startsWith("data:")
+      ? await uploadAsset(`avatars/promotora_${Date.now()}.png`, promoData.avatar)
+      : promoData.avatar;
+
+    const kycUrl = promoData.kycCedula && promoData.kycCedula.startsWith("data:")
+      ? await uploadAsset(`kyc/promotora_cedula_${Date.now()}.png`, promoData.kycCedula)
+      : promoData.kycCedula;
+
     try {
       const { error } = await supabase.auth.signUp({
         email: promoData.email,
@@ -1540,13 +1657,14 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     
     const newPromo = { 
       ...promoData, 
+      avatar: avatarUrl,
       password: hashPassword(promoData.password), 
       id: `p${Date.now()}`, 
       setups: 0, 
       earningsEUR: 0, 
       status: 'pending',
       kyc_photo: promoData.kycPhoto || "",
-      kyc_id_card_img: promoData.kycCedula || "",
+      kyc_id_card_img: kycUrl || "",
       kyc_address: promoData.kycAddress || "",
       kyc_status: "pending",
       customerAcquisitionBonusUSD: 0
@@ -1651,11 +1769,15 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast("Producto Global KFS inyectado a la red.");
   };
 
-  const finishOnboarding = (clientId: string, kycDocBase64?: string) => {
+  const finishOnboarding = async (clientId: string, kycDocBase64?: string) => {
+    const kycUrl = kycDocBase64 && kycDocBase64.startsWith("data:")
+      ? await uploadAsset(`kyc/${clientId}_${Date.now()}.png`, kycDocBase64)
+      : kycDocBase64;
+
     setDb((prev: any) => ({
       ...prev,
       clients: prev.clients.map((c: any) => 
-        c.id === clientId ? { ...c, isOnboarded: true, kycDocumentUrl: kycDocBase64 || c.kycDocumentUrl || "" } : c
+        c.id === clientId ? { ...c, isOnboarded: true, kycDocumentUrl: kycUrl || c.kycDocumentUrl || "" } : c
       )
     }));
     showToast("¡Onboarding completado! Bienvenido a KFS OS.", "success");
@@ -2106,11 +2228,15 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     return transactionObj;
   };
 
-  const submitOnlineOrder = (product: any, paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone: string = "", customerName: string = "", customerRif: string = "", paymentScreenshot: string = "", kPointsToBurn: number = 0) => {
+  const submitOnlineOrder = async (product: any, paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone: string = "", customerName: string = "", customerRif: string = "", paymentScreenshot: string = "", kPointsToBurn: number = 0) => {
     if (product.stock !== undefined && product.stock <= 0) {
       showToast("Producto agotado", "error");
       return;
     }
+
+    const screenshotUrl = paymentScreenshot && paymentScreenshot.startsWith("data:")
+      ? await uploadAsset(`screenshots/order_${Date.now()}.png`, paymentScreenshot)
+      : paymentScreenshot;
 
     const priceUSD = product.priceUSD;
     const ivaUSD = applyIva ? priceUSD * 0.16 : 0;
@@ -2138,7 +2264,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         customerPhone,
         customerName,
         customerRif,
-        paymentScreenshot,
+        paymentScreenshot: screenshotUrl,
         status: 'pending',
         timestamp: new Date().toISOString()
       };
@@ -2648,12 +2774,22 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     logAction("Dueño", "UPDATE_PAYMENT_METHODS", "Se actualizaron los métodos de pago.");
   };
 
-  const registerCandidate = (candidateData: any) => {
+  const registerCandidate = async (candidateData: any) => {
+    const cvUrl = candidateData.cvFile && candidateData.cvFile.startsWith("data:")
+      ? await uploadAsset(`cvs/${candidateData.phone || "anon"}_cv.pdf`, candidateData.cvFile)
+      : candidateData.cvFile;
+
+    const screenshotUrl = candidateData.registrationPaymentScreenshot && candidateData.registrationPaymentScreenshot.startsWith("data:")
+      ? await uploadAsset(`screenshots/${candidateData.phone || "anon"}_payment.png`, candidateData.registrationPaymentScreenshot)
+      : candidateData.registrationPaymentScreenshot;
+
     setDb((prev: any) => {
       const existingCandidates = prev.candidates || [];
       const filtered = existingCandidates.filter((c: any) => c.phone !== candidateData.phone);
       const newCandidate = {
         ...candidateData,
+        cvFile: cvUrl,
+        registrationPaymentScreenshot: screenshotUrl,
         id: candidateData.id || `cand_${Date.now()}`,
         status: candidateData.status || "pending",
         createdAt: new Date().toISOString()
@@ -2666,7 +2802,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast("Perfil profesional publicado/actualizado en la Bolsa de Empleo KFS.");
   };
 
-  const unlockCandidateContact = (candidateId: string, clientId: string, reference: string, screenshot?: string) => {
+  const unlockCandidateContact = async (candidateId: string, clientId: string, reference: string, screenshot?: string) => {
+    const screenshotUrl = screenshot && screenshot.startsWith("data:")
+      ? await uploadAsset(`screenshots/unlock_${Date.now()}.png`, screenshot)
+      : screenshot;
+
     setDb((prev: any) => {
       const client = prev.clients.find((c: any) => c.id === clientId);
       if (!client) return prev;
@@ -2683,7 +2823,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         status: "pending_approval",
         paymentMethod: "transfer",
         reference,
-        screenshot: screenshot || "",
+        screenshot: screenshotUrl || "",
         amountUSD: 10,
         timestamp: new Date().toISOString()
       };
