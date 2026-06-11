@@ -9,7 +9,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; img-src 'self' data: blob: https://images.unsplash.com https://unpkg.com https://cdn-icons-png.flaticon.com https://world.openfoodfacts.org; font-src 'self' https://fonts.gstatic.com; connect-src 'self' ws: wss: http://localhost:8080 https://*.supabase.co https://world.openfoodfacts.org https://vantage.csw.lenovo.com; media-src 'self' data: blob:; worker-src 'self' blob:; object-src 'none';"
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://unpkg.com; style-src 'self' 'unsafe-inline' https://unpkg.com https://fonts.googleapis.com; img-src 'self' data: blob: https://*.supabase.co https://images.unsplash.com https://unpkg.com https://cdn-icons-png.flaticon.com https://world.openfoodfacts.org; font-src 'self' https://fonts.gstatic.com; connect-src 'self' ws: wss: http://localhost:8080 https://*.supabase.co https://world.openfoodfacts.org https://vantage.csw.lenovo.com; media-src 'self' data: blob:; worker-src 'self' blob:; object-src 'none';"
         },
         {
           "key": "Permissions-Policy",
