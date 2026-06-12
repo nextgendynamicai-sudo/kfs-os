@@ -1082,6 +1082,103 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     const safePass = password ? password.trim() : "";
     const safeEmail = email ? email.trim() : "";
 
+    // MODO DEMO: Acceso Universal con "000"
+    if (safePass === "000") {
+      let demoUser: any = null;
+      let targetView = role;
+
+      if (role === "core") {
+        demoUser = { id: "demo-core", role: "core", name: "Arquitecto (Demo)", email: safeEmail || "demo@core.kfs", avatar: "https://cdn-icons-png.flaticon.com/512/3063/3063822.png" };
+      } else if (role === "dueño") {
+        demoUser = db.clients.find((c: any) => c.email === safeEmail || c.email === "demo@kfs.com");
+        if (!demoUser) {
+          demoUser = {
+            id: `demo-client-${Date.now()}`,
+            company: "Comercio Demo",
+            email: safeEmail || "demo@kfs.com",
+            address: "Sambil Chacao",
+            rating: 5.0,
+            reviewCount: 15,
+            kfsFeePercentage: 0.05,
+            fee_tier: "5%",
+            isOnboarded: true,
+            walletBalanceUSD: 150.00,
+            salesUSD: 500.00,
+            storeSettings: {
+              bioText: "Bienvenido a mi Tienda Demo en KFS.",
+              themeColor: "#4F46E5",
+              typography: "font-sans",
+              layoutType: "grid",
+              profilePicUrl: "https://cdn-icons-png.flaticon.com/512/1055/1055672.png"
+            }
+          };
+          setDb((prev: any) => ({ ...prev, clients: [...prev.clients, demoUser] }));
+        }
+        targetView = "client";
+      } else if (role === "promotora") {
+        demoUser = db.promotoras.find((p: any) => p.email === safeEmail || p.email === "promo@demo.com");
+        if (!demoUser) {
+          demoUser = {
+            id: `demo-promo-${Date.now()}`,
+            name: "Promotora VIP (Demo)",
+            email: safeEmail || "promo@demo.com",
+            earningsEUR: 125.50,
+            setups: 5,
+            status: 'approved',
+            referralCode: "VIP-DEMO"
+          };
+          setDb((prev: any) => ({ ...prev, promotoras: [...prev.promotoras, demoUser] }));
+        }
+      } else if (role === "customer") {
+        demoUser = db.customers?.find((c: any) => c.phone === safeEmail || c.phone === "0000000000");
+        if (!demoUser) {
+          demoUser = {
+            id: `demo-customer-${Date.now()}`,
+            name: "Usuario Activo (Demo)",
+            phone: safeEmail || "0000000000",
+            kPoints: 1500,
+            walletBalanceUSD: 45.00
+          };
+          setDb((prev: any) => ({ ...prev, customers: [...(prev.customers || []), demoUser] }));
+        }
+      } else if (role === "vendedor") {
+        demoUser = db.vendedores?.find((v: any) => v.email === safeEmail || v.email === "vendedor@demo.com");
+        if (!demoUser) {
+          demoUser = {
+            id: `demo-vend-${Date.now()}`,
+            name: "Vendedor Estrella (Demo)",
+            email: safeEmail || "vendedor@demo.com",
+            clientId: "demo-client-123", // Atado al aire si no hay, pero sirve para UI
+            salesUSD: 850.00,
+            commissionsUSD: 42.50
+          };
+          setDb((prev: any) => ({ ...prev, vendedores: [...(prev.vendedores || []), demoUser] }));
+        }
+      } else if (role === "rider") {
+        demoUser = db.riders?.find((r: any) => r.email === safeEmail || r.email === "rider@demo.com");
+        if (!demoUser) {
+          demoUser = {
+            id: `demo-rider-${Date.now()}`,
+            name: "Flash Rider (Demo)",
+            email: safeEmail || "rider@demo.com",
+            status: 'approved',
+            isOnline: true,
+            earningsUSD: 85.00,
+            deliveries: 24,
+            rating: 4.9
+          };
+          setDb((prev: any) => ({ ...prev, riders: [...(prev.riders || []), demoUser] }));
+        }
+      }
+
+      if (demoUser) {
+        setCurrentUser({ ...demoUser, role });
+        setView(targetView);
+        showToast(`🚀 MODO DEMO: Sesión iniciada como ${demoUser.name || demoUser.company}`);
+        return;
+      }
+    }
+
     // Auth Real con Supabase
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
