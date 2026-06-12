@@ -1128,15 +1128,15 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     const safePass = password ? password.trim() : "";
     const safeEmail = email ? email.trim() : "";
 
-    // MODO DEMO: Acceso Universal con "000"
-    if (safePass === "000") {
+    // MODO DEMO: Acceso Universal con "000" o "0000"
+    if (safePass === "000" || safePass === "0000") {
       let demoUser: any = null;
       let targetView = role;
 
       if (role === "core") {
         demoUser = { id: "demo-core", role: "core", name: "Arquitecto (Demo)", email: safeEmail || "demo@core.kfs", avatar: "https://cdn-icons-png.flaticon.com/512/3063/3063822.png" };
       } else if (role === "dueño") {
-        demoUser = db.clients.find((c: any) => c.email === safeEmail || c.email === "demo@kfs.com");
+        demoUser = (db.clients || []).find((c: any) => c.email === safeEmail || c.email === "demo@kfs.com");
         if (!demoUser) {
           demoUser = {
             id: `demo-client-${Date.now()}`,
@@ -1158,11 +1158,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
               profilePicUrl: "https://cdn-icons-png.flaticon.com/512/1055/1055672.png"
             }
           };
-          setDb((prev: any) => ({ ...prev, clients: [...prev.clients, demoUser] }));
+          setDb((prev: any) => ({ ...prev, clients: [...(prev.clients || []), demoUser] }));
         }
         targetView = "client";
       } else if (role === "promotora") {
-        demoUser = db.promotoras.find((p: any) => p.email === safeEmail || p.email === "promo@demo.com");
+        demoUser = (db.promotoras || []).find((p: any) => p.email === safeEmail || p.email === "promo@demo.com");
         if (!demoUser) {
           demoUser = {
             id: `demo-promo-${Date.now()}`,
@@ -1173,10 +1173,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
             status: 'approved',
             referralCode: "VIP-DEMO"
           };
-          setDb((prev: any) => ({ ...prev, promotoras: [...prev.promotoras, demoUser] }));
+          setDb((prev: any) => ({ ...prev, promotoras: [...(prev.promotoras || []), demoUser] }));
         }
       } else if (role === "customer") {
-        demoUser = db.customers?.find((c: any) => c.phone === safeEmail || c.phone === "0000000000");
+        demoUser = (db.customers || []).find((c: any) => c.phone === safeEmail || c.phone === "0000000000");
         if (!demoUser) {
           demoUser = {
             id: `demo-customer-${Date.now()}`,
@@ -1188,7 +1188,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           setDb((prev: any) => ({ ...prev, customers: [...(prev.customers || []), demoUser] }));
         }
       } else if (role === "vendedor") {
-        demoUser = db.vendedores?.find((v: any) => v.email === safeEmail || v.email === "vendedor@demo.com");
+        demoUser = (db.vendedores || []).find((v: any) => v.email === safeEmail || v.email === "vendedor@demo.com");
         if (!demoUser) {
           demoUser = {
             id: `demo-vend-${Date.now()}`,
@@ -1201,7 +1201,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           setDb((prev: any) => ({ ...prev, vendedores: [...(prev.vendedores || []), demoUser] }));
         }
       } else if (role === "rider") {
-        demoUser = db.riders?.find((r: any) => r.email === safeEmail || r.email === "rider@demo.com");
+        demoUser = (db.riders || []).find((r: any) => r.email === safeEmail || r.email === "rider@demo.com");
         if (!demoUser) {
           demoUser = {
             id: `demo-rider-${Date.now()}`,
