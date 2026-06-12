@@ -8840,7 +8840,29 @@ export default function Home() {
   }
 
   const protectedViews = ["core", "client", "promotora", "vendedor", "customer", "rider"];
-  const safeView = (!currentUser && protectedViews.includes(view)) ? "landing" : view;
+  
+  let isUserValid = true;
+  if (currentUser) {
+    if (currentUser.role === "dueño" && db.clients && !db.clients.some((c: any) => c.id === currentUser.id)) isUserValid = false;
+    if (currentUser.role === "rider" && db.riders && !db.riders.some((r: any) => r.id === currentUser.id)) isUserValid = false;
+    if (currentUser.role === "vendedor" && db.vendedores && !db.vendedores.some((v: any) => v.id === currentUser.id)) isUserValid = false;
+  }
+
+  useEffect(() => {
+    if (currentUser && !isUserValid) {
+      if (currentUser.isImpersonated) {
+        showToast("Sesión de comercio expirada. Retornando...", "error");
+        setView("core");
+        setCurrentUser({ id: "arquitecto", role: "core" }); // Fallback before actual reset
+        setTimeout(() => window.location.reload(), 1000);
+      } else {
+        showToast("Tu cuenta ya no se encuentra en el sistema.", "error");
+        logout();
+      }
+    }
+  }, [currentUser, isUserValid, logout, setView, showToast]);
+  
+  const safeView = (!currentUser || !isUserValid) && protectedViews.includes(view) ? "landing" : view;
 
   return (
     <div className="min-h-screen bg-[#0A1128]">
