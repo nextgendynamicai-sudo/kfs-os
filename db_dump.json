@@ -1,0 +1,231 @@
+{
+  "crm": [],
+  "vales": [],
+  "buyers": [],
+  "orders": [
+    {
+      "id": "ord1781193763462",
+      "ivaUSD": 0,
+      "status": "pending",
+      "igtfUSD": 0,
+      "clientId": "kfs-express",
+      "amountUSD": 0.5,
+      "productId": "prod_dig_1",
+      "timestamp": "2026-06-11T16:02:43.462Z",
+      "customerRif": "",
+      "subtotalUSD": 0.5,
+      "customerName": "Juan Perez",
+      "customerPhone": "04141234567",
+      "paymentMethod": "cash_bs",
+      "paymentReference": "12345678",
+      "paymentScreenshot": ""
+    }
+  ],
+  "riders": [],
+  "clients": [
+    {
+      "id": "kfs-express",
+      "email": "arquitecto@kfs.com",
+      "rating": 5,
+      "address": "Soporte Central KFS",
+      "company": "Arquitecto Flow Express",
+      "fee_tier": "1%",
+      "password": "==gLxlTN9kTM",
+      "salesUSD": 0,
+      "is_founder": true,
+      "isOnboarded": true,
+      "reviewCount": 0,
+      "storeSettings": {
+        "bioText": "En esta tienda podrás canjear tus KF Points. Mira todo lo que tenemos para ti",
+        "layoutType": "grid",
+        "themeColor": "#C5A184",
+        "typography": "font-sans",
+        "profilePicUrl": "https://cdn-icons-png.flaticon.com/512/3063/3063822.png"
+      },
+      "kfsFeesOwedUSD": 0,
+      "kfsFeePercentage": 0.01,
+      "walletBalanceUSD": 0
+    },
+    {
+      "id": "c_dos",
+      "email": "dos@kfs.com",
+      "rating": 5,
+      "address": "Calle Dos",
+      "company": "Comercio Dos",
+      "fee_tier": "3%",
+      "password": "==gLxlTN9kTM",
+      "salesUSD": 0,
+      "is_founder": false,
+      "isOnboarded": true,
+      "reviewCount": 0,
+      "storeSettings": {
+        "bioText": "Comercio Dos bio",
+        "layoutType": "grid",
+        "themeColor": "#0A1128",
+        "typography": "font-sans",
+        "profilePicUrl": ""
+      },
+      "kfsFeesOwedUSD": 0,
+      "kfsFeePercentage": 0.03,
+      "walletBalanceUSD": 0
+    }
+  ],
+  "expenses": [],
+  "products": [
+    {
+      "id": "prod_dig_1",
+      "name": "Curso Express",
+      "image": "https://images.unsplash.com/photo-1541658016709-82535e94bc69?w=500&auto=format&fit=crop&q=60",
+      "stock": 9998,
+      "costUSD": 0,
+      "category": "Servicios",
+      "clientId": "kfs-express",
+      "priceUSD": 0.5,
+      "description": "Aprende los fundamentos del float financiero y la liquidez prepagada en 15 minutos."
+    },
+    {
+      "id": "prod_dig_2",
+      "name": "Plantillas Legales SENIAT (B2B)",
+      "image": "https://images.unsplash.com/photo-1450133064473-71024230f91b?w=500&auto=format&fit=crop&q=60",
+      "stock": 9999,
+      "costUSD": 0,
+      "category": "Servicios",
+      "clientId": "kfs-express",
+      "priceUSD": 5,
+      "description": "Contratos de co-pago y formatos de facturación fiscal listos para imprimir y usar."
+    },
+    {
+      "id": "prod_dig_3",
+      "name": "Asesoría 1-a-1 Kreatek",
+      "image": "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=500&auto=format&fit=crop&q=60",
+      "stock": 9999,
+      "costUSD": 0,
+      "category": "Servicios",
+      "clientId": "kfs-express",
+      "priceUSD": 8,
+      "description": "Sesión estratégica remota con un asesor especializado en escalamiento y optimización de caja."
+    },
+    {
+      "id": "prod_dig_4",
+      "name": "Modelo IA + Guía de Negocio",
+      "image": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60",
+      "stock": 9999,
+      "costUSD": 0,
+      "category": "Servicios",
+      "clientId": "kfs-express",
+      "priceUSD": 10,
+      "description": "Script generativo de IA para descripciones de tienda e integraciones de API BCV."
+    }
+  ],
+  "zReports": [],
+  "auditLogs": [
+    {
+      "id": "log1781221006123",
+      "date": "2026-06-11T23:36:46.123Z",
+      "actor": "System",
+      "action": "REGISTER_CLIENT",
+      "details": "Comercio Registrado: Test Commerce bajo promotora: "
+    },
+    {
+      "id": "log1781221042662",
+      "date": "2026-06-11T23:37:22.662Z",
+      "actor": "System",
+      "action": "REGISTER_CLIENT",
+      "details": "Comercio Registrado: Comercio Tres bajo promotora: "
+    },
+    {
+      "id": "log1781221178053",
+      "date": "2026-06-11T23:39:38.053Z",
+      "actor": "System",
+      "action": "DELETE_CLIENT",
+      "details": "Comercio c1781221042658 eliminado de la red."
+    },
+    {
+      "id": "log1781221178125",
+      "date": "2026-06-11T23:39:38.125Z",
+      "actor": "System",
+      "action": "DELETE_CLIENT",
+      "details": "Comercio c1781221042658 eliminado de la red."
+    },
+    {
+      "id": "log1781221214224",
+      "date": "2026-06-11T23:40:14.224Z",
+      "actor": "System",
+      "action": "REGISTER_RIDER",
+      "details": "Rider solicitó registro: Rider Uno"
+    },
+    {
+      "id": "log1781221264155",
+      "date": "2026-06-11T23:41:04.155Z",
+      "actor": "Core",
+      "action": "REJECT_RIDER",
+      "details": "Rider rider_1781221214219 rechazado y eliminado."
+    },
+    {
+      "id": "log1781221264236",
+      "date": "2026-06-11T23:41:04.236Z",
+      "actor": "Core",
+      "action": "REJECT_RIDER",
+      "details": "Rider rider_1781221214219 rechazado y eliminado."
+    },
+    {
+      "id": "log1781221276125",
+      "date": "2026-06-11T23:41:16.125Z",
+      "actor": "System",
+      "action": "DELETE_CLIENT",
+      "details": "Comercio c1781221006118 eliminado de la red."
+    },
+    {
+      "id": "log1781232952183",
+      "date": "2026-06-12T02:55:52.183Z",
+      "actor": "System",
+      "action": "DELETE_CLIENT",
+      "details": "Comercio c_tres eliminado de la red."
+    },
+    {
+      "id": "log1781232952114",
+      "date": "2026-06-12T02:55:52.114Z",
+      "actor": "System",
+      "action": "DELETE_CLIENT",
+      "details": "Comercio c_tres eliminado de la red."
+    },
+    {
+      "id": "log1781232996818",
+      "date": "2026-06-12T02:56:36.818Z",
+      "actor": "Core",
+      "action": "REJECT_RIDER",
+      "details": "Rider rider_uno rechazado y eliminado."
+    },
+    {
+      "id": "log1781232996761",
+      "date": "2026-06-12T02:56:36.761Z",
+      "actor": "Core",
+      "action": "REJECT_RIDER",
+      "details": "Rider rider_uno rechazado y eliminado."
+    }
+  ],
+  "customers": [],
+  "ghostLogs": [],
+  "candidates": [],
+  "promotoras": [],
+  "vendedores": [],
+  "kreatekCore": {
+    "adBudgetEUR": 0,
+    "deletedKeys": [
+      "c1781221042658",
+      "rider_1781221214219",
+      "c1781221006118",
+      "c_tres",
+      "rider_uno"
+    ],
+    "earningsEUR": 65.08778172239073,
+    "wipeVersion": 4,
+    "netEarningsEUR": 65.08778172239073,
+    "totalTransactions": 0
+  },
+  "posTerminals": [],
+  "transactions": [],
+  "notifications": [],
+  "supportTickets": [],
+  "unlockedContacts": []
+}

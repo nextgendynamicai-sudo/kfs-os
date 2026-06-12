@@ -45,15 +45,19 @@ export default function RootLayout({
       <head>
         <script dangerouslySetInnerHTML={{
           __html: `
-            if (typeof window !== 'undefined' && localStorage.getItem("kfs_hard_reset_v1") !== "done") {
-              localStorage.removeItem("kfs_os_current_user");
-              localStorage.setItem("kfs_hard_reset_v1", "done");
-              if ('caches' in window) {
-                caches.keys().then(names => {
-                  for (let name of names) caches.delete(name);
-                });
+            try {
+              if (typeof window !== 'undefined' && localStorage.getItem("kfs_hard_reset_v2") !== "done") {
+                localStorage.removeItem("kfs_os_current_user");
+                localStorage.setItem("kfs_hard_reset_v2", "done");
+                if ('caches' in window) {
+                  caches.keys().then(names => {
+                    for (let name of names) caches.delete(name);
+                  });
+                }
+                window.location.reload();
               }
-              window.location.reload(true);
+            } catch (e) {
+              console.error("Hard reset failed", e);
             }
           `
         }} />

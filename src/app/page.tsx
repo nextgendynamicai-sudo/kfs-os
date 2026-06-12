@@ -8827,25 +8827,13 @@ export default function Home() {
     }
   };
 
-  if (isBooting || !isClient) {
-    return (
-      <div className="min-h-screen bg-[#0A1128] flex flex-col items-center justify-center text-white">
-        <div className="relative flex flex-col items-center">
-          <KreatekLogo className="h-28 sm:h-32 w-auto animate-pulse mb-8" />
-          <div className="w-12 h-12 border-4 border-[#C5A184]/20 border-t-[#C5A184] rounded-full animate-spin" />
-          <p className="text-xs text-gray-500 font-mono mt-6">Loading core vectors...</p>
-        </div>
-      </div>
-    );
-  }
-
   const protectedViews = ["core", "client", "promotora", "vendedor", "customer", "rider"];
   
   let isUserValid = true;
   if (currentUser) {
-    if (currentUser.role === "dueño" && db.clients && !db.clients.some((c: any) => c.id === currentUser.id)) isUserValid = false;
-    if (currentUser.role === "rider" && db.riders && !db.riders.some((r: any) => r.id === currentUser.id)) isUserValid = false;
-    if (currentUser.role === "vendedor" && db.vendedores && !db.vendedores.some((v: any) => v.id === currentUser.id)) isUserValid = false;
+    if (currentUser.role === "dueño" && db.clients?.length > 0 && !db.clients.some((c: any) => c.id === currentUser.id)) isUserValid = false;
+    if (currentUser.role === "rider" && db.riders?.length > 0 && !db.riders.some((r: any) => r.id === currentUser.id)) isUserValid = false;
+    if (currentUser.role === "vendedor" && db.vendedores?.length > 0 && !db.vendedores.some((v: any) => v.id === currentUser.id)) isUserValid = false;
   }
 
   useEffect(() => {
@@ -8860,9 +8848,21 @@ export default function Home() {
         logout();
       }
     }
-  }, [currentUser, isUserValid, logout, setView, showToast]);
+  }, [currentUser, isUserValid, logout, setView, showToast, setCurrentUser]);
   
   const safeView = (!currentUser || !isUserValid) && protectedViews.includes(view) ? "landing" : view;
+
+  if (isBooting || !isClient) {
+    return (
+      <div className="min-h-screen bg-[#0A1128] flex flex-col items-center justify-center text-white">
+        <div className="relative flex flex-col items-center">
+          <KreatekLogo className="h-28 sm:h-32 w-auto animate-pulse mb-8" />
+          <div className="w-12 h-12 border-4 border-[#C5A184]/20 border-t-[#C5A184] rounded-full animate-spin" />
+          <p className="text-xs text-gray-500 font-mono mt-6">Loading core vectors...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#0A1128]">
