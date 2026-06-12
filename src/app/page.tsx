@@ -3268,9 +3268,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                               )}
                               
                               <button onClick={() => {
-                                if (confirm(`¿Estás seguro de que deseas eliminar permanentemente el negocio "${c.company}" y todos sus productos, vendedores y terminales asociados?`)) {
-                                  deleteClient(c.id);
-                                }
+                                deleteClient(c.id);
                               }} className="bg-red-600 text-white px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-red-700 transition-colors cursor-pointer inline-flex items-center gap-1 shadow-sm">
                                 🗑️ Eliminar
                               </button>
