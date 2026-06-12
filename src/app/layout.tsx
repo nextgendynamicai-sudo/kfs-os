@@ -42,6 +42,22 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            if (typeof window !== 'undefined' && localStorage.getItem("kfs_hard_reset_v1") !== "done") {
+              localStorage.removeItem("kfs_os_current_user");
+              localStorage.setItem("kfs_hard_reset_v1", "done");
+              if ('caches' in window) {
+                caches.keys().then(names => {
+                  for (let name of names) caches.delete(name);
+                });
+              }
+              window.location.reload(true);
+            }
+          `
+        }} />
+      </head>
       <body className="min-h-full flex flex-col">
         <KFSProvider>{children}</KFSProvider>
       </body>
