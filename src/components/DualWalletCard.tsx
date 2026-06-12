@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { DollarSign, Clock, Zap, ArrowUpRight, Gift } from "lucide-react";
+import { DollarSign, Clock, Zap, ArrowUpRight, Gift, Lock } from "lucide-react";
 
 interface DualWalletCardProps {
   currentUser: any;
@@ -98,8 +98,20 @@ export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualW
         </div>
 
         {/* K-Points / Flow Express Bonus */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-center justify-between hover:border-[#C5A184]/20 transition-all">
-          <div>
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-center justify-between hover:border-[#C5A184]/20 transition-all relative overflow-hidden">
+          {currentUser.is_k_points_locked && (
+            <div className="absolute inset-0 bg-[#0A1128]/70 backdrop-blur-sm z-10 flex flex-col items-center justify-center text-center p-2">
+              <Lock size={16} className="text-[#C5A184] mb-1 drop-shadow-lg" />
+              <p className="text-[9px] font-black uppercase tracking-widest text-white mb-2 drop-shadow-md">Bono Bloqueado</p>
+              <button 
+                onClick={() => handleSimulatedRecharge(5)}
+                className="bg-[#C5A184] hover:bg-[#C5A184]/90 text-[#0A1128] px-3 py-1.5 rounded-lg text-[9px] font-black transition-colors shadow-lg"
+              >
+                Recarga $5 para desbloquear
+              </button>
+            </div>
+          )}
+          <div className={currentUser.is_k_points_locked ? "opacity-20 blur-[2px]" : ""}>
             <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 flex items-center gap-1">
               <Gift size={10} /> Bono Flow Express
             </p>
@@ -110,7 +122,7 @@ export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualW
               Equivale a {formatUSD(kPointsBalance / 1000)} USD. Expira en 5 días.
             </p>
           </div>
-          <div className="w-12 h-12 rounded-xl bg-[#C5A184]/15 flex items-center justify-center text-[#C5A184] text-lg font-bold">
+          <div className={`w-12 h-12 rounded-xl bg-[#C5A184]/15 flex items-center justify-center text-[#C5A184] text-lg font-bold ${currentUser.is_k_points_locked ? "opacity-20 blur-[2px]" : ""}`}>
             KP
           </div>
         </div>

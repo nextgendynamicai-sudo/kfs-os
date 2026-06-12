@@ -292,7 +292,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
             <p className="text-[10px] text-gray-400 mt-1">Opcional. {isOnline ? "Para que el comercio te contacte." : "Para enviar el recibo electrónico por WhatsApp."}</p>
           </div>
 
-          {availableKPoints > 0 && (
+          {availableKPoints > 0 && product.allowKPoints !== false && (
             <div className="bg-purple-50 p-4 rounded-xl border border-purple-200 space-y-2 animate-fade-in">
               <label className="text-[10px] font-black text-purple-900 uppercase tracking-widest flex justify-between">
                 <span>Quemar K-Points Disponibles</span>

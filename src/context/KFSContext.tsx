@@ -69,52 +69,7 @@ const initialDB = {
     }
   ] as any[],
   vendedores: [] as any[],
-  products: [
-    {
-      id: "prod_dig_1",
-      clientId: "kfs-express",
-      name: "Curso Express",
-      priceUSD: 0.50,
-      costUSD: 0.0,
-      stock: 9999,
-      category: "Servicios",
-      description: "Aprende los fundamentos del float financiero y la liquidez prepagada en 15 minutos.",
-      image: "https://images.unsplash.com/photo-1541658016709-82535e94bc69?w=500&auto=format&fit=crop&q=60"
-    },
-    {
-      id: "prod_dig_2",
-      clientId: "kfs-express",
-      name: "Plantillas Legales SENIAT (B2B)",
-      priceUSD: 5.00,
-      costUSD: 0.0,
-      stock: 9999,
-      category: "Servicios",
-      description: "Contratos de co-pago y formatos de facturación fiscal listos para imprimir y usar.",
-      image: "https://images.unsplash.com/photo-1450133064473-71024230f91b?w=500&auto=format&fit=crop&q=60"
-    },
-    {
-      id: "prod_dig_3",
-      clientId: "kfs-express",
-      name: "Asesoría 1-a-1 Kreatek",
-      priceUSD: 8.00,
-      costUSD: 0.0,
-      stock: 9999,
-      category: "Servicios",
-      description: "Sesión estratégica remota con un asesor especializado en escalamiento y optimización de caja.",
-      image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=500&auto=format&fit=crop&q=60"
-    },
-    {
-      id: "prod_dig_4",
-      clientId: "kfs-express",
-      name: "Modelo IA + Guía de Negocio",
-      priceUSD: 10.00,
-      costUSD: 0.0,
-      stock: 9999,
-      category: "Servicios",
-      description: "Script generativo de IA para descripciones de tienda e integraciones de API BCV.",
-      image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60"
-    }
-  ] as any[],
+  products: [] as any[],
   transactions: [] as any[],
   orders: [] as any[],
   expenses: [] as any[],
@@ -150,6 +105,7 @@ interface KFSContextType {
   toast: { show: boolean; message: string; type: string };
   showToast: (message: string, type?: "success" | "error") => void;
   rates: typeof MOCK_BCV_RATES;
+  updateBcvRates: (usd: number, eur: number) => void;
   db: typeof initialDB;
   setDb: React.Dispatch<React.SetStateAction<typeof initialDB>>;
   formatUSD: (val: number) => string;
@@ -157,6 +113,8 @@ interface KFSContextType {
   handleLogin: (role: string, password: string, email?: string | null) => void;
   logout: () => void;
   registerClient: (clientData: any, promotoraId: string, kfsFeePercentage: number) => void;
+  registerFreeUser: (clientData: any, promotoraId: string) => Promise<any>;
+  upgradeToPremium: (clientId: string, promotoraId: string) => Promise<void>;
   registerPromotora: (promoData: any) => void;
   approvePromotora: (id: string) => void;
   rejectPromotora: (id: string) => void;
@@ -233,7 +191,7 @@ interface KFSContextType {
   updateBusinessConfig: (clientId: string, config: any) => void;
   requestNotificationPermission: () => Promise<boolean>;
   processPayroll: (vendedorId: string, baseSalaryUSD: number) => void;
-  requestPayout: (amountUSD: number, bankDetails: string) => Promise<any> | void;
+  requestPayout: (amountUSD: number, bankDetails: string) => Promise<any>;
   riderCheckIn: (riderId: string) => void;
   riderCheckOut: (riderId: string) => void;
   markAsPickedUp: (txId: string) => void;
@@ -571,6 +529,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   };
   const [toast, setToast] = useState({ show: false, message: "", type: "success" });
   const [rates, setRates] = useState(MOCK_BCV_RATES);
+  const updateBcvRates = (usd: number, eur: number) => {
+    setRates({ USD: usd, EUR: eur, isWeekend: rates.isWeekend });
+    showToast("Tasa BCV global actualizada con éxito.", "success");
+  };
   const [db, setDb] = useState<any>(initialDB);
   const [networkState, setNetworkState] = useState<"online" | "mesh" | "offline">("online");
   const [ghostTrapLocked, setGhostTrapLocked] = useState(false);
@@ -1404,6 +1366,15 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast(`Recarga de $${amountUSD} acreditada vía ${gateway} (Offline Mode).`, "success");
   };
 
+  const requestTopUp = (userId: string, userType: 'client' | 'customer', amountUSD: number, paymentReference: string, screenshotBase64: string) => {
+    if (userType === 'customer') {
+      fundCustomerWallet(userId, amountUSD, `Transferencia (${paymentReference})`);
+    } else {
+      fundWallet(userId, amountUSD);
+    }
+    showToast(`Recarga por $${formatUSD(amountUSD)} confirmada. Ref: ${paymentReference}`);
+  };
+
   const registerCustomer = async (phone: string, password: string, name: string, referralCode?: string, kycPhoto?: string, kycCedula?: string, kycAddress?: string) => {
     const existing = db.customers?.find((c: any) => c.phone === phone);
     if (existing) {
@@ -1412,16 +1383,20 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     }
 
     try {
-      // Usamos un correo ficticio o real para Auth, ya que el Auth tradicional requiere email.
-      // Si Supabase Phone Auth está activo, se usaría signInWithOtp, pero usamos email simulado.
       const pseudoEmail = `${phone}@kfs-user.com`;
       const { error } = await supabase.auth.signUp({
         email: pseudoEmail,
         password: password,
         options: { data: { full_name: name, role: "customer", phone } }
       });
-      if (error) console.warn("Supabase Auth error (Customer)", error.message);
-    } catch (e) {}
+      if (error) {
+        showToast("Error en registro Supabase (Nube): " + error.message, "error");
+        return; // Strict cloud-first
+      }
+    } catch (e: any) {
+      showToast("Supabase no configurado o sin conexión: " + e.message, "error");
+      return;
+    }
 
     let referred_by_promoter_id = null;
     let referred_by_merchant_id = null;
@@ -1522,7 +1497,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const requestPayout = async (amountUSD: number, bankDetails: string) => {
     if (!currentUser || (currentUser.role !== 'dueño' && currentUser.role !== 'promotora')) {
       showToast("No autorizado para solicitar retiros.", "error");
-      return;
+      return Promise.reject("Not authorized");
     }
 
     try {
@@ -1552,15 +1527,111 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         });
       } else {
         showToast(data.error || "Error al solicitar retiro", "error");
+        return Promise.reject(data.error);
       }
+      return data;
     } catch (err) {
       showToast("Error de conexión con el servidor de pagos", "error");
+      return Promise.reject(err);
     }
   };
 
   const logout = () => {
     setCurrentUser(null);
     setView("login");
+  };
+
+  const registerFreeUser = async (clientData: any, promotoraId: string) => {
+    const avatarUrl = clientData.avatar && clientData.avatar.startsWith("data:")
+      ? await uploadAsset(`avatars/client_${Date.now()}.png`, clientData.avatar)
+      : clientData.avatar;
+
+    const kycUrl = clientData.kycCedula && clientData.kycCedula.startsWith("data:")
+      ? await uploadAsset(`kyc/client_cedula_${Date.now()}.png`, clientData.kycCedula)
+      : clientData.kycCedula;
+
+    const newClient = {
+      ...clientData,
+      avatar: avatarUrl,
+      password: hashPassword(clientData.password),
+      id: `c${Date.now()}`,
+      salesUSD: 0,
+      promotoraId,
+      rating: 5.0,
+      reviewCount: 0,
+      isOnboarded: false,
+      acceptedToS: true,
+      kycDocumentUrl: "",
+      kyc_photo: clientData.kycPhoto || "",
+      kyc_id_card_img: kycUrl || "",
+      kyc_address: clientData.kycAddress || "",
+      kyc_status: "verified",
+      walletBalanceUSD: 0,
+      // Freemium Implementation
+      account_tier: "free",
+      is_k_points_locked: true,
+      k_points_balance: 2000,
+      real_balance: 0,
+      createdAt: new Date().toISOString(),
+    };
+
+    logAction("System", "REGISTER_FREE_CLIENT", `Usuario Freemium registrado: ${clientData.company} bajo promotora: ${promotoraId}`);
+
+    setDb((prev: any) => {
+      // Regla 5: Promotora NO gana comisión en registro gratuito
+      return {
+        ...prev,
+        clients: [...prev.clients, newClient]
+      };
+    });
+
+    showToast("Comercio Freemium registrado con éxito. Bono de 2000 KP otorgado (Bloqueado).", "success");
+    if (view !== "promotora") setView("login");
+    return newClient;
+  };
+
+  const upgradeToPremium = async (clientId: string, promotoraId: string) => {
+    logAction("System", "PREMIUM_UPGRADE", `Usuario ${clientId} ascendido a Premium por Promotora ${promotoraId}`);
+
+    setDb((prev: any) => {
+      const updatedClients = prev.clients.map((c: any) => {
+        if (c.id === clientId) {
+          return {
+            ...c,
+            account_tier: "premium",
+            is_k_points_locked: false,
+            real_balance: (c.real_balance || 0) + 5.00, // $5.00 ingreso líquido
+          };
+        }
+        return c;
+      });
+
+      const updatedPromotoras = prev.promotoras.map((p: any) => {
+        if (p.id === promotoraId) {
+          return {
+            ...p,
+            upgrades_sold: (p.upgrades_sold || 0) + 1,
+            passiveEarningsEUR: (p.passiveEarningsEUR || 0) + 1.00 // $1.00 Comisión Promotora
+          };
+        }
+        return p;
+      });
+
+      const updatedCore = {
+        ...prev.kreatekCore,
+        earningsEUR: (prev.kreatekCore?.earningsEUR || 0) + 4.00,
+        netEarningsEUR: (prev.kreatekCore?.netEarningsEUR || 0) + 4.00
+      };
+
+      return {
+        ...prev,
+        clients: updatedClients,
+        promotoras: updatedPromotoras,
+        kreatekCore: updatedCore
+      };
+    });
+    
+    showToast("Upgrade a Premium completado. Bono desbloqueado.", "success");
   };
 
   const registerClient = async (clientData: any, promotoraId: string, kfsFeePercentage: number) => {
@@ -1588,11 +1659,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         }
       });
       if (authError) {
-        showToast("Error en registro Supabase: " + authError.message, "error");
-        // We continue with local mock anyway for the demo fallback if needed, but in prod we'd return.
+        showToast("Error en registro Supabase (Nube): " + authError.message, "error");
+        return; // Abort local creation in prod
       }
-    } catch (e) {
-      console.warn("Supabase Auth not configured for signups", e);
+    } catch (e: any) {
+      showToast("Supabase no configurado o sin conexión: " + e.message, "error");
+      return;
     }
 
     const newClient = { 
@@ -1673,8 +1745,14 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         password: promoData.password,
         options: { data: { full_name: promoData.name, role: "promotora" } }
       });
-      if (error) showToast("Aviso Supabase: " + error.message, "error");
-    } catch (e) {}
+      if (error) {
+        showToast("Error en registro Supabase (Nube): " + error.message, "error");
+        return;
+      }
+    } catch (e: any) {
+      showToast("Supabase no configurado o sin conexión: " + e.message, "error");
+      return;
+    }
     
     const newPromo = { 
       ...promoData, 
@@ -3136,6 +3214,22 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       showToast("Este correo ya está registrado como rider.", "error");
       return;
     }
+    // Supabase Auth Integration
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: riderData.email,
+        password: riderData.password,
+        options: { data: { full_name: riderData.name, role: "rider" } }
+      });
+      if (error) {
+        showToast("Error en registro Supabase (Nube): " + error.message, "error");
+        return;
+      }
+    } catch (e: any) {
+      showToast("Supabase no configurado o sin conexión: " + e.message, "error");
+      return;
+    }
+
     const newRider = {
       ...riderData,
       password: hashPassword(riderData.password),
@@ -3377,8 +3471,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   return (
     <KFSContext.Provider value={{
       isClient, isBooting, view, setView, currentUser, setCurrentUser,
-      toast, showToast, rates, db, setDb, formatUSD, formatEUR,
-      handleLogin, logout, registerClient, registerPromotora, approvePromotora, rejectPromotora, settlePromotoraEarnings,
+      toast, showToast, rates, updateBcvRates, db, setDb, formatUSD, formatEUR,
+      handleLogin, logout, registerClient, registerFreeUser, upgradeToPremium, registerPromotora, approvePromotora, rejectPromotora, settlePromotoraEarnings,
       addProduct, addExpense, processPurchase, submitOnlineOrder, approveOrder, rejectOrder, dispatchOrder, generateZReport,
       originalUser, impersonateClient, stopImpersonating,
       networkState, setNetworkState, smsConciliator, registerCrmExpress,

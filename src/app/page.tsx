@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { 
-  Camera, Upload, ShoppingCart, TrendingUp, Users, DollarSign, 
-  LogOut, Shield, Package, Activity, Search, QrCode, Lock, 
+import {
+  Camera, Upload, ShoppingCart, TrendingUp, Users, DollarSign,
+  LogOut, Shield, Package, Activity, Search, QrCode, Lock,
   ChevronRight, CheckCircle, CreditCard, Bell, X, Info,
   Store, Star, ChevronLeft, Clock, UserCheck, Palette,
   Zap, BookOpen, Printer, Smartphone, Settings, DownloadCloud, Terminal, Truck,
@@ -67,7 +67,7 @@ const CvViewerModal = ({ isOpen, onClose, candidate }: any) => {
     if (typeof window === "undefined") return;
     const printContent = document.getElementById("printable-cv-area")?.innerHTML;
     const cleanName = candidate.name.replace(/\s+/g, '_');
-    
+
     // Create an iframe to print cleanly without resetting state or styling
     const iframe = document.createElement('iframe');
     iframe.style.position = 'fixed';
@@ -197,7 +197,7 @@ const CvViewerModal = ({ isOpen, onClose, candidate }: any) => {
         </html>
       `);
       doc.close();
-      
+
       setTimeout(() => {
         iframe.contentWindow?.focus();
         iframe.contentWindow?.print();
@@ -262,22 +262,22 @@ const CvViewerModal = ({ isOpen, onClose, candidate }: any) => {
               <div className="grid-item">
                 <div className="grid-label">Disponibilidad de Horario</div>
                 <div className="grid-value">
-                  {candidate.answers?.availability === "full-time" ? "Tiempo Completo (Full-time)" : 
-                   candidate.answers?.availability === "part-time" ? "Medio Tiempo (Part-time)" : "Fines de Semana"}
+                  {candidate.answers?.availability === "full-time" ? "Tiempo Completo (Full-time)" :
+                    candidate.answers?.availability === "part-time" ? "Medio Tiempo (Part-time)" : "Fines de Semana"}
                 </div>
               </div>
               <div className="grid-item">
                 <div className="grid-label">Años de Experiencia</div>
                 <div className="grid-value">
-                  {candidate.answers?.experienceYears === "0-1" ? "Menos de 1 año" : 
-                   candidate.answers?.experienceYears === "1-3" ? "1 a 3 años" : "Más de 3 años"}
+                  {candidate.answers?.experienceYears === "0-1" ? "Menos de 1 año" :
+                    candidate.answers?.experienceYears === "1-3" ? "1 a 3 años" : "Más de 3 años"}
                 </div>
               </div>
               <div className="grid-item">
                 <div className="grid-label">Movilización / Vehículo</div>
                 <div className="grid-value">
-                  {candidate.answers?.hasVehicle === "no" ? "No posee transporte propio" : 
-                   candidate.answers?.hasVehicle === "moto" ? "Moto propia" : "Carro propio"}
+                  {candidate.answers?.hasVehicle === "no" ? "No posee transporte propio" :
+                    candidate.answers?.hasVehicle === "moto" ? "Moto propia" : "Carro propio"}
                 </div>
               </div>
               <div className="grid-item">
@@ -305,7 +305,7 @@ const SMSConciliatorSimulator = () => {
   const [reference, setReference] = useState("");
   const [phone, setPhone] = useState("04141234567");
   const [customSMS, setCustomSMS] = useState("");
-  
+
   const [logs, setLogs] = useState<string[]>([
     `[15:40:01] companion_ping: Local socket connection: ACTIVE`,
     `[15:40:02] local_ip: Listening on 192.168.1.45:8080`,
@@ -341,7 +341,7 @@ const SMSConciliatorSimulator = () => {
   }, [logs, isOpen]);
 
   const pendingOrders = db.orders?.filter((o: any) => o.status === 'pending') || [];
-  
+
   const handleAutofillReference = (ref: string, amt: number, ph: string) => {
     setReference(ref);
     const bsAmount = (amt * 36.45).toFixed(2).replace('.', ',');
@@ -353,21 +353,21 @@ const SMSConciliatorSimulator = () => {
 
   const handleSimulateSync = () => {
     if (!customSMS) return;
-    
+
     addLog(`sms_inbound: Intercepted push SMS payload from bank channel`);
     addLog(`parser_engine: Extracting amount, reference, telf...`);
-    
+
     setTimeout(() => {
       const result = smsConciliator(customSMS);
-      
+
       addLog(`parser_result: Bank: ${result.bank || "N/A"}, Amount: ${result.amount || 0}, Ref: ${result.reference || "N/A"}`);
-      
+
       if (result.matched) {
         addLog(`match_result: 100% reference hit on pending online order!`);
         addLog(`payout_split: Transmitting 20% hot commission splits to promoter wallet...`);
         addLog(`database: Resolving order status: APPROVED`);
         playPremiumChime();
-        
+
         const flash = document.createElement("div");
         flash.className = "fixed inset-0 pointer-events-none z-[99999] flex items-center justify-center animate-fade-in";
         flash.innerHTML = `
@@ -386,7 +386,7 @@ const SMSConciliatorSimulator = () => {
           </div>
         `;
         document.body.appendChild(flash);
-        
+
         setTimeout(() => {
           flash.classList.add("opacity-0");
           setTimeout(() => flash.remove(), 1000);
@@ -402,7 +402,7 @@ const SMSConciliatorSimulator = () => {
 
   return (
     <>
-      <button 
+      <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="fixed bottom-6 left-6 z-[80] w-14 h-14 bg-gradient-to-br from-[#C5A184] to-[#a38063] rounded-full shadow-[0_4px_20px_rgba(197,161,132,0.4)] flex items-center justify-center text-[#0A1128] hover:scale-110 active:scale-95 transition-all cursor-pointer group animate-bounce"
@@ -435,8 +435,8 @@ const SMSConciliatorSimulator = () => {
               ) : (
                 <div className="space-y-2 max-h-32 overflow-y-auto pr-1">
                   {pendingOrders.map((o: any) => (
-                    <button 
-                      key={o.id} 
+                    <button
+                      key={o.id}
                       type="button"
                       onClick={() => handleAutofillReference(o.paymentReference, o.amountUSD, o.customerPhone)}
                       className="w-full text-left bg-white/5 hover:bg-[#C5A184]/15 border border-white/10 p-2.5 rounded-xl transition-all flex justify-between items-center group cursor-pointer"
@@ -454,7 +454,7 @@ const SMSConciliatorSimulator = () => {
 
             <div className="space-y-4">
               <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block font-mono">Configurador de Mensaje</span>
-              
+
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Banco</label>
@@ -484,10 +484,10 @@ const SMSConciliatorSimulator = () => {
 
               <div>
                 <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">SMS Simulado (Editar Libremente)</label>
-                <textarea 
-                  value={customSMS} 
-                  onChange={e => setCustomSMS(e.target.value)} 
-                  rows={3} 
+                <textarea
+                  value={customSMS}
+                  onChange={e => setCustomSMS(e.target.value)}
+                  rows={3}
                   className="w-full bg-[#0A1128] border border-white/20 rounded-lg p-2.5 text-xs focus:outline-none focus:border-[#C5A184] text-white font-mono"
                 />
               </div>
@@ -508,7 +508,7 @@ const SMSConciliatorSimulator = () => {
           </div>
 
           <div className="pt-4 border-t border-white/10 space-y-2 mt-6">
-            <button 
+            <button
               type="button"
               onClick={handleSimulateSync}
               className="w-full py-4 bg-gradient-to-br from-[#C5A184] to-[#a38063] text-[#0A1128] font-black rounded-xl text-xs hover:scale-[1.02] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer"
@@ -555,23 +555,23 @@ const KFSFinancialSplitCalculator = ({ formatUSD, formatEUR, clientFeePercentage
           <div className="space-y-2">
             <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Monto de Venta de Ejemplo</label>
             <div className="flex items-center gap-3">
-              <input 
-                type="range" 
-                min="1" 
-                max="1000" 
-                value={inputAmt} 
-                onChange={(e) => setInputAmt(parseInt(e.target.value))} 
+              <input
+                type="range"
+                min="1"
+                max="1000"
+                value={inputAmt}
+                onChange={(e) => setInputAmt(parseInt(e.target.value))}
                 className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#C5A184]"
               />
               <span className="text-xl font-black font-mono text-[#C5A184] min-w-[70px] text-right">${inputAmt}</span>
             </div>
           </div>
-          
+
           <div className="space-y-2">
             <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider block">Tarifa BOS del Comercio</label>
             <div className="grid grid-cols-3 gap-2">
               {[0.03, 0.05, 0.10].map((pct) => (
-                <button 
+                <button
                   key={pct}
                   type="button"
                   onClick={() => setFeePercentage(pct)}
@@ -587,7 +587,7 @@ const KFSFinancialSplitCalculator = ({ formatUSD, formatEUR, clientFeePercentage
         {/* Real-time splits visualization */}
         <div className="space-y-4 pt-4 border-t border-[#C5A184]/15">
           <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block font-mono">Distribución del Flujo de Capital</span>
-          
+
           {/* 1. Commerce share */}
           <div className="space-y-1">
             <div className="flex justify-between text-xs font-bold text-gray-300">
@@ -613,7 +613,7 @@ const KFSFinancialSplitCalculator = ({ formatUSD, formatEUR, clientFeePercentage
                 <span className="text-sm font-black text-yellow-400 block mt-1">{formatEUR(promoterEUR)}</span>
                 <span className="text-[8px] text-gray-500 font-mono block">Directo a Wallet (EUR)</span>
               </div>
-              
+
               <div className="bg-white/5 border border-white/5 p-3 rounded-xl">
                 <span className="text-[9px] text-gray-400 font-bold block uppercase tracking-wider">Publicidad (20% neto)</span>
                 <span className="text-sm font-black text-indigo-400 block mt-1">{formatEUR(adBudgetEUR)}</span>
@@ -702,15 +702,15 @@ const FiscalPrinterSetupWidget = () => {
           <div className="space-y-1">
             <label className="text-[9px] font-bold text-gray-400 uppercase tracking-widest block">Dirección IP del Proxy Local</label>
             <div className="flex gap-2">
-              <input 
-                type="text" 
-                value={proxyUrl} 
-                onChange={(e) => setProxyUrl(e.target.value)} 
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-xs text-gray-900 focus:outline-none font-mono" 
+              <input
+                type="text"
+                value={proxyUrl}
+                onChange={(e) => setProxyUrl(e.target.value)}
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-xs text-gray-900 focus:outline-none font-mono"
               />
-              <button 
+              <button
                 type="button"
-                onClick={testConnection} 
+                onClick={testConnection}
                 disabled={testing}
                 className="bg-[#0A1128] text-white px-4 rounded-xl font-bold text-xs hover:bg-gray-800 disabled:opacity-50 flex-shrink-0 cursor-pointer"
               >
@@ -737,7 +737,7 @@ const FiscalPrinterSetupWidget = () => {
           <p className="text-[10px] text-gray-300 leading-relaxed">
             Descarga el script `fiscal-proxy.js` y ejecútalo en la PC que tenga la impresora fiscal física conectada por serial.
           </p>
-          <button 
+          <button
             type="button"
             onClick={downloadProxyScript}
             className="w-full mt-2 py-2 bg-[#C5A184] hover:bg-[#b08e72] text-[#0A1128] font-black rounded-lg text-xs transition-colors cursor-pointer text-center"
@@ -836,8 +836,8 @@ const KFSIoTEdgeConsole = ({ showToast }: { showToast: any }) => {
           {/* Action buttons */}
           <div className="space-y-3">
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block font-mono">Vincular Dispositivos</span>
-            
-            <button 
+
+            <button
               type="button"
               onClick={handleScanUSB}
               disabled={isScanningUSB}
@@ -846,7 +846,7 @@ const KFSIoTEdgeConsole = ({ showToast }: { showToast: any }) => {
               🔌 {isScanningUSB ? "Buscando USB..." : "Conectar Tiquetera USB (WebUSB)"}
             </button>
 
-            <button 
+            <button
               type="button"
               onClick={handleScanBluetooth}
               disabled={isScanningBT}
@@ -879,11 +879,11 @@ const KFSIoTEdgeConsole = ({ showToast }: { showToast: any }) => {
 // Kreatek Logo Component (Removes white background dynamically)
 const KreatekLogo = ({ className = "h-8 w-auto" }: { className?: string }) => {
   return (
-    <img 
-      src="/kfs-logo.png" 
-      className={className} 
-      alt="Kreatek Flow Systems" 
-      style={{ objectFit: "contain" }} 
+    <img
+      src="/kfs-logo.png"
+      className={className}
+      alt="Kreatek Flow Systems"
+      style={{ objectFit: "contain" }}
     />
   );
 };
@@ -919,7 +919,7 @@ const Navbar = ({ title, showBack = false, onBack }: { title?: string, showBack?
     } else {
       setIsSyncing(true);
       showToast("Sincronizando base de datos local P2P con el servidor en la nube...", "success");
-      
+
       // Simulate sync animation
       setTimeout(() => {
         setNetworkState("online");
@@ -950,110 +950,110 @@ const Navbar = ({ title, showBack = false, onBack }: { title?: string, showBack?
     <>
       {latestNotif && (
         <div className="w-full bg-gradient-to-r from-red-600 to-red-800 text-white px-4 py-2 text-center text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-lg z-50 animate-fade-in relative">
-          <Bell size={16} className="animate-bounce" /> 
-          <span className="uppercase tracking-widest">{latestNotif.title}:</span> 
+          <Bell size={16} className="animate-bounce" />
+          <span className="uppercase tracking-widest">{latestNotif.title}:</span>
           <span className="font-normal">{latestNotif.message}</span>
         </div>
       )}
       <nav className="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-white/5 bg-[#0A1128] sticky top-0 z-40 backdrop-blur-md gap-3 w-full">
-      <div className="flex items-center gap-3">
-        {showBack && (
-          <button 
-            onClick={handleBack} 
-            className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-white/10 hover:bg-white/5 text-xs text-gray-300 font-bold transition-all cursor-pointer mr-2"
+        <div className="flex items-center gap-3">
+          {showBack && (
+            <button
+              onClick={handleBack}
+              className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-white/10 hover:bg-white/5 text-xs text-gray-300 font-bold transition-all cursor-pointer mr-2"
+            >
+              <ChevronLeft size={16} /> Atrás
+            </button>
+          )}
+          <KreatekLogo className="h-10 sm:h-12 w-auto" />
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
+          {/* Network Telemetry Trigger */}
+          <button
+            onClick={cycleNetworkState}
+            disabled={isSyncing}
+            className={`flex items-center gap-2 px-3 py-1.5 rounded-full border bg-white/5 backdrop-blur-sm transition-all hover:bg-white/10 ${net.border} cursor-pointer group disabled:opacity-50`}
+            title="Gestor de Conexión de Contingencia y Sincronización"
           >
-            <ChevronLeft size={16} /> Atrás
+            <span className={`relative flex h-2 w-2`}>
+              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${net.color}`}></span>
+              <span className={`relative inline-flex rounded-full h-2 w-2 ${net.color}`}></span>
+            </span>
+            <span className={`font-mono text-[10px] font-black ${net.text} tracking-wider`}>
+              {isSyncing ? "SINCRONIZANDO..." : net.label}
+            </span>
           </button>
-        )}
-        <KreatekLogo className="h-10 sm:h-12 w-auto" />
-      </div>
 
-      <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
-        {/* Network Telemetry Trigger */}
-        <button 
-          onClick={cycleNetworkState} 
-          disabled={isSyncing}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-full border bg-white/5 backdrop-blur-sm transition-all hover:bg-white/10 ${net.border} cursor-pointer group disabled:opacity-50`}
-          title="Gestor de Conexión de Contingencia y Sincronización"
-        >
-          <span className={`relative flex h-2 w-2`}>
-            <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${net.color}`}></span>
-            <span className={`relative inline-flex rounded-full h-2 w-2 ${net.color}`}></span>
-          </span>
-          <span className={`font-mono text-[10px] font-black ${net.text} tracking-wider`}>
-            {isSyncing ? "SINCRONIZANDO..." : net.label}
-          </span>
-        </button>
+          {title && <span className="text-white/80 text-xs sm:text-sm uppercase tracking-wider font-mono bg-white/5 px-3 py-1.5 rounded-full">{title}</span>}
 
-        {title && <span className="text-white/80 text-xs sm:text-sm uppercase tracking-wider font-mono bg-white/5 px-3 py-1.5 rounded-full">{title}</span>}
-        
-        {currentUser && currentUser.role !== "marketplace" && (
-          <label className="relative w-8 h-8 rounded-full border border-[#C5A184]/50 cursor-pointer overflow-hidden flex items-center justify-center bg-white/10 hover:bg-white/20 transition-all shadow-inner group" title="Toca tu foto para actualizar tu imagen de perfil">
-            <input 
-              type="file" 
-              accept="image/*" 
-              className="hidden" 
-              onChange={async e => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  try {
-                    const base64String = await compressImage(file, 400);
-                    setDb((prev: any) => {
-                      let updated = { ...prev };
-                      if (currentUser.role === "dueño") {
-                        updated.clients = prev.clients.map((c: any) => c.id === currentUser.id ? { ...c, avatar: base64String } : c);
-                      } else if (currentUser.role === "promotora") {
-                        updated.promotoras = prev.promotoras.map((p: any) => p.id === currentUser.id ? { ...p, avatar: base64String } : p);
-                      } else if (currentUser.role === "vendedor") {
-                        updated.vendedores = prev.vendedores.map((v: any) => v.id === currentUser.id ? { ...v, avatar: base64String } : v);
-                      } else if (currentUser.role === "customer") {
-                        updated.customers = (prev.customers || []).map((c: any) => c.id === currentUser.id ? { ...c, avatar: base64String } : c);
-                      } else if (currentUser.role === "rider") {
-                        updated.riders = (prev.riders || []).map((r: any) => r.id === currentUser.id ? { ...r, avatar: base64String } : r);
-                      } else if (currentUser.role === "core") {
-                        updated.kreatekCore = { ...updated.kreatekCore, avatar: base64String };
-                      }
-                      return updated;
-                    });
-                    
-                    setCurrentUser((prev: any) => ({ ...prev, avatar: base64String }));
-                    showToast("Foto de perfil comprimida y guardada.", "success");
-                  } catch (error) {
-                    showToast("Error comprimiendo imagen", "error");
+          {currentUser && currentUser.role !== "marketplace" && (
+            <label className="relative w-8 h-8 rounded-full border border-[#C5A184]/50 cursor-pointer overflow-hidden flex items-center justify-center bg-white/10 hover:bg-white/20 transition-all shadow-inner group" title="Toca tu foto para actualizar tu imagen de perfil">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={async e => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    try {
+                      const base64String = await compressImage(file, 400);
+                      setDb((prev: any) => {
+                        let updated = { ...prev };
+                        if (currentUser.role === "dueño") {
+                          updated.clients = prev.clients.map((c: any) => c.id === currentUser.id ? { ...c, avatar: base64String } : c);
+                        } else if (currentUser.role === "promotora") {
+                          updated.promotoras = prev.promotoras.map((p: any) => p.id === currentUser.id ? { ...p, avatar: base64String } : p);
+                        } else if (currentUser.role === "vendedor") {
+                          updated.vendedores = prev.vendedores.map((v: any) => v.id === currentUser.id ? { ...v, avatar: base64String } : v);
+                        } else if (currentUser.role === "customer") {
+                          updated.customers = (prev.customers || []).map((c: any) => c.id === currentUser.id ? { ...c, avatar: base64String } : c);
+                        } else if (currentUser.role === "rider") {
+                          updated.riders = (prev.riders || []).map((r: any) => r.id === currentUser.id ? { ...r, avatar: base64String } : r);
+                        } else if (currentUser.role === "core") {
+                          updated.kreatekCore = { ...updated.kreatekCore, avatar: base64String };
+                        }
+                        return updated;
+                      });
+
+                      setCurrentUser((prev: any) => ({ ...prev, avatar: base64String }));
+                      showToast("Foto de perfil comprimida y guardada.", "success");
+                    } catch (error) {
+                      showToast("Error comprimiendo imagen", "error");
+                    }
                   }
-                }
-              }} 
-            />
-            {currentUser.avatar ? (
-              <img src={currentUser.avatar} className="w-full h-full object-cover" alt="Perfil" />
-            ) : (
-              <div className="w-full h-full bg-[#C5A184] text-[#0A1128] font-black text-[10px] flex items-center justify-center">
-                {currentUser.name ? currentUser.name.slice(0, 2).toUpperCase() : (currentUser.company ? currentUser.company.slice(0, 2).toUpperCase() : "KF")}
+                }}
+              />
+              {currentUser.avatar ? (
+                <img src={currentUser.avatar} className="w-full h-full object-cover" alt="Perfil" />
+              ) : (
+                <div className="w-full h-full bg-[#C5A184] text-[#0A1128] font-black text-[10px] flex items-center justify-center">
+                  {currentUser.name ? currentUser.name.slice(0, 2).toUpperCase() : (currentUser.company ? currentUser.company.slice(0, 2).toUpperCase() : "KF")}
+                </div>
+              )}
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                <span className="text-[8px] text-white font-black">⚙️</span>
               </div>
-            )}
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-              <span className="text-[8px] text-white font-black">⚙️</span>
-            </div>
-          </label>
-        )}
+            </label>
+          )}
 
-        {currentUser && (
-          <button 
-            onClick={logout} 
-            className="text-xs font-bold text-red-400 hover:text-red-300 transition-colors cursor-pointer bg-red-950/20 border border-red-500/20 px-3 py-1.5 rounded-xl flex items-center gap-1"
-            title="Cerrar Sesión y salir del sistema"
-          >
-            ❌ Salir
-          </button>
-        )}
-      </div>
+          {currentUser && (
+            <button
+              onClick={logout}
+              className="text-xs font-bold text-red-400 hover:text-red-300 transition-colors cursor-pointer bg-red-950/20 border border-red-500/20 px-3 py-1.5 rounded-xl flex items-center gap-1"
+              title="Cerrar Sesión y salir del sistema"
+            >
+              ❌ Salir
+            </button>
+          )}
+        </div>
 
-    </nav>
+      </nav>
     </>
   );
 };
 
-const RegisterClientForm = ({ onRegister, onCancel, standalone = true }: any) => {
+const RegisterClientForm = ({ onRegister, onCancel, standalone = true, defaultReferralCode = "" }: any) => {
   const [formData, setFormData] = useState({ name: "", idCard: "", company: "", avgBilling: "", phone: "", email: "", password: "", address: "", kfsFeePercentage: 0.03, avatar: "", kycCedula: "" });
   const [avatar, setAvatar] = useState<string>("");
   const [kycCedula, setKycCedula] = useState<string>("");
@@ -1078,9 +1078,9 @@ const RegisterClientForm = ({ onRegister, onCancel, standalone = true }: any) =>
   };
 
   return (
-    <form onSubmit={(e) => { e.preventDefault(); if(acceptedToS) onRegister(formData); else alert("Debes aceptar los Términos de Servicio y Privacidad."); }} className={`space-y-3 ${standalone ? "text-white animate-fade-in" : "text-gray-800"}`}>
+    <form onSubmit={(e) => { e.preventDefault(); if (acceptedToS) onRegister(formData, defaultReferralCode, 0.03); else alert("Debes aceptar los Términos de Servicio y Privacidad."); }} className={`space-y-3 ${standalone ? "text-white animate-fade-in" : "text-gray-800"}`}>
       <h3 className={`text-lg font-black mb-4 border-b pb-2 ${standalone ? "text-[#C5A184] border-[#C5A184]/30" : "text-[#0A1128] border-gray-200"}`}>Setup de Nuevo Comercio</h3>
-      
+
       <div className="flex flex-col items-center gap-2 mb-4">
         <label className="relative w-20 h-20 rounded-full border-2 border-dashed border-[#C5A184]/50 cursor-pointer overflow-hidden flex items-center justify-center bg-[#0A1128]/40 hover:bg-[#0A1128]/60 transition-colors group">
           <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
@@ -1110,25 +1110,25 @@ const RegisterClientForm = ({ onRegister, onCancel, standalone = true }: any) =>
         </label>
       </div>
 
-      <input required placeholder="Nombre Completo" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({...formData, name: e.target.value})} />
-      <input required placeholder="Cédula / RIF" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({...formData, idCard: e.target.value})} />
-      <input required placeholder="Nombre de la Empresa" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({...formData, company: e.target.value})} />
-      <textarea required placeholder="Dirección Comercial" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({...formData, address: e.target.value})} />
-      <input required type="number" placeholder="Facturación Promedio Diaria ($)" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({...formData, avgBilling: e.target.value})} />
-      
+      <input required placeholder="Nombre Completo" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+      <input required placeholder="Cédula / RIF" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, idCard: e.target.value })} />
+      <input required placeholder="Nombre de la Empresa" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, company: e.target.value })} />
+      <textarea required placeholder="Dirección Comercial" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, address: e.target.value })} />
+      <input required type="number" placeholder="Facturación Promedio Diaria ($)" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, avgBilling: e.target.value })} />
+
       <div className="flex flex-col mb-2">
         <label className={`text-xs font-bold mb-2 uppercase tracking-widest ${standalone ? "text-gray-400" : "text-gray-500"}`}>Tarifa BOS (Comisión Kreatek)</label>
-        <select required value={formData.kfsFeePercentage} onChange={e => setFormData({...formData, kfsFeePercentage: parseFloat(e.target.value)})} className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all font-bold ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`}>
+        <select required value={formData.kfsFeePercentage} onChange={e => setFormData({ ...formData, kfsFeePercentage: parseFloat(e.target.value) })} className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all font-bold ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`}>
           <option value={0.03}>Plan Base (3%)</option>
           <option value={0.05}>Plan Estándar (5%)</option>
           <option value={0.10}>Plan Premium (10%)</option>
         </select>
       </div>
 
-      <input required placeholder="Teléfono Personal" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({...formData, phone: e.target.value})} />
-      <input required type="email" placeholder="Correo Electrónico" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({...formData, email: e.target.value})} />
-      <input required type="password" placeholder="Crear Clave de Acceso" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({...formData, password: e.target.value})} />
-      
+      <input required placeholder="Teléfono Personal" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
+      <input required type="email" placeholder="Correo Electrónico" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, email: e.target.value })} />
+      <input required type="password" placeholder="Crear Clave de Acceso" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, password: e.target.value })} />
+
       <div className="flex items-start gap-2 pt-2 mb-2">
         <input type="checkbox" required checked={acceptedToS} onChange={(e) => setAcceptedToS(e.target.checked)} className="mt-1 cursor-pointer" />
         <span className={`text-[10px] leading-tight ${standalone ? "text-gray-400" : "text-gray-500"}`}>
@@ -1145,7 +1145,7 @@ const RegisterClientForm = ({ onRegister, onCancel, standalone = true }: any) =>
 };
 
 // Setup Promotora Form
-const RegisterPromotoraForm = ({ onRegister, onCancel }: any) => {
+const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCode = "" }: any) => {
   const [formData, setFormData] = useState({ name: "", email: "", password: "", binanceId: "", pagoMovil: "", avatar: "", kycCedula: "", kycAddress: "" });
   const [avatar, setAvatar] = useState<string>("");
   const [kycCedula, setKycCedula] = useState<string>("");
@@ -1169,9 +1169,9 @@ const RegisterPromotoraForm = ({ onRegister, onCancel }: any) => {
   };
 
   return (
-    <form onSubmit={(e) => { e.preventDefault(); onRegister(formData); }} className="space-y-3 text-white animate-fade-in">
+    <form onSubmit={(e) => { e.preventDefault(); onRegister({ ...formData, referralCode: defaultReferralCode }); }} className="space-y-3 text-white animate-fade-in">
       <h3 className="text-lg font-black mb-4 border-b border-[#C5A184]/30 pb-2 text-[#C5A184]">Autogestión de Promotora</h3>
-      
+
       <div className="flex flex-col items-center gap-2 mb-4">
         <label className="relative w-20 h-20 rounded-full border-2 border-dashed border-[#C5A184]/50 cursor-pointer overflow-hidden flex items-center justify-center bg-[#0A1128]/40 hover:bg-[#0A1128]/60 transition-colors group">
           <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
@@ -1201,12 +1201,12 @@ const RegisterPromotoraForm = ({ onRegister, onCancel }: any) => {
         </label>
       </div>
 
-      <input required placeholder="Nombre Completo" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({...formData, name: e.target.value})} />
-      <textarea required placeholder="Dirección Completa (KYC)" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({...formData, kycAddress: e.target.value})} />
-      <input required type="email" placeholder="Correo Electrónico" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({...formData, email: e.target.value})} />
-      <input required type="password" placeholder="Crear Clave de Acceso" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({...formData, password: e.target.value})} />
-      <input required placeholder="Binance ID (Ej: 184592...)" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({...formData, binanceId: e.target.value})} />
-      <input required placeholder="Pago Móvil (Ej: 0412...)" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({...formData, pagoMovil: e.target.value})} />
+      <input required placeholder="Nombre Completo" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({ ...formData, name: e.target.value })} />
+      <textarea required placeholder="Dirección Completa (KYC)" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({ ...formData, kycAddress: e.target.value })} />
+      <input required type="email" placeholder="Correo Electrónico" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({ ...formData, email: e.target.value })} />
+      <input required type="password" placeholder="Crear Clave de Acceso" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({ ...formData, password: e.target.value })} />
+      <input required placeholder="Binance ID (Ej: 184592...)" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({ ...formData, binanceId: e.target.value })} />
+      <input required placeholder="Pago Móvil (Ej: 0412...)" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({ ...formData, pagoMovil: e.target.value })} />
       <div className="flex gap-3 pt-4">
         <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl bg-gray-200/20 hover:bg-gray-200/30 text-white font-bold transition-all text-sm cursor-pointer">Cancelar</button>
         <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-[#0A1128] text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-lg cursor-pointer" style={{ backgroundColor: KREATEK_COLORS.bronze }}>Registrar Perfil</button>
@@ -1243,7 +1243,7 @@ const LandingPageView = ({ setView }: any) => {
       <section className="relative pt-40 pb-20 px-6 sm:px-10 max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12 min-h-[90vh]">
         <div className="absolute top-20 left-10 w-72 h-72 bg-[#C5A184]/20 rounded-full blur-[100px] -z-10 animate-pulse"></div>
         <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-900/20 rounded-full blur-[120px] -z-10"></div>
-        
+
         <div className="flex-1 space-y-8 z-10">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-bold text-[#C5A184] uppercase tracking-widest backdrop-blur-md">
             <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
@@ -1272,9 +1272,9 @@ const LandingPageView = ({ setView }: any) => {
         </div>
 
         <div className="flex-1 w-full relative z-10">
-           <div className="bg-gradient-to-tr from-[#0A1128] to-[#141E3A] border border-white/10 rounded-[2rem] p-2 shadow-2xl transition-transform duration-700 ease-out">
-             <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1000&auto=format&fit=crop" alt="Dashboard Preview" className="w-full h-auto rounded-xl opacity-80" />
-           </div>
+          <div className="bg-gradient-to-tr from-[#0A1128] to-[#141E3A] border border-white/10 rounded-[2rem] p-2 shadow-2xl transition-transform duration-700 ease-out">
+            <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1000&auto=format&fit=crop" alt="Dashboard Preview" className="w-full h-auto rounded-xl opacity-80" />
+          </div>
         </div>
       </section>
 
@@ -1356,12 +1356,12 @@ const LandingPageView = ({ setView }: any) => {
               <span className="bg-[#C5A184]/20 text-[#C5A184] text-[10px] font-black tracking-widest px-3 py-1.5 rounded-full uppercase block w-max mb-4">Inicial</span>
               <h3 className="text-2xl font-black text-white">Flow Velocity</h3>
               <p className="text-sm text-gray-400 mt-2">Para tiendas y emprendedores pequeños que inician su viaje digital.</p>
-              
+
               <div className="my-8">
                 <span className="text-5xl font-black text-white">3%</span>
                 <span className="text-sm text-gray-400 block mt-1">Por Venta Realizada en Caja / POS</span>
               </div>
-              
+
               <ul className="space-y-3 border-t border-white/5 pt-6 text-sm text-gray-300">
                 <li className="flex items-center gap-2"><CheckCircle size={16} className="text-[#C5A184]" /> E-Commerce Flow Express</li>
                 <li className="flex items-center gap-2"><CheckCircle size={16} className="text-[#C5A184]" /> Gestión de Inventario Local</li>
@@ -1380,12 +1380,12 @@ const LandingPageView = ({ setView }: any) => {
             <div>
               <h3 className="text-2xl font-black text-white mt-2">Flow Matrix AI</h3>
               <p className="text-sm text-gray-400 mt-2">Para medianos comercios con alta rotación y necesidad de analítica.</p>
-              
+
               <div className="my-8">
                 <span className="text-5xl font-black text-white">5%</span>
                 <span className="text-sm text-gray-400 block mt-1">Por Venta + $6 USD/mes Suscripción Nube</span>
               </div>
-              
+
               <ul className="space-y-3 border-t border-white/5 pt-6 text-sm text-gray-300">
                 <li className="flex items-center gap-2"><CheckCircle size={16} className="text-[#C5A184]" /> Todo lo de Flow Velocity</li>
                 <li className="flex items-center gap-2"><CheckCircle size={16} className="text-[#C5A184]" /> Auto-Conciliación SMS Integrada</li>
@@ -1404,12 +1404,12 @@ const LandingPageView = ({ setView }: any) => {
               <span className="bg-purple-950/40 text-purple-400 text-[10px] font-black tracking-widest px-3 py-1.5 rounded-full uppercase block w-max mb-4">Líder</span>
               <h3 className="text-2xl font-black text-white">Flow Monopoly OS</h3>
               <p className="text-sm text-gray-400 mt-2">El ecosistema financiero corporativo total para grandes franquicias.</p>
-              
+
               <div className="my-8">
                 <span className="text-5xl font-black text-white">10%</span>
                 <span className="text-sm text-gray-400 block mt-1">Por Venta + $6 USD/mes Suscripción Nube</span>
               </div>
-              
+
               <ul className="space-y-3 border-t border-white/5 pt-6 text-sm text-gray-300">
                 <li className="flex items-center gap-2"><CheckCircle size={16} className="text-[#C5A184]" /> Todo lo de Flow Matrix AI</li>
                 <li className="flex items-center gap-2"><CheckCircle size={16} className="text-[#C5A184]" /> POS ilimitados + SENIAT Proxy PnP</li>
@@ -1565,7 +1565,7 @@ const LandingPageView = ({ setView }: any) => {
               <p className="text-sm text-gray-400 leading-relaxed">
                 KFS OS unifica tu tienda física y e-commerce bajo un mismo motor lógico. Olvídate de pagar suscripciones separadas de inventario, pasarelas de pago externas y licencias para conectar impresoras fiscales.
               </p>
-              
+
               <div className="space-y-4 border-t border-white/5 pt-6">
                 <h4 className="font-bold text-[#C5A184] text-sm uppercase tracking-wider">Ahorro Garantizado:</h4>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-gray-300">
@@ -1590,7 +1590,7 @@ const LandingPageView = ({ setView }: any) => {
             </div>
 
             <div className="pt-8">
-              <button 
+              <button
                 onClick={() => {
                   if (typeof window !== "undefined") {
                     localStorage.setItem("kfs_pending_tab", "register");
@@ -1607,14 +1607,14 @@ const LandingPageView = ({ setView }: any) => {
           {/* Promotoras Value Proposition */}
           <div className="bg-[#0A1128] border border-white/10 rounded-[2.5rem] p-8 sm:p-10 flex flex-col justify-between hover:border-[#C5A184]/20 transition-all relative overflow-hidden">
             <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-[#C5A184]/5 rounded-full blur-[80px] -z-10"></div>
-            
+
             <div className="space-y-6">
               <span className="text-[#C5A184] text-xs font-black uppercase tracking-widest block">Para Promotoras de Expansión</span>
               <h3 className="text-3xl font-black text-white">Construye una fuente de ingresos pasivos de por vida</h3>
               <p className="text-sm text-gray-400 leading-relaxed">
                 No vendes un software convencional; afilias comercios al hardware transaccional más avanzado de la región. Trabaja a tu propio ritmo buscando tiendas locales y cobrando comisiones recurrentes.
               </p>
-              
+
               <div className="space-y-4 border-t border-white/5 pt-6">
                 <h4 className="font-bold text-[#C5A184] text-sm uppercase tracking-wider">Tus Beneficios y Labores:</h4>
                 <ul className="space-y-3 text-xs text-gray-300">
@@ -1639,7 +1639,7 @@ const LandingPageView = ({ setView }: any) => {
             </div>
 
             <div className="pt-8">
-              <button 
+              <button
                 onClick={() => {
                   if (typeof window !== "undefined") {
                     localStorage.setItem("kfs_pending_tab", "registerPromo");
@@ -1746,6 +1746,10 @@ const LandingPageView = ({ setView }: any) => {
 const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView, currentUser, logout }: any) => {
   const [activeTab, setActiveTab] = useState(() => {
     if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      const urlRole = searchParams.get('role');
+      if (urlRole) return urlRole;
+      
       const saved = localStorage.getItem("kfs_pending_tab");
       if (saved) {
         localStorage.removeItem("kfs_pending_tab");
@@ -1757,6 +1761,13 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
 
+  const [referralCode, setReferralCode] = useState(() => {
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      return searchParams.get('ref') || "";
+    }
+    return "";
+  });
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0A1128] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#141E3A] to-[#0A1128] font-sans">
@@ -1779,7 +1790,7 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
                 </p>
               </div>
               <div className="space-y-3 pt-2">
-                <button 
+                <button
                   onClick={() => {
                     const role = currentUser.role;
                     if (role === "dueño") setView("client");
@@ -1794,8 +1805,8 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
                 >
                   Ir a mi Panel de Control <ChevronRight size={18} />
                 </button>
-                <button 
-                  onClick={logout} 
+                <button
+                  onClick={logout}
                   className="w-full py-3.5 rounded-xl font-bold border border-red-500/20 text-red-400 hover:bg-red-500/10 transition-colors cursor-pointer text-sm"
                 >
                   Cerrar Sesión (Cambiar Cuenta)
@@ -1863,10 +1874,10 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
                 </div>
               )}
 
-              {activeTab === "register" && <RegisterClientForm onRegister={registerClient} onCancel={() => setActiveTab("dueño")} />}
-              {activeTab === "registerPromo" && <RegisterPromotoraForm onRegister={registerPromotora} onCancel={() => setActiveTab("promotora")} />}
-              {activeTab === "registerCustomer" && <RegisterCustomerForm onCancel={() => setActiveTab("customer")} />}
-              {activeTab === "registerRider" && <RegisterRiderForm onCancel={() => setActiveTab("rider")} />}
+              {activeTab === "register" && <RegisterClientForm onRegister={registerClient} onCancel={() => setActiveTab("dueño")} defaultReferralCode={referralCode} />}
+              {activeTab === "registerPromo" && <RegisterPromotoraForm onRegister={registerPromotora} onCancel={() => setActiveTab("promotora")} defaultReferralCode={referralCode} />}
+              {activeTab === "registerCustomer" && <RegisterCustomerForm onCancel={() => setActiveTab("customer")} defaultReferralCode={referralCode} />}
+              {activeTab === "registerRider" && <RegisterRiderForm onCancel={() => setActiveTab("rider")} defaultReferralCode={referralCode} />}
             </>
           )}
 
@@ -1892,6 +1903,11 @@ const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCancel: () 
   const [kycAddress, setKycAddress] = useState("");
   const { registerCustomer } = useKFS() as any;
 
+  const handleRegister = (e: React.FormEvent) => {
+    e.preventDefault();
+    registerCustomer(`${phonePrefix}${phoneBody}`, password, name, defaultReferralCode, kycPhoto, kycCedula, kycAddress);
+  };
+
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>, setter: any) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -1912,12 +1928,12 @@ const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCancel: () 
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 animate-fade-in">
-      <input required type="text" placeholder="Nombre y Apellido" value={name} onChange={e=>setName(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184] transition-all" />
-      
+      <input required type="text" placeholder="Nombre y Apellido" value={name} onChange={e => setName(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184] transition-all" />
+
       <div className="flex gap-2">
-        <select 
-          value={phonePrefix} 
-          onChange={e => setPhonePrefix(e.target.value)} 
+        <select
+          value={phonePrefix}
+          onChange={e => setPhonePrefix(e.target.value)}
           className="bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-[#C5A184] text-sm cursor-pointer"
         >
           <option value="+58">VE (+58)</option>
@@ -1931,7 +1947,7 @@ const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCancel: () 
           <option value="+1">US/CA (+1)</option>
           <option value="+1809">DO (+1-809)</option>
         </select>
-        <input required type="text" placeholder="Número Telefónico (Ej: 4141234567)" value={phoneBody} onChange={e=>setPhoneBody(e.target.value)} className="flex-1 bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184] transition-all" />
+        <input required type="text" placeholder="Número Telefónico (Ej: 4141234567)" value={phoneBody} onChange={e => setPhoneBody(e.target.value)} className="flex-1 bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184] transition-all" />
       </div>
 
       <div className="flex gap-4 mb-2">
@@ -1958,10 +1974,10 @@ const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCancel: () 
           )}
         </label>
       </div>
-      
-      <textarea required placeholder="Dirección Residencial Completa" value={kycAddress} onChange={e=>setKycAddress(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184] transition-all text-sm h-20 resize-none" />
 
-      <input required type="password" placeholder="Crear Contraseña" value={password} onChange={e=>setPassword(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184] transition-all" />
+      <textarea required placeholder="Dirección Residencial Completa" value={kycAddress} onChange={e => setKycAddress(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184] transition-all text-sm h-20 resize-none" />
+
+      <input required type="password" placeholder="Crear Contraseña" value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184] transition-all" />
       <div className="flex gap-2 pt-2">
         <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl border border-white/20 text-gray-300 font-bold hover:bg-white/5 transition-all">Atrás</button>
         <button type="submit" className="w-2/3 py-3 rounded-xl bg-[#C5A184] text-[#0A1128] font-black hover:scale-[1.02] active:scale-95 transition-all">Crear Cuenta</button>
@@ -1970,7 +1986,7 @@ const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCancel: () 
   )
 }
 // RegisterRiderForm — Formulario de Registro para Riders de Delivery
-const RegisterRiderForm = ({ onCancel }: { onCancel: () => void }) => {
+const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCancel: () => void, defaultReferralCode?: string }) => {
   const { registerRider, showToast } = useKFS() as any;
   const [formData, setFormData] = useState({
     name: "", email: "", password: "", phone: "",
@@ -2000,7 +2016,7 @@ const RegisterRiderForm = ({ onCancel }: { onCancel: () => void }) => {
     if (!formData.pagoMovil.banco || !formData.pagoMovil.telefono || !formData.pagoMovil.cedula) {
       showToast("Completa todos los datos de Pago Móvil.", "error"); return;
     }
-    registerRider(formData);
+    registerRider({ ...formData, referredBy: defaultReferralCode });
   };
 
   const DocUploadField = ({ label, icon, field, fileKey, uploaded }: { label: string; icon: string; field: "cedulaImg" | "medCertImg" | "licenseImg"; fileKey: "cedula" | "med" | "license"; uploaded: boolean }) => (
@@ -2025,10 +2041,10 @@ const RegisterRiderForm = ({ onCancel }: { onCancel: () => void }) => {
       </div>
 
       {/* Personal Data */}
-      <input required placeholder="Nombre Completo" value={formData.name} onChange={e => setFormData(p => ({...p, name: e.target.value}))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
-      <input required type="tel" placeholder="Teléfono (Ej: 04141234567)" value={formData.phone} onChange={e => setFormData(p => ({...p, phone: e.target.value}))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
-      <input required type="email" placeholder="Correo Electrónico" value={formData.email} onChange={e => setFormData(p => ({...p, email: e.target.value}))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
-      <input required type="password" placeholder="Crear Contraseña" value={formData.password} onChange={e => setFormData(p => ({...p, password: e.target.value}))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
+      <input required placeholder="Nombre Completo" value={formData.name} onChange={e => setFormData(p => ({ ...p, name: e.target.value }))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
+      <input required type="tel" placeholder="Teléfono (Ej: 04141234567)" value={formData.phone} onChange={e => setFormData(p => ({ ...p, phone: e.target.value }))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
+      <input required type="email" placeholder="Correo Electrónico" value={formData.email} onChange={e => setFormData(p => ({ ...p, email: e.target.value }))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
+      <input required type="password" placeholder="Crear Contraseña" value={formData.password} onChange={e => setFormData(p => ({ ...p, password: e.target.value }))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
 
       {/* Document Uploads */}
       <div className="space-y-1">
@@ -2046,13 +2062,13 @@ const RegisterRiderForm = ({ onCancel }: { onCancel: () => void }) => {
         <p className="text-[10px] font-black text-[#C5A184] uppercase tracking-widest">Pago Móvil (Cobro de Delivery $2)</p>
         <p className="text-[9px] text-gray-500">Los clientes te pagarán directamente aquí</p>
       </div>
-      <select required value={formData.pagoMovil.banco} onChange={e => setFormData(p => ({...p, pagoMovil: {...p.pagoMovil, banco: e.target.value}}))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all">
+      <select required value={formData.pagoMovil.banco} onChange={e => setFormData(p => ({ ...p, pagoMovil: { ...p.pagoMovil, banco: e.target.value } }))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all">
         <option value="">— Selecciona Banco —</option>
-        {["Banesco","Mercantil","Banco de Venezuela","Provincial","BOD","Bancaribe","Bicentenario","BNC","Exterior","Tesoro"].map(b => <option key={b} value={b}>{b}</option>)}
+        {["Banesco", "Mercantil", "Banco de Venezuela", "Provincial", "BOD", "Bancaribe", "Bicentenario", "BNC", "Exterior", "Tesoro"].map(b => <option key={b} value={b}>{b}</option>)}
       </select>
       <div className="grid grid-cols-2 gap-2">
-        <input required type="tel" placeholder="Teléfono PM (04xx...)" value={formData.pagoMovil.telefono} onChange={e => setFormData(p => ({...p, pagoMovil: {...p.pagoMovil, telefono: e.target.value}}))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-3 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
-        <input required placeholder="Cédula Titular" value={formData.pagoMovil.cedula} onChange={e => setFormData(p => ({...p, pagoMovil: {...p.pagoMovil, cedula: e.target.value}}))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-3 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
+        <input required type="tel" placeholder="Teléfono PM (04xx...)" value={formData.pagoMovil.telefono} onChange={e => setFormData(p => ({ ...p, pagoMovil: { ...p.pagoMovil, telefono: e.target.value } }))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-3 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
+        <input required placeholder="Cédula Titular" value={formData.pagoMovil.cedula} onChange={e => setFormData(p => ({ ...p, pagoMovil: { ...p.pagoMovil, cedula: e.target.value } }))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-3 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
       </div>
 
       <div className="bg-amber-900/20 border border-amber-500/30 rounded-xl p-3">
@@ -2074,7 +2090,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
   const [subTab, setSubTab] = useState("profile"); // profile | jobs
   const [isTopUpOpen, setIsTopUpOpen] = useState(false);
   const [topUpAmount, setTopUpAmount] = useState("");
-  
+
   const { transferP2P } = useP2PTransfer();
   const [p2pRecipient, setP2pRecipient] = useState("");
   const [p2pAmount, setP2pAmount] = useState("");
@@ -2095,11 +2111,11 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
   };
 
   if (!currentUser) return null;
-  
+
   // Aggregate CRM points
   const crmEntry = db.crm?.find((c: any) => c.phone === currentUser.phone);
   const totalPoints = crmEntry?.kfsPoints || 0;
-  
+
   // Aggregate transactions by store
   const userTransactions = db.transactions?.filter((tx: any) => tx.customerPhone === currentUser.phone) || [];
   const historyByStore = userTransactions.reduce((acc: any, tx: any) => {
@@ -2122,7 +2138,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
   // Candidate Form States
   const currentCandidate = db.candidates?.find((c: any) => c.phone === currentUser.phone);
   const unreadNotifsCount = currentCandidate?.notifications?.filter((n: any) => !n.read).length || 0;
-  
+
   const [bio, setBio] = useState(currentCandidate?.bio || "");
   const [email, setEmail] = useState(currentCandidate?.email || "");
   const [selectedRole, setSelectedRole] = useState(currentCandidate?.role || "Cajero");
@@ -2148,8 +2164,8 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
   const [showCvModal, setShowCvModal] = useState(false);
 
   const availableSkills = [
-    "Cuadre de caja", "Uso de POS", "Atención al cliente", 
-    "Lector de código de barras", "Control de inventario", 
+    "Cuadre de caja", "Uso de POS", "Atención al cliente",
+    "Lector de código de barras", "Control de inventario",
     "Ventas retail", "Facturación fiscal", "Manejo de delivery"
   ];
 
@@ -2216,17 +2232,17 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
       <div className="bg-gradient-to-br from-[#0A1128] to-[#1a2b5e] rounded-b-[3rem] shadow-[0_10px_30px_rgba(10,17,40,0.3)] pt-6 pb-12 px-6 text-white relative z-10">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
-            <span className="bg-white/20 p-2 rounded-xl text-[#C5A184]"><UserCheck size={20}/></span>
+            <span className="bg-white/20 p-2 rounded-xl text-[#C5A184]"><UserCheck size={20} /></span>
             <h1 className="font-black text-xl tracking-tight">KFS Customer</h1>
           </div>
           <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
-            <LogOut size={16}/>
+            <LogOut size={16} />
           </button>
         </div>
 
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 bg-[#C5A184] rounded-full flex items-center justify-center text-[#0A1128] font-black text-2xl flex-shrink-0 shadow-lg border-4 border-[#0A1128]">
-            {currentUser.name?.slice(0,2).toUpperCase()}
+            {currentUser.name?.slice(0, 2).toUpperCase()}
           </div>
           <div>
             <h2 className="text-xl md:text-2xl font-black tracking-tight truncate">{currentUser.name}</h2>
@@ -2241,14 +2257,14 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
         {subTab === "profile" ? (
           <>
             {/* Overdrive Dual Wallet Card */}
-            <DualWalletCard 
-              currentUser={currentUser} 
-              formatUSD={formatUSD} 
+            <DualWalletCard
+              currentUser={currentUser}
+              formatUSD={formatUSD}
               onRequestTopUp={(amount) => { setTopUpAmount(amount.toString()); setIsTopUpOpen(true); }}
             />
-            
-            <TopUpModal 
-              isOpen={isTopUpOpen} 
+
+            <TopUpModal
+              isOpen={isTopUpOpen}
               onClose={() => setIsTopUpOpen(false)}
               amount={topUpAmount}
               setAmount={setTopUpAmount}
@@ -2281,7 +2297,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                   </p>
                 </div>
               </div>
-              
+
               <form onSubmit={handleP2PTransferSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
@@ -2340,133 +2356,133 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
             {/* Logistics Tracking */}
             {(activeOrders.length > 0 || logisticsTxs.length > 0) && (
               <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 md:p-8 shadow-xl">
-                 <h3 className="text-xl font-black mb-6 text-[#C5A184] flex items-center gap-2"><Truck size={24} /> Rastreo de Envíos Activos</h3>
-                 <div className="space-y-4">
-                   {activeOrders.map((o: any) => {
-                     const p = db.products.find((prod: any) => prod.id === o.productId);
-                     return (
-                       <div key={o.id} className="bg-orange-500/10 border border-orange-500/20 p-5 rounded-2xl flex justify-between items-center">
-                         <div>
-                           <h4 className="font-bold text-orange-400">{p?.name || "Producto Online"}</h4>
-                           <p className="text-xs text-orange-200/70 mt-1">Ref: {o.paymentReference} | Pendiente de Aprobación por el Vendedor</p>
-                         </div>
-                         <Clock className="text-orange-400 animate-pulse" />
-                       </div>
-                     );
-                   })}
-                   {logisticsTxs.map((tx: any) => {
-                     const p = db.products.find((prod: any) => prod.id === tx.productId);
-                     const isDispatched = tx.shippingStatus === 'dispatched';
-                     const isPickedUp = tx.shippingStatus === 'picked_up';
-                     const isDelivered = tx.shippingStatus === 'delivered';
-                     return (
-                        <div key={tx.id} className={`${isDelivered ? 'bg-gray-800/50 border-gray-700' : isPickedUp ? 'bg-purple-500/10 border-purple-500/20' : isDispatched ? 'bg-green-500/10 border-green-500/20' : 'bg-blue-500/10 border-blue-500/20'} border p-5 rounded-2xl space-y-4 relative overflow-hidden`}>
-                          <div className="flex justify-between items-start relative z-10">
-                            <div>
-                              <h4 className={`font-bold ${isDelivered ? 'text-gray-400' : isPickedUp ? 'text-purple-400' : isDispatched ? 'text-green-400' : 'text-blue-400'}`}>{p?.name || "Producto Online"}</h4>
-                              <p className={`text-xs mt-1 ${isDelivered ? 'text-gray-500' : isPickedUp ? 'text-purple-200/70' : isDispatched ? 'text-green-200/70' : 'text-blue-200/70'}`}>
-                                {isDelivered ? '✅ Entregado' : isPickedUp ? '🛵 Tu Rider recogió el pedido y va en camino.' : isDispatched ? '📦 Tu paquete fue asignado a un Rider y está esperando recolección.' : '⏳ Pago Aprobado. Vendedor empacando'}
-                              </p>
-                            </div>
-                            {isDelivered ? <CheckCircle className="text-gray-500" /> : isPickedUp ? <MapPin className="text-purple-400 animate-bounce" /> : isDispatched ? <Truck className="text-green-400 animate-pulse" /> : <Package className="text-blue-400 animate-pulse" />}
+                <h3 className="text-xl font-black mb-6 text-[#C5A184] flex items-center gap-2"><Truck size={24} /> Rastreo de Envíos Activos</h3>
+                <div className="space-y-4">
+                  {activeOrders.map((o: any) => {
+                    const p = db.products.find((prod: any) => prod.id === o.productId);
+                    return (
+                      <div key={o.id} className="bg-orange-500/10 border border-orange-500/20 p-5 rounded-2xl flex justify-between items-center">
+                        <div>
+                          <h4 className="font-bold text-orange-400">{p?.name || "Producto Online"}</h4>
+                          <p className="text-xs text-orange-200/70 mt-1">Ref: {o.paymentReference} | Pendiente de Aprobación por el Vendedor</p>
+                        </div>
+                        <Clock className="text-orange-400 animate-pulse" />
+                      </div>
+                    );
+                  })}
+                  {logisticsTxs.map((tx: any) => {
+                    const p = db.products.find((prod: any) => prod.id === tx.productId);
+                    const isDispatched = tx.shippingStatus === 'dispatched';
+                    const isPickedUp = tx.shippingStatus === 'picked_up';
+                    const isDelivered = tx.shippingStatus === 'delivered';
+                    return (
+                      <div key={tx.id} className={`${isDelivered ? 'bg-gray-800/50 border-gray-700' : isPickedUp ? 'bg-purple-500/10 border-purple-500/20' : isDispatched ? 'bg-green-500/10 border-green-500/20' : 'bg-blue-500/10 border-blue-500/20'} border p-5 rounded-2xl space-y-4 relative overflow-hidden`}>
+                        <div className="flex justify-between items-start relative z-10">
+                          <div>
+                            <h4 className={`font-bold ${isDelivered ? 'text-gray-400' : isPickedUp ? 'text-purple-400' : isDispatched ? 'text-green-400' : 'text-blue-400'}`}>{p?.name || "Producto Online"}</h4>
+                            <p className={`text-xs mt-1 ${isDelivered ? 'text-gray-500' : isPickedUp ? 'text-purple-200/70' : isDispatched ? 'text-green-200/70' : 'text-blue-200/70'}`}>
+                              {isDelivered ? '✅ Entregado' : isPickedUp ? '🛵 Tu Rider recogió el pedido y va en camino.' : isDispatched ? '📦 Tu paquete fue asignado a un Rider y está esperando recolección.' : '⏳ Pago Aprobado. Vendedor empacando'}
+                            </p>
                           </div>
+                          {isDelivered ? <CheckCircle className="text-gray-500" /> : isPickedUp ? <MapPin className="text-purple-400 animate-bounce" /> : isDispatched ? <Truck className="text-green-400 animate-pulse" /> : <Package className="text-blue-400 animate-pulse" />}
+                        </div>
 
-                          {/* Live Map */}
-                          {isPickedUp && (
-                            <div className="mt-4">
-                               <LiveMap 
-                                  role="customer"
-                                  storePos={getStoreCoords(tx.clientId)}
-                                  customerPos={getCustomerCoords(tx.customerPhone || "default_cust")}
-                                  riderPos={
-                                    (() => {
-                                      const r = db.riders?.find((r: any) => r.id === tx.assignedRiderId);
-                                      return r?.lastLat && r?.lastLng ? { lat: r.lastLat, lng: r.lastLng } : getStoreCoords(tx.clientId);
-                                    })()
-                                  }
-                                  className="h-48"
-                               />
-                               <div className="flex justify-between items-center mt-3 bg-black/60 rounded-lg px-3 py-2 border border-purple-500/20 backdrop-blur-md">
-                                 <p className="text-[10px] text-gray-300 font-bold flex items-center gap-1.5"><Clock size={12} className="text-purple-400"/> ETA Estimado</p>
-                                 <p className="text-xs font-black text-white">~ 12 min</p>
-                               </div>
+                        {/* Live Map */}
+                        {isPickedUp && (
+                          <div className="mt-4">
+                            <LiveMap
+                              role="customer"
+                              storePos={getStoreCoords(tx.clientId)}
+                              customerPos={getCustomerCoords(tx.customerPhone || "default_cust")}
+                              riderPos={
+                                (() => {
+                                  const r = db.riders?.find((r: any) => r.id === tx.assignedRiderId);
+                                  return r?.lastLat && r?.lastLng ? { lat: r.lastLat, lng: r.lastLng } : getStoreCoords(tx.clientId);
+                                })()
+                              }
+                              className="h-48"
+                            />
+                            <div className="flex justify-between items-center mt-3 bg-black/60 rounded-lg px-3 py-2 border border-purple-500/20 backdrop-blur-md">
+                              <p className="text-[10px] text-gray-300 font-bold flex items-center gap-1.5"><Clock size={12} className="text-purple-400" /> ETA Estimado</p>
+                              <p className="text-xs font-black text-white">~ 12 min</p>
                             </div>
-                          )}
-                         {tx.assignedRiderName && (
-                           <div className="bg-black/30 rounded-xl p-3 flex items-center justify-between border border-white/5">
-                             <div className="flex items-center gap-3">
-                               <div className="w-8 h-8 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center font-black">
-                                 🛵
-                               </div>
-                               <div>
-                                 <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">Tu Rider</p>
-                                 <p className="text-sm font-black text-white">{tx.assignedRiderName}</p>
-                               </div>
-                             </div>
-                             {/* Rating Widget if Delivered */}
-                             {isDelivered && !tx.riderRating && (
-                               <div className="flex gap-1">
-                                 {[1,2,3,4,5].map(star => (
-                                   <button
-                                     key={star}
-                                     onClick={() => {
-                                       const { rateRider } = useKFS() as any;
-                                       rateRider(tx.id, star);
-                                     }}
-                                     className="text-gray-500 hover:text-yellow-400 transition-colors text-lg"
-                                   >
-                                     ★
-                                   </button>
-                                 ))}
-                               </div>
-                             )}
-                             {tx.riderRating && (
-                               <div className="text-yellow-400 text-sm font-black flex items-center gap-1">
-                                 {tx.riderRating} ★
-                               </div>
-                             )}
-                           </div>
-                         )}
-                       </div>
-                     );
-                   })}
-                 </div>
+                          </div>
+                        )}
+                        {tx.assignedRiderName && (
+                          <div className="bg-black/30 rounded-xl p-3 flex items-center justify-between border border-white/5">
+                            <div className="flex items-center gap-3">
+                              <div className="w-8 h-8 rounded-full bg-orange-500/20 text-orange-400 flex items-center justify-center font-black">
+                                🛵
+                              </div>
+                              <div>
+                                <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">Tu Rider</p>
+                                <p className="text-sm font-black text-white">{tx.assignedRiderName}</p>
+                              </div>
+                            </div>
+                            {/* Rating Widget if Delivered */}
+                            {isDelivered && !tx.riderRating && (
+                              <div className="flex gap-1">
+                                {[1, 2, 3, 4, 5].map(star => (
+                                  <button
+                                    key={star}
+                                    onClick={() => {
+                                      const { rateRider } = useKFS() as any;
+                                      rateRider(tx.id, star);
+                                    }}
+                                    className="text-gray-500 hover:text-yellow-400 transition-colors text-lg"
+                                  >
+                                    ★
+                                  </button>
+                                ))}
+                              </div>
+                            )}
+                            {tx.riderRating && (
+                              <div className="text-yellow-400 text-sm font-black flex items-center gap-1">
+                                {tx.riderRating} ★
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             )}
 
             {/* Purchase History */}
             <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 md:p-8 shadow-xl">
-               <h3 className="text-xl font-black mb-6 text-[#C5A184] flex items-center gap-2"><Activity size={24} /> Historial de Tiendas Visitadas</h3>
-               {historyEntries.length === 0 ? (
-                 <div className="text-center py-10 opacity-70">
-                    <Package size={48} className="mx-auto mb-4 text-[#C5A184]" />
-                    <p className="font-bold text-gray-300">Aún no tienes historial de compras.</p>
-                    <p className="text-xs text-gray-500 mt-1">Visita tiendas KFS o compra en Flow Express.</p>
-                 </div>
-               ) : (
-                 <div className="space-y-4">
-                   {historyEntries.map((c: any, i: number) => {
-                     const store = db.clients.find((cl: any) => cl.id === c.clientId);
-                     return (
-                       <div key={i} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-5 bg-black/40 rounded-xl border border-white/5 hover:border-[#C5A184]/30 transition-colors gap-4">
-                         <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-[#C5A184]">
-                              <Store size={18} />
-                            </div>
-                            <div>
-                              <p className="font-black text-gray-100 text-lg">{store?.company || "Tienda Desconocida"}</p>
-                              <p className="text-[10px] uppercase tracking-widest text-gray-500 mt-1 font-bold">{c.purchasesCount} Compras Registradas</p>
-                            </div>
-                         </div>
-                         <div className="text-left sm:text-right w-full sm:w-auto bg-white/5 sm:bg-transparent p-3 sm:p-0 rounded-lg">
-                           <p className="text-[10px] text-gray-400 font-mono">Volumen Gastado</p>
-                           <p className="text-[#C5A184] font-black text-xl">{formatUSD(c.totalSpent)}</p>
-                         </div>
-                       </div>
-                     )
-                   })}
-                 </div>
-               )}
+              <h3 className="text-xl font-black mb-6 text-[#C5A184] flex items-center gap-2"><Activity size={24} /> Historial de Tiendas Visitadas</h3>
+              {historyEntries.length === 0 ? (
+                <div className="text-center py-10 opacity-70">
+                  <Package size={48} className="mx-auto mb-4 text-[#C5A184]" />
+                  <p className="font-bold text-gray-300">Aún no tienes historial de compras.</p>
+                  <p className="text-xs text-gray-500 mt-1">Visita tiendas KFS o compra en Flow Express.</p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {historyEntries.map((c: any, i: number) => {
+                    const store = db.clients.find((cl: any) => cl.id === c.clientId);
+                    return (
+                      <div key={i} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-5 bg-black/40 rounded-xl border border-white/5 hover:border-[#C5A184]/30 transition-colors gap-4">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-[#C5A184]">
+                            <Store size={18} />
+                          </div>
+                          <div>
+                            <p className="font-black text-gray-100 text-lg">{store?.company || "Tienda Desconocida"}</p>
+                            <p className="text-[10px] uppercase tracking-widest text-gray-500 mt-1 font-bold">{c.purchasesCount} Compras Registradas</p>
+                          </div>
+                        </div>
+                        <div className="text-left sm:text-right w-full sm:w-auto bg-white/5 sm:bg-transparent p-3 sm:p-0 rounded-lg">
+                          <p className="text-[10px] text-gray-400 font-mono">Volumen Gastado</p>
+                          <p className="text-[#C5A184] font-black text-xl">{formatUSD(c.totalSpent)}</p>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
             </div>
           </>
         ) : (
@@ -2480,9 +2496,9 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                     <Bell size={16} /> Notificaciones de Empleo
                   </h4>
                   {unreadNotifsCount > 0 && (
-                    <button 
-                      type="button" 
-                      onClick={() => markNotificationsAsRead(currentCandidate.id)} 
+                    <button
+                      type="button"
+                      onClick={() => markNotificationsAsRead(currentCandidate.id)}
                       className="text-[10px] text-gray-400 hover:text-white underline cursor-pointer"
                     >
                       Marcar todas como leídas
@@ -2525,333 +2541,333 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
               /* Jobs Tab Form Container */
               <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 md:p-8 shadow-xl space-y-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-6">
-              <div>
-                <h3 className="text-2xl font-black text-[#C5A184] flex items-center gap-2">
-                  <Briefcase size={26} /> Mi Perfil Laboral
-                </h3>
-                <p className="text-xs text-gray-400 mt-1">Configura tu perfil profesional para ser visible ante dueños de comercios KFS OS.</p>
-              </div>
-
-              {currentCandidate ? (
-                currentCandidate.status === "backed" ? (
-                  <div className="bg-gradient-to-r from-yellow-500/20 to-amber-500/20 border border-yellow-500/40 text-yellow-300 px-4 py-2 rounded-2xl flex items-center gap-2 text-xs font-black shadow-[0_0_15px_rgba(234,179,8,0.15)] animate-pulse">
-                    <Award size={16} className="text-yellow-400" />
-                    <span>Perfil Respaldado por KFS OS</span>
+                  <div>
+                    <h3 className="text-2xl font-black text-[#C5A184] flex items-center gap-2">
+                      <Briefcase size={26} /> Mi Perfil Laboral
+                    </h3>
+                    <p className="text-xs text-gray-400 mt-1">Configura tu perfil profesional para ser visible ante dueños de comercios KFS OS.</p>
                   </div>
-                ) : (
-                  <div className="bg-blue-500/10 border border-blue-500/20 text-blue-400 px-4 py-2 rounded-2xl flex items-center gap-2 text-xs font-bold">
-                    <Clock size={16} className="animate-spin" />
-                    <span>Perfil en Evaluación KFS</span>
-                  </div>
-                )
-              ) : (
-                <span className="text-xs text-red-400 font-bold bg-red-500/10 border border-red-500/25 px-3 py-1.5 rounded-xl">Sin postularse</span>
-              )}
-            </div>
 
-            <form onSubmit={handleSaveCandidate} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider mb-2 block">Nombre Completo</label>
-                  <input
-                    type="text"
-                    disabled
-                    value={currentUser.name}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-gray-400 focus:outline-none cursor-not-allowed"
-                  />
+                  {currentCandidate ? (
+                    currentCandidate.status === "backed" ? (
+                      <div className="bg-gradient-to-r from-yellow-500/20 to-amber-500/20 border border-yellow-500/40 text-yellow-300 px-4 py-2 rounded-2xl flex items-center gap-2 text-xs font-black shadow-[0_0_15px_rgba(234,179,8,0.15)] animate-pulse">
+                        <Award size={16} className="text-yellow-400" />
+                        <span>Perfil Respaldado por KFS OS</span>
+                      </div>
+                    ) : (
+                      <div className="bg-blue-500/10 border border-blue-500/20 text-blue-400 px-4 py-2 rounded-2xl flex items-center gap-2 text-xs font-bold">
+                        <Clock size={16} className="animate-spin" />
+                        <span>Perfil en Evaluación KFS</span>
+                      </div>
+                    )
+                  ) : (
+                    <span className="text-xs text-red-400 font-bold bg-red-500/10 border border-red-500/25 px-3 py-1.5 rounded-xl">Sin postularse</span>
+                  )}
                 </div>
-                <div>
-                  <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider mb-2 block">Teléfono (WhatsApp)</label>
-                  <input
-                    type="text"
-                    disabled
-                    value={currentUser.phone}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-gray-400 focus:outline-none cursor-not-allowed"
-                  />
-                </div>
-              </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider mb-2 block">Correo Electrónico (Obligatorio)</label>
-                  <input
-                    type="email"
-                    required
-                    placeholder="ejemplo@correo.com"
-                    value={email}
-                    onChange={e => setEmail(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-[#C5A184] focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider mb-2 block">Cargo de Interés</label>
-                  <select
-                    value={selectedRole}
-                    onChange={e => setSelectedRole(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-[#C5A184] focus:outline-none focus:bg-[#0A1128]"
-                  >
-                    <option value="Cajero">Cajero / Cajera</option>
-                    <option value="Vendedor">Vendedor de Tienda</option>
-                    <option value="Almacenista">Almacenista / Despachador</option>
-                    <option value="Administrador">Administrador de Local</option>
-                    <option value="Delivery">Delivery / Mensajero</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider mb-2 block">Presentación y Experiencia Laboral (Obligatorio)</label>
-                <textarea
-                  required
-                  rows={4}
-                  placeholder="Describe detalladamente tu experiencia, referencias y por qué eres un excelente candidato..."
-                  value={bio}
-                  onChange={e => setBio(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-600 focus:border-[#C5A184] focus:outline-none"
-                />
-              </div>
-
-              <div>
-                <div className="flex justify-between items-center mb-2">
-                  <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider block">Currículum Vitae (Obligatorio)</label>
-                  <button
-                    type="button"
-                    onClick={() => setUseKfsCvBuilder(!useKfsCvBuilder)}
-                    className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${useKfsCvBuilder ? "bg-[#C5A184] text-[#0A1128]" : "bg-white/5 text-gray-400 hover:text-white"}`}
-                  >
-                    {useKfsCvBuilder ? "⚡ Usando CV Digital KFS" : "📄 Usar CV Digital KFS"}
-                  </button>
-                </div>
-                
-                {useKfsCvBuilder ? (
-                  <div className="bg-white/5 border border-white/10 p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4">
+                <form onSubmit={handleSaveCandidate} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <p className="text-xs text-green-400 font-bold">✨ CV Digital Autogenerado KFS OS</p>
-                      <p className="text-[10px] text-gray-400 mt-0.5">Se generará un currículum formateado profesionalmente con tu Bio, Habilidades y Respuestas.</p>
+                      <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider mb-2 block">Nombre Completo</label>
+                      <input
+                        type="text"
+                        disabled
+                        value={currentUser.name}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-gray-400 focus:outline-none cursor-not-allowed"
+                      />
                     </div>
-                    <button
-                      type="button"
-                      onClick={() => setShowCvModal(true)}
-                      className="px-4 py-2 rounded-xl bg-[#0A1128] text-[#C5A184] border border-[#C5A184]/35 font-bold text-xs hover:bg-[#C5A184] hover:text-[#0A1128] transition-all cursor-pointer"
-                    >
-                      Previsualizar / Imprimir CV
-                    </button>
+                    <div>
+                      <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider mb-2 block">Teléfono (WhatsApp)</label>
+                      <input
+                        type="text"
+                        disabled
+                        value={currentUser.phone}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-gray-400 focus:outline-none cursor-not-allowed"
+                      />
+                    </div>
                   </div>
-                ) : (
-                  <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-white/5 border border-white/10 p-5 rounded-2xl">
-                    <input
-                      type="file"
-                      accept="application/pdf,image/*"
-                      onChange={async (e) => {
-                        const file = e.target.files?.[0];
-                        if (file) {
-                          try {
-                            setCvFileName(file.name);
-                            setCvFileType(file.type);
-                            const base64 = await readAsBase64(file);
-                            setCvFile(base64);
-                            showToast("Currículum cargado.", "success");
-                          } catch (err) {
-                            showToast("Error al leer el archivo.", "error");
-                          }
-                        }
-                      }}
-                      className="text-xs text-gray-400 block w-full sm:w-auto"
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                      <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider mb-2 block">Correo Electrónico (Obligatorio)</label>
+                      <input
+                        type="email"
+                        required
+                        placeholder="ejemplo@correo.com"
+                        value={email}
+                        onChange={e => setEmail(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-[#C5A184] focus:outline-none"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider mb-2 block">Cargo de Interés</label>
+                      <select
+                        value={selectedRole}
+                        onChange={e => setSelectedRole(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-[#C5A184] focus:outline-none focus:bg-[#0A1128]"
+                      >
+                        <option value="Cajero">Cajero / Cajera</option>
+                        <option value="Vendedor">Vendedor de Tienda</option>
+                        <option value="Almacenista">Almacenista / Despachador</option>
+                        <option value="Administrador">Administrador de Local</option>
+                        <option value="Delivery">Delivery / Mensajero</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider mb-2 block">Presentación y Experiencia Laboral (Obligatorio)</label>
+                    <textarea
+                      required
+                      rows={4}
+                      placeholder="Describe detalladamente tu experiencia, referencias y por qué eres un excelente candidato..."
+                      value={bio}
+                      onChange={e => setBio(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-600 focus:border-[#C5A184] focus:outline-none"
                     />
-                    {cvFileName && (
-                      <div className="flex items-center gap-2 text-xs font-bold text-green-400">
-                        <span>📄 {cvFileName}</span>
-                        <button 
-                          type="button" 
-                          onClick={() => window.open(cvFile, '_blank')} 
-                          className="text-[10px] text-green-300 underline cursor-pointer hover:text-white"
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider block">Currículum Vitae (Obligatorio)</label>
+                      <button
+                        type="button"
+                        onClick={() => setUseKfsCvBuilder(!useKfsCvBuilder)}
+                        className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${useKfsCvBuilder ? "bg-[#C5A184] text-[#0A1128]" : "bg-white/5 text-gray-400 hover:text-white"}`}
+                      >
+                        {useKfsCvBuilder ? "⚡ Usando CV Digital KFS" : "📄 Usar CV Digital KFS"}
+                      </button>
+                    </div>
+
+                    {useKfsCvBuilder ? (
+                      <div className="bg-white/5 border border-white/10 p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <div>
+                          <p className="text-xs text-green-400 font-bold">✨ CV Digital Autogenerado KFS OS</p>
+                          <p className="text-[10px] text-gray-400 mt-0.5">Se generará un currículum formateado profesionalmente con tu Bio, Habilidades y Respuestas.</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setShowCvModal(true)}
+                          className="px-4 py-2 rounded-xl bg-[#0A1128] text-[#C5A184] border border-[#C5A184]/35 font-bold text-xs hover:bg-[#C5A184] hover:text-[#0A1128] transition-all cursor-pointer"
                         >
-                          (Ver actual)
+                          Previsualizar / Imprimir CV
                         </button>
                       </div>
+                    ) : (
+                      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-white/5 border border-white/10 p-5 rounded-2xl">
+                        <input
+                          type="file"
+                          accept="application/pdf,image/*"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              try {
+                                setCvFileName(file.name);
+                                setCvFileType(file.type);
+                                const base64 = await readAsBase64(file);
+                                setCvFile(base64);
+                                showToast("Currículum cargado.", "success");
+                              } catch (err) {
+                                showToast("Error al leer el archivo.", "error");
+                              }
+                            }
+                          }}
+                          className="text-xs text-gray-400 block w-full sm:w-auto"
+                        />
+                        {cvFileName && (
+                          <div className="flex items-center gap-2 text-xs font-bold text-green-400">
+                            <span>📄 {cvFileName}</span>
+                            <button
+                              type="button"
+                              onClick={() => window.open(cvFile, '_blank')}
+                              className="text-[10px] text-green-300 underline cursor-pointer hover:text-white"
+                            >
+                              (Ver actual)
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    {showCvModal && (
+                      <CvViewerModal
+                        isOpen={showCvModal}
+                        onClose={() => setShowCvModal(false)}
+                        candidate={{
+                          name: currentUser.name,
+                          phone: currentUser.phone,
+                          email: email || currentCandidate?.email || "correo@ejemplo.com",
+                          bio: bio || currentCandidate?.bio || "Bio...",
+                          role: selectedRole || currentCandidate?.role || "Cajero",
+                          skills: selectedSkills || currentCandidate?.skills || [],
+                          answers: answers || currentCandidate?.answers || {},
+                          id: currentCandidate?.id || "cand_demo"
+                        }}
+                      />
                     )}
                   </div>
-                )}
-                {showCvModal && (
-                  <CvViewerModal 
-                    isOpen={showCvModal} 
-                    onClose={() => setShowCvModal(false)} 
-                    candidate={{
-                      name: currentUser.name,
-                      phone: currentUser.phone,
-                      email: email || currentCandidate?.email || "correo@ejemplo.com",
-                      bio: bio || currentCandidate?.bio || "Bio...",
-                      role: selectedRole || currentCandidate?.role || "Cajero",
-                      skills: selectedSkills || currentCandidate?.skills || [],
-                      answers: answers || currentCandidate?.answers || {},
-                      id: currentCandidate?.id || "cand_demo"
-                    }}
-                  />
-                )}
-              </div>
-
-              <div>
-                <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider mb-3 block">Habilidades Técnicas</label>
-                <div className="flex flex-wrap gap-2">
-                  {availableSkills.map(skill => {
-                    const isSelected = selectedSkills.includes(skill);
-                    return (
-                      <button
-                        key={skill}
-                        type="button"
-                        onClick={() => handleToggleSkill(skill)}
-                        className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${isSelected ? "bg-[#C5A184] text-[#0A1128] shadow-md" : "bg-white/5 text-gray-400 hover:text-white hover:bg-white/10"}`}
-                      >
-                        {isSelected && <Check size={12} />}
-                        {skill}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div className="bg-white/5 border border-white/10 p-6 rounded-2xl space-y-4">
-                <h4 className="text-[#C5A184] text-xs font-black uppercase tracking-widest flex items-center gap-1.5">
-                  <Shield size={14} /> Micro-Encuesta de Compatibilidad
-                </h4>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Disponibilidad</label>
-                    <select
-                      value={answers.availability}
-                      onChange={e => setAnswers(prev => ({ ...prev, availability: e.target.value }))}
-                      className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#C5A184]"
-                    >
-                      <option value="full-time">Tiempo Completo (Full-time)</option>
-                      <option value="part-time">Medio Tiempo (Part-time)</option>
-                      <option value="weekends">Fines de Semana</option>
-                    </select>
-                  </div>
 
                   <div>
-                    <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Ubicación (Residencia)</label>
-                    <select
-                      value={answers.location}
-                      onChange={e => setAnswers(prev => ({ ...prev, location: e.target.value }))}
-                      className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#C5A184]"
-                    >
-                      <option value="Caracas - Este">Caracas - Este</option>
-                      <option value="Caracas - Oeste">Caracas - Oeste</option>
-                      <option value="Caracas - Centro">Caracas - Centro</option>
-                      <option value="Fuera de Caracas">Fuera de Caracas</option>
-                    </select>
+                    <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider mb-3 block">Habilidades Técnicas</label>
+                    <div className="flex flex-wrap gap-2">
+                      {availableSkills.map(skill => {
+                        const isSelected = selectedSkills.includes(skill);
+                        return (
+                          <button
+                            key={skill}
+                            type="button"
+                            onClick={() => handleToggleSkill(skill)}
+                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${isSelected ? "bg-[#C5A184] text-[#0A1128] shadow-md" : "bg-white/5 text-gray-400 hover:text-white hover:bg-white/10"}`}
+                          >
+                            {isSelected && <Check size={12} />}
+                            {skill}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Años de Experiencia</label>
-                    <select
-                      value={answers.experienceYears}
-                      onChange={e => setAnswers(prev => ({ ...prev, experienceYears: e.target.value }))}
-                      className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#C5A184]"
-                    >
-                      <option value="0-1">Menos de 1 año</option>
-                      <option value="1-3">1 a 3 años</option>
-                      <option value="3+">Más de 3 años</option>
-                    </select>
+                  <div className="bg-white/5 border border-white/10 p-6 rounded-2xl space-y-4">
+                    <h4 className="text-[#C5A184] text-xs font-black uppercase tracking-widest flex items-center gap-1.5">
+                      <Shield size={14} /> Micro-Encuesta de Compatibilidad
+                    </h4>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div>
+                        <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Disponibilidad</label>
+                        <select
+                          value={answers.availability}
+                          onChange={e => setAnswers(prev => ({ ...prev, availability: e.target.value }))}
+                          className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#C5A184]"
+                        >
+                          <option value="full-time">Tiempo Completo (Full-time)</option>
+                          <option value="part-time">Medio Tiempo (Part-time)</option>
+                          <option value="weekends">Fines de Semana</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Ubicación (Residencia)</label>
+                        <select
+                          value={answers.location}
+                          onChange={e => setAnswers(prev => ({ ...prev, location: e.target.value }))}
+                          className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#C5A184]"
+                        >
+                          <option value="Caracas - Este">Caracas - Este</option>
+                          <option value="Caracas - Oeste">Caracas - Oeste</option>
+                          <option value="Caracas - Centro">Caracas - Centro</option>
+                          <option value="Fuera de Caracas">Fuera de Caracas</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Años de Experiencia</label>
+                        <select
+                          value={answers.experienceYears}
+                          onChange={e => setAnswers(prev => ({ ...prev, experienceYears: e.target.value }))}
+                          className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#C5A184]"
+                        >
+                          <option value="0-1">Menos de 1 año</option>
+                          <option value="1-3">1 a 3 años</option>
+                          <option value="3+">Más de 3 años</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">¿Posee Transporte Propio?</label>
+                        <select
+                          value={answers.hasVehicle}
+                          onChange={e => setAnswers(prev => ({ ...prev, hasVehicle: e.target.value }))}
+                          className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#C5A184]"
+                        >
+                          <option value="no">No posee</option>
+                          <option value="moto">Moto propia</option>
+                          <option value="carro">Carro propio</option>
+                        </select>
+                      </div>
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">¿Posee Transporte Propio?</label>
-                    <select
-                      value={answers.hasVehicle}
-                      onChange={e => setAnswers(prev => ({ ...prev, hasVehicle: e.target.value }))}
-                      className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#C5A184]"
-                    >
-                      <option value="no">No posee</option>
-                      <option value="moto">Moto propia</option>
-                      <option value="carro">Carro propio</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
+                  {currentCandidate?.registrationPaymentStatus !== "approved" && (
+                    <div className="bg-white/5 border border-white/10 p-6 rounded-[2rem] space-y-4">
+                      <h4 className="text-sm font-black text-[#C5A184] uppercase tracking-wider border-b border-[#C5A184]/15 pb-2">
+                        Pago de Activación de Perfil ($1.00 USD)
+                      </h4>
+                      <p className="text-xs text-gray-300 leading-relaxed">
+                        Para activar tu perfil en la Bolsa de Trabajo de KFS OS y ser visible ante dueños de locales, debes realizar un pago único de **$1.00 USD** para cubrir la validación técnica de tu CV.
+                      </p>
 
-              {currentCandidate?.registrationPaymentStatus !== "approved" && (
-                <div className="bg-white/5 border border-white/10 p-6 rounded-[2rem] space-y-4">
-                  <h4 className="text-sm font-black text-[#C5A184] uppercase tracking-wider border-b border-[#C5A184]/15 pb-2">
-                    Pago de Activación de Perfil ($1.00 USD)
-                  </h4>
-                  <p className="text-xs text-gray-300 leading-relaxed">
-                    Para activar tu perfil en la Bolsa de Trabajo de KFS OS y ser visible ante dueños de locales, debes realizar un pago único de **$1.00 USD** para cubrir la validación técnica de tu CV.
-                  </p>
+                      <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-xl text-[10px] text-amber-200 space-y-1 font-mono leading-tight">
+                        <p className="font-black border-b border-amber-500/20 pb-1">DATOS DE TRANSFERENCIA DIRECTA ($1 USD):</p>
+                        <p>Zinli/Wally/AirTM: <strong>master@kreatek.com</strong></p>
+                        <p>Pago Móvil: <strong>Banesco (0414-1234567) RIF: J-4019283-2</strong></p>
+                      </div>
 
-                  <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-xl text-[10px] text-amber-200 space-y-1 font-mono leading-tight">
-                    <p className="font-black border-b border-amber-500/20 pb-1">DATOS DE TRANSFERENCIA DIRECTA ($1 USD):</p>
-                    <p>Zinli/Wally/AirTM: <strong>master@kreatek.com</strong></p>
-                    <p>Pago Móvil: <strong>Banesco (0414-1234567) RIF: J-4019283-2</strong></p>
-                  </div>
+                      {currentCandidate?.registrationPaymentStatus === "rejected" && (
+                        <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-xs font-bold animate-pulse">
+                          ⚠️ Tu reporte de pago anterior fue RECHAZADO por el administrador. Por favor, realiza una transferencia correcta y reenvía los datos.
+                        </div>
+                      )}
 
-                  {currentCandidate?.registrationPaymentStatus === "rejected" && (
-                    <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-xs font-bold animate-pulse">
-                      ⚠️ Tu reporte de pago anterior fue RECHAZADO por el administrador. Por favor, realiza una transferencia correcta y reenvía los datos.
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Referencia del Pago</label>
+                          <input
+                            type="text"
+                            placeholder="Número de referencia de $1 USD"
+                            value={regRefNum}
+                            onChange={e => setRegRefNum(e.target.value)}
+                            className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#C5A184]"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1 font-sans">Capture de Transferencia ($1 USD)</label>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                try {
+                                  const base64 = await compressImage(file, 400);
+                                  setRegScreenshot(base64);
+                                  showToast("Capture cargado.", "success");
+                                } catch (err) {
+                                  showToast("Error al comprimir el capture.", "error");
+                                }
+                              }
+                            }}
+                            className="text-xs text-gray-400 block mt-1"
+                          />
+                        </div>
+                      </div>
                     </div>
                   )}
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="flex flex-col sm:flex-row justify-between items-center bg-white/5 border border-white/10 p-5 rounded-2xl gap-4">
                     <div>
-                      <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Referencia del Pago</label>
-                      <input
-                        type="text"
-                        placeholder="Número de referencia de $1 USD"
-                        value={regRefNum}
-                        onChange={e => setRegRefNum(e.target.value)}
-                        className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#C5A184]"
-                      />
+                      <h4 className="text-sm font-black text-white">Estado de Búsqueda Activa</h4>
+                      <p className="text-xs text-gray-400">Si lo desactivas, los comercios no verán tu perfil en las búsquedas hasta que decidas reactivarlo.</p>
                     </div>
-                    <div>
-                      <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1 font-sans">Capture de Transferencia ($1 USD)</label>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={async (e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            try {
-                              const base64 = await compressImage(file, 400);
-                              setRegScreenshot(base64);
-                              showToast("Capture cargado.", "success");
-                            } catch (err) {
-                              showToast("Error al comprimir el capture.", "error");
-                            }
-                          }
-                        }}
-                        className="text-xs text-gray-400 block mt-1"
-                      />
-                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsActive(!isActive)}
+                      className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${isActive ? "bg-green-600 text-white shadow-md" : "bg-gray-700 text-gray-300"}`}
+                    >
+                      {isActive ? "🟢 Visible (Buscando Trabajo)" : "🔴 Pausado (Oculto)"}
+                    </button>
                   </div>
-                </div>
-              )}
 
-              <div className="flex flex-col sm:flex-row justify-between items-center bg-white/5 border border-white/10 p-5 rounded-2xl gap-4">
-                <div>
-                  <h4 className="text-sm font-black text-white">Estado de Búsqueda Activa</h4>
-                  <p className="text-xs text-gray-400">Si lo desactivas, los comercios no verán tu perfil en las búsquedas hasta que decidas reactivarlo.</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setIsActive(!isActive)}
-                  className={`px-6 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer ${isActive ? "bg-green-600 text-white shadow-md" : "bg-gray-700 text-gray-300"}`}
-                >
-                  {isActive ? "🟢 Visible (Buscando Trabajo)" : "🔴 Pausado (Oculto)"}
-                </button>
+                  <div className="flex justify-end pt-4">
+                    <button
+                      type="submit"
+                      className="bg-[#C5A184] text-[#0A1128] px-8 py-4 rounded-xl font-black hover:scale-[1.03] active:scale-95 transition-transform flex items-center justify-center gap-2 cursor-pointer shadow-xl"
+                    >
+                      <FileText size={18} /> {currentCandidate ? "Actualizar Perfil Laboral" : "Publicar Perfil Profesional"}
+                    </button>
+                  </div>
+                </form>
               </div>
-
-              <div className="flex justify-end pt-4">
-                <button
-                  type="submit"
-                  className="bg-[#C5A184] text-[#0A1128] px-8 py-4 rounded-xl font-black hover:scale-[1.03] active:scale-95 transition-transform flex items-center justify-center gap-2 cursor-pointer shadow-xl"
-                >
-                  <FileText size={18} /> {currentCandidate ? "Actualizar Perfil Laboral" : "Publicar Perfil Profesional"}
-                </button>
-              </div>
-            </form>
-          </div>
-        )}
+            )}
           </div>
         )}
 
@@ -2867,9 +2883,9 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
             const Icon = tab.icon;
             const isActive = subTab === tab.id;
             return (
-              <button 
-                key={tab.id} 
-                onClick={() => setSubTab(tab.id)} 
+              <button
+                key={tab.id}
+                onClick={() => setSubTab(tab.id)}
                 className="relative flex flex-col items-center justify-center w-20 h-12 cursor-pointer group"
               >
                 {isActive && <span className="absolute -top-4 w-12 h-1 bg-[#C5A184] rounded-b-full shadow-[0_4px_10px_rgba(197,161,132,0.5)]" />}
@@ -2894,7 +2910,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
 
 // CoreDashboard
 const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePromotoraEarnings, showToast, formatUSD, formatEUR, currentUser, logout, approveSubscription }: any) => {
-  const { impersonateClient, registerClient, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, toggleCandidateBacking, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, validateTopUp } = useKFS() as any;
+  const { impersonateClient, registerClient, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, toggleCandidateBacking, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, validateTopUp, rates, updateBcvRates } = useKFS() as any;
   const [searchPromotora, setSearchPromotora] = useState("");
   const [searchClient, setSearchClient] = useState("");
   const [searchVendedor, setSearchVendedor] = useState("");
@@ -2938,7 +2954,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
       };
       setDb(cleared);
       localStorage.setItem("kfs_os_db_prod", JSON.stringify(cleared));
-      
+
       if (isSupabaseConfigured) {
         try {
           const { supabase } = await import("../context/supabase");
@@ -2960,7 +2976,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
   };
 
   const [activeModal, setActiveModal] = useState<string | null>(null);
-  
+
   // Assign Promotora State
   const [targetClientId, setTargetClientId] = useState("");
   const [targetPromotoraId, setTargetPromotoraId] = useState("");
@@ -3013,11 +3029,11 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
       <div className="bg-gradient-to-br from-[#0A1128] to-[#1a2b5e] rounded-b-[3rem] shadow-[0_10px_30px_rgba(10,17,40,0.3)] pt-6 pb-12 px-6 text-white relative z-10">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
-            <span className="bg-white/20 p-2 rounded-xl text-[#C5A184]"><Shield size={20}/></span>
+            <span className="bg-white/20 p-2 rounded-xl text-[#C5A184]"><Shield size={20} /></span>
             <h1 className="font-black text-xl tracking-tight">KFS OS (Arquitecto)</h1>
           </div>
           <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
-            <LogOut size={16}/>
+            <LogOut size={16} />
           </button>
         </div>
 
@@ -3080,6 +3096,31 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
               </div>
             </div>
 
+            {/* BCV Rate Manual Update */}
+            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+              <div>
+                <h3 className="font-black text-[#0A1128] text-lg">Tasa Oficial Banco Central</h3>
+                <p className="text-xs text-gray-500">Actualización manual / forzada en el sistema</p>
+              </div>
+              <div className="flex items-center gap-4 w-full md:w-auto">
+                <div className="flex-1 md:w-32">
+                  <label className="text-[10px] font-bold text-gray-400 uppercase">Tasa USD (Bs)</label>
+                  <input type="number" id="manualUsdRate" defaultValue={rates.USD} step="0.01" className="w-full border border-gray-200 rounded p-2 font-bold" />
+                </div>
+                <div className="flex-1 md:w-32">
+                  <label className="text-[10px] font-bold text-gray-400 uppercase">Tasa EUR (Bs)</label>
+                  <input type="number" id="manualEurRate" defaultValue={rates.EUR} step="0.01" className="w-full border border-gray-200 rounded p-2 font-bold" />
+                </div>
+                <button onClick={() => {
+                  const usd = parseFloat((document.getElementById('manualUsdRate') as HTMLInputElement).value);
+                  const eur = parseFloat((document.getElementById('manualEurRate') as HTMLInputElement).value);
+                  if (usd > 0 && eur > 0) updateBcvRates(usd, eur);
+                }} className="bg-[#0A1128] text-white rounded-lg px-6 py-2 h-10 mt-5 font-black hover:bg-[#1a2b5e] transition-colors">
+                  Fijar
+                </button>
+              </div>
+            </div>
+
             {/* Net Earnings and Ad Budget Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden">
@@ -3123,7 +3164,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             <KFSFinancialSplitCalculator formatUSD={formatUSD} formatEUR={formatEUR} />
 
             <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
-              <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><TrendingUp className="text-[#C5A184]"/> Flujo de Comisiones KFS</h3>
+              <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><TrendingUp className="text-[#C5A184]" /> Flujo de Comisiones KFS</h3>
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={chartData}>
@@ -3158,7 +3199,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             {/* Control y Gobernanza de Promotoras */}
             <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><Shield className="text-[#C5A184]"/> Control y Gobernanza de Promotoras</h3>
+                <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><Shield className="text-[#C5A184]" /> Control y Gobernanza de Promotoras</h3>
                 <div className="relative w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                   <input type="text" placeholder="Buscar promotora..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchPromotora} onChange={e => setSearchPromotora(e.target.value)} />
@@ -3220,7 +3261,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             {/* Estado de Cobranza Diaria (BOS) */}
             <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><DollarSign className="text-red-500"/> Estado de Cobranza Diaria (BOS)</h3>
+                <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><DollarSign className="text-red-500" /> Estado de Cobranza Diaria (BOS)</h3>
                 <div className="relative w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                   <input type="text" placeholder="Buscar comercio..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchClient} onChange={e => setSearchClient(e.target.value)} />
@@ -3256,7 +3297,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                               <button onClick={() => impersonateClient(c)} className="bg-blue-500 text-white px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-blue-600 transition-colors cursor-pointer inline-flex items-center gap-1 shadow-sm">
                                 👁️ Ver Panel
                               </button>
-                              
+
                               {isBlocked ? (
                                 <button onClick={() => releaseClient(c.id)} className="bg-green-600 text-white px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-green-700 transition-colors cursor-pointer inline-flex items-center gap-1 shadow-sm">
                                   🔓 Liberar
@@ -3266,7 +3307,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                                   🔒 Bloquear
                                 </button>
                               )}
-                              
+
                               <button onClick={() => {
                                 deleteClient(c.id);
                               }} className="bg-red-600 text-white px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-red-700 transition-colors cursor-pointer inline-flex items-center gap-1 shadow-sm">
@@ -3294,7 +3335,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             {/* Fuerza Laboral (Vendedores) */}
             <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><UserCheck className="text-[#C5A184]"/> Fuerza Laboral (Vendedores)</h3>
+                <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><UserCheck className="text-[#C5A184]" /> Fuerza Laboral (Vendedores)</h3>
                 <div className="relative w-48">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                   <input type="text" placeholder="Buscar vendedor..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchVendedor} onChange={e => setSearchVendedor(e.target.value)} />
@@ -3359,7 +3400,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                       {(db.riders || []).reduce((acc: number, r: any) => acc + (r.deliveriesCompleted || 0), 0)}
                     </p>
                   </div>
-                  <div className="bg-orange-100 text-orange-600 p-2 rounded-lg"><Truck size={20}/></div>
+                  <div className="bg-orange-100 text-orange-600 p-2 rounded-lg"><Truck size={20} /></div>
                 </div>
                 <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
                   <div>
@@ -3368,7 +3409,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                       {formatUSD((db.riders || []).reduce((acc: number, r: any) => acc + (r.totalEarningsUSD || 0), 0))}
                     </p>
                   </div>
-                  <div className="bg-green-100 text-green-600 p-2 rounded-lg"><DollarSign size={20}/></div>
+                  <div className="bg-green-100 text-green-600 p-2 rounded-lg"><DollarSign size={20} /></div>
                 </div>
                 <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
                   <div>
@@ -3377,7 +3418,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                       {(db.riders || []).filter((r: any) => r.status === "approved").length}
                     </p>
                   </div>
-                  <div className="bg-blue-100 text-blue-600 p-2 rounded-lg"><Users size={20}/></div>
+                  <div className="bg-blue-100 text-blue-600 p-2 rounded-lg"><Users size={20} /></div>
                 </div>
               </div>
 
@@ -3460,7 +3501,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                                 onClick={() => { setAssignRiderModal({ riderId: rider.id, riderName: rider.name }); setAssignRiderBusinessId(""); }}
                                 className="px-4 py-2 bg-orange-500 text-white font-black rounded-xl hover:bg-orange-600 text-xs border border-orange-400 cursor-pointer flex items-center gap-1"
                               >
-                                <Truck size={12}/> Asignar Negocio
+                                <Truck size={12} /> Asignar Negocio
                               </button>
                               <button onClick={() => rejectRider(rider.id)} className="px-4 py-2 bg-red-50 text-red-500 font-black rounded-xl hover:bg-red-100 text-xs border border-red-200 cursor-pointer">
                                 Revocar
@@ -3495,7 +3536,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
           <div className="space-y-8 flex flex-col">
             {/* Help Desk */}
             <div className="bg-[#0A1128] rounded-[2rem] shadow-sm border border-red-500/20 p-8 text-white mt-8">
-              <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-red-400"><Bell className="text-red-400"/> Help Desk (Tickets de Soporte Global)</h3>
+              <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-red-400"><Bell className="text-red-400" /> Help Desk (Tickets de Soporte Global)</h3>
               <div className="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
                 {(db.supportTickets || []).slice().reverse().map((ticket: any) => {
                   const client = db.clients.find((c: any) => c.id === ticket.clientId);
@@ -3517,7 +3558,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                           <input type="text" id={`reply-${ticket.id}`} placeholder="Respuesta Kreatek..." className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#C5A184]" />
                           <button onClick={() => {
                             const input = document.getElementById(`reply-${ticket.id}`) as HTMLInputElement;
-                            if(input && input.value) {
+                            if (input && input.value) {
                               replyTicket(ticket.id, "Kreatek Core", input.value);
                               input.value = "";
                             }
@@ -3539,7 +3580,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             {/* Suscripciones Pendientes */}
             {db.clients.filter((c: any) => c.subscription?.status === 'pending_verification').length > 0 && (
               <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 mb-8">
-                <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><CreditCard className="text-green-500"/> Suscripciones por Aprobar ($6)</h3>
+                <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><CreditCard className="text-green-500" /> Suscripciones por Aprobar ($6)</h3>
                 <div className="space-y-4">
                   {db.clients.filter((c: any) => c.subscription?.status === 'pending_verification').map((c: any) => (
                     <div key={c.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-green-50/50 rounded-2xl border border-green-100 shadow-sm gap-4">
@@ -3560,7 +3601,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             {db.candidates?.filter((c: any) => c.registrationPaymentStatus === 'pending_approval').length > 0 && (
               <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 mb-8 animate-fade-in">
                 <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2">
-                  <Briefcase className="text-green-500"/> Registraciones de Bolsa de Empleo por Aprobar ($1)
+                  <Briefcase className="text-green-500" /> Registraciones de Bolsa de Empleo por Aprobar ($1)
                 </h3>
                 <div className="space-y-4">
                   {db.candidates.filter((c: any) => c.registrationPaymentStatus === 'pending_approval').map((cand: any) => (
@@ -3575,7 +3616,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                         </p>
                         <div className="flex gap-4 mt-2">
                           {(cand.cvFile || cand.useKfsCvBuilder) && (
-                            <button 
+                            <button
                               onClick={() => {
                                 if (cand.useKfsCvBuilder) {
                                   setViewingCandidateCv(cand);
@@ -3589,7 +3630,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                             </button>
                           )}
                           {cand.registrationPaymentProof && (
-                            <button 
+                            <button
                               onClick={() => window.open(cand.registrationPaymentProof, '_blank')}
                               className="text-[10px] font-black text-green-700 underline cursor-pointer flex items-center gap-1"
                             >
@@ -3599,14 +3640,14 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                         </div>
                       </div>
                       <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-                        <button 
-                          onClick={() => approveCandidateRegistration(cand.id)} 
+                        <button
+                          onClick={() => approveCandidateRegistration(cand.id)}
                           className="px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md text-xs"
                         >
                           <CheckCircle size={14} /> Aprobar Registro
                         </button>
-                        <button 
-                          onClick={() => rejectCandidateRegistration(cand.id)} 
+                        <button
+                          onClick={() => rejectCandidateRegistration(cand.id)}
                           className="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md text-xs"
                         >
                           <X size={14} /> Rechazar Registro
@@ -3622,7 +3663,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             {db.unlockedContacts?.filter((u: any) => u.status === 'pending_approval').length > 0 && (
               <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 mb-8 animate-fade-in">
                 <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2">
-                  <CreditCard className="text-green-500"/> Desbloqueos de Bolsa de Empleo por Aprobar ($10)
+                  <CreditCard className="text-green-500" /> Desbloqueos de Bolsa de Empleo por Aprobar ($10)
                 </h3>
                 <div className="space-y-4">
                   {db.unlockedContacts.filter((u: any) => u.status === 'pending_approval').map((u: any) => {
@@ -3640,7 +3681,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                           </p>
                           {u.screenshot && (
                             <div className="mt-2">
-                              <button 
+                              <button
                                 onClick={() => window.open(u.screenshot, '_blank')}
                                 className="text-[10px] font-black text-green-700 underline cursor-pointer"
                               >
@@ -3650,14 +3691,14 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                           )}
                         </div>
                         <div className="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-                          <button 
-                            onClick={() => approveUnlock(u.id)} 
+                          <button
+                            onClick={() => approveUnlock(u.id)}
                             className="px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md text-xs"
                           >
                             <CheckCircle size={14} /> Aprobar Desbloqueo
                           </button>
-                          <button 
-                            onClick={() => rejectUnlock(u.id)} 
+                          <button
+                            onClick={() => rejectUnlock(u.id)}
                             className="px-6 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md text-xs"
                           >
                             <X size={14} /> Rechazar Pago
@@ -3673,7 +3714,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             {/* Verificaciones y Respaldo de Candidatos */}
             <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 mb-8 animate-fade-in">
               <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2">
-                <Award className="text-yellow-500"/> Verificaciones de Bolsa de Empleo
+                <Award className="text-yellow-500" /> Verificaciones de Bolsa de Empleo
               </h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
@@ -3707,7 +3748,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                           <span className="block">{cand.phone}</span>
                           <span className="block">{cand.email}</span>
                           {(cand.cvFile || cand.useKfsCvBuilder) && (
-                            <button 
+                            <button
                               onClick={() => {
                                 if (cand.useKfsCvBuilder) {
                                   setViewingCandidateCv(cand);
@@ -3778,11 +3819,11 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             {pendingTopUps.length > 0 && (
               <div className="bg-green-50/50 rounded-[2rem] shadow-sm border border-green-200 p-8 mb-8 animate-fade-in">
                 <div className="flex justify-between items-center mb-6">
-                  <h3 className="text-xl font-black text-green-900 flex items-center gap-2"><DollarSign className="text-green-500"/> Validaciones Financieras Pendientes</h3>
+                  <h3 className="text-xl font-black text-green-900 flex items-center gap-2"><DollarSign className="text-green-500" /> Validaciones Financieras Pendientes</h3>
                 </div>
                 <div className="space-y-4">
                   {pendingTopUps.map((t: any) => {
-                    const user = t.userType === 'client' ? db.clients?.find((c:any) => c.id === t.userId) : db.customers?.find((c:any) => c.id === t.userId);
+                    const user = t.userType === 'client' ? db.clients?.find((c: any) => c.id === t.userId) : db.customers?.find((c: any) => c.id === t.userId);
                     const name = t.userType === 'client' ? user?.company : user?.name;
                     return (
                       <div key={t.id} className="bg-white border border-green-100 rounded-2xl p-5 flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm hover:shadow-md transition-shadow">
@@ -3821,7 +3862,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             {/* Ghost Trap Forensics */}
             <div className="bg-red-50/30 rounded-[2rem] shadow-sm border border-red-100 p-8 mb-8">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-black text-red-900 flex items-center gap-2"><Lock className="text-red-500"/> Ghost Trap Forensics (Alertas de Anulación Silenciosa)</h3>
+                <h3 className="text-xl font-black text-red-900 flex items-center gap-2"><Lock className="text-red-500" /> Ghost Trap Forensics (Alertas de Anulación Silenciosa)</h3>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
@@ -3857,13 +3898,13 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             {/* Auditoría de Cierre */}
             <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><Lock className="text-[#C5A184]"/> Auditoría de Cierre (Reportes Z Globales)</h3>
+                <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><Lock className="text-[#C5A184]" /> Auditoría de Cierre (Reportes Z Globales)</h3>
                 <div className="flex gap-2">
                   <button onClick={() => showToast("Comando TFHKA Z (SENIAT) enviado al Spooler...", "success")} className="bg-amber-100 text-amber-900 px-4 py-2 rounded-xl font-bold text-sm hover:bg-amber-200 transition-colors cursor-pointer flex items-center gap-2 border border-amber-300">
-                     Emitir Z Fiscal
+                    Emitir Z Fiscal
                   </button>
                   <button onClick={() => window.print()} className="bg-[#0A1128] text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors cursor-pointer flex items-center gap-2">
-                     Imprimir Listado
+                    Imprimir Listado
                   </button>
                 </div>
               </div>
@@ -3901,7 +3942,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 
             {/* Registro Inmutable de Auditoría */}
             <div className="bg-[#0A1128] rounded-[2rem] shadow-sm border border-white/10 p-8 text-white mt-8">
-              <h3 className="text-xl font-black mb-6 flex items-center gap-2"><Shield className="text-[#C5A184]"/> Registro Inmutable de Auditoría (Logs)</h3>
+              <h3 className="text-xl font-black mb-6 flex items-center gap-2"><Shield className="text-[#C5A184]" /> Registro Inmutable de Auditoría (Logs)</h3>
               <div className="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
                 {(db.auditLogs || []).slice().reverse().map((log: any) => (
                   <div key={log.id} className="bg-white/5 border border-white/10 p-4 rounded-xl flex items-start gap-4">
@@ -3923,7 +3964,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 
             {/* Catálogo Global de Productos */}
             <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
-              <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><Store className="text-[#C5A184]"/> Catálogo Global de Productos</h3>
+              <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><Store className="text-[#C5A184]" /> Catálogo Global de Productos</h3>
               <div className="overflow-x-auto max-h-96">
                 <table className="w-full text-sm text-left">
                   <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black sticky top-0">
@@ -3957,7 +3998,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
         {activeTab === "kyc" && (
           <div className="space-y-8 flex flex-col">
             <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
-              <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><FileText className="text-[#C5A184]"/> Bóveda KYC (Know Your Customer)</h3>
+              <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><FileText className="text-[#C5A184]" /> Bóveda KYC (Know Your Customer)</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
                   <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black">
@@ -3978,8 +4019,8 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                         <td className="py-4 px-4 text-xs text-gray-600 max-w-xs truncate" title={client.kyc_address || client.address}>{client.kyc_address || client.address || "N/A"}</td>
                         <td className="py-4 px-4 text-center">
                           <div className="flex justify-center gap-2">
-                            {client.kyc_photo || client.avatar ? <img src={client.kyc_photo || client.avatar} onClick={() => setViewingKycPhoto(client.kyc_photo || client.avatar)} className="w-10 h-10 aspect-square object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-gray-200" alt="Selfie" title="Ver Selfie/Logo" /> : <span className="p-2.5 text-gray-300 border border-dashed border-gray-200 rounded-lg"><Camera size={16}/></span>}
-                            {client.kyc_id_card_img ? <img src={client.kyc_id_card_img} onClick={() => setViewingKycPhoto(client.kyc_id_card_img)} className="w-10 h-10 aspect-square object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-gray-200" alt="Cédula" title="Ver Cédula/RIF" /> : <span className="p-2.5 text-gray-300 border border-dashed border-gray-200 rounded-lg"><FileText size={16}/></span>}
+                            {client.kyc_photo || client.avatar ? <img src={client.kyc_photo || client.avatar} onClick={() => setViewingKycPhoto(client.kyc_photo || client.avatar)} className="w-10 h-10 aspect-square object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-gray-200" alt="Selfie" title="Ver Selfie/Logo" /> : <span className="p-2.5 text-gray-300 border border-dashed border-gray-200 rounded-lg"><Camera size={16} /></span>}
+                            {client.kyc_id_card_img ? <img src={client.kyc_id_card_img} onClick={() => setViewingKycPhoto(client.kyc_id_card_img)} className="w-10 h-10 aspect-square object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-gray-200" alt="Cédula" title="Ver Cédula/RIF" /> : <span className="p-2.5 text-gray-300 border border-dashed border-gray-200 rounded-lg"><FileText size={16} /></span>}
                           </div>
                         </td>
                         <td className="py-4 px-4 text-right">
@@ -3995,8 +4036,8 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                         <td className="py-4 px-4 text-xs text-gray-600 max-w-xs truncate" title={promo.kyc_address}>{promo.kyc_address || "N/A"}</td>
                         <td className="py-4 px-4 text-center">
                           <div className="flex justify-center gap-2">
-                            {promo.kyc_photo || promo.avatar ? <img src={promo.kyc_photo || promo.avatar} onClick={() => setViewingKycPhoto(promo.kyc_photo || promo.avatar)} className="w-10 h-10 aspect-square object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-gray-200" alt="Selfie" title="Ver Selfie" /> : <span className="p-2.5 text-gray-300 border border-dashed border-gray-200 rounded-lg"><Camera size={16}/></span>}
-                            {promo.kyc_id_card_img ? <img src={promo.kyc_id_card_img} onClick={() => setViewingKycPhoto(promo.kyc_id_card_img)} className="w-10 h-10 aspect-square object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-gray-200" alt="Cédula" title="Ver Cédula" /> : <span className="p-2.5 text-gray-300 border border-dashed border-gray-200 rounded-lg"><FileText size={16}/></span>}
+                            {promo.kyc_photo || promo.avatar ? <img src={promo.kyc_photo || promo.avatar} onClick={() => setViewingKycPhoto(promo.kyc_photo || promo.avatar)} className="w-10 h-10 aspect-square object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-gray-200" alt="Selfie" title="Ver Selfie" /> : <span className="p-2.5 text-gray-300 border border-dashed border-gray-200 rounded-lg"><Camera size={16} /></span>}
+                            {promo.kyc_id_card_img ? <img src={promo.kyc_id_card_img} onClick={() => setViewingKycPhoto(promo.kyc_id_card_img)} className="w-10 h-10 aspect-square object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-gray-200" alt="Cédula" title="Ver Cédula" /> : <span className="p-2.5 text-gray-300 border border-dashed border-gray-200 rounded-lg"><FileText size={16} /></span>}
                           </div>
                         </td>
                         <td className="py-4 px-4 text-right">
@@ -4012,8 +4053,8 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                         <td className="py-4 px-4 text-xs text-gray-600 max-w-xs truncate" title={cust.kyc_address}>{cust.kyc_address || "N/A"}</td>
                         <td className="py-4 px-4 text-center">
                           <div className="flex justify-center gap-2">
-                            {cust.kyc_photo ? <img src={cust.kyc_photo} onClick={() => setViewingKycPhoto(cust.kyc_photo)} className="w-10 h-10 aspect-square object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-gray-200" alt="Selfie" title="Ver Selfie" /> : <span className="p-2.5 text-gray-300 border border-dashed border-gray-200 rounded-lg"><Camera size={16}/></span>}
-                            {cust.kyc_id_card_img ? <img src={cust.kyc_id_card_img} onClick={() => setViewingKycPhoto(cust.kyc_id_card_img)} className="w-10 h-10 aspect-square object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-gray-200" alt="Cédula" title="Ver Cédula" /> : <span className="p-2.5 text-gray-300 border border-dashed border-gray-200 rounded-lg"><FileText size={16}/></span>}
+                            {cust.kyc_photo ? <img src={cust.kyc_photo} onClick={() => setViewingKycPhoto(cust.kyc_photo)} className="w-10 h-10 aspect-square object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-gray-200" alt="Selfie" title="Ver Selfie" /> : <span className="p-2.5 text-gray-300 border border-dashed border-gray-200 rounded-lg"><Camera size={16} /></span>}
+                            {cust.kyc_id_card_img ? <img src={cust.kyc_id_card_img} onClick={() => setViewingKycPhoto(cust.kyc_id_card_img)} className="w-10 h-10 aspect-square object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-gray-200" alt="Cédula" title="Ver Cédula" /> : <span className="p-2.5 text-gray-300 border border-dashed border-gray-200 rounded-lg"><FileText size={16} /></span>}
                           </div>
                         </td>
                         <td className="py-4 px-4 text-right">
@@ -4028,11 +4069,45 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
           </div>
         )}
 
+        {activeTab === "nodos" && (
+          <div className="space-y-8 flex flex-col">
+            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 animate-fade-in">
+              <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><QrCode className="text-[#C5A184]" /> Creador de Nodos KFS (Invitaciones)</h3>
+              <p className="text-sm text-gray-500 mb-6">Genera enlaces QR oficiales para registrar nuevos actores en la economía KFS como tus referidos.</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {[
+                  { role: 'registerCustomer', title: 'Invitar Cliente' },
+                  { role: 'registerPromo', title: 'Invitar Promotora' },
+                  { role: 'register', title: 'Invitar Comercio' },
+                  { role: 'registerRider', title: 'Invitar Delivery' }
+                ].map((invite, idx) => {
+                  let host = '';
+                  if (typeof window !== 'undefined') {
+                    host = window.location.origin + window.location.pathname;
+                  }
+                  const url = `${host}?role=${invite.role}&ref=arquitecto`;
+                  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}`;
+                  return (
+                    <div key={idx} className="bg-gray-50 border border-gray-200 p-6 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                      <h4 className="font-black text-[#0A1128] mb-4">{invite.title}</h4>
+                      <div className="bg-white p-2 rounded-xl border border-gray-100 shadow-sm mb-4">
+                        <img src={qrUrl} alt={`QR ${invite.title}`} className="w-32 h-32 rounded-lg" />
+                      </div>
+                      <input type="text" readOnly value={url} className="w-full text-[10px] bg-white border border-gray-200 rounded p-2 text-gray-500 mb-2 focus:outline-none" />
+                      <button onClick={() => { navigator.clipboard.writeText(url); showToast('Enlace copiado', 'success'); }} className="w-full py-2 bg-[#C5A184] text-[#0A1128] font-bold text-xs rounded hover:bg-[#b08d70] transition-colors">Copiar Enlace</button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Tactical Actions Modals */}
         {activeModal === 'store' && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
             <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative p-2 shadow-2xl">
-              <button onClick={() => setActiveModal(null)} className="absolute top-6 right-6 z-50 text-gray-400 hover:text-black"><X size={24}/></button>
+              <button onClick={() => setActiveModal(null)} className="absolute top-6 right-6 z-50 text-gray-400 hover:text-black"><X size={24} /></button>
               <RegisterClientForm onRegister={(data: any, promoId: string, fee: number) => { registerClient(data, promoId, fee); setActiveModal(null); }} onCancel={() => setActiveModal(null)} />
             </div>
           </div>
@@ -4043,7 +4118,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6">
               <div className="flex justify-between items-center border-b border-gray-100 pb-4">
                 <h3 className="text-xl font-black">Asignar Promotora</h3>
-                <button onClick={() => setActiveModal(null)}><X size={24} className="text-gray-400"/></button>
+                <button onClick={() => setActiveModal(null)}><X size={24} className="text-gray-400" /></button>
               </div>
               <div className="space-y-4">
                 <div>
@@ -4061,7 +4136,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                     {db.promotoras.filter((p: any) => p.status !== 'pending').map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
                   </select>
                 </div>
-                <button onClick={() => { if(targetClientId && targetPromotoraId) { assignPromotoraToClient(targetClientId, targetPromotoraId === 'none' ? '' : targetPromotoraId); setActiveModal(null); } }} className="w-full bg-[#0A1128] text-white py-4 rounded-xl font-black shadow-lg">Aplicar Reasignación</button>
+                <button onClick={() => { if (targetClientId && targetPromotoraId) { assignPromotoraToClient(targetClientId, targetPromotoraId === 'none' ? '' : targetPromotoraId); setActiveModal(null); } }} className="w-full bg-[#0A1128] text-white py-4 rounded-xl font-black shadow-lg">Aplicar Reasignación</button>
               </div>
             </div>
           </div>
@@ -4072,13 +4147,25 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6">
               <div className="flex justify-between items-center border-b border-gray-100 pb-4">
                 <h3 className="text-xl font-black">Catálogo Global</h3>
-                <button onClick={() => setActiveModal(null)}><X size={24} className="text-gray-400"/></button>
+                <button onClick={() => setActiveModal(null)}><X size={24} className="text-gray-400" /></button>
               </div>
               <div className="space-y-4">
                 <input type="text" placeholder="Nombre del Producto" value={globalProdName} onChange={e => setGlobalProdName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold" />
                 <input type="number" placeholder="Precio ($ USD)" value={globalProdPrice} onChange={e => setGlobalProdPrice(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold" />
                 <input type="text" placeholder="Categoría" value={globalProdCategory} onChange={e => setGlobalProdCategory(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold" />
-                <button onClick={() => { if(globalProdName && globalProdPrice) { addGlobalProduct({ name: globalProdName, priceUSD: parseFloat(globalProdPrice), category: globalProdCategory }); setActiveModal(null); } }} className="w-full bg-indigo-600 text-white py-4 rounded-xl font-black shadow-lg">Inyectar a la Red KFS</button>
+                <label className="flex items-center gap-2 text-sm font-bold text-gray-700 cursor-pointer p-3 border border-gray-200 rounded-xl bg-gray-50">
+                  <input type="checkbox" id="globalKPoints" className="w-5 h-5 accent-indigo-600 rounded" defaultChecked={true} />
+                  Permitir pago mixto con K-Points (Lealtad)
+                </label>
+                <button onClick={() => { 
+                  if (globalProdName && globalProdPrice) { 
+                    const allowKPoints = (document.getElementById('globalKPoints') as HTMLInputElement)?.checked;
+                    addGlobalProduct({ name: globalProdName, priceUSD: parseFloat(globalProdPrice), category: globalProdCategory, allowKPoints }); 
+                    setActiveModal(null); 
+                  } 
+                }} className="w-full bg-indigo-600 text-white py-4 rounded-xl font-black shadow-lg hover:bg-indigo-700 transition-colors">
+                  Inyectar a la Red KFS
+                </button>
               </div>
             </div>
           </div>
@@ -4089,7 +4176,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6">
               <div className="flex justify-between items-center border-b border-gray-100 pb-4">
                 <h3 className="text-xl font-black text-red-600">Alerta Push Network</h3>
-                <button onClick={() => setActiveModal(null)}><X size={24} className="text-gray-400"/></button>
+                <button onClick={() => setActiveModal(null)}><X size={24} className="text-gray-400" /></button>
               </div>
               <div className="space-y-4">
                 <div>
@@ -4103,7 +4190,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                 </div>
                 <input type="text" placeholder="Título Breve" value={notifTitle} onChange={e => setNotifTitle(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold text-red-600" />
                 <textarea placeholder="Mensaje de impacto..." value={notifMsg} onChange={e => setNotifMsg(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold h-24 resize-none" />
-                <button onClick={() => { if(notifTitle && notifMsg) { sendNotification(notifTarget, notifTitle, notifMsg); setActiveModal(null); } }} className="w-full bg-red-600 text-white py-4 rounded-xl font-black shadow-lg flex justify-center gap-2 items-center"><Bell size={20}/> Broadcast Instantáneo</button>
+                <button onClick={() => { if (notifTitle && notifMsg) { sendNotification(notifTarget, notifTitle, notifMsg); setActiveModal(null); } }} className="w-full bg-red-600 text-white py-4 rounded-xl font-black shadow-lg flex justify-center gap-2 items-center"><Bell size={20} /> Broadcast Instantáneo</button>
               </div>
             </div>
           </div>
@@ -4112,11 +4199,11 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
         {viewingKycPhoto && (
           <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
             <div className="relative max-w-3xl w-full flex flex-col items-center">
-              <button onClick={() => setViewingKycPhoto(null)} className="absolute -top-12 right-0 text-white hover:text-red-400 transition-colors cursor-pointer"><X size={32}/></button>
+              <button onClick={() => setViewingKycPhoto(null)} className="absolute -top-12 right-0 text-white hover:text-red-400 transition-colors cursor-pointer"><X size={32} /></button>
               <img src={viewingKycPhoto} alt="Visor KYC" className="w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl bg-white/5" />
               <div className="mt-6 flex gap-4 w-full max-w-sm">
                 <a href={viewingKycPhoto} download="kfs_kyc_document.jpg" className="flex-1 bg-[#C5A184] text-[#0A1128] py-3 rounded-xl font-black text-center shadow-[0_0_20px_rgba(197,161,132,0.4)] hover:scale-105 transition-transform flex items-center justify-center gap-2 cursor-pointer">
-                  <DownloadCloud size={20}/> Descargar Documento
+                  <DownloadCloud size={20} /> Descargar Documento
                 </a>
               </div>
             </div>
@@ -4128,10 +4215,10 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6">
               <div className="flex justify-between items-center border-b border-gray-100 pb-4">
                 <div>
-                  <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><Truck className="text-orange-500" size={22}/> Asignar Rider a Negocio</h3>
+                  <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><Truck className="text-orange-500" size={22} /> Asignar Rider a Negocio</h3>
                   <p className="text-xs text-gray-400 mt-0.5">Máx. 2 negocios por rider • Máx. 2 riders por negocio</p>
                 </div>
-                <button onClick={() => { setAssignRiderModal(null); setAssignRiderBusinessId(""); }}><X size={24} className="text-gray-400 hover:text-gray-700 cursor-pointer"/></button>
+                <button onClick={() => { setAssignRiderModal(null); setAssignRiderBusinessId(""); }}><X size={24} className="text-gray-400 hover:text-gray-700 cursor-pointer" /></button>
               </div>
               <div className="space-y-4">
                 <div>
@@ -4200,7 +4287,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                   disabled={!assignRiderModal.riderId || !assignRiderBusinessId}
                   className="w-full bg-orange-500 text-white py-4 rounded-xl font-black shadow-lg disabled:opacity-40 disabled:cursor-not-allowed hover:bg-orange-600 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <Truck size={18}/> Confirmar Asignación
+                  <Truck size={18} /> Confirmar Asignación
                 </button>
               </div>
             </div>
@@ -4208,10 +4295,10 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
         )}
 
         {viewingCandidateCv && (
-          <CvViewerModal 
-            isOpen={!!viewingCandidateCv} 
-            onClose={() => setViewingCandidateCv(null)} 
-            candidate={viewingCandidateCv} 
+          <CvViewerModal
+            isOpen={!!viewingCandidateCv}
+            onClose={() => setViewingCandidateCv(null)}
+            candidate={viewingCandidateCv}
           />
         )}
       </div>
@@ -4224,14 +4311,15 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             { id: "red", icon: Store, label: "Red KFS", badge: (db.riders?.filter((r: any) => r.status === "pending") || []).length },
             { id: "soporte", icon: Bell, label: "Soporte", badge: (db.clients.filter((c: any) => c.subscription?.status === 'pending_verification').length + (db.candidates?.filter((c: any) => c.registrationPaymentStatus === 'pending_approval').length || 0) + (db.unlockedContacts?.filter((u: any) => u.status === 'pending_approval').length || 0) + (db.supportTickets || []).filter((t: any) => t.status === 'open').length) },
             { id: "auditoria", icon: Shield, label: "Auditoría" },
-            { id: "kyc", icon: FileText, label: "Bóveda KYC" }
+            { id: "kyc", icon: FileText, label: "Bóveda KYC" },
+            { id: "nodos", icon: QrCode, label: "Nodos KFS" }
           ].map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
-              <button 
-                key={tab.id} 
-                onClick={() => setActiveTab(tab.id)} 
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
                 className="relative flex flex-col items-center justify-center w-20 h-12 cursor-pointer group"
               >
                 {isActive && <span className="absolute -top-4 w-12 h-1 bg-[#C5A184] rounded-b-full shadow-[0_4px_10px_rgba(197,161,132,0.5)]" />}
@@ -4254,7 +4342,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 };
 
 // Promotora Dashboard
-const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settlePromotoraEarnings, formatUSD, formatEUR, logout }: any) => {
+const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToPremium, settlePromotoraEarnings, formatUSD, formatEUR, logout }: any) => {
   const [showRegister, setShowRegister] = useState(false);
   const [showCustomerRegister, setShowCustomerRegister] = useState(false);
   const [searchClient, setSearchClient] = useState("");
@@ -4264,10 +4352,10 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
   const myPromotoraData = db.promotoras.find((p: any) => p.id === currentUser.id);
   const filteredClients = myClients.filter((c: any) => c.company.toLowerCase().includes(searchClient.toLowerCase()) || c.name.toLowerCase().includes(searchClient.toLowerCase()));
   const myCustomers = db.customers?.filter((c: any) => c.referred_by_promoter_id === currentUser.id) || [];
-  
+
   const pendingTopUps = db.topups?.filter((t: any) => t.status === 'pending' && (
-    (t.userType === 'client' && myClients.find((c:any) => c.id === t.userId)) ||
-    (t.userType === 'customer' && myCustomers.find((c:any) => c.id === t.userId))
+    (t.userType === 'client' && myClients.find((c: any) => c.id === t.userId)) ||
+    (t.userType === 'customer' && myCustomers.find((c: any) => c.id === t.userId))
   )) || [];
 
   const [activeTab, setActiveTab] = useState("panel"); // panel | negocios | afiliados
@@ -4280,17 +4368,17 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
       <div className="bg-gradient-to-br from-[#0A1128] to-[#1a2b5e] rounded-b-[3rem] shadow-[0_10px_30px_rgba(10,17,40,0.3)] pt-6 pb-12 px-6 text-white relative z-10">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
-            <span className="bg-white/20 p-2 rounded-xl text-[#C5A184]"><CheckCircle size={20}/></span>
+            <span className="bg-white/20 p-2 rounded-xl text-[#C5A184]"><CheckCircle size={20} /></span>
             <h1 className="font-black text-xl tracking-tight">KFS Promotora</h1>
           </div>
           <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
-            <LogOut size={16}/>
+            <LogOut size={16} />
           </button>
         </div>
 
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 bg-[#C5A184] rounded-full flex items-center justify-center text-[#0A1128] font-black text-2xl flex-shrink-0 shadow-lg border-4 border-[#0A1128]">
-            {currentUser.name?.slice(0,2).toUpperCase()}
+            {currentUser.name?.slice(0, 2).toUpperCase()}
           </div>
           <div>
             <h2 className="text-xl md:text-2xl font-black tracking-tight truncate">{currentUser.name}</h2>
@@ -4300,188 +4388,205 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
       </div>
 
       <div className="p-4 md:p-8 max-w-5xl mx-auto -mt-6 relative z-20 flex flex-col gap-8 animate-fade-in">
-        
+
         {activeTab === "panel" && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
-            <div className="relative z-10">
-              <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><CreditCard size={14} className="text-green-500" /> Regalías Liquidadas (BOS)</p>
-              <h2 className="text-5xl font-black mb-1 text-green-400">{formatEUR(myPromotoraData?.passiveEarningsEUR || 0)}</h2>
-              <p className="text-xs text-gray-400 mt-2">Modelo Revenue Share (20%)</p>
-              {(myPromotoraData?.passiveEarningsEUR || 0) > 0 && (
-                <button onClick={() => setShowPayoutModal(true)} className="w-full bg-[#C5A184] text-[#0A1128] py-3 rounded-xl font-bold text-sm hover:scale-[1.02] transition-transform cursor-pointer shadow-lg flex justify-center items-center gap-2 mt-4">
-                  <CheckCircle size={18} /> Solicitar Retiro
-                </button>
-              )}
-            </div>
-            <Activity size={100} className="absolute -right-10 -bottom-10 text-white/5" />
-          </div>
-          
-          <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
-             <div className="relative z-10">
-               <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><CheckCircle size={14} className="text-white/50" /> Nodos Captados</p>
-               <h2 className="text-5xl font-black mb-1 text-white">{myPromotoraData?.setups || 0}</h2>
-               <p className="text-xs text-gray-400 mt-2">Comercios afiliados activos</p>
-             </div>
-             <Users size={100} className="absolute -right-10 -bottom-10 text-white/5" />
-          </div>
-        </div>
-
-        {pendingTopUps.length > 0 && (
-          <div className="bg-[#0A1128] rounded-[2rem] shadow-sm border border-green-500/30 p-8 text-white mt-8 animate-fade-in">
-            <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-green-400"><DollarSign className="text-green-400"/> Recargas Pendientes por Validar</h3>
-            <div className="space-y-4">
-              {pendingTopUps.map((t: any) => {
-                const user = t.userType === 'client' ? myClients.find((c:any) => c.id === t.userId) : myCustomers.find((c:any) => c.id === t.userId);
-                const name = t.userType === 'client' ? user?.company : user?.name;
-                return (
-                  <div key={t.id} className="bg-white/5 border border-white/10 rounded-2xl p-5 flex flex-col md:flex-row justify-between items-center gap-6">
-                    <div className="flex items-center gap-4">
-                      {t.screenshotBase64 && (
-                        <a href={t.screenshotBase64} target="_blank" rel="noreferrer" className="w-16 h-16 rounded-xl overflow-hidden border border-white/20 block hover:scale-105 transition-transform">
-                          <img src={t.screenshotBase64} alt="Comprobante" className="w-full h-full object-cover" />
-                        </a>
-                      )}
-                      <div>
-                        <p className="font-bold text-sm text-gray-200">{name} <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded-full text-[#C5A184] uppercase ml-2">{t.userType}</span></p>
-                        <p className="text-xs text-gray-400 font-mono mt-1">Ref: {t.paymentReference} | {new Date(t.timestamp).toLocaleString()}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4 w-full md:w-auto">
-                      <div className="text-right flex-1 md:flex-none">
-                        <p className="text-[10px] text-gray-500 uppercase font-black">Monto a Acreditar</p>
-                        <p className="text-xl font-black text-green-400">${t.amountUSD.toFixed(2)}</p>
-                      </div>
-                      <div className="flex gap-2">
-                        <button onClick={() => validateTopUp(t.id, 'rejected', currentUser.id)} className="w-10 h-10 rounded-xl bg-red-500/20 hover:bg-red-500 hover:text-white text-red-500 flex items-center justify-center transition-colors cursor-pointer border border-red-500/50">
-                          <X size={18} />
-                        </button>
-                        <button onClick={() => validateTopUp(t.id, 'approved', currentUser.id)} className="w-10 h-10 rounded-xl bg-green-500/20 hover:bg-green-500 hover:text-white text-green-500 flex items-center justify-center transition-colors cursor-pointer border border-green-500/50">
-                          <CheckCircle size={18} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        <div className="bg-[#0A1128] rounded-[2rem] shadow-sm border border-red-500/20 p-8 text-white mt-8">
-          <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-red-400"><Bell className="text-red-400"/> Tickets de Mis Comercios</h3>
-          <div className="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
-            {(db.supportTickets || []).slice().reverse().filter((t:any) => {
-               const client = myClients.find((c:any) => c.id === t.clientId);
-               return client !== undefined;
-            }).map((ticket: any) => {
-              const client = myClients.find((c: any) => c.id === ticket.clientId);
-              return (
-                <div key={ticket.id} className="bg-white/5 border border-white/10 p-4 rounded-xl flex flex-col gap-2">
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm font-bold text-gray-200">[{ticket.status === 'open' ? '🔴 ABIERTO' : '🟢 CERRADO'}] {client?.company || "Comercio"} - {ticket.subject}</p>
-                    <span className="text-[10px] text-gray-500 font-mono">{new Date(ticket.createdAt).toLocaleString()}</span>
-                  </div>
-                  <div className="space-y-2 mt-2 pl-4 border-l-2 border-[#C5A184]/30">
-                    {ticket.messages.map((m: any, i: number) => (
-                      <div key={i} className="text-xs">
-                        <span className="font-bold text-[#C5A184]">{m.author}:</span> <span className="text-gray-300">{m.text}</span>
-                      </div>
-                    ))}
-                  </div>
-                  {ticket.status === 'open' && (
-                    <div className="flex gap-2 mt-2">
-                      <input type="text" id={`reply-promo-${ticket.id}`} placeholder="Respuesta..." className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#C5A184]" />
-                      <button onClick={() => {
-                        const input = document.getElementById(`reply-promo-${ticket.id}`) as HTMLInputElement;
-                        if(input && input.value) {
-                          replyTicket(ticket.id, `Promotora ${currentUser.name}`, input.value);
-                          input.value = "";
-                        }
-                      }} className="bg-[#C5A184] text-[#0A1128] px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer hover:bg-[#b08d70]">Responder</button>
-                    </div>
+              <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
+                <div className="relative z-10">
+                  <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><CreditCard size={14} className="text-green-500" /> Regalías Liquidadas (BOS)</p>
+                  <h2 className="text-5xl font-black mb-1 text-green-400">{formatEUR(myPromotoraData?.passiveEarningsEUR || 0)}</h2>
+                  <p className="text-xs text-gray-400 mt-2">Modelo Revenue Share (20%)</p>
+                  {(myPromotoraData?.passiveEarningsEUR || 0) > 0 && (
+                    <button onClick={() => setShowPayoutModal(true)} className="w-full bg-[#C5A184] text-[#0A1128] py-3 rounded-xl font-bold text-sm hover:scale-[1.02] transition-transform cursor-pointer shadow-lg flex justify-center items-center gap-2 mt-4">
+                      <CheckCircle size={18} /> Solicitar Retiro
+                    </button>
                   )}
                 </div>
-              )
-            })}
-            {(db.supportTickets || []).filter((t:any) => myClients.find((c:any) => c.id === t.clientId)).length === 0 && (
-              <p className="text-gray-500 text-sm font-bold text-center py-4">No hay tickets de soporte activos.</p>
-            )}
-          </div>
-        </div>
+                <Activity size={100} className="absolute -right-10 -bottom-10 text-white/5" />
+              </div>
 
-        {/* Manuals Section */}
-        <div className="bg-[#0A1128] text-white p-8 md:p-10 rounded-[2rem] shadow-xl relative overflow-hidden">
-          <h3 className="text-xl font-black mb-6">Centro de Aprendizaje y Manuales</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <button onClick={() => setActiveManual('sales')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
-              <BookOpen size={32} className="text-[#C5A184]" />
-              <span className="font-bold text-sm">Manual de Ventas</span>
-            </button>
-            <button onClick={() => setActiveManual('implementation')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
-              <Settings size={32} className="text-[#C5A184]" />
-              <span className="font-bold text-sm">Guía de Implementación</span>
-            </button>
-            <button onClick={() => setActiveManual('installation')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
-              <DownloadCloud size={32} className="text-[#C5A184]" />
-              <span className="font-bold text-sm">Setup Fiscal Proxy</span>
-            </button>
+              <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
+                <div className="relative z-10">
+                  <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><CheckCircle size={14} className="text-white/50" /> Nodos Captados</p>
+                  <h2 className="text-5xl font-black mb-1 text-white">{myPromotoraData?.setups || 0}</h2>
+                  <p className="text-xs text-gray-400 mt-2">Comercios afiliados activos</p>
+                </div>
+                <Users size={100} className="absolute -right-10 -bottom-10 text-white/5" />
+              </div>
+            </div>
+
+            {pendingTopUps.length > 0 && (
+              <div className="bg-[#0A1128] rounded-[2rem] shadow-sm border border-green-500/30 p-8 text-white mt-8 animate-fade-in">
+                <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-green-400"><DollarSign className="text-green-400" /> Recargas Pendientes por Validar</h3>
+                <div className="space-y-4">
+                  {pendingTopUps.map((t: any) => {
+                    const user = t.userType === 'client' ? myClients.find((c: any) => c.id === t.userId) : myCustomers.find((c: any) => c.id === t.userId);
+                    const name = t.userType === 'client' ? user?.company : user?.name;
+                    return (
+                      <div key={t.id} className="bg-white/5 border border-white/10 rounded-2xl p-5 flex flex-col md:flex-row justify-between items-center gap-6">
+                        <div className="flex items-center gap-4">
+                          {t.screenshotBase64 && (
+                            <a href={t.screenshotBase64} target="_blank" rel="noreferrer" className="w-16 h-16 rounded-xl overflow-hidden border border-white/20 block hover:scale-105 transition-transform">
+                              <img src={t.screenshotBase64} alt="Comprobante" className="w-full h-full object-cover" />
+                            </a>
+                          )}
+                          <div>
+                            <p className="font-bold text-sm text-gray-200">{name} <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded-full text-[#C5A184] uppercase ml-2">{t.userType}</span></p>
+                            <p className="text-xs text-gray-400 font-mono mt-1">Ref: {t.paymentReference} | {new Date(t.timestamp).toLocaleString()}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-4 w-full md:w-auto">
+                          <div className="text-right flex-1 md:flex-none">
+                            <p className="text-[10px] text-gray-500 uppercase font-black">Monto a Acreditar</p>
+                            <p className="text-xl font-black text-green-400">${t.amountUSD.toFixed(2)}</p>
+                          </div>
+                          <div className="flex gap-2">
+                            <button onClick={() => validateTopUp(t.id, 'rejected', currentUser.id)} className="w-10 h-10 rounded-xl bg-red-500/20 hover:bg-red-500 hover:text-white text-red-500 flex items-center justify-center transition-colors cursor-pointer border border-red-500/50">
+                              <X size={18} />
+                            </button>
+                            <button onClick={() => validateTopUp(t.id, 'approved', currentUser.id)} className="w-10 h-10 rounded-xl bg-green-500/20 hover:bg-green-500 hover:text-white text-green-500 flex items-center justify-center transition-colors cursor-pointer border border-green-500/50">
+                              <CheckCircle size={18} />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            <div className="bg-[#0A1128] rounded-[2rem] shadow-sm border border-red-500/20 p-8 text-white mt-8">
+              <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-red-400"><Bell className="text-red-400" /> Tickets de Mis Comercios</h3>
+              <div className="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+                {(db.supportTickets || []).slice().reverse().filter((t: any) => {
+                  const client = myClients.find((c: any) => c.id === t.clientId);
+                  return client !== undefined;
+                }).map((ticket: any) => {
+                  const client = myClients.find((c: any) => c.id === ticket.clientId);
+                  return (
+                    <div key={ticket.id} className="bg-white/5 border border-white/10 p-4 rounded-xl flex flex-col gap-2">
+                      <div className="flex justify-between items-center">
+                        <p className="text-sm font-bold text-gray-200">[{ticket.status === 'open' ? '🔴 ABIERTO' : '🟢 CERRADO'}] {client?.company || "Comercio"} - {ticket.subject}</p>
+                        <span className="text-[10px] text-gray-500 font-mono">{new Date(ticket.createdAt).toLocaleString()}</span>
+                      </div>
+                      <div className="space-y-2 mt-2 pl-4 border-l-2 border-[#C5A184]/30">
+                        {ticket.messages.map((m: any, i: number) => (
+                          <div key={i} className="text-xs">
+                            <span className="font-bold text-[#C5A184]">{m.author}:</span> <span className="text-gray-300">{m.text}</span>
+                          </div>
+                        ))}
+                      </div>
+                      {ticket.status === 'open' && (
+                        <div className="flex gap-2 mt-2">
+                          <input type="text" id={`reply-promo-${ticket.id}`} placeholder="Respuesta..." className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#C5A184]" />
+                          <button onClick={() => {
+                            const input = document.getElementById(`reply-promo-${ticket.id}`) as HTMLInputElement;
+                            if (input && input.value) {
+                              replyTicket(ticket.id, `Promotora ${currentUser.name}`, input.value);
+                              input.value = "";
+                            }
+                          }} className="bg-[#C5A184] text-[#0A1128] px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer hover:bg-[#b08d70]">Responder</button>
+                        </div>
+                      )}
+                    </div>
+                  )
+                })}
+                {(db.supportTickets || []).filter((t: any) => myClients.find((c: any) => c.id === t.clientId)).length === 0 && (
+                  <p className="text-gray-500 text-sm font-bold text-center py-4">No hay tickets de soporte activos.</p>
+                )}
+              </div>
+            </div>
+
+            {/* Manuals Section */}
+            <div className="bg-[#0A1128] text-white p-8 md:p-10 rounded-[2rem] shadow-xl relative overflow-hidden">
+              <h3 className="text-xl font-black mb-6">Centro de Aprendizaje y Manuales</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <button onClick={() => setActiveManual('sales')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
+                  <BookOpen size={32} className="text-[#C5A184]" />
+                  <span className="font-bold text-sm">Manual de Ventas</span>
+                </button>
+                <button onClick={() => setActiveManual('implementation')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
+                  <Settings size={32} className="text-[#C5A184]" />
+                  <span className="font-bold text-sm">Guía de Implementación</span>
+                </button>
+                <button onClick={() => setActiveManual('installation')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
+                  <DownloadCloud size={32} className="text-[#C5A184]" />
+                  <span className="font-bold text-sm">Setup Fiscal Proxy</span>
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-        </div>
         )}
 
         {activeTab === "negocios" && (
           <div className="space-y-6">
-        {!showRegister ? (
-          <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 relative overflow-hidden">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-gray-100 pb-4 gap-4">
-              <h3 className="text-xl font-black text-[#0A1128]">Mis Comercios Activados</h3>
-              <div className="flex flex-wrap gap-4 w-full md:w-auto">
-                <div className="relative flex-1 md:w-48">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                  <input type="text" placeholder="Buscar comercio..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchClient} onChange={e => setSearchClient(e.target.value)} />
+            {!showRegister ? (
+              <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 relative overflow-hidden">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-gray-100 pb-4 gap-4">
+                  <h3 className="text-xl font-black text-[#0A1128]">Mis Comercios Activados</h3>
+                  <div className="flex flex-wrap gap-4 w-full md:w-auto">
+                    <div className="relative flex-1 md:w-48">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                      <input type="text" placeholder="Buscar comercio..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchClient} onChange={e => setSearchClient(e.target.value)} />
+                    </div>
+                    <button onClick={() => setShowRegister(true)} className="bg-[#0A1128] text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors shadow-md cursor-pointer">+ Nuevo Setup</button>
+                  </div>
                 </div>
-                <button onClick={() => setShowRegister(true)} className="bg-[#0A1128] text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors shadow-md cursor-pointer">+ Nuevo Setup</button>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm text-left">
+                    <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black">
+                      <tr>
+                        <th className="py-4 px-4">Nodo Comercial</th>
+                        <th className="py-4 px-4">Contacto</th>
+                        <th className="py-4 px-4">Tarifa BOS</th>
+                        <th className="py-4 px-4 text-center">Tienda</th>
+                        <th className="py-4 px-4 text-right">Deuda KFS</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredClients.map((c: any) => (
+                        <tr key={c.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                          <td className="py-4 px-4 font-bold text-[#0A1128]">
+                            <div className="flex items-center gap-2">
+                              {c.company}
+                              {c.account_tier === 'free' && (
+                                <button
+                                  onClick={() => upgradeToPremium(c.id, currentUser.id)}
+                                  className="bg-gradient-to-r from-[#C5A184] to-yellow-600 text-white px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider hover:opacity-90 transition-opacity whitespace-nowrap shadow-sm"
+                                >
+                                  Upgrade $5
+                                </button>
+                              )}
+                              {c.account_tier === 'premium' && (
+                                <span className="bg-[#0A1128] text-[#C5A184] px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider shadow-sm">
+                                  Premium
+                                </span>
+                              )}
+                            </div>
+                          </td>
+                          <td className="py-4 px-4 text-gray-500">{c.name}<br /><span className="text-xs font-mono">{c.phone}</span></td>
+                          <td className="py-4 px-4 font-bold text-[#C5A184]">{(c.kfsFeePercentage || 0.03) * 100}%</td>
+                          <td className="py-4 px-4 text-center">
+                            <button onClick={() => setCustomizingClient(c)} className="bg-gray-100 hover:bg-gray-200 text-[#0A1128] px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1 mx-auto">
+                              <Palette size={14} /> Diseño
+                            </button>
+                          </td>
+                          <td className="py-4 px-4 font-black text-red-500 text-right">{formatUSD(c.kfsFeesOwedUSD || 0)}</td>
+                        </tr>
+                      ))}
+                      {myClients.length === 0 && <tr><td colSpan={5} className="text-center py-10 text-gray-400 font-bold">Sin nodos comerciales supervisados.</td></tr>}
+                    </tbody>
+                  </table>
+                </div>
               </div>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm text-left">
-                <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black">
-                  <tr>
-                    <th className="py-4 px-4">Nodo Comercial</th>
-                    <th className="py-4 px-4">Contacto</th>
-                    <th className="py-4 px-4">Tarifa BOS</th>
-                    <th className="py-4 px-4 text-center">Tienda</th>
-                    <th className="py-4 px-4 text-right">Deuda KFS</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filteredClients.map((c: any) => (
-                    <tr key={c.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                      <td className="py-4 px-4 font-bold text-[#0A1128]">{c.company}</td>
-                      <td className="py-4 px-4 text-gray-500">{c.name}<br/><span className="text-xs font-mono">{c.phone}</span></td>
-                      <td className="py-4 px-4 font-bold text-[#C5A184]">{(c.kfsFeePercentage || 0.03) * 100}%</td>
-                      <td className="py-4 px-4 text-center">
-                        <button onClick={() => setCustomizingClient(c)} className="bg-gray-100 hover:bg-gray-200 text-[#0A1128] px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1 mx-auto">
-                          <Palette size={14} /> Diseño
-                        </button>
-                      </td>
-                      <td className="py-4 px-4 font-black text-red-500 text-right">{formatUSD(c.kfsFeesOwedUSD || 0)}</td>
-                    </tr>
-                  ))}
-                  {myClients.length === 0 && <tr><td colSpan={5} className="text-center py-10 text-gray-400 font-bold">Sin nodos comerciales supervisados.</td></tr>}
-                </tbody>
-              </table>
-            </div>
+            ) : (
+              <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 max-w-2xl mx-auto">
+                <RegisterClientForm onRegister={(data: any) => { registerClient(data, currentUser.id, data.kfsFeePercentage); setShowRegister(false); }} onCancel={() => setShowRegister(false)} standalone={false} />
+              </div>
+            )}
           </div>
-        ) : (
-          <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 max-w-2xl mx-auto">
-            <RegisterClientForm onRegister={(data: any) => { registerClient(data, currentUser.id, data.kfsFeePercentage); setShowRegister(false); }} onCancel={() => setShowRegister(false)} standalone={false} />
-          </div>
-        )}
-        </div>
         )}
       </div>
 
@@ -4505,7 +4610,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
             <button onClick={() => setActiveManual(null)} className="absolute top-6 right-6 text-gray-500 hover:text-[#0A1128] transition-colors cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200">
               <X size={20} />
             </button>
-            
+
             {activeManual === 'sales' && (
               <div>
                 <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><BookOpen className="text-[#C5A184]" size={28} /> Manual de Ventas: KFS Ecosistema</h2>
@@ -4586,55 +4691,55 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
         <div className="space-y-6">
           {/* Captación de Clientes Panel */}
           <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 relative overflow-hidden text-[#0A1128]">
-             <h3 className="text-xl font-black mb-4">Captación de Clientes</h3>
-             <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
-                <div className="w-40 h-40 bg-gray-100 rounded-xl flex items-center justify-center border-4 border-[#C5A184] flex-shrink-0">
-                   {/* Mock QR */}
-                   <div className="text-center">
-                     <QrCode size={64} className="mx-auto text-gray-800" />
-                     <p className="text-xs font-bold mt-2">Scan Me</p>
-                   </div>
+            <h3 className="text-xl font-black mb-4">Captación de Clientes</h3>
+            <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
+              <div className="w-40 h-40 bg-gray-100 rounded-xl flex items-center justify-center border-4 border-[#C5A184] flex-shrink-0">
+                {/* Mock QR */}
+                <div className="text-center">
+                  <QrCode size={64} className="mx-auto text-gray-800" />
+                  <p className="text-xs font-bold mt-2">Scan Me</p>
                 </div>
-                <div className="flex-1">
-                   <p className="text-sm text-gray-600 mb-2">Pide a tus clientes que escaneen este código o ingresen tu ID al registrarse para quedar enlazados a tu perfil.</p>
-                   <p className="bg-gray-100 px-4 py-2 rounded-lg font-mono font-black inline-block text-lg border border-gray-300 text-indigo-900 tracking-wider mb-4">{currentUser.id}</p>
-                   
-                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                     <div className="bg-green-50 border border-green-100 p-4 rounded-xl">
-                       <p className="text-xs text-green-700 font-bold uppercase tracking-wider mb-1">Bono por Adquisición</p>
-                       <p className="text-2xl font-black text-green-600">${(currentUser.customerAcquisitionBonusUSD || 0).toFixed(2)}</p>
-                       <p className="text-[10px] text-green-600/80 mt-1">Ganas $1.00 USD cuando tu referido recarga sus primeros $5.00 USD en la billetera.</p>
-                     </div>
-                     <div className="flex items-center">
-                       <button onClick={() => setShowCustomerRegister(true)} className="w-full bg-[#0A1128] text-white py-4 rounded-xl font-black shadow-lg hover:bg-gray-800 transition-colors flex justify-center items-center gap-2 cursor-pointer">
-                         <UserPlus size={20}/> Registrar Cliente en Vivo
-                       </button>
-                     </div>
-                   </div>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-gray-600 mb-2">Pide a tus clientes que escaneen este código o ingresen tu ID al registrarse para quedar enlazados a tu perfil.</p>
+                <p className="bg-gray-100 px-4 py-2 rounded-lg font-mono font-black inline-block text-lg border border-gray-300 text-indigo-900 tracking-wider mb-4">{currentUser.id}</p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-green-50 border border-green-100 p-4 rounded-xl">
+                    <p className="text-xs text-green-700 font-bold uppercase tracking-wider mb-1">Bono por Adquisición</p>
+                    <p className="text-2xl font-black text-green-600">${(currentUser.customerAcquisitionBonusUSD || 0).toFixed(2)}</p>
+                    <p className="text-[10px] text-green-600/80 mt-1">Ganas $1.00 USD cuando tu referido recarga sus primeros $5.00 USD en la billetera.</p>
+                  </div>
+                  <div className="flex items-center">
+                    <button onClick={() => setShowCustomerRegister(true)} className="w-full bg-[#0A1128] text-white py-4 rounded-xl font-black shadow-lg hover:bg-gray-800 transition-colors flex justify-center items-center gap-2 cursor-pointer">
+                      <UserPlus size={20} /> Registrar Cliente en Vivo
+                    </button>
+                  </div>
                 </div>
-             </div>
+              </div>
+            </div>
           </div>
 
           <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
-             <h3 className="text-lg font-black mb-4">Mis Clientes Afiliados ({myCustomers.length})</h3>
-             {myCustomers.length > 0 ? (
-               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                 {myCustomers.map((c: any) => (
-                   <div key={c.id} className="p-4 border border-gray-100 rounded-xl flex justify-between items-center bg-gray-50">
-                      <div>
-                        <p className="font-bold text-sm text-[#0A1128]">{c.name}</p>
-                        <p className="text-xs text-gray-500 font-mono">{c.phone}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-[10px] text-green-600 font-bold uppercase">Afiliado</p>
-                        <p className="text-[10px] text-gray-400">{c.hasRecharged ? "Recargado" : "Pendiente Recarga"}</p>
-                      </div>
-                   </div>
-                 ))}
-               </div>
-             ) : (
-               <p className="text-sm text-gray-500 text-center py-6">No tienes clientes afiliados todavía.</p>
-             )}
+            <h3 className="text-lg font-black mb-4">Mis Clientes Afiliados ({myCustomers.length})</h3>
+            {myCustomers.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {myCustomers.map((c: any) => (
+                  <div key={c.id} className="p-4 border border-gray-100 rounded-xl flex justify-between items-center bg-gray-50">
+                    <div>
+                      <p className="font-bold text-sm text-[#0A1128]">{c.name}</p>
+                      <p className="text-xs text-gray-500 font-mono">{c.phone}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[10px] text-green-600 font-bold uppercase">Afiliado</p>
+                      <p className="text-[10px] text-gray-400">{c.hasRecharged ? "Recargado" : "Pendiente Recarga"}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-gray-500 text-center py-6">No tienes clientes afiliados todavía.</p>
+            )}
           </div>
         </div>
       )}
@@ -4643,10 +4748,10 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
       {showCustomerRegister && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
           <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative p-2 shadow-2xl">
-            <button onClick={() => setShowCustomerRegister(false)} className="absolute top-6 right-6 z-50 text-gray-400 hover:text-black cursor-pointer"><X size={24}/></button>
+            <button onClick={() => setShowCustomerRegister(false)} className="absolute top-6 right-6 z-50 text-gray-400 hover:text-black cursor-pointer"><X size={24} /></button>
             <div className="p-4 border-b border-gray-100 mb-4">
-               <h3 className="text-xl font-black text-center text-[#0A1128]">Registro Rápido de Cliente</h3>
-               <p className="text-xs text-center text-gray-500 mt-1">Este cliente quedará atado a tu ID: <span className="font-mono font-bold text-indigo-600">{currentUser.id}</span></p>
+              <h3 className="text-xl font-black text-center text-[#0A1128]">Registro Rápido de Cliente</h3>
+              <p className="text-xs text-center text-gray-500 mt-1">Este cliente quedará atado a tu ID: <span className="font-mono font-bold text-indigo-600">{currentUser.id}</span></p>
             </div>
             <RegisterCustomerForm onCancel={() => setShowCustomerRegister(false)} defaultReferralCode={currentUser.id} />
           </div>
@@ -4677,9 +4782,9 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, settleProm
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (
-              <button 
-                key={tab.id} 
-                onClick={() => setActiveTab(tab.id)} 
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
                 className="relative flex flex-col items-center justify-center w-20 h-12 cursor-pointer group"
               >
                 {isActive && <span className="absolute -top-4 w-12 h-1 bg-[#C5A184] rounded-b-full shadow-[0_4px_10px_rgba(197,161,132,0.5)]" />}
@@ -4744,9 +4849,9 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
 
   return (
     <div className="bg-white p-6 md:p-8 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col gap-6 h-full">
-      <h4 className="font-black text-[#0A1128] text-lg flex items-center gap-2"><Palette className="text-[#C5A184]"/> Personalizar Tienda</h4>
+      <h4 className="font-black text-[#0A1128] text-lg flex items-center gap-2"><Palette className="text-[#C5A184]" /> Personalizar Tienda</h4>
       <p className="text-xs text-gray-500">Ajusta la apariencia visual de tu vitrina pública en Flow Express.</p>
-      
+
       <div className="space-y-4 pt-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="flex flex-col gap-2">
@@ -4788,20 +4893,20 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
 
         <div className="flex flex-col gap-1">
           <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Biografía o Eslogan (Max 150 char)</label>
-          <textarea maxLength={150} value={settings.bioText} onChange={e => setSettings({...settings, bioText: e.target.value})} placeholder="Los mejores productos..." className="w-full h-16 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C5A184] resize-none" />
+          <textarea maxLength={150} value={settings.bioText} onChange={e => setSettings({ ...settings, bioText: e.target.value })} placeholder="Los mejores productos..." className="w-full h-16 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C5A184] resize-none" />
         </div>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Color Principal</label>
             <div className="flex items-center gap-2">
-              <input type="color" value={settings.themeColor} onChange={e => setSettings({...settings, themeColor: e.target.value})} className="h-10 w-10 rounded cursor-pointer border-0 p-0" />
-              <input type="text" value={settings.themeColor} onChange={e => setSettings({...settings, themeColor: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none font-mono" />
+              <input type="color" value={settings.themeColor} onChange={e => setSettings({ ...settings, themeColor: e.target.value })} className="h-10 w-10 rounded cursor-pointer border-0 p-0" />
+              <input type="text" value={settings.themeColor} onChange={e => setSettings({ ...settings, themeColor: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none font-mono" />
             </div>
           </div>
           <div>
             <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Tipografía</label>
-            <select value={settings.typography} onChange={e => setSettings({...settings, typography: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none">
+            <select value={settings.typography} onChange={e => setSettings({ ...settings, typography: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none">
               <option value="font-sans">Moderna (Sans)</option>
               <option value="font-serif">Clásica (Serif)</option>
               <option value="font-mono">Técnica (Mono)</option>
@@ -4811,7 +4916,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
 
         <div>
           <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Disposición (Layout)</label>
-          <select value={settings.layoutType} onChange={e => setSettings({...settings, layoutType: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none">
+          <select value={settings.layoutType} onChange={e => setSettings({ ...settings, layoutType: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none">
             <option value="grid">Grilla de Tarjetas (Recomendado)</option>
             <option value="list">Lista Compacta</option>
           </select>
@@ -4821,7 +4926,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
         <div className="border-t border-gray-100 pt-6 mt-2">
           <div className="flex items-center gap-2 mb-4">
             <div className="bg-orange-100 text-orange-600 p-2 rounded-xl">
-              <Truck size={18}/>
+              <Truck size={18} />
             </div>
             <div>
               <h5 className="font-black text-[#0A1128] text-sm">Dirección de Delivery</h5>
@@ -4834,7 +4939,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
               <input
                 type="text"
                 value={settings.deliveryAddress || ""}
-                onChange={e => setSettings({...settings, deliveryAddress: e.target.value})}
+                onChange={e => setSettings({ ...settings, deliveryAddress: e.target.value })}
                 placeholder="Ej: Av. Principal, Edificio Torre Norte, Local 4"
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
               />
@@ -4844,7 +4949,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
               <input
                 type="text"
                 value={settings.deliveryCity || ""}
-                onChange={e => setSettings({...settings, deliveryCity: e.target.value})}
+                onChange={e => setSettings({ ...settings, deliveryCity: e.target.value })}
                 placeholder="Ej: Caracas, Miranda"
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
               />
@@ -4854,7 +4959,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
               <input
                 type="text"
                 value={settings.deliveryReference || ""}
-                onChange={e => setSettings({...settings, deliveryReference: e.target.value})}
+                onChange={e => setSettings({ ...settings, deliveryReference: e.target.value })}
                 placeholder="Ej: Frente al banco, puerta azul"
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
               />
@@ -4866,7 +4971,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-xs text-orange-600 font-bold hover:text-orange-700 transition-colors"
               >
-                <Truck size={13}/> Verificar en Google Maps ↗
+                <Truck size={13} /> Verificar en Google Maps ↗
               </a>
             )}
           </div>
@@ -4921,14 +5026,14 @@ const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
   return (
     <div className="min-h-screen bg-[#0A1128] flex flex-col items-center justify-center p-4 text-white animate-fade-in relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-[#0A1128] via-[#C5A184]/10 to-[#0A1128] opacity-50"></div>
-      
+
       <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 max-w-lg w-full relative z-10 shadow-2xl flex flex-col items-center text-center">
         <KreatekLogo className="h-16 sm:h-20 w-auto mb-6" />
         <h2 className="text-3xl font-black mb-2 text-[#C5A184]">Setup Inicial</h2>
         <p className="text-gray-300 mb-8 font-light">Vamos a preparar tu ecosistema {currentUser.company} para la nueva era digital en 3 simples pasos.</p>
-        
+
         <div className="flex gap-2 mb-8">
-          {[1,2,3].map(s => (
+          {[1, 2, 3].map(s => (
             <div key={s} className={`h-2 flex-1 rounded-full ${s <= step ? 'bg-[#C5A184]' : 'bg-white/10'}`}></div>
           ))}
         </div>
@@ -4940,7 +5045,7 @@ const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
             <label className="border-2 border-dashed border-[#C5A184]/50 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-colors">
               <input type="file" accept="image/*" className="hidden" onChange={handleKycUpload} />
               {kycDoc ? (
-                <div className="text-green-400 font-bold flex items-center gap-2"><CheckCircle size={20}/> Documento Cargado</div>
+                <div className="text-green-400 font-bold flex items-center gap-2"><CheckCircle size={20} /> Documento Cargado</div>
               ) : (
                 <div className="text-center text-gray-400">
                   <Camera size={32} className="mx-auto mb-2 opacity-50" />
@@ -4956,9 +5061,9 @@ const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
           <div className="space-y-4 animate-slide-up">
             <h3 className="text-xl font-bold">2. Sube un Producto</h3>
             <p className="text-sm text-gray-400">Personaliza tu inventario ahora mismo. Sube una foto de tu producto directamente desde la galería.</p>
-            
+
             <input type="text" placeholder="Nombre de tu producto (Ej. Refresco)" value={productName} onChange={e => setProductName(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184]" />
-            
+
             <label className="border-2 border-dashed border-[#C5A184]/50 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-colors">
               <input type="file" accept="image/*" className="hidden" onChange={handleProductUpload} />
               {productImage ? (
@@ -5017,7 +5122,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
       </div>
     );
   };
-  
+
   // Preset States
   const storePreset = currentUser.storeSettings?.hiringPreset || {
     role: "Cajero",
@@ -5040,8 +5145,8 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
   const [screenshot, setScreenshot] = useState("");
 
   const availableSkills = [
-    "Cuadre de caja", "Uso de POS", "Atención al cliente", 
-    "Lector de código de barras", "Control de inventario", 
+    "Cuadre de caja", "Uso de POS", "Atención al cliente",
+    "Lector de código de barras", "Control de inventario",
     "Ventas retail", "Facturación fiscal", "Manejo de delivery"
   ];
 
@@ -5080,10 +5185,10 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
 
   const getMatchScore = (cand: any) => {
     let score = 100;
-    
+
     // Role matching
     if (cand.role !== role) score -= 30;
-    
+
     // Location matching
     if (cand.answers?.location !== location) score -= 20;
 
@@ -5156,7 +5261,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
       {activeWidgetTab === "preset" && (
         <form onSubmit={handleSavePreset} className="space-y-6">
           <h4 className="text-sm font-black text-[#0A1128] uppercase tracking-wider">¿Qué perfil necesitas contratar?</h4>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label className="text-xs font-bold text-gray-500 uppercase mb-2 block">Cargo Solicitado</label>
@@ -5257,14 +5362,14 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {sortedCandidates.map((cand: any) => {
               const { isUnlocked, status: unlockStatus } = checkUnlockStatus(cand.id);
-              
+
               if (isUnlocked) return null;
 
               const isPaying = payingCandidateId === cand.id;
 
               return (
-                <div 
-                  key={cand.id} 
+                <div
+                  key={cand.id}
                   className={`bg-white rounded-3xl p-6 border transition-all relative overflow-hidden flex flex-col justify-between ${cand.status === "backed" ? "border-yellow-300 shadow-[0_4px_20px_rgba(234,179,8,0.1)] bg-gradient-to-br from-yellow-50/30 to-white" : "border-gray-100 shadow-sm"}`}
                 >
                   <div className="space-y-4">
@@ -5354,10 +5459,10 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                             onChange={e => setRefNum(e.target.value)}
                             className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none"
                           />
-                          
-                          <input 
-                            type="file" 
-                            accept="image/*" 
+
+                          <input
+                            type="file"
+                            accept="image/*"
                             onChange={async (e) => {
                               const file = e.target.files?.[0];
                               if (file) {
@@ -5368,7 +5473,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                                   alert("Error al comprimir la imagen");
                                 }
                               }
-                            }} 
+                            }}
                             className="w-full text-[10px]"
                           />
                         </div>
@@ -5426,8 +5531,8 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
               if (!isUnlocked) return null;
 
               return (
-                <div 
-                  key={cand.id} 
+                <div
+                  key={cand.id}
                   className={`bg-white rounded-3xl p-6 border border-green-200 shadow-sm bg-gradient-to-br from-green-50/20 to-white relative overflow-hidden flex flex-col justify-between`}
                 >
                   <div className="space-y-4">
@@ -5478,18 +5583,17 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                       </div>
                       <div className="flex justify-between items-center text-[10px] font-bold border-t border-[#C5A184]/10 pt-2 mt-1">
                         <span className="text-gray-400">Estado de Contratación:</span>
-                        <span className={`uppercase tracking-wider font-black px-1.5 py-0.5 rounded ${
-                          cand.hiringState === 'hired' ? 'bg-green-500/20 text-green-400' : 
-                          cand.hiringState === 'interviewing' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-gray-500/20 text-gray-400'
-                        }`}>
-                          {cand.hiringState === 'hired' ? 'Contratado' : 
-                           cand.hiringState === 'interviewing' ? 'En Entrevista' : 'Libre'}
+                        <span className={`uppercase tracking-wider font-black px-1.5 py-0.5 rounded ${cand.hiringState === 'hired' ? 'bg-green-500/20 text-green-400' :
+                            cand.hiringState === 'interviewing' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-gray-500/20 text-gray-400'
+                          }`}>
+                          {cand.hiringState === 'hired' ? 'Contratado' :
+                            cand.hiringState === 'interviewing' ? 'En Entrevista' : 'Libre'}
                         </span>
                       </div>
                       {(cand.cvFile || cand.useKfsCvBuilder) && (
                         <div className="flex justify-between items-center text-xs font-bold pt-1">
                           <span className="text-gray-400">Hoja de Vida (CV):</span>
-                          <button 
+                          <button
                             type="button"
                             onClick={() => {
                               if (cand.useKfsCvBuilder) {
@@ -5529,18 +5633,18 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
 
                   <div className="mt-6 pt-4 border-t border-gray-100 space-y-3">
                     <div className="flex gap-2">
-                      <a 
+                      <a
                         href={`tel:${cand.phone}`}
                         className="w-1/2 py-3 rounded-xl border border-gray-300 font-bold text-center text-xs text-gray-700 bg-gray-50 hover:bg-gray-100 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                       >
                         📞 Llamar Candidato
                       </a>
-                      
+
                       {(() => {
                         const waNum = cand.phone.replace(/[^0-9]/g, '');
                         const cleanWaNum = waNum.startsWith('0') ? '58' + waNum.slice(1) : (waNum.length === 10 ? '58' + waNum : waNum);
                         return (
-                          <a 
+                          <a
                             href={`https://wa.me/${cleanWaNum}?text=Hola%20${encodeURIComponent(cand.name)}!%20Vimos%20tu%20perfil%20en%20la%20Bolsa%20de%20Empleo%20de%20KFS%20OS%20y%20nos%20interesaría%20agendar%20una%20entrevista.%20¿Estás%20disponible?`}
                             target="_blank"
                             rel="noreferrer"
@@ -5661,10 +5765,10 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
       )}
 
       {viewingCandidateCv && (
-        <CvViewerModal 
-          isOpen={!!viewingCandidateCv} 
-          onClose={() => setViewingCandidateCv(null)} 
-          candidate={viewingCandidateCv} 
+        <CvViewerModal
+          isOpen={!!viewingCandidateCv}
+          onClose={() => setViewingCandidateCv(null)}
+          candidate={viewingCandidateCv}
         />
       )}
 
@@ -5686,7 +5790,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   const [showPayrollModal, setShowPayrollModal] = useState<any>(null); // Holds vendedor obj
   const [payrollBaseSalary, setPayrollBaseSalary] = useState("");
   const [searchVendedor, setSearchVendedor] = useState("");
-  
+
   const [newProd, setNewProd] = useState({ name: "", price: "", cost: "", stock: "", imgUrl: "", category: "Alimentos", barcode: "", description: "" });
   const [isFetchingBarcode, setIsFetchingBarcode] = useState(false);
   const [newVendedor, setNewVendedor] = useState({ name: "", email: "", password: "", avatar: "" });
@@ -5736,7 +5840,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             }
           }
         });
-        
+
         if (newProducts.length > 0) {
           setDb((prev: any) => ({
             ...prev,
@@ -5822,7 +5926,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   const grossSalesUSD = clientInfo.salesUSD || 0;
   const netProfitUSD = grossSalesUSD - totalExpensesUSD;
 
-  const myTransactions = db.transactions.filter((tx: any) => 
+  const myTransactions = db.transactions.filter((tx: any) =>
     db.products.find((p: any) => p.id === tx.productId)?.clientId === currentUser.id
   );
   const clientChartData = myTransactions.map((t: any, index: number) => ({
@@ -5836,7 +5940,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
     const daysSinceSold = p.lastSoldAt ? (new Date().getTime() - new Date(p.lastSoldAt).getTime()) / (1000 * 3600 * 24) : 16; // default 16 if never sold
     return daysSinceSold > 15;
   });
-  
+
   // Filter CRM to this client's transactions? Wait, CRM is global right now based on phone.
   // Actually, we'll just show the global CRM filtered by those who bought from this client
   const myClientTxs = db.transactions.filter((tx: any) => tx.clientId === currentUser.id && tx.customerPhone);
@@ -5869,13 +5973,13 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
   const submitProduct = (e: React.FormEvent) => {
     e.preventDefault();
-    addProduct({ 
-      name: newProd.name, 
-      priceUSD: parseFloat(newProd.price), 
+    addProduct({
+      name: newProd.name,
+      priceUSD: parseFloat(newProd.price),
       costUSD: parseFloat(newProd.cost) || 0,
       stock: parseInt(newProd.stock) || 0,
-      image: newProd.imgUrl || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60", 
-      clientId: currentUser.id, 
+      image: newProd.imgUrl || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60",
+      clientId: currentUser.id,
       clientName: currentUser.company,
       category: newProd.category,
       barcode: newProd.barcode,
@@ -5895,12 +5999,12 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   };
 
   const handleAddVendedor = (e: React.FormEvent) => {
-     e.preventDefault();
-     const added = { ...newVendedor, id: `v${Date.now()}`, clientId: currentUser.id, company: currentUser.company };
-     setDb((prev: any) => ({ ...prev, vendedores: [...prev.vendedores, added] }));
-     setNewVendedor({ name: "", email: "", password: "", avatar: "" });
-     setShowAddVendedor(false);
-     showToast("Vendedor autorizado y registrado.");
+    e.preventDefault();
+    const added = { ...newVendedor, id: `v${Date.now()}`, clientId: currentUser.id, company: currentUser.company };
+    setDb((prev: any) => ({ ...prev, vendedores: [...prev.vendedores, added] }));
+    setNewVendedor({ name: "", email: "", password: "", avatar: "" });
+    setShowAddVendedor(false);
+    showToast("Vendedor autorizado y registrado.");
   };
 
   const isPastDue = clientInfo.subscription?.status === 'past_due' || (clientInfo.subscription?.nextBillingDate && new Date() > new Date(clientInfo.subscription.nextBillingDate));
@@ -5911,13 +6015,13 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
       <div className="min-h-screen bg-[#0A1128] flex flex-col items-center justify-center p-6 text-center">
         <div className="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full p-10 border-t-8 border-[#C5A184] animate-fade-in relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-full bg-[#C5A184]/5 z-0 pointer-events-none"></div>
-          
+
           <Lock size={64} className="text-[#C5A184] mx-auto mb-6 relative z-10" />
           <h2 className="text-3xl font-black text-[#0A1128] mb-2 relative z-10">
             {isPendingVerification ? "Pago en Verificación" : "Suscripción Vencida"}
           </h2>
           <p className="text-gray-600 mb-8 font-bold relative z-10 text-lg">
-            {isPendingVerification 
+            {isPendingVerification
               ? "Tu comprobante de pago ha sido enviado al equipo Kreatek Core y está siendo auditado. Tu tienda se reactivará en breve."
               : "Tu membresía mensual a KFS OS ($6) se encuentra vencida. Tu tienda está pausada."}
           </p>
@@ -5926,17 +6030,17 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             <div className="bg-gray-50 border border-gray-200 p-6 rounded-2xl mb-8 relative z-10">
               <h3 className="font-bold text-[#0A1128] mb-4">¿Cómo reactivar tu Tienda?</h3>
               <p className="text-sm text-gray-500 mb-4">Transfiere $6 USD vía Zinli, AirTM, Wally, Ubbi, Binance Pay o Pago Móvil y escribe la referencia bancaria a continuación:</p>
-              
+
               <form onSubmit={(e) => {
                 e.preventDefault();
                 const ref = (e.target as any).reference.value;
                 paySubscription(currentUser.id, ref);
               }} className="space-y-4">
-                <input 
-                  type="text" 
-                  name="reference" 
-                  required 
-                  placeholder="Ej: 12345678" 
+                <input
+                  type="text"
+                  name="reference"
+                  required
+                  placeholder="Ej: 12345678"
                   className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-[#C5A184] focus:outline-none"
                 />
                 <button type="submit" className="w-full bg-[#C5A184] text-white font-black py-4 rounded-xl hover:bg-[#b08e72] transition-colors cursor-pointer flex justify-center items-center gap-2 shadow-md">
@@ -5973,17 +6077,17 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
       <div className="bg-gradient-to-br from-[#0A1128] to-[#1a2b5e] rounded-b-[3rem] shadow-[0_10px_30px_rgba(10,17,40,0.3)] pt-6 pb-12 px-6 text-white relative z-10">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
-            <span className="bg-white/20 p-2 rounded-xl text-[#C5A184]"><Store size={20}/></span>
+            <span className="bg-white/20 p-2 rounded-xl text-[#C5A184]"><Store size={20} /></span>
             <h1 className="font-black text-xl tracking-tight">KFS Negocio</h1>
           </div>
           <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
-            <LogOut size={16}/>
+            <LogOut size={16} />
           </button>
         </div>
 
         <div className="flex items-center gap-4">
           <div className="w-16 h-16 bg-[#C5A184] rounded-full flex items-center justify-center text-[#0A1128] font-black text-2xl flex-shrink-0 shadow-lg border-4 border-[#0A1128]">
-            {currentUser.company?.slice(0,2).toUpperCase()}
+            {currentUser.company?.slice(0, 2).toUpperCase()}
           </div>
           <div>
             <h2 className="text-xl md:text-2xl font-black tracking-tight truncate">{currentUser.company}</h2>
@@ -5993,131 +6097,129 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
       </div>
 
       <div className="max-w-5xl mx-auto px-4 -mt-6 relative z-20 space-y-6 animate-fade-in">
-        
+
         {activeTab === "resumen" && (
           <div className="space-y-6">
-        <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 md:p-12 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
-          <div className="relative z-10 w-full flex flex-col md:flex-row md:justify-between md:items-end gap-6">
-            <div>
-              <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-4">Ganancia Neta (USD)</p>
-              <h2 className="text-6xl md:text-8xl font-black tracking-tighter mb-4"><AnimatedCounter value={netProfitUSD} format={formatUSD} /></h2>
-              <div className="flex gap-4 text-sm font-bold text-gray-400">
-                <span>Ventas Brutas: <span className="text-green-400"><AnimatedCounter value={grossSalesUSD} format={formatUSD} /></span></span>
-                <span>Gastos: <span className="text-red-400">-<AnimatedCounter value={totalExpensesUSD} format={formatUSD} /></span></span>
+            <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 md:p-12 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
+              <div className="relative z-10 w-full flex flex-col md:flex-row md:justify-between md:items-end gap-6">
+                <div>
+                  <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-4">Ganancia Neta (USD)</p>
+                  <h2 className="text-6xl md:text-8xl font-black tracking-tighter mb-4"><AnimatedCounter value={netProfitUSD} format={formatUSD} /></h2>
+                  <div className="flex gap-4 text-sm font-bold text-gray-400">
+                    <span>Ventas Brutas: <span className="text-green-400"><AnimatedCounter value={grossSalesUSD} format={formatUSD} /></span></span>
+                    <span>Gastos: <span className="text-red-400">-<AnimatedCounter value={totalExpensesUSD} format={formatUSD} /></span></span>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-xl border border-white/20">
+                    <span className="text-xs font-bold text-gray-300">Nivel KFS:</span>
+                    <select
+                      value={currentUser.kfsTier || 'velocity'}
+                      onChange={(e) => changeTier(e.target.value)}
+                      className="bg-transparent text-sm font-black text-white focus:outline-none cursor-pointer"
+                    >
+                      <option value="velocity" className="text-black">Flow Velocity (3%)</option>
+                      <option value="matrix" className="text-black">Flow Matrix AI (5%)</option>
+                      <option value="monopoly" className="text-black">Flow Monopoly OS (10%)</option>
+                    </select>
+                  </div>
+                  <button onClick={() => setShowExpenseModal(true)} className="bg-[#C5A184] text-[#0A1128] font-black px-6 py-3 rounded-xl shadow-lg hover:scale-105 transition-transform">
+                    Registrar Gasto
+                  </button>
+                </div>
               </div>
+              <DollarSign size={200} className="absolute -right-10 -bottom-20 text-white/5" />
             </div>
-            <div className="flex flex-col gap-3">
-              <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-xl border border-white/20">
-                <span className="text-xs font-bold text-gray-300">Nivel KFS:</span>
-                <select 
-                  value={currentUser.kfsTier || 'velocity'} 
-                  onChange={(e) => changeTier(e.target.value)}
-                  className="bg-transparent text-sm font-black text-white focus:outline-none cursor-pointer"
-                >
-                  <option value="velocity" className="text-black">Flow Velocity (3%)</option>
-                  <option value="matrix" className="text-black">Flow Matrix AI (5%)</option>
-                  <option value="monopoly" className="text-black">Flow Monopoly OS (10%)</option>
-                </select>
-              </div>
-              <button onClick={() => setShowExpenseModal(true)} className="bg-[#C5A184] text-[#0A1128] font-black px-6 py-3 rounded-xl shadow-lg hover:scale-105 transition-transform">
-                Registrar Gasto
-              </button>
-            </div>
-          </div>
-          <DollarSign size={200} className="absolute -right-10 -bottom-20 text-white/5" />
-        </div>
-        
-        {/* Peaje Gamificado Progress */}
-        <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 flex flex-col md:flex-row items-center gap-8">
-           <div className="flex-1 w-full">
-             <div className="flex justify-between items-end mb-2">
-               <h3 className="font-black text-[#0A1128] text-lg">Progreso de Peaje Gamificado</h3>
-               <span className="text-sm font-bold text-[#C5A184]">{clientInfo?.onboardedUsers || 0} / 50 Usuarios</span>
-             </div>
-             <div className="w-full bg-gray-100 h-4 rounded-full overflow-hidden">
-               <div className="bg-[#C5A184] h-full transition-all duration-1000" style={{ width: `${Math.min(((clientInfo?.onboardedUsers || 0) / 50) * 100, 100)}%` }}></div>
-             </div>
-             <p className="text-xs text-gray-500 mt-3">
-               Logra que 50 clientes se afilien usando tu código o QR y tu comisión B2B se reducirá automáticamente al 3% de forma permanente.
-             </p>
-           </div>
-           <div className="w-32 h-32 bg-gray-50 rounded-xl border-4 border-[#C5A184] flex items-center justify-center flex-shrink-0 text-center relative shadow-sm">
-              <div className="text-center">
-                <QrCode size={48} className="mx-auto text-gray-800" />
-                <p className="text-[10px] font-bold mt-1">Tu QR</p>
-              </div>
-           </div>
-        </div>
 
-        </div>
+            {/* Peaje Gamificado Progress */}
+            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 flex flex-col md:flex-row items-center gap-8">
+              <div className="flex-1 w-full">
+                <div className="flex justify-between items-end mb-2">
+                  <h3 className="font-black text-[#0A1128] text-lg">Progreso de Peaje Gamificado</h3>
+                  <span className="text-sm font-bold text-[#C5A184]">{clientInfo?.onboardedUsers || 0} / 50 Usuarios</span>
+                </div>
+                <div className="w-full bg-gray-100 h-4 rounded-full overflow-hidden">
+                  <div className="bg-[#C5A184] h-full transition-all duration-1000" style={{ width: `${Math.min(((clientInfo?.onboardedUsers || 0) / 50) * 100, 100)}%` }}></div>
+                </div>
+                <p className="text-xs text-gray-500 mt-3">
+                  Logra que 50 clientes se afilien usando tu código o QR y tu comisión B2B se reducirá automáticamente al 3% de forma permanente.
+                </p>
+              </div>
+              <div className="w-32 h-32 bg-gray-50 rounded-xl border-4 border-[#C5A184] flex items-center justify-center flex-shrink-0 text-center relative shadow-sm">
+                <div className="text-center">
+                  <QrCode size={48} className="mx-auto text-gray-800" />
+                  <p className="text-[10px] font-bold mt-1">Tu QR</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
         )}
 
         {activeTab === 'config' && <StorefrontCustomizer client={clientInfo} updateStoreSettings={updateStoreSettings} />}
 
         {/* ===== OPEN / CLOSE TOGGLE + DELIVERY CONFIG ===== */}
         {activeTab === 'config' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Open / Close */}
-          <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 flex flex-col gap-4">
-            <h4 className="font-black text-[#0A1128] flex items-center gap-2"><Store size={20} className="text-[#C5A184]"/> Estado del Negocio</h4>
-            <div className="flex items-center justify-between bg-gray-50 rounded-2xl p-4">
-              <div>
-                <p className="font-black text-sm text-[#0A1128]">{clientInfo.isOpen !== false ? '🟢 Abierto' : '🔴 Cerrado'}</p>
-                <p className="text-[10px] text-gray-400 mt-0.5">Tus clientes verán este estado en tu tienda</p>
-              </div>
-              <button
-                onClick={() => toggleBusinessOpen(currentUser.id)}
-                className={`relative w-14 h-7 rounded-full transition-colors duration-300 focus:outline-none cursor-pointer ${
-                  clientInfo.isOpen !== false ? 'bg-green-500' : 'bg-gray-300'
-                }`}
-              >
-                <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform duration-300 ${
-                  clientInfo.isOpen !== false ? 'translate-x-7' : 'translate-x-0'
-                }`} />
-              </button>
-            </div>
-            <div className="space-y-2">
-              <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Horario de Atención</p>
-              {['Lun-Vie','Sáb','Dom'].map(day => (
-                <div key={day} className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-gray-600 w-14">{day}</span>
-                  <input type="time" defaultValue="08:00" className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 text-xs flex-1" />
-                  <span className="text-xs text-gray-400">–</span>
-                  <input type="time" defaultValue="18:00" className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 text-xs flex-1" />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Open / Close */}
+            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 flex flex-col gap-4">
+              <h4 className="font-black text-[#0A1128] flex items-center gap-2"><Store size={20} className="text-[#C5A184]" /> Estado del Negocio</h4>
+              <div className="flex items-center justify-between bg-gray-50 rounded-2xl p-4">
+                <div>
+                  <p className="font-black text-sm text-[#0A1128]">{clientInfo.isOpen !== false ? '🟢 Abierto' : '🔴 Cerrado'}</p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">Tus clientes verán este estado en tu tienda</p>
                 </div>
-              ))}
+                <button
+                  onClick={() => toggleBusinessOpen(currentUser.id)}
+                  className={`relative w-14 h-7 rounded-full transition-colors duration-300 focus:outline-none cursor-pointer ${clientInfo.isOpen !== false ? 'bg-green-500' : 'bg-gray-300'
+                    }`}
+                >
+                  <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform duration-300 ${clientInfo.isOpen !== false ? 'translate-x-7' : 'translate-x-0'
+                    }`} />
+                </button>
+              </div>
+              <div className="space-y-2">
+                <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Horario de Atención</p>
+                {['Lun-Vie', 'Sáb', 'Dom'].map(day => (
+                  <div key={day} className="flex items-center gap-2">
+                    <span className="text-xs font-bold text-gray-600 w-14">{day}</span>
+                    <input type="time" defaultValue="08:00" className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 text-xs flex-1" />
+                    <span className="text-xs text-gray-400">–</span>
+                    <input type="time" defaultValue="18:00" className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 text-xs flex-1" />
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Delivery zone */}
-          <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 flex flex-col gap-4">
-            <h4 className="font-black text-[#0A1128] flex items-center gap-2"><Truck size={20} className="text-orange-500"/> Zona de Delivery</h4>
-            <div className="flex flex-col gap-3">
-              <div>
-                <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block mb-2">
-                  Radio máximo: <span className="text-orange-500">{deliveryRadiusKm} km</span>
-                </label>
-                <input
-                  type="range" min={1} max={30} value={deliveryRadiusKm}
-                  onChange={e => setDeliveryRadiusKm(Number(e.target.value))}
-                  className="w-full accent-orange-500 cursor-pointer"
-                />
-                <div className="flex justify-between text-[9px] text-gray-400 font-bold mt-1">
-                  <span>1 km</span><span>15 km</span><span>30 km</span>
+            {/* Delivery zone */}
+            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 flex flex-col gap-4">
+              <h4 className="font-black text-[#0A1128] flex items-center gap-2"><Truck size={20} className="text-orange-500" /> Zona de Delivery</h4>
+              <div className="flex flex-col gap-3">
+                <div>
+                  <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block mb-2">
+                    Radio máximo: <span className="text-orange-500">{deliveryRadiusKm} km</span>
+                  </label>
+                  <input
+                    type="range" min={1} max={30} value={deliveryRadiusKm}
+                    onChange={e => setDeliveryRadiusKm(Number(e.target.value))}
+                    className="w-full accent-orange-500 cursor-pointer"
+                  />
+                  <div className="flex justify-between text-[9px] text-gray-400 font-bold mt-1">
+                    <span>1 km</span><span>15 km</span><span>30 km</span>
+                  </div>
                 </div>
+                <div className="bg-orange-50 border border-orange-100 rounded-xl p-3 text-xs text-orange-700 font-bold">
+                  📦 Solo se aceptarán pedidos dentro de {deliveryRadiusKm} km del negocio.
+                </div>
+                <button
+                  onClick={() => updateBusinessConfig(currentUser.id, { deliveryRadiusKm })}
+                  className="w-full bg-orange-500 text-white py-3 rounded-xl font-black hover:bg-orange-600 active:scale-95 transition-all text-sm cursor-pointer"
+                >
+                  Guardar Configuración de Zona
+                </button>
               </div>
-              <div className="bg-orange-50 border border-orange-100 rounded-xl p-3 text-xs text-orange-700 font-bold">
-                📦 Solo se aceptarán pedidos dentro de {deliveryRadiusKm} km del negocio.
-              </div>
-              <button
-                onClick={() => updateBusinessConfig(currentUser.id, { deliveryRadiusKm })}
-                className="w-full bg-orange-500 text-white py-3 rounded-xl font-black hover:bg-orange-600 active:scale-95 transition-all text-sm cursor-pointer"
-              >
-                Guardar Configuración de Zona
-              </button>
             </div>
           </div>
-        </div>
         )}
 
         {activeTab === 'config' && <FiscalPrinterSetupWidget />}
@@ -6126,1195 +6228,1195 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
         {/* Manuals Section for Client (Owner) */}
         {activeTab === 'resumen' && (
-        <div className="bg-[#0A1128] text-white p-6 md:p-8 rounded-[2rem] shadow-xl relative overflow-hidden">
-          <h3 className="text-xl font-black mb-6">Centro de Aprendizaje (Dueño de Negocio)</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <button onClick={() => setActiveManual('owner')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
-              <BookOpen size={32} className="text-[#C5A184]" />
-              <span className="font-bold text-sm">Manual de Uso del Sistema</span>
-            </button>
-            <button onClick={() => setActiveManual('benefits')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
-              <Star size={32} className="text-[#C5A184]" />
-              <span className="font-bold text-sm">Whitepaper de Beneficios KFS</span>
-            </button>
+          <div className="bg-[#0A1128] text-white p-6 md:p-8 rounded-[2rem] shadow-xl relative overflow-hidden">
+            <h3 className="text-xl font-black mb-6">Centro de Aprendizaje (Dueño de Negocio)</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <button onClick={() => setActiveManual('owner')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
+                <BookOpen size={32} className="text-[#C5A184]" />
+                <span className="font-bold text-sm">Manual de Uso del Sistema</span>
+              </button>
+              <button onClick={() => setActiveManual('benefits')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
+                <Star size={32} className="text-[#C5A184]" />
+                <span className="font-bold text-sm">Whitepaper de Beneficios KFS</span>
+              </button>
+            </div>
           </div>
-        </div>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           {activeTab === 'inventario' && (
             <>
-          <button onClick={() => setShowAddModal(true)} className="bg-white border border-gray-100 p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-5 hover:border-[#C5A184]/50 transition-all cursor-pointer">
-            <div className="w-16 h-16 bg-[#0A1128]/5 rounded-full flex items-center justify-center">
-              <Package size={32} className="text-[#0A1128]" />
-            </div>
-            <span className="font-black text-lg text-[#0A1128]">Subir Producto</span>
-          </button>
-          
-          <div className="bg-white border border-gray-100 p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-5 transition-all relative overflow-hidden">
-             <input type="file" accept=".csv" ref={fileInputRef} onChange={handleCSVUpload} className="hidden" />
-             <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center">
-               <DownloadCloud size={32} className="text-green-600" />
-             </div>
-             <button onClick={() => fileInputRef.current?.click()} className="font-black text-lg text-green-700 hover:text-green-800 transition-colors cursor-pointer text-center leading-tight">Importar Inventario<br/><span className="text-xs font-bold text-gray-400">Desde Excel/CSV</span></button>
-          </div>
+              <button onClick={() => setShowAddModal(true)} className="bg-white border border-gray-100 p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-5 hover:border-[#C5A184]/50 transition-all cursor-pointer">
+                <div className="w-16 h-16 bg-[#0A1128]/5 rounded-full flex items-center justify-center">
+                  <Package size={32} className="text-[#0A1128]" />
+                </div>
+                <span className="font-black text-lg text-[#0A1128]">Subir Producto</span>
+              </button>
 
-          <button onClick={() => setShowTicketModal(true)} className="bg-[#0A1128] text-white p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-5 hover:bg-gray-900 transition-all relative overflow-hidden group cursor-pointer">
-            <div className="absolute inset-0 bg-red-500/20 animate-pulse group-hover:bg-red-500/40 transition-colors"></div>
-            <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center relative z-10">
-              <Bell size={32} className="text-red-400" />
-            </div>
-            <span className="font-black text-lg text-white relative z-10">Help Desk (Tickets)</span>
-          </button>
-          </>
+              <div className="bg-white border border-gray-100 p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-5 transition-all relative overflow-hidden">
+                <input type="file" accept=".csv" ref={fileInputRef} onChange={handleCSVUpload} className="hidden" />
+                <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center">
+                  <DownloadCloud size={32} className="text-green-600" />
+                </div>
+                <button onClick={() => fileInputRef.current?.click()} className="font-black text-lg text-green-700 hover:text-green-800 transition-colors cursor-pointer text-center leading-tight">Importar Inventario<br /><span className="text-xs font-bold text-gray-400">Desde Excel/CSV</span></button>
+              </div>
+
+              <button onClick={() => setShowTicketModal(true)} className="bg-[#0A1128] text-white p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-5 hover:bg-gray-900 transition-all relative overflow-hidden group cursor-pointer">
+                <div className="absolute inset-0 bg-red-500/20 animate-pulse group-hover:bg-red-500/40 transition-colors"></div>
+                <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center relative z-10">
+                  <Bell size={32} className="text-red-400" />
+                </div>
+                <span className="font-black text-lg text-white relative z-10">Help Desk (Tickets)</span>
+              </button>
+            </>
           )}
         </div>
 
         {activeTab === 'resumen' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-          <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 h-full">
-            <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2"><TrendingUp className="text-[#C5A184]"/> Rendimiento de Ventas</h3>
-            <div className="h-64 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={clientChartData}>
-                  <XAxis dataKey="name" fontSize={10} stroke="#cbd5e1" />
-                  <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
-                  <Line type="monotone" dataKey="amount" stroke="#0A1128" strokeWidth={4} dot={{ r: 4, fill: "#C5A184" }} />
-                </LineChart>
-              </ResponsiveContainer>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+            <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 h-full">
+              <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2"><TrendingUp className="text-[#C5A184]" /> Rendimiento de Ventas</h3>
+              <div className="h-64 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={clientChartData}>
+                    <XAxis dataKey="name" fontSize={10} stroke="#cbd5e1" />
+                    <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
+                    <Line type="monotone" dataKey="amount" stroke="#0A1128" strokeWidth={4} dot={{ r: 4, fill: "#C5A184" }} />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
             </div>
-          </div>
-          <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 h-full flex flex-col">
-            <h3 className="text-xl font-black mb-6 flex items-center gap-2"><Star className="text-indigo-500" /> Productos Estrella</h3>
-            <div className="space-y-4">
-              {myProducts.slice(0, 4).map((p: any, i: number) => (
-                <div key={i} className="flex justify-between items-center bg-gray-50 p-4 rounded-xl border border-gray-100">
-                  <div className="flex items-center gap-3">
-                    <div className="bg-indigo-100 text-indigo-600 font-black h-8 w-8 rounded-full flex items-center justify-center">#{i+1}</div>
-                    <span className="font-bold">{p.name}</span>
+            <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 h-full flex flex-col">
+              <h3 className="text-xl font-black mb-6 flex items-center gap-2"><Star className="text-indigo-500" /> Productos Estrella</h3>
+              <div className="space-y-4">
+                {myProducts.slice(0, 4).map((p: any, i: number) => (
+                  <div key={i} className="flex justify-between items-center bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <div className="flex items-center gap-3">
+                      <div className="bg-indigo-100 text-indigo-600 font-black h-8 w-8 rounded-full flex items-center justify-center">#{i + 1}</div>
+                      <span className="font-bold">{p.name}</span>
+                    </div>
+                    <span className="font-black text-indigo-600">{formatUSD(p.priceUSD)}</span>
                   </div>
-                  <span className="font-black text-indigo-600">{formatUSD(p.priceUSD)}</span>
-                </div>
-              ))}
-              {myProducts.length === 0 && <p className="text-gray-400 text-sm font-bold">Aún no hay productos.</p>}
+                ))}
+                {myProducts.length === 0 && <p className="text-gray-400 text-sm font-bold">Aún no hay productos.</p>}
+              </div>
             </div>
           </div>
-        </div>
         )}
 
         {activeTab === 'resumen' && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-          <div className="bg-[#0A1128] text-white p-6 md:p-8 rounded-[2rem] shadow-xl relative overflow-hidden border border-[#C5A184]/20 h-full">
-            <h3 className="font-black text-xl mb-2 flex items-center gap-2"><Activity className="text-[#C5A184]"/> Kreatek Insights (IA)</h3>
-            <p className="text-xs text-gray-400 mb-6">Motor de predicción de inventario activo.</p>
-            <div className="space-y-4">
-              <div className="bg-white/10 border border-[#C5A184]/30 rounded-xl p-4 flex gap-4">
-                <span className="text-2xl">🤖</span>
-                <p className="text-sm text-gray-200">He analizado tus productos estrella. Te sugiero aumentar un 5% el precio del producto top 1, la rotación soporta el margen.</p>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+            <div className="bg-[#0A1128] text-white p-6 md:p-8 rounded-[2rem] shadow-xl relative overflow-hidden border border-[#C5A184]/20 h-full">
+              <h3 className="font-black text-xl mb-2 flex items-center gap-2"><Activity className="text-[#C5A184]" /> Kreatek Insights (IA)</h3>
+              <p className="text-xs text-gray-400 mb-6">Motor de predicción de inventario activo.</p>
+              <div className="space-y-4">
+                <div className="bg-white/10 border border-[#C5A184]/30 rounded-xl p-4 flex gap-4">
+                  <span className="text-2xl">🤖</span>
+                  <p className="text-sm text-gray-200">He analizado tus productos estrella. Te sugiero aumentar un 5% el precio del producto top 1, la rotación soporta el margen.</p>
+                </div>
+                <div className="bg-white/10 border border-[#C5A184]/30 rounded-xl p-4 flex gap-4">
+                  <span className="text-2xl">⚡</span>
+                  <p className="text-sm text-gray-200">Tus ventas en horario matutino cayeron un 12%. Te sugiero lanzar un SMS Push "Oferta Mañanera" desde Flow Express.</p>
+                </div>
               </div>
-              <div className="bg-white/10 border border-[#C5A184]/30 rounded-xl p-4 flex gap-4">
-                <span className="text-2xl">⚡</span>
-                <p className="text-sm text-gray-200">Tus ventas en horario matutino cayeron un 12%. Te sugiero lanzar un SMS Push "Oferta Mañanera" desde Flow Express.</p>
+            </div>
+
+            <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col justify-between h-full">
+              <div>
+                <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2"><DollarSign className="text-green-600" /> Billetera KFS (Billing)</h3>
+                <p className="text-xs text-gray-500 mb-4">Suscripción SaaS Activa: $6/mes. Próximo cobro: {new Date(clientInfo.subscription?.nextBillingDate).toLocaleDateString()}</p>
+                <div className="bg-gray-50 rounded-xl p-4 flex justify-between items-center mb-4 border border-gray-200">
+                  <span className="font-bold text-gray-600">Saldo Actual:</span>
+                  <span className="text-2xl font-black text-green-700">${(clientInfo.walletBalanceUSD || 0).toFixed(2)}</span>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <input type="number" placeholder="Monto $USD" value={fundAmount} onChange={e => setFundAmount(e.target.value)} className="w-1/2 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 font-bold" />
+                  <button onClick={() => { if (fundAmount) { setIsTopUpOpen(true); } }} className="w-1/2 bg-green-600 text-white font-black rounded-xl cursor-pointer hover:bg-green-700">Recargar Saldo</button>
+                  <TopUpModal
+                    isOpen={isTopUpOpen}
+                    onClose={() => setIsTopUpOpen(false)}
+                    amount={fundAmount}
+                    setAmount={setFundAmount}
+                    onSubmit={(amount: number, ref: string, img: string) => {
+                      requestTopUp(currentUser.id, 'client', amount, ref, img);
+                    }}
+                    userType="client"
+                  />
+                </div>
+                <button onClick={() => processMonthlyBilling(currentUser.id)} className="w-full bg-red-100 text-red-600 font-bold py-2 rounded-xl border border-red-200 text-xs cursor-pointer hover:bg-red-200">Simular Cobro Mensual (Dev)</button>
               </div>
             </div>
           </div>
-          
-          <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col justify-between h-full">
-            <div>
-              <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2"><DollarSign className="text-green-600"/> Billetera KFS (Billing)</h3>
-              <p className="text-xs text-gray-500 mb-4">Suscripción SaaS Activa: $6/mes. Próximo cobro: {new Date(clientInfo.subscription?.nextBillingDate).toLocaleDateString()}</p>
-              <div className="bg-gray-50 rounded-xl p-4 flex justify-between items-center mb-4 border border-gray-200">
-                <span className="font-bold text-gray-600">Saldo Actual:</span>
-                <span className="text-2xl font-black text-green-700">${(clientInfo.walletBalanceUSD || 0).toFixed(2)}</span>
-              </div>
-            </div>
-            <div className="space-y-2">
-              <div className="flex gap-2">
-                <input type="number" placeholder="Monto $USD" value={fundAmount} onChange={e=>setFundAmount(e.target.value)} className="w-1/2 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 font-bold" />
-                <button onClick={() => { if(fundAmount) { setIsTopUpOpen(true); } }} className="w-1/2 bg-green-600 text-white font-black rounded-xl cursor-pointer hover:bg-green-700">Recargar Saldo</button>
-                <TopUpModal 
-                  isOpen={isTopUpOpen} 
-                  onClose={() => setIsTopUpOpen(false)}
-                  amount={fundAmount}
-                  setAmount={setFundAmount}
-                  onSubmit={(amount: number, ref: string, img: string) => {
-                    requestTopUp(currentUser.id, 'client', amount, ref, img);
-                  }}
-                  userType="client"
-                />
-              </div>
-              <button onClick={() => processMonthlyBilling(currentUser.id)} className="w-full bg-red-100 text-red-600 font-bold py-2 rounded-xl border border-red-200 text-xs cursor-pointer hover:bg-red-200">Simular Cobro Mensual (Dev)</button>
-            </div>
-          </div>
-        </div>
         )}
 
         {activeTab === 'personal' && (
-        <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 w-full">
-          <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6 border-b border-gray-100 pb-4">
-            <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2"><Users className="text-[#C5A184]"/> Control de Empleados</h3>
-            <div className="flex gap-4">
-              <div className="relative w-48">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                <input type="text" placeholder="Buscar vendedor..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchVendedor} onChange={e => setSearchVendedor(e.target.value)} />
+          <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 w-full">
+            <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6 border-b border-gray-100 pb-4">
+              <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2"><Users className="text-[#C5A184]" /> Control de Empleados</h3>
+              <div className="flex gap-4">
+                <div className="relative w-48">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                  <input type="text" placeholder="Buscar vendedor..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchVendedor} onChange={e => setSearchVendedor(e.target.value)} />
+                </div>
+                <button onClick={() => setShowAddVendedor(true)} className="text-sm font-bold text-white bg-[#0A1128] px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors cursor-pointer">+ Añadir Vendedor</button>
               </div>
-              <button onClick={() => setShowAddVendedor(true)} className="text-sm font-bold text-white bg-[#0A1128] px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors cursor-pointer">+ Añadir Vendedor</button>
             </div>
-          </div>
-          <div className="space-y-3">
-            {myVendedores.filter((v: any) => v.name.toLowerCase().includes(searchVendedor.toLowerCase()) || v.email.toLowerCase().includes(searchVendedor.toLowerCase())).map((v: any) => (
-              <div key={v.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                <div className="flex items-center gap-3">
-                  {v.avatar ? (
-                    <img src={v.avatar} className="w-10 h-10 rounded-full object-cover border border-[#C5A184]/40" alt="Avatar" />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-[#0A1128]/10 text-[#0A1128] font-black text-xs flex items-center justify-center border border-[#0A1128]/20">
-                      {v.name.slice(0, 2).toUpperCase()}
+            <div className="space-y-3">
+              {myVendedores.filter((v: any) => v.name.toLowerCase().includes(searchVendedor.toLowerCase()) || v.email.toLowerCase().includes(searchVendedor.toLowerCase())).map((v: any) => (
+                <div key={v.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                  <div className="flex items-center gap-3">
+                    {v.avatar ? (
+                      <img src={v.avatar} className="w-10 h-10 rounded-full object-cover border border-[#C5A184]/40" alt="Avatar" />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-[#0A1128]/10 text-[#0A1128] font-black text-xs flex items-center justify-center border border-[#0A1128]/20">
+                        {v.name.slice(0, 2).toUpperCase()}
+                      </div>
+                    )}
+                    <div className="flex flex-col">
+                      <span className="font-bold text-[#0A1128]">{v.name}</span>
+                      <span className="text-xs text-gray-500 font-mono">{v.email}</span>
                     </div>
-                  )}
-                  <div className="flex flex-col">
-                    <span className="font-bold text-[#0A1128]">{v.name}</span>
-                    <span className="text-xs text-gray-500 font-mono">{v.email}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="bg-green-100 text-green-700 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider hidden sm:inline-block">Activo</span>
+                    <button onClick={() => setShowPayrollModal(v)} className="bg-[#0A1128] text-[#C5A184] border border-[#C5A184]/50 text-[10px] font-black px-3 py-1.5 rounded-lg hover:bg-[#C5A184] hover:text-[#0A1128] transition-colors cursor-pointer uppercase tracking-wider">
+                      Liquidar Nómina
+                    </button>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className="bg-green-100 text-green-700 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider hidden sm:inline-block">Activo</span>
-                  <button onClick={() => setShowPayrollModal(v)} className="bg-[#0A1128] text-[#C5A184] border border-[#C5A184]/50 text-[10px] font-black px-3 py-1.5 rounded-lg hover:bg-[#C5A184] hover:text-[#0A1128] transition-colors cursor-pointer uppercase tracking-wider">
-                    Liquidar Nómina
-                  </button>
-                </div>
-              </div>
-            ))}
-            {myVendedores.length === 0 && <p className="text-sm text-gray-400 text-center py-4">Sin empleados. Añada vendedores para usar los terminales móviles.</p>}
+              ))}
+              {myVendedores.length === 0 && <p className="text-sm text-gray-400 text-center py-4">Sin empleados. Añada vendedores para usar los terminales móviles.</p>}
+            </div>
           </div>
-        </div>
         )}
 
         {activeTab === 'config' && (
-        <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 relative overflow-hidden w-full">
-           <div className="absolute top-0 right-0 w-40 h-40 bg-[#C5A184]/5 rounded-bl-[100px] -z-10"></div>
-           <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6 border-b border-gray-100 pb-4">
-             <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2"><DollarSign className="text-[#C5A184]"/> Datos Oficiales de Liquidación KFS</h3>
-             <span className="bg-gray-100 text-gray-600 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider border border-gray-200">Transferencia Directa</span>
-           </div>
-           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-             <div className="flex flex-col bg-gray-50 p-4 rounded-xl border border-gray-100">
-               <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Entidad Bancaria</span>
-               <span className="font-black text-sm text-[#0A1128]">Banco Nacional de Crédito (BNC)</span>
-             </div>
-             <div className="flex flex-col bg-gray-50 p-4 rounded-xl border border-gray-100">
-               <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Teléfono (Pago Móvil)</span>
-               <span className="font-mono font-bold text-sm text-[#0A1128]">0412-7740041</span>
-             </div>
-             <div className="flex flex-col bg-gray-50 p-4 rounded-xl border border-gray-100">
-               <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Cédula de Identidad</span>
-               <span className="font-mono font-bold text-sm text-[#0A1128]">V-25.218.648</span>
-             </div>
-           </div>
-        </div>
+          <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 relative overflow-hidden w-full">
+            <div className="absolute top-0 right-0 w-40 h-40 bg-[#C5A184]/5 rounded-bl-[100px] -z-10"></div>
+            <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6 border-b border-gray-100 pb-4">
+              <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2"><DollarSign className="text-[#C5A184]" /> Datos Oficiales de Liquidación KFS</h3>
+              <span className="bg-gray-100 text-gray-600 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider border border-gray-200">Transferencia Directa</span>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="flex flex-col bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Entidad Bancaria</span>
+                <span className="font-black text-sm text-[#0A1128]">Banco Nacional de Crédito (BNC)</span>
+              </div>
+              <div className="flex flex-col bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Teléfono (Pago Móvil)</span>
+                <span className="font-mono font-bold text-sm text-[#0A1128]">0412-7740041</span>
+              </div>
+              <div className="flex flex-col bg-gray-50 p-4 rounded-xl border border-gray-100">
+                <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Cédula de Identidad</span>
+                <span className="font-mono font-bold text-sm text-[#0A1128]">V-25.218.648</span>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Widget de Cierre y Publicidad para el Dueño */}
         {activeTab === 'resumen' && (
-        <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-6 md:p-8 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/5 animate-fade-in w-full">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#C5A184]/5 rounded-full blur-3xl -z-10"></div>
-          <div className="flex flex-col md:flex-row justify-between items-stretch gap-6 relative z-10">
-            
-            {/* Columna 1: Liquidación Obligatoria al Cierre */}
-            <div className="flex-1 flex flex-col justify-between p-6 bg-white/5 rounded-2xl border border-white/10 relative">
-              <div className="space-y-2">
-                <span className="text-[#C5A184] text-[10px] font-black uppercase tracking-widest block font-mono">Cierre de Caja & Liquidación</span>
-                <h3 className="text-xl font-black text-white">Pago Requerido al Cierre</h3>
-                <p className="text-xs text-gray-400 leading-relaxed">
-                  Para habilitar la sincronización en la nube de tu terminal el día de mañana, debes liquidar tu balance de comisiones BOS de la jornada actual.
-                </p>
-              </div>
-              <div className="mt-6 pt-4 border-t border-white/10 flex justify-between items-baseline">
-                <div>
-                  <span className="text-[10px] text-gray-400 block font-bold">TOTAL A REPORTAR:</span>
-                  <span className="text-3xl font-black text-red-400 font-mono">{formatUSD(currentUser.kfsFeesOwedUSD || 0)}</span>
-                </div>
-                <button 
-                  onClick={() => {
-                    window.open(`https://wa.me/584127740041?text=Hola Kreatek, soy el local *${currentUser.company}*. Adjunto comprobante de pago de BOS diario correspondiente a la deuda de *${formatUSD(currentUser.kfsFeesOwedUSD || 0)}*.`, '_blank');
-                    window.dispatchEvent(new CustomEvent('kfs-payment-alert', { detail: { company: currentUser.company, amount: currentUser.kfsFeesOwedUSD } }));
-                    showToast("Abriendo WhatsApp y notificando a KFS Core...", "success");
-                  }}
-                  className="bg-[#C5A184] text-[#0A1128] font-black text-xs px-5 py-3 rounded-xl shadow-lg hover:scale-105 transition-transform flex items-center gap-1.5 cursor-pointer"
-                >
-                  <CheckCircle size={14} /> Reportar Pago
-                </button>
-              </div>
-            </div>
+          <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-6 md:p-8 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/5 animate-fade-in w-full">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#C5A184]/5 rounded-full blur-3xl -z-10"></div>
+            <div className="flex flex-col md:flex-row justify-between items-stretch gap-6 relative z-10">
 
-            {/* Columna 2: Inversión en Publicidad del Día Siguiente */}
-            <div className="flex-1 flex flex-col justify-between p-6 bg-indigo-950/40 rounded-2xl border border-indigo-500/20 relative">
-              <div className="space-y-2">
-                <span className="text-indigo-300 text-[10px] font-black uppercase tracking-widest block font-mono">Plan de Tracción de Tráfico</span>
-                <h3 className="text-xl font-black text-white">Inversión en Publicidad KFS</h3>
-                <p className="text-xs text-indigo-200/70 leading-relaxed">
-                  El oráculo de KFS OS reinyecta automáticamente el **20% de tu tarifa BOS diaria** en campañas de publicidad geolocalizada mañana.
-                </p>
+              {/* Columna 1: Liquidación Obligatoria al Cierre */}
+              <div className="flex-1 flex flex-col justify-between p-6 bg-white/5 rounded-2xl border border-white/10 relative">
+                <div className="space-y-2">
+                  <span className="text-[#C5A184] text-[10px] font-black uppercase tracking-widest block font-mono">Cierre de Caja & Liquidación</span>
+                  <h3 className="text-xl font-black text-white">Pago Requerido al Cierre</h3>
+                  <p className="text-xs text-gray-400 leading-relaxed">
+                    Para habilitar la sincronización en la nube de tu terminal el día de mañana, debes liquidar tu balance de comisiones BOS de la jornada actual.
+                  </p>
+                </div>
+                <div className="mt-6 pt-4 border-t border-white/10 flex justify-between items-baseline">
+                  <div>
+                    <span className="text-[10px] text-gray-400 block font-bold">TOTAL A REPORTAR:</span>
+                    <span className="text-3xl font-black text-red-400 font-mono">{formatUSD(currentUser.kfsFeesOwedUSD || 0)}</span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      window.open(`https://wa.me/584127740041?text=Hola Kreatek, soy el local *${currentUser.company}*. Adjunto comprobante de pago de BOS diario correspondiente a la deuda de *${formatUSD(currentUser.kfsFeesOwedUSD || 0)}*.`, '_blank');
+                      window.dispatchEvent(new CustomEvent('kfs-payment-alert', { detail: { company: currentUser.company, amount: currentUser.kfsFeesOwedUSD } }));
+                      showToast("Abriendo WhatsApp y notificando a KFS Core...", "success");
+                    }}
+                    className="bg-[#C5A184] text-[#0A1128] font-black text-xs px-5 py-3 rounded-xl shadow-lg hover:scale-105 transition-transform flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <CheckCircle size={14} /> Reportar Pago
+                  </button>
+                </div>
               </div>
-              <div className="mt-6 pt-4 border-t border-indigo-500/20 flex justify-between items-baseline">
-                <div>
-                  <span className="text-[10px] text-indigo-300 block font-bold">PRESUPUESTO ASIGNADO PARA MAÑANA:</span>
-                  <span className="text-3xl font-black text-green-400 font-mono">
-                    {formatUSD((currentUser.kfsFeesOwedUSD || 0) * 0.20)}
+
+              {/* Columna 2: Inversión en Publicidad del Día Siguiente */}
+              <div className="flex-1 flex flex-col justify-between p-6 bg-indigo-950/40 rounded-2xl border border-indigo-500/20 relative">
+                <div className="space-y-2">
+                  <span className="text-indigo-300 text-[10px] font-black uppercase tracking-widest block font-mono">Plan de Tracción de Tráfico</span>
+                  <h3 className="text-xl font-black text-white">Inversión en Publicidad KFS</h3>
+                  <p className="text-xs text-indigo-200/70 leading-relaxed">
+                    El oráculo de KFS OS reinyecta automáticamente el **20% de tu tarifa BOS diaria** en campañas de publicidad geolocalizada mañana.
+                  </p>
+                </div>
+                <div className="mt-6 pt-4 border-t border-indigo-500/20 flex justify-between items-baseline">
+                  <div>
+                    <span className="text-[10px] text-indigo-300 block font-bold">PRESUPUESTO ASIGNADO PARA MAÑANA:</span>
+                    <span className="text-3xl font-black text-green-400 font-mono">
+                      {formatUSD((currentUser.kfsFeesOwedUSD || 0) * 0.20)}
+                    </span>
+                  </div>
+                  <span className="bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-[9px] font-mono font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
+                    Tráfico Garantizado
                   </span>
                 </div>
-                <span className="bg-indigo-500/20 border border-indigo-500/30 text-indigo-300 text-[9px] font-mono font-black px-2.5 py-1 rounded-full uppercase tracking-wider">
-                  Tráfico Garantizado
-                </span>
               </div>
-            </div>
 
+            </div>
           </div>
-        </div>
         )}
-        
+
         {activeTab === 'config' && <KFSIoTEdgeConsole showToast={showToast} />}
 
         {/* Vales & Créditos Widget */}
         {activeTab === 'personal' && (
-        <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-6">
-          <div className="flex justify-between items-center border-b border-gray-100 pb-4">
-            <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2 text-[#C5A184]">
-              🎫 Vales y Créditos Digitales
-            </h3>
-            <span className="bg-[#C5A184]/15 border border-[#C5A184]/30 text-[#C5A184] text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
-              Conciliación Automática
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Emitir Vale Form */}
-            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 space-y-4">
-              <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block font-mono">Emitir Nuevo Vale / Crédito</span>
-              <form onSubmit={e => {
-                e.preventDefault();
-                const target = e.target as any;
-                const recipientName = target.recipient.value;
-                const type = target.type.value;
-                const amountUSD = parseFloat(target.amount.value);
-                const surchargePct = parseFloat(target.surcharge.value);
-                const dueDate = target.dueDate.value;
-
-                createVale({
-                  recipientName,
-                  type,
-                  amountUSD,
-                  surchargePct,
-                  dueDate
-                });
-
-                target.reset();
-              }} className="space-y-3">
-                <input required name="recipient" placeholder="Telf. Cliente CRM o Nombre Vendedor" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-900 focus:outline-none" />
-                <select name="type" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-900 focus:outline-none font-bold">
-                  <option value="credito_cliente">Crédito a Cliente (CRM)</option>
-                  <option value="adelanto_nomina">Adelanto de Nómina</option>
-                </select>
-                <div className="grid grid-cols-2 gap-2">
-                  <input required type="number" step="0.01" name="amount" placeholder="Monto ($)" className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs text-gray-900 focus:outline-none" />
-                  <select name="surcharge" className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs text-gray-900 focus:outline-none font-bold">
-                    <option value="0.00">Sin Recargo</option>
-                    <option value="0.03">Recargo 3%</option>
-                    <option value="0.05">Recargo 5%</option>
-                    <option value="0.08">Recargo 8%</option>
-                    <option value="0.10">Recargo 10%</option>
-                  </select>
-                </div>
-                <input required type="date" name="dueDate" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-900 focus:outline-none font-mono" />
-                <button type="submit" className="w-full py-3 bg-[#0A1128] hover:bg-gray-800 text-white font-black rounded-xl text-xs shadow-md transition-all cursor-pointer">
-                  Emitir Vale Criptográfico &rarr;
-                </button>
-              </form>
+          <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-6">
+            <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+              <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2 text-[#C5A184]">
+                🎫 Vales y Créditos Digitales
+              </h3>
+              <span className="bg-[#C5A184]/15 border border-[#C5A184]/30 text-[#C5A184] text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
+                Conciliación Automática
+              </span>
             </div>
 
-            {/* List of active Vales */}
-            <div className="md:col-span-2 space-y-4">
-              <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block font-mono">Gobernanza de Cuentas y Adelantos Pendientes</span>
-              <div className="overflow-x-auto max-h-60 border border-gray-100 rounded-xl bg-gray-50/50 p-2">
-                <table className="w-full text-xs text-left">
-                  <thead className="bg-gray-100 text-gray-500 uppercase text-[9px] font-black sticky top-0">
-                    <tr>
-                      <th className="py-2.5 px-3 rounded-l-lg">Vale / Beneficiario</th>
-                      <th className="py-2.5 px-2">Tipo</th>
-                      <th className="py-2.5 px-2">Vencimiento</th>
-                      <th className="py-2.5 px-2">Total Adeudado</th>
-                      <th className="py-2.5 px-3 text-right rounded-r-lg">Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(db.vales || []).map((v: any) => (
-                      <tr key={v.id} className="border-b border-gray-100/50 hover:bg-white transition-colors">
-                        <td className="py-3 px-3">
-                          <span className="font-mono font-black text-[#0A1128] block">{v.id}</span>
-                          <span className="text-[10px] text-gray-500 font-bold block">{v.recipientName}</span>
-                        </td>
-                        <td className="py-3 px-2 font-bold text-gray-600">
-                          {v.type === "adelanto_nomina" ? "💼 Nómina" : "🛍️ Cliente"}
-                        </td>
-                        <td className="py-3 px-2 font-mono text-gray-500">{v.dueDate}</td>
-                        <td className="py-3 px-2">
-                          <span className="font-black text-red-500">{formatUSD(v.totalDueUSD)}</span>
-                          {v.surchargePct > 0 && <span className="text-[9px] text-orange-500 font-bold block">Recargo: +{v.surchargePct * 100}%</span>}
-                        </td>
-                        <td className="py-3 px-3 text-right">
-                          {v.status === "pending" ? (
-                            <button onClick={() => {
-                              const payAmount = parseFloat(prompt("Ingrese el monto del abono en USD ($):", v.totalDueUSD.toFixed(2)) || "0");
-                              if (payAmount > 0) {
-                                payVale(v.id, payAmount);
-                              }
-                            }} className="bg-green-100 text-green-700 font-black px-2.5 py-1.5 rounded-lg hover:bg-green-200 transition-colors cursor-pointer">
-                              Abonar
-                            </button>
-                          ) : (
-                            <span className="bg-gray-100 text-gray-500 font-black px-2 py-1 rounded uppercase tracking-wider text-[8px]">Cancelado</span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                    {(db.vales || []).length === 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Emitir Vale Form */}
+              <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 space-y-4">
+                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block font-mono">Emitir Nuevo Vale / Crédito</span>
+                <form onSubmit={e => {
+                  e.preventDefault();
+                  const target = e.target as any;
+                  const recipientName = target.recipient.value;
+                  const type = target.type.value;
+                  const amountUSD = parseFloat(target.amount.value);
+                  const surchargePct = parseFloat(target.surcharge.value);
+                  const dueDate = target.dueDate.value;
+
+                  createVale({
+                    recipientName,
+                    type,
+                    amountUSD,
+                    surchargePct,
+                    dueDate
+                  });
+
+                  target.reset();
+                }} className="space-y-3">
+                  <input required name="recipient" placeholder="Telf. Cliente CRM o Nombre Vendedor" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-900 focus:outline-none" />
+                  <select name="type" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-900 focus:outline-none font-bold">
+                    <option value="credito_cliente">Crédito a Cliente (CRM)</option>
+                    <option value="adelanto_nomina">Adelanto de Nómina</option>
+                  </select>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input required type="number" step="0.01" name="amount" placeholder="Monto ($)" className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs text-gray-900 focus:outline-none" />
+                    <select name="surcharge" className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs text-gray-900 focus:outline-none font-bold">
+                      <option value="0.00">Sin Recargo</option>
+                      <option value="0.03">Recargo 3%</option>
+                      <option value="0.05">Recargo 5%</option>
+                      <option value="0.08">Recargo 8%</option>
+                      <option value="0.10">Recargo 10%</option>
+                    </select>
+                  </div>
+                  <input required type="date" name="dueDate" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-900 focus:outline-none font-mono" />
+                  <button type="submit" className="w-full py-3 bg-[#0A1128] hover:bg-gray-800 text-white font-black rounded-xl text-xs shadow-md transition-all cursor-pointer">
+                    Emitir Vale Criptográfico &rarr;
+                  </button>
+                </form>
+              </div>
+
+              {/* List of active Vales */}
+              <div className="md:col-span-2 space-y-4">
+                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block font-mono">Gobernanza de Cuentas y Adelantos Pendientes</span>
+                <div className="overflow-x-auto max-h-60 border border-gray-100 rounded-xl bg-gray-50/50 p-2">
+                  <table className="w-full text-xs text-left">
+                    <thead className="bg-gray-100 text-gray-500 uppercase text-[9px] font-black sticky top-0">
                       <tr>
-                        <td colSpan={5} className="text-center py-8 text-gray-400 font-bold">No hay vales ni créditos pendientes registrados.</td>
+                        <th className="py-2.5 px-3 rounded-l-lg">Vale / Beneficiario</th>
+                        <th className="py-2.5 px-2">Tipo</th>
+                        <th className="py-2.5 px-2">Vencimiento</th>
+                        <th className="py-2.5 px-2">Total Adeudado</th>
+                        <th className="py-2.5 px-3 text-right rounded-r-lg">Acciones</th>
                       </tr>
-                    )}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {(db.vales || []).map((v: any) => (
+                        <tr key={v.id} className="border-b border-gray-100/50 hover:bg-white transition-colors">
+                          <td className="py-3 px-3">
+                            <span className="font-mono font-black text-[#0A1128] block">{v.id}</span>
+                            <span className="text-[10px] text-gray-500 font-bold block">{v.recipientName}</span>
+                          </td>
+                          <td className="py-3 px-2 font-bold text-gray-600">
+                            {v.type === "adelanto_nomina" ? "💼 Nómina" : "🛍️ Cliente"}
+                          </td>
+                          <td className="py-3 px-2 font-mono text-gray-500">{v.dueDate}</td>
+                          <td className="py-3 px-2">
+                            <span className="font-black text-red-500">{formatUSD(v.totalDueUSD)}</span>
+                            {v.surchargePct > 0 && <span className="text-[9px] text-orange-500 font-bold block">Recargo: +{v.surchargePct * 100}%</span>}
+                          </td>
+                          <td className="py-3 px-3 text-right">
+                            {v.status === "pending" ? (
+                              <button onClick={() => {
+                                const payAmount = parseFloat(prompt("Ingrese el monto del abono en USD ($):", v.totalDueUSD.toFixed(2)) || "0");
+                                if (payAmount > 0) {
+                                  payVale(v.id, payAmount);
+                                }
+                              }} className="bg-green-100 text-green-700 font-black px-2.5 py-1.5 rounded-lg hover:bg-green-200 transition-colors cursor-pointer">
+                                Abonar
+                              </button>
+                            ) : (
+                              <span className="bg-gray-100 text-gray-500 font-black px-2 py-1 rounded uppercase tracking-wider text-[8px]">Cancelado</span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                      {(db.vales || []).length === 0 && (
+                        <tr>
+                          <td colSpan={5} className="text-center py-8 text-gray-400 font-bold">No hay vales ni créditos pendientes registrados.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
-          </div>
-          )}
+        )}
         {/* Lógica Empresarial / Analítica */}
         {activeTab === 'resumen' && (
-        <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-6">
-          <div className="flex justify-between items-center border-b border-gray-100 pb-4">
-            <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2">
-              📊 Inteligencia de Mercado y Metas KFS
-            </h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-[#0A1128] text-white p-6 rounded-2xl border border-[#C5A184]/30 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-[#C5A184]/10 rounded-full blur-3xl" />
-              <h4 className="text-[10px] font-black uppercase text-[#C5A184] mb-2 font-mono">Caja & Ganancias Disponibles</h4>
-              <p className="text-3xl font-black mb-1">${formatUSD(currentUser.salesUSD || 0)} <span className="text-sm font-light text-gray-400">/ $1,000</span></p>
-              <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden mt-4 mb-4">
-                <div className="bg-[#C5A184] h-full" style={{ width: `${Math.min(100, ((currentUser.salesUSD || 0) / 1000) * 100)}%` }} />
+          <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-6">
+            <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+              <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2">
+                📊 Inteligencia de Mercado y Metas KFS
+              </h3>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-[#0A1128] text-white p-6 rounded-2xl border border-[#C5A184]/30 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[#C5A184]/10 rounded-full blur-3xl" />
+                <h4 className="text-[10px] font-black uppercase text-[#C5A184] mb-2 font-mono">Caja & Ganancias Disponibles</h4>
+                <p className="text-3xl font-black mb-1">${formatUSD(currentUser.salesUSD || 0)} <span className="text-sm font-light text-gray-400">/ $1,000</span></p>
+                <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden mt-4 mb-4">
+                  <div className="bg-[#C5A184] h-full" style={{ width: `${Math.min(100, ((currentUser.salesUSD || 0) / 1000) * 100)}%` }} />
+                </div>
+                <button
+                  onClick={() => setShowPayoutModal(true)}
+                  className="w-full py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-black uppercase tracking-wider transition-colors"
+                >
+                  Solicitar Retiro
+                </button>
               </div>
-              <button 
-                onClick={() => setShowPayoutModal(true)}
-                className="w-full py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg text-xs font-black uppercase tracking-wider transition-colors"
-              >
-                Solicitar Retiro
-              </button>
-            </div>
-            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
-              <h4 className="text-[10px] font-black uppercase text-gray-500 mb-2 font-mono">Categorías Fuertes</h4>
-              <ul className="space-y-2 mt-4 text-sm font-bold text-gray-800">
-                <li className="flex justify-between items-center"><span>Alimentos</span> <span className="text-[#C5A184]">74%</span></li>
-                <li className="flex justify-between items-center"><span>Bebidas</span> <span className="text-[#C5A184]">20%</span></li>
-                <li className="flex justify-between items-center"><span>Limpieza</span> <span className="text-[#C5A184]">6%</span></li>
-              </ul>
-            </div>
-            <div className="bg-red-50 p-6 rounded-2xl border border-red-100">
-              <h4 className="text-[10px] font-black uppercase text-red-500 mb-2 font-mono">Fuga de Capital Detectada</h4>
-              <p className="text-xs text-red-700 mt-2">KFS Oracle™ ha detectado que no tienes productos en la categoría <strong>'Higiene Personal'</strong>. Estás perdiendo aproximadamente un 15% de ventas combinadas ante tu competencia local.</p>
-              <button className="mt-4 text-xs font-black text-red-600 hover:underline uppercase tracking-wider">Poblar Catálogo →</button>
+              <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                <h4 className="text-[10px] font-black uppercase text-gray-500 mb-2 font-mono">Categorías Fuertes</h4>
+                <ul className="space-y-2 mt-4 text-sm font-bold text-gray-800">
+                  <li className="flex justify-between items-center"><span>Alimentos</span> <span className="text-[#C5A184]">74%</span></li>
+                  <li className="flex justify-between items-center"><span>Bebidas</span> <span className="text-[#C5A184]">20%</span></li>
+                  <li className="flex justify-between items-center"><span>Limpieza</span> <span className="text-[#C5A184]">6%</span></li>
+                </ul>
+              </div>
+              <div className="bg-red-50 p-6 rounded-2xl border border-red-100">
+                <h4 className="text-[10px] font-black uppercase text-red-500 mb-2 font-mono">Fuga de Capital Detectada</h4>
+                <p className="text-xs text-red-700 mt-2">KFS Oracle™ ha detectado que no tienes productos en la categoría <strong>'Higiene Personal'</strong>. Estás perdiendo aproximadamente un 15% de ventas combinadas ante tu competencia local.</p>
+                <button className="mt-4 text-xs font-black text-red-600 hover:underline uppercase tracking-wider">Poblar Catálogo →</button>
+              </div>
             </div>
           </div>
-        </div>
         )}
 
         {/* Bóveda KFS (Métodos de Pago del Dueño) */}
         {activeTab === 'config' && (
-        <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-6">
-          <div className="flex justify-between items-center border-b border-gray-100 pb-4">
-            <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2">
-              🏦 Bóveda Financiera (Métodos de Cobro)
-            </h3>
-            <span className="bg-green-100 text-green-700 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
-              Verificados
-            </span>
+          <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-6">
+            <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+              <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2">
+                🏦 Bóveda Financiera (Métodos de Cobro)
+              </h3>
+              <span className="bg-green-100 text-green-700 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
+                Verificados
+              </span>
+            </div>
+            <form onSubmit={e => {
+              e.preventDefault();
+              const target = e.target as any;
+              updatePaymentMethods(currentUser.id, {
+                zinli: target.zinli.value,
+                wallyTech: target.wallyTech.value,
+                airtm: target.airtm.value,
+                ubbiApp: target.ubbiApp.value,
+                pagoMovilPhone: target.pMovilPhone.value,
+                pagoMovilId: target.pMovilId.value,
+                pagoMovilBank: target.pMovilBank.value,
+                binance: target.binance.value
+              });
+            }} className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Zinli (Email)</label>
+                <input name="zinli" defaultValue={currentUser.paymentMethods?.zinli || ""} placeholder="correo@zinli.com" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[#C5A184]" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Wally Tech</label>
+                <input name="wallyTech" defaultValue={currentUser.paymentMethods?.wallyTech || ""} placeholder="Usuario o Teléfono" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[#C5A184]" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">AirTM</label>
+                <input name="airtm" defaultValue={currentUser.paymentMethods?.airtm || ""} placeholder="correo@airtm.com" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[#C5A184]" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Ubbi App</label>
+                <input name="ubbiApp" defaultValue={currentUser.paymentMethods?.ubbiApp || ""} placeholder="Usuario Ubbi" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[#C5A184]" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Binance Pay (Pay ID)</label>
+                <input name="binance" defaultValue={currentUser.paymentMethods?.binance || ""} placeholder="ID de Binance" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[#C5A184]" />
+              </div>
+              <div className="space-y-2 border border-gray-200 p-4 rounded-xl">
+                <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono mb-2 block">Pago Móvil</label>
+                <input name="pMovilBank" defaultValue={currentUser.paymentMethods?.pagoMovilBank || ""} placeholder="Banco (Ej. Banesco 0134)" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#C5A184] mb-2" />
+                <input name="pMovilPhone" defaultValue={currentUser.paymentMethods?.pagoMovilPhone || ""} placeholder="Teléfono" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#C5A184] mb-2" />
+                <input name="pMovilId" defaultValue={currentUser.paymentMethods?.pagoMovilId || ""} placeholder="Cédula/RIF" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#C5A184]" />
+              </div>
+              <div className="md:col-span-3 flex justify-end">
+                <button type="submit" className="bg-[#0A1128] text-white font-bold py-3 px-8 rounded-xl hover:bg-black transition-colors cursor-pointer active:scale-95">Guardar en Bóveda Criptográfica</button>
+              </div>
+            </form>
           </div>
-          <form onSubmit={e => {
-            e.preventDefault();
-            const target = e.target as any;
-            updatePaymentMethods(currentUser.id, {
-              zinli: target.zinli.value,
-              wallyTech: target.wallyTech.value,
-              airtm: target.airtm.value,
-              ubbiApp: target.ubbiApp.value,
-              pagoMovilPhone: target.pMovilPhone.value,
-              pagoMovilId: target.pMovilId.value,
-              pagoMovilBank: target.pMovilBank.value,
-              binance: target.binance.value
-            });
-          }} className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Zinli (Email)</label>
-              <input name="zinli" defaultValue={currentUser.paymentMethods?.zinli || ""} placeholder="correo@zinli.com" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[#C5A184]" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Wally Tech</label>
-              <input name="wallyTech" defaultValue={currentUser.paymentMethods?.wallyTech || ""} placeholder="Usuario o Teléfono" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[#C5A184]" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">AirTM</label>
-              <input name="airtm" defaultValue={currentUser.paymentMethods?.airtm || ""} placeholder="correo@airtm.com" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[#C5A184]" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Ubbi App</label>
-              <input name="ubbiApp" defaultValue={currentUser.paymentMethods?.ubbiApp || ""} placeholder="Usuario Ubbi" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[#C5A184]" />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Binance Pay (Pay ID)</label>
-              <input name="binance" defaultValue={currentUser.paymentMethods?.binance || ""} placeholder="ID de Binance" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[#C5A184]" />
-            </div>
-            <div className="space-y-2 border border-gray-200 p-4 rounded-xl">
-              <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono mb-2 block">Pago Móvil</label>
-              <input name="pMovilBank" defaultValue={currentUser.paymentMethods?.pagoMovilBank || ""} placeholder="Banco (Ej. Banesco 0134)" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#C5A184] mb-2" />
-              <input name="pMovilPhone" defaultValue={currentUser.paymentMethods?.pagoMovilPhone || ""} placeholder="Teléfono" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#C5A184] mb-2" />
-              <input name="pMovilId" defaultValue={currentUser.paymentMethods?.pagoMovilId || ""} placeholder="Cédula/RIF" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#C5A184]" />
-            </div>
-            <div className="md:col-span-3 flex justify-end">
-              <button type="submit" className="bg-[#0A1128] text-white font-bold py-3 px-8 rounded-xl hover:bg-black transition-colors cursor-pointer active:scale-95">Guardar en Bóveda Criptográfica</button>
-            </div>
-          </form>
-        </div>
         )}
 
         {/* Gobernanza de Puntos de Venta (Multi-POS Integrado) */}
         {activeTab === 'config' && (
-        <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-6">
-          <div className="flex justify-between items-center border-b border-gray-100 pb-4">
-            <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2 text-[#C5A184]">
-              🔌 Gobernanza de Puntos de Venta (Multi-POS Integrado)
-            </h3>
-            <span className="bg-[#C5A184]/15 border border-[#C5A184]/30 text-[#C5A184] text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
-              Sincronización Directa PCI
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Formulario de Registro/Enlace POS */}
-            <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 space-y-4">
-              <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block font-mono">Enlazar y Certificar POS Físico</span>
-              <form onSubmit={e => {
-                e.preventDefault();
-                const target = e.target as any;
-                const name = target.posName.value;
-                const connectionType = target.connectionType.value;
-                const connectionInfo = target.connectionInfo.value;
-                const assignedVendedorId = target.assignedVendedorId.value || null;
-
-                registerPosTerminal({
-                  name,
-                  connectionType,
-                  connectionInfo,
-                  assignedVendedorId,
-                  clientId: currentUser.id
-                });
-
-                target.reset();
-              }} className="space-y-3">
-                <input required name="posName" placeholder="Nombre POS (Ej: Pax A920 - Caja 1)" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-900 focus:outline-none" />
-                
-                <div className="grid grid-cols-2 gap-2">
-                  <select name="connectionType" className="w-full bg-white border border-gray-200 rounded-xl px-2 py-2.5 text-[10px] text-gray-900 focus:outline-none font-bold">
-                    <option value="TCP_IP">Red Local (IP)</option>
-                    <option value="SERIAL">Puerto COM (Serial)</option>
-                  </select>
-                  <input required name="connectionInfo" placeholder="IP (192...) o COM3" className="w-full bg-white border border-gray-200 rounded-xl px-2 py-2.5 text-[10px] text-gray-900 focus:outline-none font-mono" />
-                </div>
-
-                <div>
-                  <label className="text-[9px] font-bold text-gray-400 block mb-1 uppercase tracking-widest">Cajero Asignado</label>
-                  <select name="assignedVendedorId" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-900 focus:outline-none font-bold">
-                    <option value="">Sin Asignar</option>
-                    {myVendedores.map((v: any) => (
-                      <option key={v.id} value={v.id}>{v.name}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <button type="submit" className="w-full py-3 bg-[#0A1128] hover:bg-gray-800 text-white font-black rounded-xl text-xs shadow-md transition-all cursor-pointer">
-                  ⚡ Conectar POS Integrado &rarr;
-                </button>
-              </form>
+          <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-6">
+            <div className="flex justify-between items-center border-b border-gray-100 pb-4">
+              <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2 text-[#C5A184]">
+                🔌 Gobernanza de Puntos de Venta (Multi-POS Integrado)
+              </h3>
+              <span className="bg-[#C5A184]/15 border border-[#C5A184]/30 text-[#C5A184] text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
+                Sincronización Directa PCI
+              </span>
             </div>
 
-            {/* Listado de POS enlazados y telemetría en vivo */}
-            <div className="md:col-span-2 space-y-4">
-              <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block font-mono">Telemetría y Facturación Real por Punto</span>
-              <div className="overflow-x-auto max-h-60 border border-gray-100 rounded-xl bg-gray-50/50 p-2">
-                <table className="w-full text-xs text-left">
-                  <thead className="bg-gray-100 text-gray-500 uppercase text-[9px] font-black sticky top-0">
-                    <tr>
-                      <th className="py-2.5 px-3 rounded-l-lg">POS Físico / Canal</th>
-                      <th className="py-2.5 px-2">Cajero</th>
-                      <th className="py-2.5 px-2">Telemetría</th>
-                      <th className="py-2.5 px-2">Facturación Real</th>
-                      <th className="py-2.5 px-3 text-right rounded-r-lg">Acciones</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(db.posTerminals || []).filter((p: any) => p.clientId === currentUser.id).map((p: any) => {
-                      const vendedor = myVendedores.find((v: any) => v.id === p.assignedVendedorId);
-                      return (
-                        <tr key={p.id} className="border-b border-gray-100/50 hover:bg-white transition-colors">
-                          <td className="py-3 px-3">
-                            <span className="font-bold text-[#0A1128] block">{p.name}</span>
-                            <span className="text-[9px] text-gray-400 font-mono block uppercase">ID: {p.id} | {p.connectionType}: {p.connectionInfo}</span>
-                          </td>
-                          <td className="py-3 px-2 font-bold text-gray-600">
-                            {vendedor ? (
-                              <span className="flex items-center gap-1.5 text-[#0A1128]">
-                                <UserCheck size={12} className="text-[#C5A184]" /> {vendedor.name}
-                              </span>
-                            ) : (
-                              <span className="text-gray-400 italic">No Asignado</span>
-                            )}
-                          </td>
-                          <td className="py-3 px-2">
-                            <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 px-2 py-1 rounded-full font-black text-[8px] uppercase tracking-wider border border-green-200">
-                              <span className="relative flex h-1.5 w-1.5">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
-                              </span>
-                              Conectado
-                            </span>
-                          </td>
-                          <td className="py-3 px-2">
-                            <span className="font-black text-green-600 block">{formatUSD(p.totalAmountUSD || 0)}</span>
-                            <span className="text-[9px] text-gray-400 font-bold block">{p.transactionsCount || 0} TXs Directas</span>
-                          </td>
-                          <td className="py-3 px-3 text-right">
-                            <button 
-                              onClick={() => {
-                                deletePosTerminal(p.id);
-                              }}
-                              className="text-[9px] bg-red-50 hover:bg-red-100 text-red-600 font-black px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
-                            >
-                              Retirar
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                    {(db.posTerminals || []).filter((p: any) => p.clientId === currentUser.id).length === 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Formulario de Registro/Enlace POS */}
+              <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100 space-y-4">
+                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block font-mono">Enlazar y Certificar POS Físico</span>
+                <form onSubmit={e => {
+                  e.preventDefault();
+                  const target = e.target as any;
+                  const name = target.posName.value;
+                  const connectionType = target.connectionType.value;
+                  const connectionInfo = target.connectionInfo.value;
+                  const assignedVendedorId = target.assignedVendedorId.value || null;
+
+                  registerPosTerminal({
+                    name,
+                    connectionType,
+                    connectionInfo,
+                    assignedVendedorId,
+                    clientId: currentUser.id
+                  });
+
+                  target.reset();
+                }} className="space-y-3">
+                  <input required name="posName" placeholder="Nombre POS (Ej: Pax A920 - Caja 1)" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-900 focus:outline-none" />
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <select name="connectionType" className="w-full bg-white border border-gray-200 rounded-xl px-2 py-2.5 text-[10px] text-gray-900 focus:outline-none font-bold">
+                      <option value="TCP_IP">Red Local (IP)</option>
+                      <option value="SERIAL">Puerto COM (Serial)</option>
+                    </select>
+                    <input required name="connectionInfo" placeholder="IP (192...) o COM3" className="w-full bg-white border border-gray-200 rounded-xl px-2 py-2.5 text-[10px] text-gray-900 focus:outline-none font-mono" />
+                  </div>
+
+                  <div>
+                    <label className="text-[9px] font-bold text-gray-400 block mb-1 uppercase tracking-widest">Cajero Asignado</label>
+                    <select name="assignedVendedorId" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-900 focus:outline-none font-bold">
+                      <option value="">Sin Asignar</option>
+                      {myVendedores.map((v: any) => (
+                        <option key={v.id} value={v.id}>{v.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <button type="submit" className="w-full py-3 bg-[#0A1128] hover:bg-gray-800 text-white font-black rounded-xl text-xs shadow-md transition-all cursor-pointer">
+                    ⚡ Conectar POS Integrado &rarr;
+                  </button>
+                </form>
+              </div>
+
+              {/* Listado de POS enlazados y telemetría en vivo */}
+              <div className="md:col-span-2 space-y-4">
+                <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest block font-mono">Telemetría y Facturación Real por Punto</span>
+                <div className="overflow-x-auto max-h-60 border border-gray-100 rounded-xl bg-gray-50/50 p-2">
+                  <table className="w-full text-xs text-left">
+                    <thead className="bg-gray-100 text-gray-500 uppercase text-[9px] font-black sticky top-0">
                       <tr>
-                        <td colSpan={5} className="text-center py-8 text-gray-400 font-bold">No hay puntos de venta integrados en este local comercial.</td>
+                        <th className="py-2.5 px-3 rounded-l-lg">POS Físico / Canal</th>
+                        <th className="py-2.5 px-2">Cajero</th>
+                        <th className="py-2.5 px-2">Telemetría</th>
+                        <th className="py-2.5 px-2">Facturación Real</th>
+                        <th className="py-2.5 px-3 text-right rounded-r-lg">Acciones</th>
                       </tr>
-                    )}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {(db.posTerminals || []).filter((p: any) => p.clientId === currentUser.id).map((p: any) => {
+                        const vendedor = myVendedores.find((v: any) => v.id === p.assignedVendedorId);
+                        return (
+                          <tr key={p.id} className="border-b border-gray-100/50 hover:bg-white transition-colors">
+                            <td className="py-3 px-3">
+                              <span className="font-bold text-[#0A1128] block">{p.name}</span>
+                              <span className="text-[9px] text-gray-400 font-mono block uppercase">ID: {p.id} | {p.connectionType}: {p.connectionInfo}</span>
+                            </td>
+                            <td className="py-3 px-2 font-bold text-gray-600">
+                              {vendedor ? (
+                                <span className="flex items-center gap-1.5 text-[#0A1128]">
+                                  <UserCheck size={12} className="text-[#C5A184]" /> {vendedor.name}
+                                </span>
+                              ) : (
+                                <span className="text-gray-400 italic">No Asignado</span>
+                              )}
+                            </td>
+                            <td className="py-3 px-2">
+                              <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-700 px-2 py-1 rounded-full font-black text-[8px] uppercase tracking-wider border border-green-200">
+                                <span className="relative flex h-1.5 w-1.5">
+                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
+                                </span>
+                                Conectado
+                              </span>
+                            </td>
+                            <td className="py-3 px-2">
+                              <span className="font-black text-green-600 block">{formatUSD(p.totalAmountUSD || 0)}</span>
+                              <span className="text-[9px] text-gray-400 font-bold block">{p.transactionsCount || 0} TXs Directas</span>
+                            </td>
+                            <td className="py-3 px-3 text-right">
+                              <button
+                                onClick={() => {
+                                  deletePosTerminal(p.id);
+                                }}
+                                className="text-[9px] bg-red-50 hover:bg-red-100 text-red-600 font-black px-2.5 py-1.5 rounded-lg transition-colors cursor-pointer"
+                              >
+                                Retirar
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      {(db.posTerminals || []).filter((p: any) => p.clientId === currentUser.id).length === 0 && (
+                        <tr>
+                          <td colSpan={5} className="text-center py-8 text-gray-400 font-bold">No hay puntos de venta integrados en este local comercial.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
-        </div>
         )}
 
         {activeTab === 'inventario' && (
           <div className="space-y-6">
-          {(myOrders.length > 0 || myPendingDispatch.length > 0) && (
-          <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-orange-200 bg-orange-50/30">
-            <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2 text-orange-600">
-              <Clock className="text-orange-500" /> Órdenes Online ({myOrders.length} por validar, {myPendingDispatch.length} por despachar)
-            </h3>
-            
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Columna Izquierda: Lista de Órdenes */}
-              <div className="lg:col-span-2 space-y-4">
-                {myOrders.map((order: any) => {
-                  const product = db.products.find((p: any) => p.id === order.productId);
-                  return (
-                    <div key={order.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-white rounded-2xl border border-orange-100 shadow-sm gap-4 animate-fade-in">
-                      <div>
-                        <span className="bg-orange-100 text-orange-700 text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-wider mb-2 inline-block">Pendiente</span>
-                        <h4 className="font-bold text-[#0A1128]">{product?.name || "Producto Desconocido"}</h4>
-                         <p className="text-sm text-gray-500 font-mono mt-1">Ref: <span className="font-bold text-gray-900">{order.paymentReference}</span> | Método: {order.paymentMethod}</p>
-                        {order.customerName && (
-                          <p className="text-xs text-gray-600 font-bold mt-1">
-                            Cliente: {order.customerName} {order.customerRif && `(${order.customerRif})`}
-                          </p>
-                        )}
-                        {order.paymentScreenshot && (
-                          <button 
-                            onClick={() => setActiveScreenshot(order.paymentScreenshot)} 
-                            className="mt-2 text-xs bg-amber-100 hover:bg-amber-200 text-amber-800 font-black px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
-                          >
-                            🖼️ Ver Capture
-                          </button>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-4 w-full md:w-auto">
-                        <div className="text-right flex-1 md:flex-none">
-                          <p className="font-black text-lg text-green-600">{formatUSD(order.amountUSD)}</p>
+            {(myOrders.length > 0 || myPendingDispatch.length > 0) && (
+              <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-orange-200 bg-orange-50/30">
+                <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2 text-orange-600">
+                  <Clock className="text-orange-500" /> Órdenes Online ({myOrders.length} por validar, {myPendingDispatch.length} por despachar)
+                </h3>
+
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  {/* Columna Izquierda: Lista de Órdenes */}
+                  <div className="lg:col-span-2 space-y-4">
+                    {myOrders.map((order: any) => {
+                      const product = db.products.find((p: any) => p.id === order.productId);
+                      return (
+                        <div key={order.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-white rounded-2xl border border-orange-100 shadow-sm gap-4 animate-fade-in">
+                          <div>
+                            <span className="bg-orange-100 text-orange-700 text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-wider mb-2 inline-block">Pendiente</span>
+                            <h4 className="font-bold text-[#0A1128]">{product?.name || "Producto Desconocido"}</h4>
+                            <p className="text-sm text-gray-500 font-mono mt-1">Ref: <span className="font-bold text-gray-900">{order.paymentReference}</span> | Método: {order.paymentMethod}</p>
+                            {order.customerName && (
+                              <p className="text-xs text-gray-600 font-bold mt-1">
+                                Cliente: {order.customerName} {order.customerRif && `(${order.customerRif})`}
+                              </p>
+                            )}
+                            {order.paymentScreenshot && (
+                              <button
+                                onClick={() => setActiveScreenshot(order.paymentScreenshot)}
+                                className="mt-2 text-xs bg-amber-100 hover:bg-amber-200 text-amber-800 font-black px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+                              >
+                                🖼️ Ver Capture
+                              </button>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-4 w-full md:w-auto">
+                            <div className="text-right flex-1 md:flex-none">
+                              <p className="font-black text-lg text-green-600">{formatUSD(order.amountUSD)}</p>
+                            </div>
+                            <div className="flex gap-2">
+                              <button onClick={() => rejectOrder(order.id)} className="p-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition-colors cursor-pointer" title="Rechazar y devolver stock"><X size={20} /></button>
+                              <button onClick={() => approveOrder(order.id)} className="p-2 bg-green-100 text-green-600 rounded-xl hover:bg-green-200 transition-colors cursor-pointer" title="Aprobar Pago"><CheckCircle size={20} /></button>
+                            </div>
+                          </div>
                         </div>
-                        <div className="flex gap-2">
-                          <button onClick={() => rejectOrder(order.id)} className="p-2 bg-red-100 text-red-600 rounded-xl hover:bg-red-200 transition-colors cursor-pointer" title="Rechazar y devolver stock"><X size={20} /></button>
-                          <button onClick={() => approveOrder(order.id)} className="p-2 bg-green-100 text-green-600 rounded-xl hover:bg-green-200 transition-colors cursor-pointer" title="Aprobar Pago"><CheckCircle size={20} /></button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Columna Centro: Órdenes por Despachar */}
+                  {myPendingDispatch.length > 0 && (
+                    <div className="lg:col-span-2 space-y-4 mt-8 lg:mt-0 lg:border-t-0 border-t border-orange-100 pt-8 lg:pt-0">
+                      <h4 className="font-bold text-[#0A1128] mb-4 flex items-center gap-2">
+                        <Package className="text-blue-500" /> Listo para Empacar / Despachar ({myPendingDispatch.length})
+                      </h4>
+                      {myPendingDispatch.map((tx: any) => {
+                        const product = db.products.find((p: any) => p.id === tx.productId);
+                        const assignedRider = tx.assignedRiderId ? db.riders?.find((r: any) => r.id === tx.assignedRiderId) : null;
+                        return (
+                          <div key={tx.id} className="flex flex-col p-5 bg-blue-50 rounded-2xl border border-blue-100 shadow-sm gap-4 animate-fade-in">
+                            <div className="flex justify-between items-start flex-wrap gap-2">
+                              <div>
+                                <span className="bg-blue-200 text-blue-800 text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-wider mb-2 inline-block">Pago Aprobado</span>
+                                <h4 className="font-bold text-[#0A1128]">{product?.name || "Producto Desconocido"}</h4>
+                                <p className="text-sm text-gray-600 font-mono mt-1">Teléfono: <span className="font-bold">{tx.customerPhone}</span></p>
+                              </div>
+                              <div className="flex gap-2">
+                                <button onClick={() => { dispatchOrder(tx.id); assignDeliveryToOrder(tx.id, currentUser.id); }} className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md text-sm">
+                                  <Truck size={16} /> Despachar + Asignar Rider
+                                </button>
+                              </div>
+                            </div>
+                            {assignedRider && (
+                              <div className="bg-green-50 border border-green-200 rounded-xl p-3">
+                                <p className="text-[10px] text-green-600 font-black uppercase tracking-wider mb-1">🛵 Rider Asignado — El cliente paga $2 directamente</p>
+                                <p className="font-bold text-sm text-[#0A1128]">{assignedRider.name}</p>
+                                {assignedRider.pagoMovil?.banco && (
+                                  <p className="text-xs text-gray-600 mt-0.5">💳 {assignedRider.pagoMovil.banco} · {assignedRider.pagoMovil.telefono} · CI {assignedRider.pagoMovil.cedula}</p>
+                                )}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+
+                      {/* My Riders Section */}
+                      {(() => {
+                        const myRiders = (db.riders || []).filter((r: any) => (r.associatedBusinesses || []).includes(currentUser.id));
+                        const availableRiders = (db.riders || []).filter((r: any) => r.status === "approved" && !(r.associatedBusinesses || []).includes(currentUser.id) && (r.associatedBusinesses || []).length < 2);
+                        return (
+                          <div className="bg-white border border-blue-100 rounded-2xl p-5 mt-4">
+                            <h4 className="font-black text-[#0A1128] text-sm mb-3 flex items-center gap-2">
+                              <Truck size={16} className="text-blue-500" /> Mis Riders ({myRiders.length}/2)
+                            </h4>
+                            {myRiders.length === 0 ? (
+                              <p className="text-xs text-gray-400 italic">No tienes riders asignados. Añade un rider aprobado abajo.</p>
+                            ) : (
+                              <div className="space-y-2 mb-3">
+                                {myRiders.map((r: any) => (
+                                  <div key={r.id} className="flex items-center justify-between bg-blue-50 rounded-xl p-3">
+                                    <div>
+                                      <p className="font-black text-sm text-[#0A1128]">{r.name}</p>
+                                      <p className="text-[10px] text-gray-500">{r.pagoMovil?.banco ? `PM: ${r.pagoMovil.banco}` : "Sin Pago Móvil"}</p>
+                                    </div>
+                                    <button onClick={() => removeRiderFromBusiness(r.id, currentUser.id)} className="text-[10px] text-red-500 hover:text-red-700 font-bold cursor-pointer px-2 py-1 rounded-lg hover:bg-red-50">Quitar</button>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                            {myRiders.length < 2 && availableRiders.length > 0 && (
+                              <div>
+                                <p className="text-[10px] font-black text-gray-500 uppercase tracking-wider mb-2">Riders disponibles para asignar:</p>
+                                <div className="space-y-1">
+                                  {availableRiders.slice(0, 5).map((r: any) => (
+                                    <button key={r.id} onClick={() => assignRiderToBusiness(r.id, currentUser.id)} className="w-full text-left px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl hover:bg-blue-50 hover:border-blue-200 transition-colors cursor-pointer">
+                                      <span className="font-bold text-sm text-[#0A1128]">{r.name}</span>
+                                      <span className="text-[10px] text-gray-400 ml-2">{r.email}</span>
+                                      <span className="float-right text-[10px] text-blue-500 font-black">+ Añadir</span>
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })()}
+                    </div>
+                  )}
+
+                  {/* Columna Derecha: Conciliador SMS Real */}
+                  <div className="bg-[#0A1128] border border-[#C5A184]/20 rounded-3xl p-6 text-[#F8F9FA] relative overflow-hidden shadow-xl flex flex-col justify-between text-left">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#C5A184]/5 rounded-full blur-2xl pointer-events-none"></div>
+                    <div>
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-2.5 rounded-xl bg-[#C5A184]/15 text-[#C5A184]">
+                          <Bell size={20} className="animate-pulse" />
+                        </div>
+                        <div>
+                          <h4 className="font-black text-sm tracking-wide">CONCILIADOR SMS</h4>
+                          <p className="text-[9px] text-[#C5A184] font-mono uppercase tracking-widest">Tecnología Inteligente KFS</p>
+                        </div>
+                      </div>
+
+                      <p className="text-[11px] text-gray-300 mb-4 leading-relaxed">
+                        Pega el SMS de Pago Móvil, Zinli o AirTM. El motor KFS extraerá la referencia y el monto para conciliar y liberar la orden al instante sin intervención manual.
+                      </p>
+
+                      <textarea
+                        placeholder="Pega el mensaje de texto bancario recibido aquí..."
+                        value={smsInput}
+                        onChange={(e) => setSmsInput(e.target.value)}
+                        className="w-full h-24 bg-black/40 border border-white/10 rounded-xl p-3 text-xs font-mono text-gray-200 focus:outline-none focus:border-[#C5A184] placeholder:text-gray-600 resize-none leading-relaxed"
+                      />
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={handleManualSmsConciliation}
+                      className="w-full mt-4 py-3 rounded-xl font-black text-xs text-[#0A1128] bg-[#C5A184] hover:bg-[#b08e72] transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
+                    >
+                      ⚡ Conciliar SMS Real
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
+              <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2">Registro de Egresos Operativos</h3>
+              <div className="space-y-3">
+                {myExpenses.map((e: any) => (
+                  <div key={e.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <span className="font-bold text-[#0A1128]">{e.description}</span>
+                    <span className="text-red-500 font-black">-{formatUSD(e.amountUSD)}</span>
+                  </div>
+                ))}
+                {myExpenses.length === 0 && <p className="text-sm text-gray-400 text-center py-4">No hay egresos registrados.</p>}
+              </div>
+            </div>
+
+            {/* Módulos Fase 15 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+              {/* Low Stock Widget */}
+              <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-red-100 bg-red-50/20">
+                <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2 text-red-500">
+                  <Activity className="text-red-500" /> Alertas de Inventario
+                </h3>
+                <div className="space-y-3">
+                  {lowStockProducts.map((p: any) => (
+                    <div key={p.id} className="flex justify-between items-center p-4 bg-white rounded-2xl border border-red-100 shadow-sm">
+                      <div className="flex flex-col">
+                        <span className="font-bold text-[#0A1128]">{p.name} <span className="text-[10px] font-black text-white bg-green-500 px-2 py-0.5 rounded-full ml-2">Alerta Verde</span></span>
+                        <span className="text-xs text-red-500 font-black">{p.stock} unidades restantes</span>
+                      </div>
+                      <button onClick={() => window.open(`https://wa.me/?text=Hola,%20necesito%20reabastecer:%20${p.name}`, '_blank')} className="text-xs font-bold bg-green-100 text-green-700 px-3 py-2 rounded-lg hover:bg-green-200 transition-colors cursor-pointer">Reabastecer</button>
+                    </div>
+                  ))}
+                  {stagnantProducts.map((p: any) => (
+                    <div key={`stg-${p.id}`} className="flex justify-between items-center p-4 bg-red-50 rounded-2xl border border-red-200 shadow-sm">
+                      <div className="flex flex-col">
+                        <span className="font-bold text-[#0A1128]">{p.name} <span className="text-[10px] font-black text-white bg-red-500 px-2 py-0.5 rounded-full ml-2">Alerta Roja</span></span>
+                        <span className="text-xs text-red-500 font-black">Estancado (&gt;15 días sin ventas)</span>
+                      </div>
+                      <button onClick={() => showToast(`Iniciando campaña de Retargeting forzado para ${p.name}...`)} className="text-xs font-bold bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors cursor-pointer">Forzar Descuento</button>
+                    </div>
+                  ))}
+                  {lowStockProducts.length === 0 && stagnantProducts.length === 0 && <p className="text-sm text-gray-400 font-bold">El inventario está estable.</p>}
+                </div>
+              </div>
+
+              {/* CRM Widget */}
+              <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                  <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2 text-[#C5A184]">
+                    <Users className="text-[#C5A184]" /> Clientes Frecuentes (CRM)
+                  </h3>
+                  <div className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100">
+                    <span className="text-xs font-bold text-gray-600">Programa Fidelidad KFS</span>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input type="checkbox" checked={currentUser.loyaltyProgramActive || false} onChange={e => toggleLoyaltyProgram(currentUser.id, e.target.checked)} className="sr-only peer" />
+                      <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#C5A184]"></div>
+                    </label>
+                  </div>
+                </div>
+                <div className="space-y-3">
+                  {myCrm.map((c: any) => (
+                    <div key={c.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-gray-50 rounded-2xl border border-gray-100 gap-4">
+                      <div className="flex flex-col">
+                        <span className="font-bold text-[#0A1128] font-mono">{c.phone} {c.name && <span className="text-gray-500 font-sans font-medium text-xs ml-1">({c.name})</span>}</span>
+                        <span className="text-xs text-gray-500">{c.purchasesCount} compras registradas</span>
+                      </div>
+                      <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+                        <div className="text-right">
+                          <span className="text-green-600 font-black block">{formatUSD(c.totalSpent)}</span>
+                          {c.kfsPoints > 0 && <span className="text-[10px] font-bold text-[#C5A184] bg-[#C5A184]/10 px-2 py-0.5 rounded-full">{c.kfsPoints.toFixed(1)} KFS Pts</span>}
+                        </div>
+                        <a
+                          href={`https://wa.me/58${c.phone.replace(/^0+/, '').replace(/[^0-9]/g, '')}?text=Hola ${c.name || ''}, ¡Te extrañamos en ${currentUser.company}! 🎁 Tienes puntos acumulados por tus compras.`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="bg-[#0A1128] text-white p-2 rounded-xl hover:bg-gray-800 transition-colors shadow-sm flex items-center justify-center"
+                          title="Re-Marketing (WhatsApp)"
+                        >
+                          <Users size={16} />
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                  {myCrm.length === 0 && <p className="text-sm text-gray-400 font-bold">Sin clientes registrados con teléfono.</p>}
+                </div>
+              </div>
+            </div>
+
+            {/* Z-Reports Widget */}
+            {myZReports.length > 0 && (
+              <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
+                <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2">
+                  <Lock className="text-[#0A1128]" /> Cortes de Caja (Reportes Z)
+                </h3>
+                <div className="space-y-3">
+                  {myZReports.map((z: any) => {
+                    const vendedor = myVendedores.find((v: any) => v.id === z.vendedorId);
+                    return (
+                      <div key={z.id} className="flex justify-between items-center p-5 bg-gray-50 rounded-2xl border border-gray-200">
+                        <div className="flex flex-col">
+                          <span className="font-black text-[#0A1128] uppercase tracking-wider text-sm">{vendedor?.name || "Vendedor"} - {new Date(z.timestamp).toLocaleDateString()}</span>
+                          <span className="text-xs text-gray-500">{z.txCount} transacciones procesadas</span>
+                        </div>
+                        <span className="font-black text-xl text-[#0A1128]">{formatUSD(z.totalUSD)}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            <div>
+              <h3 className="font-black text-xl text-[#0A1128] mb-6 pl-2">Inventario en Flow Express</h3>
+              <div className="grid grid-cols-1 min-[400px]:grid-cols-2 md:grid-cols-4 gap-4">
+                {myProducts.map((p: any) => {
+                  const hasCost = p.costUSD !== undefined && p.costUSD > 0;
+                  const margin = hasCost ? ((p.priceUSD - p.costUSD) / p.priceUSD) * 100 : 0;
+                  const recPrice = hasCost ? p.costUSD / 0.65 : 0;
+                  const marginVulnerable = hasCost && p.priceUSD < recPrice - 0.01;
+
+                  return (
+                    <div key={p.id} className={`bg-white rounded-2xl shadow-sm overflow-hidden border transition-all ${marginVulnerable ? "border-red-200 shadow-[0_0_15px_rgba(239,68,68,0.05)]" : "border-gray-100"}`}>
+                      <div className="h-40 bg-gray-100 w-full overflow-hidden relative">
+                        <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                        {marginVulnerable && (
+                          <span className="absolute top-2 left-2 bg-red-600 text-white font-black text-[8px] uppercase tracking-widest px-2.5 py-1 rounded-full animate-pulse shadow-md">
+                            ⚠️ Margen Vulnerado
+                          </span>
+                        )}
+                        <button
+                          onClick={() => toggleProductFeatured(p.id, !p.isFeatured)}
+                          className="absolute top-2 right-2 bg-white/80 backdrop-blur-sm p-1.5 rounded-full hover:bg-white transition-colors shadow-sm cursor-pointer"
+                          title={p.isFeatured ? "Quitar de Destacados" : "Marcar como Estrella"}
+                        >
+                          <Star size={16} className={p.isFeatured ? "fill-yellow-400 text-yellow-500" : "text-gray-400"} />
+                        </button>
+                      </div>
+                      <div className="p-4 space-y-3">
+                        <div>
+                          <h4 className="font-bold text-sm truncate text-[#0A1128] mb-0.5">{p.name}</h4>
+                          <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{p.category || "General"}</span>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-1 bg-gray-50 p-2.5 rounded-xl border border-gray-100 text-[10px] font-mono leading-tight">
+                          <div className="flex flex-col text-gray-500">
+                            <span>Costo:</span>
+                            <span className="text-[#0A1128] font-bold">{hasCost ? formatUSD(p.costUSD) : "N/D"}</span>
+                          </div>
+                          <div className="flex flex-col text-gray-500 text-right">
+                            <span>Margen:</span>
+                            <span className={`font-black ${margin >= 35 ? "text-green-600" : margin > 0 ? "text-orange-500 animate-pulse" : "text-gray-400"}`}>
+                              {hasCost ? `${margin.toFixed(1)}%` : "N/D"}
+                            </span>
+                          </div>
+                        </div>
+
+                        {marginVulnerable && (
+                          <div className="bg-red-50/50 border border-red-100 p-2 rounded-lg text-center space-y-1.5">
+                            <p className="text-[9px] font-bold text-red-600">Sugerido KFS: <span className="font-black text-xs">{formatUSD(recPrice)}</span></p>
+                            <button
+                              onClick={() => shieldMargin(p.id, recPrice)}
+                              className="w-full py-1.5 bg-red-600 hover:bg-red-700 text-white text-[9px] font-black uppercase tracking-widest rounded-md shadow transition-colors cursor-pointer"
+                            >
+                              🛡️ Blindar Margen
+                            </button>
+                          </div>
+                        )}
+
+                        <div className="flex justify-between items-center pt-1 border-t border-gray-100 mt-2">
+                          <div>
+                            <p className="text-[#0A1128] font-black text-sm">{formatUSD(p.priceUSD)}</p>
+                            <p className="text-[10px] font-bold text-gray-500">Bs. {(p.priceUSD * (rates?.USD || 36.45)).toFixed(2)}</p>
+                          </div>
+                          <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${p.stock && p.stock > 0 ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
+                            {p.stock && p.stock > 0 ? `${p.stock} unids` : "Agotado"}
+                          </span>
                         </div>
                       </div>
                     </div>
                   );
                 })}
-              </div>
-
-              {/* Columna Centro: Órdenes por Despachar */}
-              {myPendingDispatch.length > 0 && (
-                <div className="lg:col-span-2 space-y-4 mt-8 lg:mt-0 lg:border-t-0 border-t border-orange-100 pt-8 lg:pt-0">
-                  <h4 className="font-bold text-[#0A1128] mb-4 flex items-center gap-2">
-                    <Package className="text-blue-500" /> Listo para Empacar / Despachar ({myPendingDispatch.length})
-                  </h4>
-                  {myPendingDispatch.map((tx: any) => {
-                    const product = db.products.find((p: any) => p.id === tx.productId);
-                    const assignedRider = tx.assignedRiderId ? db.riders?.find((r: any) => r.id === tx.assignedRiderId) : null;
-                    return (
-                      <div key={tx.id} className="flex flex-col p-5 bg-blue-50 rounded-2xl border border-blue-100 shadow-sm gap-4 animate-fade-in">
-                        <div className="flex justify-between items-start flex-wrap gap-2">
-                          <div>
-                            <span className="bg-blue-200 text-blue-800 text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-wider mb-2 inline-block">Pago Aprobado</span>
-                            <h4 className="font-bold text-[#0A1128]">{product?.name || "Producto Desconocido"}</h4>
-                            <p className="text-sm text-gray-600 font-mono mt-1">Teléfono: <span className="font-bold">{tx.customerPhone}</span></p>
-                          </div>
-                          <div className="flex gap-2">
-                            <button onClick={() => { dispatchOrder(tx.id); assignDeliveryToOrder(tx.id, currentUser.id); }} className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md text-sm">
-                              <Truck size={16} /> Despachar + Asignar Rider
-                            </button>
-                          </div>
-                        </div>
-                        {assignedRider && (
-                          <div className="bg-green-50 border border-green-200 rounded-xl p-3">
-                            <p className="text-[10px] text-green-600 font-black uppercase tracking-wider mb-1">🛵 Rider Asignado — El cliente paga $2 directamente</p>
-                            <p className="font-bold text-sm text-[#0A1128]">{assignedRider.name}</p>
-                            {assignedRider.pagoMovil?.banco && (
-                              <p className="text-xs text-gray-600 mt-0.5">💳 {assignedRider.pagoMovil.banco} · {assignedRider.pagoMovil.telefono} · CI {assignedRider.pagoMovil.cedula}</p>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                  
-                  {/* My Riders Section */}
-                  {(() => {
-                    const myRiders = (db.riders || []).filter((r: any) => (r.associatedBusinesses || []).includes(currentUser.id));
-                    const availableRiders = (db.riders || []).filter((r: any) => r.status === "approved" && !(r.associatedBusinesses || []).includes(currentUser.id) && (r.associatedBusinesses || []).length < 2);
-                    return (
-                      <div className="bg-white border border-blue-100 rounded-2xl p-5 mt-4">
-                        <h4 className="font-black text-[#0A1128] text-sm mb-3 flex items-center gap-2">
-                          <Truck size={16} className="text-blue-500" /> Mis Riders ({myRiders.length}/2)
-                        </h4>
-                        {myRiders.length === 0 ? (
-                          <p className="text-xs text-gray-400 italic">No tienes riders asignados. Añade un rider aprobado abajo.</p>
-                        ) : (
-                          <div className="space-y-2 mb-3">
-                            {myRiders.map((r: any) => (
-                              <div key={r.id} className="flex items-center justify-between bg-blue-50 rounded-xl p-3">
-                                <div>
-                                  <p className="font-black text-sm text-[#0A1128]">{r.name}</p>
-                                  <p className="text-[10px] text-gray-500">{r.pagoMovil?.banco ? `PM: ${r.pagoMovil.banco}` : "Sin Pago Móvil"}</p>
-                                </div>
-                                <button onClick={() => removeRiderFromBusiness(r.id, currentUser.id)} className="text-[10px] text-red-500 hover:text-red-700 font-bold cursor-pointer px-2 py-1 rounded-lg hover:bg-red-50">Quitar</button>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                        {myRiders.length < 2 && availableRiders.length > 0 && (
-                          <div>
-                            <p className="text-[10px] font-black text-gray-500 uppercase tracking-wider mb-2">Riders disponibles para asignar:</p>
-                            <div className="space-y-1">
-                              {availableRiders.slice(0, 5).map((r: any) => (
-                                <button key={r.id} onClick={() => assignRiderToBusiness(r.id, currentUser.id)} className="w-full text-left px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl hover:bg-blue-50 hover:border-blue-200 transition-colors cursor-pointer">
-                                  <span className="font-bold text-sm text-[#0A1128]">{r.name}</span>
-                                  <span className="text-[10px] text-gray-400 ml-2">{r.email}</span>
-                                  <span className="float-right text-[10px] text-blue-500 font-black">+ Añadir</span>
-                                </button>
-                              ))}
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })()}
-                </div>
-              )}
-
-              {/* Columna Derecha: Conciliador SMS Real */}
-              <div className="bg-[#0A1128] border border-[#C5A184]/20 rounded-3xl p-6 text-[#F8F9FA] relative overflow-hidden shadow-xl flex flex-col justify-between text-left">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[#C5A184]/5 rounded-full blur-2xl pointer-events-none"></div>
-                <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="p-2.5 rounded-xl bg-[#C5A184]/15 text-[#C5A184]">
-                      <Bell size={20} className="animate-pulse" />
-                    </div>
-                    <div>
-                      <h4 className="font-black text-sm tracking-wide">CONCILIADOR SMS</h4>
-                      <p className="text-[9px] text-[#C5A184] font-mono uppercase tracking-widest">Tecnología Inteligente KFS</p>
-                    </div>
-                  </div>
-                  
-                  <p className="text-[11px] text-gray-300 mb-4 leading-relaxed">
-                    Pega el SMS de Pago Móvil, Zinli o AirTM. El motor KFS extraerá la referencia y el monto para conciliar y liberar la orden al instante sin intervención manual.
-                  </p>
-                  
-                  <textarea 
-                    placeholder="Pega el mensaje de texto bancario recibido aquí..."
-                    value={smsInput}
-                    onChange={(e) => setSmsInput(e.target.value)}
-                    className="w-full h-24 bg-black/40 border border-white/10 rounded-xl p-3 text-xs font-mono text-gray-200 focus:outline-none focus:border-[#C5A184] placeholder:text-gray-600 resize-none leading-relaxed"
-                  />
-                </div>
-                
-                <button 
-                  type="button" 
-                  onClick={handleManualSmsConciliation}
-                  className="w-full mt-4 py-3 rounded-xl font-black text-xs text-[#0A1128] bg-[#C5A184] hover:bg-[#b08e72] transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
-                >
-                  ⚡ Conciliar SMS Real
-                </button>
+                {myProducts.length === 0 && <div className="col-span-2 md:col-span-4 text-center py-10 bg-white rounded-2xl text-gray-400 font-bold">Catálogo vacío.</div>}
               </div>
             </div>
           </div>
-        )}
-
-        <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
-          <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2">Registro de Egresos Operativos</h3>
-          <div className="space-y-3">
-            {myExpenses.map((e: any) => (
-              <div key={e.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                <span className="font-bold text-[#0A1128]">{e.description}</span>
-                <span className="text-red-500 font-black">-{formatUSD(e.amountUSD)}</span>
-              </div>
-            ))}
-            {myExpenses.length === 0 && <p className="text-sm text-gray-400 text-center py-4">No hay egresos registrados.</p>}
-          </div>
-        </div>
-
-        {/* Módulos Fase 15 */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-          {/* Low Stock Widget */}
-          <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-red-100 bg-red-50/20">
-            <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2 text-red-500">
-              <Activity className="text-red-500" /> Alertas de Inventario
-            </h3>
-            <div className="space-y-3">
-              {lowStockProducts.map((p: any) => (
-                <div key={p.id} className="flex justify-between items-center p-4 bg-white rounded-2xl border border-red-100 shadow-sm">
-                  <div className="flex flex-col">
-                    <span className="font-bold text-[#0A1128]">{p.name} <span className="text-[10px] font-black text-white bg-green-500 px-2 py-0.5 rounded-full ml-2">Alerta Verde</span></span>
-                    <span className="text-xs text-red-500 font-black">{p.stock} unidades restantes</span>
-                  </div>
-                  <button onClick={() => window.open(`https://wa.me/?text=Hola,%20necesito%20reabastecer:%20${p.name}`, '_blank')} className="text-xs font-bold bg-green-100 text-green-700 px-3 py-2 rounded-lg hover:bg-green-200 transition-colors cursor-pointer">Reabastecer</button>
-                </div>
-              ))}
-              {stagnantProducts.map((p: any) => (
-                <div key={`stg-${p.id}`} className="flex justify-between items-center p-4 bg-red-50 rounded-2xl border border-red-200 shadow-sm">
-                  <div className="flex flex-col">
-                    <span className="font-bold text-[#0A1128]">{p.name} <span className="text-[10px] font-black text-white bg-red-500 px-2 py-0.5 rounded-full ml-2">Alerta Roja</span></span>
-                    <span className="text-xs text-red-500 font-black">Estancado (&gt;15 días sin ventas)</span>
-                  </div>
-                  <button onClick={() => showToast(`Iniciando campaña de Retargeting forzado para ${p.name}...`)} className="text-xs font-bold bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors cursor-pointer">Forzar Descuento</button>
-                </div>
-              ))}
-              {lowStockProducts.length === 0 && stagnantProducts.length === 0 && <p className="text-sm text-gray-400 font-bold">El inventario está estable.</p>}
-            </div>
-          </div>
-
-          {/* CRM Widget */}
-          <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-              <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2 text-[#C5A184]">
-                <Users className="text-[#C5A184]" /> Clientes Frecuentes (CRM)
-              </h3>
-              <div className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100">
-                <span className="text-xs font-bold text-gray-600">Programa Fidelidad KFS</span>
-                <label className="relative inline-flex items-center cursor-pointer">
-                  <input type="checkbox" checked={currentUser.loyaltyProgramActive || false} onChange={e => toggleLoyaltyProgram(currentUser.id, e.target.checked)} className="sr-only peer" />
-                  <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#C5A184]"></div>
-                </label>
-              </div>
-            </div>
-            <div className="space-y-3">
-              {myCrm.map((c: any) => (
-                <div key={c.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-gray-50 rounded-2xl border border-gray-100 gap-4">
-                  <div className="flex flex-col">
-                    <span className="font-bold text-[#0A1128] font-mono">{c.phone} {c.name && <span className="text-gray-500 font-sans font-medium text-xs ml-1">({c.name})</span>}</span>
-                    <span className="text-xs text-gray-500">{c.purchasesCount} compras registradas</span>
-                  </div>
-                  <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
-                    <div className="text-right">
-                      <span className="text-green-600 font-black block">{formatUSD(c.totalSpent)}</span>
-                      {c.kfsPoints > 0 && <span className="text-[10px] font-bold text-[#C5A184] bg-[#C5A184]/10 px-2 py-0.5 rounded-full">{c.kfsPoints.toFixed(1)} KFS Pts</span>}
-                    </div>
-                    <a 
-                      href={`https://wa.me/58${c.phone.replace(/^0+/, '').replace(/[^0-9]/g, '')}?text=Hola ${c.name || ''}, ¡Te extrañamos en ${currentUser.company}! 🎁 Tienes puntos acumulados por tus compras.`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="bg-[#0A1128] text-white p-2 rounded-xl hover:bg-gray-800 transition-colors shadow-sm flex items-center justify-center"
-                      title="Re-Marketing (WhatsApp)"
-                    >
-                      <Users size={16} />
-                    </a>
-                  </div>
-                </div>
-              ))}
-              {myCrm.length === 0 && <p className="text-sm text-gray-400 font-bold">Sin clientes registrados con teléfono.</p>}
-            </div>
-          </div>
-        </div>
-
-        {/* Z-Reports Widget */}
-        {myZReports.length > 0 && (
-          <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
-            <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2">
-              <Lock className="text-[#0A1128]" /> Cortes de Caja (Reportes Z)
-            </h3>
-            <div className="space-y-3">
-              {myZReports.map((z: any) => {
-                const vendedor = myVendedores.find((v:any) => v.id === z.vendedorId);
-                return (
-                  <div key={z.id} className="flex justify-between items-center p-5 bg-gray-50 rounded-2xl border border-gray-200">
-                    <div className="flex flex-col">
-                      <span className="font-black text-[#0A1128] uppercase tracking-wider text-sm">{vendedor?.name || "Vendedor"} - {new Date(z.timestamp).toLocaleDateString()}</span>
-                      <span className="text-xs text-gray-500">{z.txCount} transacciones procesadas</span>
-                    </div>
-                    <span className="font-black text-xl text-[#0A1128]">{formatUSD(z.totalUSD)}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        )}
-
-        <div>
-          <h3 className="font-black text-xl text-[#0A1128] mb-6 pl-2">Inventario en Flow Express</h3>
-          <div className="grid grid-cols-1 min-[400px]:grid-cols-2 md:grid-cols-4 gap-4">
-            {myProducts.map((p: any) => {
-              const hasCost = p.costUSD !== undefined && p.costUSD > 0;
-              const margin = hasCost ? ((p.priceUSD - p.costUSD) / p.priceUSD) * 100 : 0;
-              const recPrice = hasCost ? p.costUSD / 0.65 : 0;
-              const marginVulnerable = hasCost && p.priceUSD < recPrice - 0.01;
-
-              return (
-                <div key={p.id} className={`bg-white rounded-2xl shadow-sm overflow-hidden border transition-all ${marginVulnerable ? "border-red-200 shadow-[0_0_15px_rgba(239,68,68,0.05)]" : "border-gray-100"}`}>
-                  <div className="h-40 bg-gray-100 w-full overflow-hidden relative">
-                    <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
-                    {marginVulnerable && (
-                      <span className="absolute top-2 left-2 bg-red-600 text-white font-black text-[8px] uppercase tracking-widest px-2.5 py-1 rounded-full animate-pulse shadow-md">
-                        ⚠️ Margen Vulnerado
-                      </span>
-                    )}
-                    <button 
-                      onClick={() => toggleProductFeatured(p.id, !p.isFeatured)} 
-                      className="absolute top-2 right-2 bg-white/80 backdrop-blur-sm p-1.5 rounded-full hover:bg-white transition-colors shadow-sm cursor-pointer"
-                      title={p.isFeatured ? "Quitar de Destacados" : "Marcar como Estrella"}
-                    >
-                      <Star size={16} className={p.isFeatured ? "fill-yellow-400 text-yellow-500" : "text-gray-400"} />
-                    </button>
-                  </div>
-                  <div className="p-4 space-y-3">
-                    <div>
-                      <h4 className="font-bold text-sm truncate text-[#0A1128] mb-0.5">{p.name}</h4>
-                      <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{p.category || "General"}</span>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-1 bg-gray-50 p-2.5 rounded-xl border border-gray-100 text-[10px] font-mono leading-tight">
-                      <div className="flex flex-col text-gray-500">
-                        <span>Costo:</span>
-                        <span className="text-[#0A1128] font-bold">{hasCost ? formatUSD(p.costUSD) : "N/D"}</span>
-                      </div>
-                      <div className="flex flex-col text-gray-500 text-right">
-                        <span>Margen:</span>
-                        <span className={`font-black ${margin >= 35 ? "text-green-600" : margin > 0 ? "text-orange-500 animate-pulse" : "text-gray-400"}`}>
-                          {hasCost ? `${margin.toFixed(1)}%` : "N/D"}
-                        </span>
-                      </div>
-                    </div>
-
-                    {marginVulnerable && (
-                      <div className="bg-red-50/50 border border-red-100 p-2 rounded-lg text-center space-y-1.5">
-                        <p className="text-[9px] font-bold text-red-600">Sugerido KFS: <span className="font-black text-xs">{formatUSD(recPrice)}</span></p>
-                        <button 
-                          onClick={() => shieldMargin(p.id, recPrice)} 
-                          className="w-full py-1.5 bg-red-600 hover:bg-red-700 text-white text-[9px] font-black uppercase tracking-widest rounded-md shadow transition-colors cursor-pointer"
-                        >
-                          🛡️ Blindar Margen
-                        </button>
-                      </div>
-                    )}
-
-                    <div className="flex justify-between items-center pt-1 border-t border-gray-100 mt-2">
-                      <div>
-                        <p className="text-[#0A1128] font-black text-sm">{formatUSD(p.priceUSD)}</p>
-                        <p className="text-[10px] font-bold text-gray-500">Bs. {(p.priceUSD * (rates?.USD || 36.45)).toFixed(2)}</p>
-                      </div>
-                      <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${p.stock && p.stock > 0 ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
-                        {p.stock && p.stock > 0 ? `${p.stock} unids` : "Agotado"}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
-            {myProducts.length === 0 && <div className="col-span-2 md:col-span-4 text-center py-10 bg-white rounded-2xl text-gray-400 font-bold">Catálogo vacío.</div>}
-          </div>
-          </div>
-        </div>
         )}
 
         {/* Modal Agregar Producto */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl">
-            <h3 className="text-2xl font-black mb-6 text-[#0A1128]">Nuevo Producto</h3>
-            <form onSubmit={submitProduct} className="space-y-4">
-              <div className="flex gap-2">
-                <input type="text" placeholder="Código de Barras (Opcional)" value={newProd.barcode} onChange={e => setNewProd({...newProd, barcode: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-mono text-gray-900" />
-                <button type="button" onClick={() => handleBarcodeSearch(newProd.barcode)} disabled={isFetchingBarcode} className="bg-[#0A1128] text-white px-4 rounded-xl font-bold flex-shrink-0 disabled:opacity-50">
-                  <Search size={18} />
-                </button>
-              </div>
-              <input required type="text" placeholder="Nombre del Artículo" value={newProd.name} onChange={e => setNewProd({...newProd, name: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-bold text-gray-900" />
-              <div className="grid grid-cols-3 gap-2">
-                <div>
-                  <label className="text-[9px] font-black uppercase text-gray-400 block mb-1">Costo Insumo</label>
-                  <input required type="number" step="0.01" placeholder="Costo ($)" value={newProd.cost} onChange={e => setNewProd({...newProd, cost: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-bold text-gray-900" />
+        {showAddModal && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl">
+              <h3 className="text-2xl font-black mb-6 text-[#0A1128]">Nuevo Producto</h3>
+              <form onSubmit={submitProduct} className="space-y-4">
+                <div className="flex gap-2">
+                  <input type="text" placeholder="Código de Barras (Opcional)" value={newProd.barcode} onChange={e => setNewProd({ ...newProd, barcode: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-mono text-gray-900" />
+                  <button type="button" onClick={() => handleBarcodeSearch(newProd.barcode)} disabled={isFetchingBarcode} className="bg-[#0A1128] text-white px-4 rounded-xl font-bold flex-shrink-0 disabled:opacity-50">
+                    <Search size={18} />
+                  </button>
                 </div>
-                <div>
-                  <label className="text-[9px] font-black uppercase text-gray-400 block mb-1">Precio Venta</label>
-                  <input required type="number" step="0.01" placeholder="Precio ($)" value={newProd.price} onChange={e => setNewProd({...newProd, price: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-black text-gray-900 text-center" />
-                </div>
-                <div>
-                  <label className="text-[9px] font-black uppercase text-gray-400 block mb-1">Stock</label>
-                  <input required type="number" placeholder="Cant" value={newProd.stock} onChange={e => setNewProd({...newProd, stock: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-bold text-gray-900 text-center" />
-                </div>
-              </div>
-              <select value={newProd.category} onChange={e => setNewProd({...newProd, category: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-bold text-gray-900">
-                <option value="Alimentos">Alimentos y Bebidas</option>
-                <option value="Ropa y Calzado">Ropa y Calzado</option>
-                <option value="Tecnología">Tecnología y Electrónica</option>
-                <option value="Salud y Belleza">Salud y Belleza</option>
-                <option value="Hogar">Hogar y Muebles</option>
-                <option value="Servicios">Servicios Generales</option>
-              </select>
-              <textarea placeholder="Descripción del producto (Opcional)" value={newProd.description} onChange={e => setNewProd({...newProd, description: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-medium text-gray-900 text-sm h-20 resize-none" />
-              <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 cursor-pointer relative transition-colors">
-                <input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-                {newProd.imgUrl ? (
-                   <img src={newProd.imgUrl} className="mx-auto h-32 object-cover rounded-lg shadow-md" alt="Preview" />
-                ) : (
-                  <div className="flex flex-col items-center text-gray-400">
-                    <Camera size={40} className="mb-3" />
-                    <span className="text-sm font-bold">Tocar para seleccionar de Galería</span>
+                <input required type="text" placeholder="Nombre del Artículo" value={newProd.name} onChange={e => setNewProd({ ...newProd, name: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-bold text-gray-900" />
+                <div className="grid grid-cols-3 gap-2">
+                  <div>
+                    <label className="text-[9px] font-black uppercase text-gray-400 block mb-1">Costo Insumo</label>
+                    <input required type="number" step="0.01" placeholder="Costo ($)" value={newProd.cost} onChange={e => setNewProd({ ...newProd, cost: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-bold text-gray-900" />
                   </div>
-                )}
-              </div>
-              <div className="flex gap-3 pt-4">
-                <button type="button" onClick={() => setShowAddModal(false)} className="w-1/3 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 cursor-pointer">Cancelar</button>
-                <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-[#0A1128] bg-[#C5A184] shadow-lg cursor-pointer">Publicar</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Modal Agregar Vendedor */}
-      {showAddVendedor && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl">
-            <h3 className="text-2xl font-black mb-6 text-[#0A1128]">Nuevo Empleado</h3>
-            <form onSubmit={handleAddVendedor} className="space-y-4">
-              <div className="flex flex-col items-center gap-2 mb-4">
-                <label className="relative w-16 h-16 rounded-full border-2 border-dashed border-gray-300 cursor-pointer overflow-hidden flex items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors group">
-                  <input type="file" accept="image/*" className="hidden" onChange={async e => {
-                    const file = e.target.files?.[0];
-                    if (file) {
-                      try {
-                        const base64String = await compressImage(file, 200, 0.6);
-                        setNewVendedor(prev => ({ ...prev, avatar: base64String }));
-                      } catch (error) {
-                        // ignore error or showToast if available in scope
-                      }
-                    }
-                  }} />
-                  {newVendedor.avatar ? (
-                    <img src={newVendedor.avatar} className="w-full h-full object-cover" alt="Avatar" />
+                  <div>
+                    <label className="text-[9px] font-black uppercase text-gray-400 block mb-1">Precio Venta</label>
+                    <input required type="number" step="0.01" placeholder="Precio ($)" value={newProd.price} onChange={e => setNewProd({ ...newProd, price: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-black text-gray-900 text-center" />
+                  </div>
+                  <div>
+                    <label className="text-[9px] font-black uppercase text-gray-400 block mb-1">Stock</label>
+                    <input required type="number" placeholder="Cant" value={newProd.stock} onChange={e => setNewProd({ ...newProd, stock: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-bold text-gray-900 text-center" />
+                  </div>
+                </div>
+                <select value={newProd.category} onChange={e => setNewProd({ ...newProd, category: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-bold text-gray-900">
+                  <option value="Alimentos">Alimentos y Bebidas</option>
+                  <option value="Ropa y Calzado">Ropa y Calzado</option>
+                  <option value="Tecnología">Tecnología y Electrónica</option>
+                  <option value="Salud y Belleza">Salud y Belleza</option>
+                  <option value="Hogar">Hogar y Muebles</option>
+                  <option value="Servicios">Servicios Generales</option>
+                </select>
+                <textarea placeholder="Descripción del producto (Opcional)" value={newProd.description} onChange={e => setNewProd({ ...newProd, description: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-medium text-gray-900 text-sm h-20 resize-none" />
+                <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 cursor-pointer relative transition-colors">
+                  <input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                  {newProd.imgUrl ? (
+                    <img src={newProd.imgUrl} className="mx-auto h-32 object-cover rounded-lg shadow-md" alt="Preview" />
                   ) : (
-                    <div className="text-center text-gray-400 group-hover:text-gray-600 transition-colors">
-                      <Camera size={20} className="mx-auto" />
-                      <span className="text-[7px] font-bold block mt-0.5">Foto</span>
+                    <div className="flex flex-col items-center text-gray-400">
+                      <Camera size={40} className="mb-3" />
+                      <span className="text-sm font-bold">Tocar para seleccionar de Galería</span>
                     </div>
                   )}
-                </label>
-                <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Foto del Empleado</span>
-              </div>
-
-              <input required type="text" placeholder="Nombre del Vendedor" value={newVendedor.name} onChange={e => setNewVendedor({...newVendedor, name: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] text-gray-900" />
-              <input required type="email" placeholder="Correo (Usuario de Acceso)" value={newVendedor.email} onChange={e => setNewVendedor({...newVendedor, email: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] text-gray-900" />
-              <input required type="password" placeholder="Clave de Acceso" value={newVendedor.password} onChange={e => setNewVendedor({...newVendedor, password: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] text-gray-900" />
-              <div className="flex gap-3 pt-4">
-                <button type="button" onClick={() => setShowAddVendedor(false)} className="w-1/3 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 cursor-pointer">Cancelar</button>
-                <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-white bg-[#0A1128] shadow-lg cursor-pointer">Crear Acceso</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Modal Agregar Gasto */}
-      {showExpenseModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl">
-            <h3 className="text-2xl font-black mb-6 text-[#0A1128]">Registrar Gasto (Egreso)</h3>
-            <form onSubmit={(e) => {
-              e.preventDefault();
-              addExpense({
-                description: newExpense.description,
-                amountUSD: parseFloat(newExpense.amountUSD) || 0,
-                clientId: currentUser.id
-              });
-              setNewExpense({ description: "", amountUSD: "" });
-              setShowExpenseModal(false);
-            }} className="space-y-4">
-              <input required type="text" placeholder="Concepto (Ej. Alquiler, Proveedor)" value={newExpense.description} onChange={e => setNewExpense({...newExpense, description: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] text-gray-900" />
-              <input required type="number" step="0.01" placeholder="Monto Total (USD)" value={newExpense.amountUSD} onChange={e => setNewExpense({...newExpense, amountUSD: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] text-gray-900" />
-              <div className="flex gap-3 pt-4">
-                <button type="button" onClick={() => setShowExpenseModal(false)} className="w-1/3 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 cursor-pointer">Cancelar</button>
-                <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-white bg-red-600 hover:bg-red-700 shadow-lg cursor-pointer">Descontar Saldo</button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {activeManual && (
-        <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
-          <div className="bg-white text-[#0A1128] rounded-[2rem] w-full max-w-2xl max-h-[85vh] overflow-y-auto relative p-8 shadow-2xl border-4 border-[#0A1128]">
-            <button onClick={() => setActiveManual(null)} className="absolute top-6 right-6 text-gray-500 hover:text-[#0A1128] transition-colors cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200">
-              <X size={20} />
-            </button>
-            
-            {activeManual === 'owner' && (
-              <div>
-                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><BookOpen className="text-[#C5A184]" size={28} /> Manual de Uso del Dueño</h2>
-                <div className="space-y-5 text-gray-700 text-sm leading-relaxed">
-                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">1. ¿Qué es KFS OS?</p>
-                    <p>Es tu centro de comando. Desde aquí controlas tus ventas físicas, tu E-Commerce (Flow Express Marketplace), empleados e inventario en un solo lugar.</p>
-                  </div>
-                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">2. Control de Inventario:</p>
-                    <p>Usa la sección "Inventario" para cargar tus productos. Recomendamos usar código de barras reales (EAN/UPC) para que la búsqueda en caja sea instantánea.</p>
-                  </div>
-                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">3. Control de Empleados (Vendedores):</p>
-                    <p>Crea usuarios y contraseñas temporales para tus cajeros. Ellos accederán desde sus propios dispositivos o la PC de la tienda al panel de Caja Registradora.</p>
-                  </div>
-                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">4. Liquidación y Tarifas:</p>
-                    <p>Tus ganancias netas están en la cima de este panel. La deuda KFS se calcula basada en tu tarifa operativa y debe ser cancelada en los datos de transferencia mostrados abajo.</p>
-                  </div>
                 </div>
-              </div>
-            )}
-            {activeManual === 'benefits' && (
-              <div>
-                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><Star className="text-[#C5A184]" size={28} /> Whitepaper de Beneficios KFS</h2>
-                <div className="space-y-5 text-gray-700 text-sm leading-relaxed">
-                  <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl mb-4">
-                    <p className="font-black text-blue-800 text-xs uppercase tracking-widest mb-1">El Ecosistema Financiero</p>
-                    <p className="text-blue-700 text-xs">Ahorros masivos al eliminar software de terceros obsoleto.</p>
-                  </div>
-                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">1. E-Commerce Flow Express Gratuito:</p>
-                    <p>Tu inventario está conectado en tiempo real al marketplace Flow Express. Cualquier cliente puede comprar online con pago móvil, Zinli, AirTM, Ubbi, Wally o Binance Pay sin comisiones adicionales.</p>
-                  </div>
-                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">2. Sincro-Shield Fiscal Gratuito:</p>
-                    <p>No necesitas pagar licencias anuales a intermediarios. Nuestro proxy conecta tu PC directo a la impresora fiscal bajo las normativas del SENIAT.</p>
-                  </div>
-                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">3. Conciliación Automática SMS:</p>
-                    <p>Si activas la función SMS, el sistema verificará pagos móviles entrantes de forma autónoma. Se acabaron los fraudes de capturas falsas.</p>
-                  </div>
+                <div className="flex gap-3 pt-4">
+                  <button type="button" onClick={() => setShowAddModal(false)} className="w-1/3 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 cursor-pointer">Cancelar</button>
+                  <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-[#0A1128] bg-[#C5A184] shadow-lg cursor-pointer">Publicar</button>
                 </div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-      {showTicketModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-[2rem] max-w-md w-full p-8 space-y-4 shadow-2xl border border-gray-100">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-black text-[#0A1128]">Crear Ticket SOS</h3>
-              <button onClick={() => setShowTicketModal(false)} className="hover:bg-gray-100 p-2 rounded-full cursor-pointer transition-colors"><X size={20} className="text-gray-400"/></button>
-            </div>
-            <p className="text-xs text-gray-500 mb-2">Nuestro equipo técnico y tu promotora asignada recibirán este reporte inmediatamente.</p>
-            <input type="text" placeholder="Asunto (Ej: Lector no lee)" value={ticketSubject} onChange={e=>setTicketSubject(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-[#C5A184]" />
-            <textarea placeholder="Describe el problema..." value={ticketMsg} onChange={e=>setTicketMsg(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 h-32 resize-none focus:outline-none focus:border-[#C5A184]" />
-            <button onClick={() => { if(ticketSubject && ticketMsg) { createTicket(currentUser.id, ticketSubject, ticketMsg); setShowTicketModal(false); } }} className="w-full bg-red-600 text-white font-black py-4 rounded-xl shadow-lg hover:bg-red-700 transition-colors cursor-pointer disabled:opacity-50" disabled={!ticketSubject || !ticketMsg}>
-              Enviar a Soporte Técnico
-            </button>
-          </div>
-        </div>
-      )}
-      {activeScreenshot && (
-        <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
-          <div className="bg-[#0A1128] border border-[#C5A184]/30 rounded-[2.5rem] w-full max-w-lg p-6 shadow-2xl relative flex flex-col items-center">
-            <button onClick={() => setActiveScreenshot(null)} className="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors cursor-pointer bg-white/10 p-2 rounded-full">
-              <X size={20} />
-            </button>
-            <h3 className="text-xl font-black text-[#C5A184] mb-4 text-center">Capture de Transacción</h3>
-            <div className="w-full max-h-[70vh] overflow-auto rounded-2xl border border-white/10 bg-black/40 p-2 flex justify-center items-center">
-              <img src={activeScreenshot} alt="Transaction Capture" className="max-w-full h-auto rounded-xl object-contain" />
+              </form>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* FIXED BOTTOM NAVIGATION */}
-      <div className="fixed bottom-0 inset-x-0 z-40 bg-white/90 backdrop-blur-xl border-t border-gray-200 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pb-safe">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between gap-2 items-center relative">
-          {[
-            { id: "resumen", icon: Activity, label: "Resumen" },
-            { id: "inventario", icon: Package, label: "Inventario" },
-            { id: "personal", icon: Users, label: "Personal" },
-            { id: "config", icon: Settings, label: "Ajustes" }
-          ].map(tab => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button 
-                key={tab.id} 
-                onClick={() => setActiveTab(tab.id)} 
-                className="relative flex flex-col items-center justify-center w-20 h-12 cursor-pointer group"
-              >
-                {isActive && <span className="absolute -top-4 w-12 h-1 bg-[#C5A184] rounded-b-full shadow-[0_4px_10px_rgba(197,161,132,0.5)]" />}
-                <div className={`relative transition-all duration-300 ${isActive ? '-translate-y-2 text-[#0A1128]' : 'text-gray-400 group-hover:text-gray-600'}`}>
-                  <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+        {/* Modal Agregar Vendedor */}
+        {showAddVendedor && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl">
+              <h3 className="text-2xl font-black mb-6 text-[#0A1128]">Nuevo Empleado</h3>
+              <form onSubmit={handleAddVendedor} className="space-y-4">
+                <div className="flex flex-col items-center gap-2 mb-4">
+                  <label className="relative w-16 h-16 rounded-full border-2 border-dashed border-gray-300 cursor-pointer overflow-hidden flex items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors group">
+                    <input type="file" accept="image/*" className="hidden" onChange={async e => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        try {
+                          const base64String = await compressImage(file, 200, 0.6);
+                          setNewVendedor(prev => ({ ...prev, avatar: base64String }));
+                        } catch (error) {
+                          // ignore error or showToast if available in scope
+                        }
+                      }
+                    }} />
+                    {newVendedor.avatar ? (
+                      <img src={newVendedor.avatar} className="w-full h-full object-cover" alt="Avatar" />
+                    ) : (
+                      <div className="text-center text-gray-400 group-hover:text-gray-600 transition-colors">
+                        <Camera size={20} className="mx-auto" />
+                        <span className="text-[7px] font-bold block mt-0.5">Foto</span>
+                      </div>
+                    )}
+                  </label>
+                  <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Foto del Empleado</span>
                 </div>
-                <span className={`text-[9px] font-bold mt-1 transition-all duration-300 ${isActive ? 'opacity-100 text-[#0A1128]' : 'opacity-0 translate-y-2'}`}>{tab.label}</span>
+
+                <input required type="text" placeholder="Nombre del Vendedor" value={newVendedor.name} onChange={e => setNewVendedor({ ...newVendedor, name: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] text-gray-900" />
+                <input required type="email" placeholder="Correo (Usuario de Acceso)" value={newVendedor.email} onChange={e => setNewVendedor({ ...newVendedor, email: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] text-gray-900" />
+                <input required type="password" placeholder="Clave de Acceso" value={newVendedor.password} onChange={e => setNewVendedor({ ...newVendedor, password: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] text-gray-900" />
+                <div className="flex gap-3 pt-4">
+                  <button type="button" onClick={() => setShowAddVendedor(false)} className="w-1/3 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 cursor-pointer">Cancelar</button>
+                  <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-white bg-[#0A1128] shadow-lg cursor-pointer">Crear Acceso</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Modal Agregar Gasto */}
+        {showExpenseModal && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl">
+              <h3 className="text-2xl font-black mb-6 text-[#0A1128]">Registrar Gasto (Egreso)</h3>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                addExpense({
+                  description: newExpense.description,
+                  amountUSD: parseFloat(newExpense.amountUSD) || 0,
+                  clientId: currentUser.id
+                });
+                setNewExpense({ description: "", amountUSD: "" });
+                setShowExpenseModal(false);
+              }} className="space-y-4">
+                <input required type="text" placeholder="Concepto (Ej. Alquiler, Proveedor)" value={newExpense.description} onChange={e => setNewExpense({ ...newExpense, description: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] text-gray-900" />
+                <input required type="number" step="0.01" placeholder="Monto Total (USD)" value={newExpense.amountUSD} onChange={e => setNewExpense({ ...newExpense, amountUSD: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] text-gray-900" />
+                <div className="flex gap-3 pt-4">
+                  <button type="button" onClick={() => setShowExpenseModal(false)} className="w-1/3 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 cursor-pointer">Cancelar</button>
+                  <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-white bg-red-600 hover:bg-red-700 shadow-lg cursor-pointer">Descontar Saldo</button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {activeManual && (
+          <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
+            <div className="bg-white text-[#0A1128] rounded-[2rem] w-full max-w-2xl max-h-[85vh] overflow-y-auto relative p-8 shadow-2xl border-4 border-[#0A1128]">
+              <button onClick={() => setActiveManual(null)} className="absolute top-6 right-6 text-gray-500 hover:text-[#0A1128] transition-colors cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200">
+                <X size={20} />
               </button>
-            )
-          })}
+
+              {activeManual === 'owner' && (
+                <div>
+                  <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><BookOpen className="text-[#C5A184]" size={28} /> Manual de Uso del Dueño</h2>
+                  <div className="space-y-5 text-gray-700 text-sm leading-relaxed">
+                    <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                      <p className="font-black text-[#0A1128] mb-1">1. ¿Qué es KFS OS?</p>
+                      <p>Es tu centro de comando. Desde aquí controlas tus ventas físicas, tu E-Commerce (Flow Express Marketplace), empleados e inventario en un solo lugar.</p>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                      <p className="font-black text-[#0A1128] mb-1">2. Control de Inventario:</p>
+                      <p>Usa la sección "Inventario" para cargar tus productos. Recomendamos usar código de barras reales (EAN/UPC) para que la búsqueda en caja sea instantánea.</p>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                      <p className="font-black text-[#0A1128] mb-1">3. Control de Empleados (Vendedores):</p>
+                      <p>Crea usuarios y contraseñas temporales para tus cajeros. Ellos accederán desde sus propios dispositivos o la PC de la tienda al panel de Caja Registradora.</p>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                      <p className="font-black text-[#0A1128] mb-1">4. Liquidación y Tarifas:</p>
+                      <p>Tus ganancias netas están en la cima de este panel. La deuda KFS se calcula basada en tu tarifa operativa y debe ser cancelada en los datos de transferencia mostrados abajo.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {activeManual === 'benefits' && (
+                <div>
+                  <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><Star className="text-[#C5A184]" size={28} /> Whitepaper de Beneficios KFS</h2>
+                  <div className="space-y-5 text-gray-700 text-sm leading-relaxed">
+                    <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl mb-4">
+                      <p className="font-black text-blue-800 text-xs uppercase tracking-widest mb-1">El Ecosistema Financiero</p>
+                      <p className="text-blue-700 text-xs">Ahorros masivos al eliminar software de terceros obsoleto.</p>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                      <p className="font-black text-[#0A1128] mb-1">1. E-Commerce Flow Express Gratuito:</p>
+                      <p>Tu inventario está conectado en tiempo real al marketplace Flow Express. Cualquier cliente puede comprar online con pago móvil, Zinli, AirTM, Ubbi, Wally o Binance Pay sin comisiones adicionales.</p>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                      <p className="font-black text-[#0A1128] mb-1">2. Sincro-Shield Fiscal Gratuito:</p>
+                      <p>No necesitas pagar licencias anuales a intermediarios. Nuestro proxy conecta tu PC directo a la impresora fiscal bajo las normativas del SENIAT.</p>
+                    </div>
+                    <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                      <p className="font-black text-[#0A1128] mb-1">3. Conciliación Automática SMS:</p>
+                      <p>Si activas la función SMS, el sistema verificará pagos móviles entrantes de forma autónoma. Se acabaron los fraudes de capturas falsas.</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        {showTicketModal && (
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in">
+            <div className="bg-white rounded-[2rem] max-w-md w-full p-8 space-y-4 shadow-2xl border border-gray-100">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-black text-[#0A1128]">Crear Ticket SOS</h3>
+                <button onClick={() => setShowTicketModal(false)} className="hover:bg-gray-100 p-2 rounded-full cursor-pointer transition-colors"><X size={20} className="text-gray-400" /></button>
+              </div>
+              <p className="text-xs text-gray-500 mb-2">Nuestro equipo técnico y tu promotora asignada recibirán este reporte inmediatamente.</p>
+              <input type="text" placeholder="Asunto (Ej: Lector no lee)" value={ticketSubject} onChange={e => setTicketSubject(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-[#C5A184]" />
+              <textarea placeholder="Describe el problema..." value={ticketMsg} onChange={e => setTicketMsg(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 h-32 resize-none focus:outline-none focus:border-[#C5A184]" />
+              <button onClick={() => { if (ticketSubject && ticketMsg) { createTicket(currentUser.id, ticketSubject, ticketMsg); setShowTicketModal(false); } }} className="w-full bg-red-600 text-white font-black py-4 rounded-xl shadow-lg hover:bg-red-700 transition-colors cursor-pointer disabled:opacity-50" disabled={!ticketSubject || !ticketMsg}>
+                Enviar a Soporte Técnico
+              </button>
+            </div>
+          </div>
+        )}
+        {activeScreenshot && (
+          <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
+            <div className="bg-[#0A1128] border border-[#C5A184]/30 rounded-[2.5rem] w-full max-w-lg p-6 shadow-2xl relative flex flex-col items-center">
+              <button onClick={() => setActiveScreenshot(null)} className="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors cursor-pointer bg-white/10 p-2 rounded-full">
+                <X size={20} />
+              </button>
+              <h3 className="text-xl font-black text-[#C5A184] mb-4 text-center">Capture de Transacción</h3>
+              <div className="w-full max-h-[70vh] overflow-auto rounded-2xl border border-white/10 bg-black/40 p-2 flex justify-center items-center">
+                <img src={activeScreenshot} alt="Transaction Capture" className="max-w-full h-auto rounded-xl object-contain" />
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* FIXED BOTTOM NAVIGATION */}
+        <div className="fixed bottom-0 inset-x-0 z-40 bg-white/90 backdrop-blur-xl border-t border-gray-200 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pb-safe">
+          <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between gap-2 items-center relative">
+            {[
+              { id: "resumen", icon: Activity, label: "Resumen" },
+              { id: "inventario", icon: Package, label: "Inventario" },
+              { id: "personal", icon: Users, label: "Personal" },
+              { id: "config", icon: Settings, label: "Ajustes" }
+            ].map(tab => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className="relative flex flex-col items-center justify-center w-20 h-12 cursor-pointer group"
+                >
+                  {isActive && <span className="absolute -top-4 w-12 h-1 bg-[#C5A184] rounded-b-full shadow-[0_4px_10px_rgba(197,161,132,0.5)]" />}
+                  <div className={`relative transition-all duration-300 ${isActive ? '-translate-y-2 text-[#0A1128]' : 'text-gray-400 group-hover:text-gray-600'}`}>
+                    <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+                  </div>
+                  <span className={`text-[9px] font-bold mt-1 transition-all duration-300 ${isActive ? 'opacity-100 text-[#0A1128]' : 'opacity-0 translate-y-2'}`}>{tab.label}</span>
+                </button>
+              )
+            })}
+          </div>
         </div>
-      </div>
 
       </div>
-      
+
       {showPayrollModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
           <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-2xl max-w-md w-full animate-scale-in border border-gray-100">
-            <h3 className="text-xl font-black mb-1 flex items-center gap-2 text-[#0A1128]"><DollarSign className="text-blue-500"/> Liquidación de Nómina</h3>
+            <h3 className="text-xl font-black mb-1 flex items-center gap-2 text-[#0A1128]"><DollarSign className="text-blue-500" /> Liquidación de Nómina</h3>
             <p className="text-xs text-gray-500 mb-6">Empleado: {showPayrollModal.name}</p>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Salario / Comisión Base ($)</label>
@@ -7328,7 +7430,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 <span className="text-[10px] text-orange-600 font-black uppercase tracking-widest block">Vales Pendientes por Descontar</span>
                 {(db.vales || []).filter((v: any) => v.targetId === showPayrollModal.id && v.status === "pending").map((v: any) => (
                   <div key={v.id} className="flex justify-between items-center text-xs text-orange-800">
-                    <span>{v.date.slice(0,10)} - Adelanto</span>
+                    <span>{v.date.slice(0, 10)} - Adelanto</span>
                     <span className="font-bold">-${v.totalDueUSD.toFixed(2)}</span>
                   </div>
                 ))}
@@ -7336,7 +7438,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   <span className="text-xs text-orange-800/60 block">No hay vales pendientes.</span>
                 )}
               </div>
-              
+
               <div className="flex justify-between items-center bg-[#0A1128] p-4 rounded-xl text-white">
                 <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Total Neto a Pagar</span>
                 <span className="text-xl font-black text-[#C5A184]">
@@ -7349,7 +7451,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
               <button onClick={() => { setShowPayrollModal(null); setPayrollBaseSalary(""); }} className="flex-1 px-4 py-3 border border-gray-200 text-gray-600 text-sm font-bold rounded-xl hover:bg-gray-50 transition-colors cursor-pointer">
                 Cancelar
               </button>
-              <button 
+              <button
                 onClick={() => {
                   if (!payrollBaseSalary) {
                     showToast("Ingresa un monto base", "error");
@@ -7358,7 +7460,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   processPayroll(showPayrollModal.id, parseFloat(payrollBaseSalary));
                   setShowPayrollModal(null);
                   setPayrollBaseSalary("");
-                }} 
+                }}
                 className="flex-1 px-4 py-3 bg-[#0A1128] text-[#C5A184] text-sm font-black uppercase tracking-wider rounded-xl hover:bg-gray-800 transition-colors cursor-pointer border border-[#C5A184]/30 shadow-lg"
               >
                 Aprobar Pago
@@ -7400,11 +7502,11 @@ const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }: any) 
       try {
         // Dynamic import to avoid SSR issues
         const { Html5Qrcode } = await import("html5-qrcode");
-        
+
         if (!isComponentMounted) return;
 
         html5QrCode = new Html5Qrcode("kfs-reader");
-        
+
         await html5QrCode.start(
           { facingMode: "environment" },
           {
@@ -7456,14 +7558,14 @@ const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }: any) 
           <X size={24} />
         </button>
         <h3 className="text-xl font-black text-[#C5A184] mb-4 flex items-center gap-2"><QrCode /> Terminal de Escaneo KFS</h3>
-        
+
         {/* Scan Frame */}
         <div id="kfs-reader" className="relative w-full aspect-square bg-black/40 rounded-2xl overflow-hidden border border-white/5 flex flex-col items-center justify-center mb-6">
           {/* Laser animation */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-red-500 animate-pulse border-b-2 border-red-400 z-10 pointer-events-none" style={{ animationDuration: "1.5s", animationIterationCount: "infinite" }} />
-          
+
           <div className="absolute bottom-4 left-4 right-4 bg-black/60 backdrop-blur-sm p-3 rounded-lg text-center z-10 pointer-events-none">
-            <span className="text-[10px] text-gray-300 font-mono flex items-center justify-center gap-1"><Info size={12}/> Buscando QR o Código de Barras...</span>
+            <span className="text-[10px] text-gray-300 font-mono flex items-center justify-center gap-1"><Info size={12} /> Buscando QR o Código de Barras...</span>
           </div>
         </div>
 
@@ -7471,14 +7573,14 @@ const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }: any) 
         <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3">
           <span className="text-[10px] font-black text-[#C5A184] uppercase tracking-widest block font-mono">Entrada Manual de Emergencia</span>
           <div className="flex gap-2 mb-2 border-b border-white/5 pb-2">
-            <button 
+            <button
               type="button"
               onClick={() => setSelectedScanType("product")}
               className={`flex-1 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${selectedScanType === "product" ? "bg-[#C5A184] text-[#0A1128]" : "bg-white/5 text-gray-400"}`}
             >
               📦 Producto
             </button>
-            <button 
+            <button
               type="button"
               onClick={() => setSelectedScanType("cedula")}
               className={`flex-1 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${selectedScanType === "cedula" ? "bg-[#C5A184] text-[#0A1128]" : "bg-white/5 text-gray-400"}`}
@@ -7488,7 +7590,7 @@ const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }: any) 
           </div>
 
           {selectedScanType === "product" ? (
-            <select 
+            <select
               className="w-full bg-[#0A1128] text-white border border-[#C5A184]/30 rounded-xl px-3 py-2.5 text-xs focus:outline-none"
               value={selectedProductToSimulate}
               onChange={(e) => setSelectedProductToSimulate(e.target.value)}
@@ -7499,7 +7601,7 @@ const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }: any) 
               ))}
             </select>
           ) : (
-            <select 
+            <select
               className="w-full bg-[#0A1128] text-white border border-[#C5A184]/30 rounded-xl px-3 py-2.5 text-xs focus:outline-none font-mono"
               value={selectedCedula}
               onChange={(e) => setSelectedCedula(e.target.value)}
@@ -7510,9 +7612,9 @@ const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }: any) 
             </select>
           )}
 
-          <button 
+          <button
             type="button"
-            onClick={handleSimulatedScan} 
+            onClick={handleSimulatedScan}
             className="w-full py-3 bg-[#C5A184] text-[#0A1128] font-black rounded-xl text-xs hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
           >
             ✓ Confirmar e Ingresar Manualmente
@@ -7562,7 +7664,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
         e.preventDefault();
         const scannedCode = barcodeBuffer;
         barcodeBuffer = "";
-        
+
         const product = db.products?.find((p: any) => p.clientId === currentUser.clientId && p.barcode === scannedCode);
         if (product && product.stock > 0) {
           playPremiumChime();
@@ -7576,7 +7678,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
       } else if (e.key.length === 1) {
         barcodeBuffer += e.key;
       }
-      
+
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => { barcodeBuffer = ""; }, 100);
     };
@@ -7603,7 +7705,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
       }
     }
   };
-  
+
   const [newProd, setNewProd] = useState({ name: "", price: "", stock: "", imgUrl: "", category: "Alimentos", barcode: "", description: "" });
   const [isFetchingBarcode, setIsFetchingBarcode] = useState(false);
   const [activeManual, setActiveManual] = useState<string | null>(null);
@@ -7663,12 +7765,12 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
 
   const submitProduct = (e: React.FormEvent) => {
     e.preventDefault();
-    addProduct({ 
-      name: newProd.name, 
-      priceUSD: parseFloat(newProd.price), 
+    addProduct({
+      name: newProd.name,
+      priceUSD: parseFloat(newProd.price),
       stock: parseInt(newProd.stock) || 0,
-      image: newProd.imgUrl || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60", 
-      clientId: currentUser.clientId, 
+      image: newProd.imgUrl || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60",
+      clientId: currentUser.clientId,
       clientName: currentUser.company,
       category: newProd.category,
       barcode: newProd.barcode,
@@ -7689,10 +7791,10 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
         const cedula = match[2];
         const name = match[3].replace(/_/g, ' ');
         const surname = match[4].replace(/_/g, ' ');
-        
+
         const crmPhone = `0414-${Math.floor(1000000 + Math.random() * 9000000)}`;
         registerCrmExpress(`${type}-${cedula}`, name, surname, crmPhone);
-        
+
         playPremiumChime();
         showToast(`CRM Express: ¡Cédula ${type}-${cedula} (${name} ${surname}) registrada en CRM!`, "success");
       } else {
@@ -7704,7 +7806,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
 
     // 1. Buscar por ID o código de barras localmente
     let prod = db.products.find((p: any) => p.id === prodIdOrBarcode || p.barcode === prodIdOrBarcode);
-    
+
     if (prod) {
       setCheckoutProduct(prod);
       setShowScanner(false);
@@ -7787,7 +7889,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
         </div>
       </nav>
       <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-6 animate-fade-in">
-        
+
         {networkState === "offline" && (
           <div className="bg-red-500/20 border border-red-500/50 rounded-2xl p-4 flex items-center justify-between animate-pulse">
             <div className="flex items-center gap-3">
@@ -7808,11 +7910,11 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
               <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse inline-block"></span> Terminal en línea y asegurado.
             </p>
           </div>
-          
+
           <div className="relative z-10 bg-black/50 border border-green-500/30 p-4 rounded-xl flex flex-col items-end">
-             <span className="text-[10px] font-bold text-green-400 uppercase tracking-widest">Cumplimiento SUNDDE</span>
-             <span className="text-2xl font-black text-white mt-1">Tasa BCV: {rates?.USD?.toFixed(2)} Bs</span>
-             <span className="text-[9px] text-gray-400 mt-1 uppercase tracking-widest">Gaceta Oficial de Venezuela</span>
+            <span className="text-[10px] font-bold text-green-400 uppercase tracking-widest">Cumplimiento SUNDDE</span>
+            <span className="text-2xl font-black text-white mt-1">Tasa BCV: {rates?.USD?.toFixed(2)} Bs</span>
+            <span className="text-[9px] text-gray-400 mt-1 uppercase tracking-widest">Gaceta Oficial de Venezuela</span>
           </div>
 
           <Activity size={150} className="absolute -right-10 -bottom-10 text-white/5" />
@@ -7846,7 +7948,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
             <h3 className="font-black text-xl text-[#0A1128] mb-4 flex items-center gap-2 text-orange-600">
               <Clock className="text-orange-500" /> Órdenes Online ({myOrders.length})
             </h3>
-            
+
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Columna Izquierda: Lista de Órdenes */}
               <div className="lg:col-span-2 space-y-3">
@@ -7864,8 +7966,8 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
                           </p>
                         )}
                         {order.paymentScreenshot && (
-                          <button 
-                            onClick={() => setActiveScreenshot(order.paymentScreenshot)} 
+                          <button
+                            onClick={() => setActiveScreenshot(order.paymentScreenshot)}
                             className="mt-1.5 text-[10px] bg-amber-100 hover:bg-amber-200 text-amber-800 font-black px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
                           >
                             🖼️ Ver Capture
@@ -7898,21 +8000,21 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
                       <h4 className="font-black text-xs tracking-wide">CONCILIADOR SMS</h4>
                     </div>
                   </div>
-                  
+
                   <p className="text-[10px] text-gray-400 mb-3 leading-relaxed">
                     Pega el SMS de notificación del Pago Móvil recibido para conciliar y auto-aprobar la orden del cliente de inmediato.
                   </p>
-                  
-                  <textarea 
+
+                  <textarea
                     placeholder="Pega el SMS recibido..."
                     value={smsInput}
                     onChange={(e) => setSmsInput(e.target.value)}
                     className="w-full h-20 bg-black/40 border border-white/10 rounded-xl p-2.5 text-xs font-mono text-gray-200 focus:outline-none focus:border-[#C5A184] placeholder:text-gray-600 resize-none leading-relaxed"
                   />
                 </div>
-                
-                <button 
-                  type="button" 
+
+                <button
+                  type="button"
                   onClick={handleManualSmsConciliation}
                   className="w-full mt-3 py-2.5 rounded-xl font-black text-xs text-[#0A1128] bg-[#C5A184] hover:bg-[#b08e72] transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
                 >
@@ -7925,7 +8027,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
 
         <div className="bg-white p-6 rounded-3xl border border-gray-100">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
-            <h3 className="font-black text-[#0A1128] text-lg flex items-center gap-2"><Package size={20} className="text-[#C5A184]"/> Catálogo de {currentUser.company}</h3>
+            <h3 className="font-black text-[#0A1128] text-lg flex items-center gap-2"><Package size={20} className="text-[#C5A184]" /> Catálogo de {currentUser.company}</h3>
             <div className="relative w-full md:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
               <input type="text" placeholder="Buscar producto o barcode..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchProduct} onChange={e => setSearchProduct(e.target.value)} />
@@ -7961,29 +8063,29 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
 
       {/* Scanner View Integration */}
       {showScanner && (
-        <ScannerView 
-          videoRef={videoRef} 
-          onClose={() => setShowScanner(false)} 
-          onScan={handleScanSuccess} 
-          myProducts={myProducts} 
+        <ScannerView
+          videoRef={videoRef}
+          onClose={() => setShowScanner(false)}
+          onScan={handleScanSuccess}
+          myProducts={myProducts}
           formatUSD={formatUSD}
         />
       )}
 
       {checkoutProduct && (
-        <CheckoutModal 
-          product={checkoutProduct} 
-          onConfirm={handleConfirmCheckout} 
-          onCancel={() => setCheckoutProduct(null)} 
-          formatUSD={formatUSD} 
+        <CheckoutModal
+          product={checkoutProduct}
+          onConfirm={handleConfirmCheckout}
+          onCancel={() => setCheckoutProduct(null)}
+          formatUSD={formatUSD}
         />
       )}
-      
+
       {receiptTx && (
-        <ReceiptModal 
-          tx={receiptTx} 
-          product={db.products.find((p:any) => p.id === receiptTx.productId)}
-          onClose={() => setReceiptTx(null)} 
+        <ReceiptModal
+          tx={receiptTx}
+          product={db.products.find((p: any) => p.id === receiptTx.productId)}
+          onClose={() => setReceiptTx(null)}
           formatUSD={formatUSD}
           triggerGhostTrap={triggerGhostTrap}
           showToast={showToast}
@@ -7998,17 +8100,17 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
             <h3 className="text-2xl font-black mb-6 text-[#0A1128]">Nuevo Producto</h3>
             <form onSubmit={submitProduct} className="space-y-4">
               <div className="flex gap-2">
-                <input type="text" placeholder="Código de Barras (Opcional)" value={newProd.barcode} onChange={e => setNewProd({...newProd, barcode: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-mono text-gray-900" />
+                <input type="text" placeholder="Código de Barras (Opcional)" value={newProd.barcode} onChange={e => setNewProd({ ...newProd, barcode: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-mono text-gray-900" />
                 <button type="button" onClick={() => handleBarcodeSearch(newProd.barcode)} disabled={isFetchingBarcode} className="bg-[#0A1128] text-white px-4 rounded-xl font-bold flex-shrink-0 disabled:opacity-50">
                   <Search size={18} />
                 </button>
               </div>
-              <input required type="text" placeholder="Nombre del Artículo" value={newProd.name} onChange={e => setNewProd({...newProd, name: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-bold text-gray-900" />
+              <input required type="text" placeholder="Nombre del Artículo" value={newProd.name} onChange={e => setNewProd({ ...newProd, name: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-bold text-gray-900" />
               <div className="grid grid-cols-2 gap-3">
-                <input required type="number" step="0.01" placeholder="Precio ($)" value={newProd.price} onChange={e => setNewProd({...newProd, price: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-black text-lg text-gray-900" />
-                <input required type="number" placeholder="Stock" value={newProd.stock} onChange={e => setNewProd({...newProd, stock: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-bold text-gray-900" />
+                <input required type="number" step="0.01" placeholder="Precio ($)" value={newProd.price} onChange={e => setNewProd({ ...newProd, price: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-black text-lg text-gray-900" />
+                <input required type="number" placeholder="Stock" value={newProd.stock} onChange={e => setNewProd({ ...newProd, stock: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-bold text-gray-900" />
               </div>
-              <select value={newProd.category} onChange={e => setNewProd({...newProd, category: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-bold text-gray-900">
+              <select value={newProd.category} onChange={e => setNewProd({ ...newProd, category: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-bold text-gray-900">
                 <option value="Alimentos">Alimentos y Bebidas</option>
                 <option value="Ropa y Calzado">Ropa y Calzado</option>
                 <option value="Tecnología">Tecnología y Electrónica</option>
@@ -8016,11 +8118,11 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
                 <option value="Hogar">Hogar y Muebles</option>
                 <option value="Servicios">Servicios Generales</option>
               </select>
-              <textarea placeholder="Descripción del producto (Opcional)" value={newProd.description} onChange={e => setNewProd({...newProd, description: e.target.value})} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-medium text-gray-900 text-sm h-20 resize-none" />
+              <textarea placeholder="Descripción del producto (Opcional)" value={newProd.description} onChange={e => setNewProd({ ...newProd, description: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-medium text-gray-900 text-sm h-20 resize-none" />
               <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 cursor-pointer relative transition-colors">
                 <input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                 {newProd.imgUrl ? (
-                   <img src={newProd.imgUrl} className="mx-auto h-32 object-cover rounded-lg shadow-md" alt="Preview" />
+                  <img src={newProd.imgUrl} className="mx-auto h-32 object-cover rounded-lg shadow-md" alt="Preview" />
                 ) : (
                   <div className="flex flex-col items-center text-gray-400">
                     <Camera size={40} className="mb-3" />
@@ -8043,7 +8145,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
           <div className="bg-[#0A1128] border border-[#C5A184]/30 rounded-[2.5rem] w-full max-w-lg p-8 shadow-2xl relative overflow-hidden">
             {/* Efecto de brillo de fondo */}
             <div className="absolute top-0 right-0 w-48 h-48 bg-[#C5A184]/5 rounded-full blur-3xl pointer-events-none"></div>
-            
+
             <div className="flex items-center gap-3 mb-6">
               <div className="p-3 rounded-2xl bg-[#C5A184]/10 text-[#C5A184]">
                 <Package size={28} />
@@ -8064,10 +8166,10 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
 
             <div className="bg-white/5 border border-white/10 rounded-2xl p-5 mb-8 flex gap-4 items-center">
               {scannedGlobalProduct.imgUrl ? (
-                <img 
-                  src={scannedGlobalProduct.imgUrl} 
-                  alt={scannedGlobalProduct.name} 
-                  className="w-20 h-20 object-cover rounded-xl border border-white/10 shadow-lg flex-shrink-0 bg-white/10 animate-fade-in" 
+                <img
+                  src={scannedGlobalProduct.imgUrl}
+                  alt={scannedGlobalProduct.name}
+                  className="w-20 h-20 object-cover rounded-xl border border-white/10 shadow-lg flex-shrink-0 bg-white/10 animate-fade-in"
                 />
               ) : (
                 <div className="w-20 h-20 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 text-[#C5A184]">
@@ -8088,15 +8190,15 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
             </div>
 
             <div className="flex gap-3">
-              <button 
-                type="button" 
-                onClick={() => setScannedGlobalProduct(null)} 
+              <button
+                type="button"
+                onClick={() => setScannedGlobalProduct(null)}
                 className="w-1/3 py-3.5 rounded-xl border border-white/10 text-white hover:bg-white/5 font-bold cursor-pointer transition-colors"
               >
                 Ignorar
               </button>
-              <button 
-                type="button" 
+              <button
+                type="button"
                 onClick={() => {
                   setNewProd({
                     name: scannedGlobalProduct.name,
@@ -8109,7 +8211,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
                   });
                   setScannedGlobalProduct(null);
                   setShowAddModal(true);
-                }} 
+                }}
                 className="w-2/3 py-3.5 rounded-xl font-black text-[#0A1128] bg-[#C5A184] hover:bg-[#b08e72] shadow-xl cursor-pointer transition-colors flex items-center justify-center gap-2"
               >
                 <CheckCircle size={18} />
@@ -8126,7 +8228,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
             <button onClick={() => setActiveManual(null)} className="absolute top-6 right-6 text-gray-500 hover:text-[#0A1128] transition-colors cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200">
               <X size={20} />
             </button>
-            
+
             {activeManual === 'operator' && (
               <div>
                 <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><BookOpen className="text-[#C5A184]" size={28} /> Manual del Operador (Caja)</h2>
@@ -8183,15 +8285,15 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
     submitOnlineOrder(checkoutProduct, paymentMethod, applyIva, paymentReference, customerPhone, customerName, customerRif, paymentScreenshot, kPointsToBurn);
     setCheckoutProduct(null);
   };
-  
-  const filteredClients = db.clients.filter((c: any) => 
+
+  const filteredClients = db.clients.filter((c: any) =>
     c.company?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const activeStore = activeStoreId ? db.clients.find((c: any) => c.id === activeStoreId) : null;
   const storeProducts = activeStore ? db.products.filter((p: any) => p.clientId === activeStoreId) : [];
-  
-  const filteredProducts = storeProducts.filter((p: any) => 
+
+  const filteredProducts = storeProducts.filter((p: any) =>
     (selectedCategory === "All" || p.category === selectedCategory) &&
     (p.name?.toLowerCase().includes(searchQuery.toLowerCase()))
   );
@@ -8209,7 +8311,7 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
   return (
     <div className={`min-h-screen bg-gray-50 pb-20 ${activeStore ? typography : "font-sans"}`}>
       <Navbar title={activeStore ? `Mall: ${activeStore.company}` : "Flow Express"} showBack={true} onBack={logout} />
-      
+
       <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
         {activeStore && settings.coverPhotoUrl ? (
           <div className="relative rounded-3xl overflow-hidden shadow-sm mb-8 border border-gray-100">
@@ -8226,9 +8328,9 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
               </div>
               <div className="relative w-full sm:w-80 shrink-0">
                 <Search className="absolute left-3 top-3 text-gray-400" size={18} />
-                <input 
-                  type="text" 
-                  placeholder="Buscar en esta tienda..." 
+                <input
+                  type="text"
+                  placeholder="Buscar en esta tienda..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#C5A184] text-gray-900"
@@ -8247,12 +8349,12 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
                 <p className="text-xs text-gray-500 mt-1">{activeStore ? (settings.bioText || "Catálogo exclusivo de este negocio.") : "Explora nuestras tiendas destacadas y descubre sus productos."}</p>
               </div>
             </div>
-            
+
             <div className="relative w-full sm:w-80">
               <Search className="absolute left-3 top-3 text-gray-400" size={18} />
-              <input 
-                type="text" 
-                placeholder={activeStore ? "Buscar en esta tienda..." : "Buscar comercio..."} 
+              <input
+                type="text"
+                placeholder={activeStore ? "Buscar en esta tienda..." : "Buscar comercio..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#C5A184] text-gray-900"
@@ -8265,8 +8367,8 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
           <>
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {filteredClients.map((c: any) => {
-                 const pCount = db.products.filter((p: any) => p.clientId === c.id).length;
-                 return (
+                const pCount = db.products.filter((p: any) => p.clientId === c.id).length;
+                return (
                   <div key={c.id} onClick={() => setActiveStoreId(c.id)} className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 cursor-pointer hover:-translate-y-1 transition-transform group">
                     <div className="flex items-start justify-between mb-4">
                       <div className="w-16 h-16 bg-[#0A1128]/5 rounded-2xl flex items-center justify-center group-hover:bg-[#C5A184]/10 transition-colors">
@@ -8283,7 +8385,7 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
                       <span className="text-[#C5A184]">Entrar a la tienda &rarr;</span>
                     </div>
                   </div>
-                 );
+                );
               })}
               {filteredClients.length === 0 && (
                 <div className="col-span-full bg-white rounded-3xl p-12 text-center text-gray-400 font-bold border border-gray-100 shadow-sm">
@@ -8291,7 +8393,7 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
                 </div>
               )}
             </div>
-            
+
             <div className="mt-8">
               <FlowExpressCatalog currentUser={currentUser} formatUSD={formatUSD} />
             </div>
@@ -8305,8 +8407,8 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
             </div>
             <div className="flex overflow-x-auto gap-2 pb-2 hide-scrollbar">
               {categories.map(cat => (
-                <button 
-                  key={cat} 
+                <button
+                  key={cat}
                   onClick={() => setSelectedCategory(cat)}
                   style={selectedCategory === cat ? { backgroundColor: themeColor, color: '#fff' } : {}}
                   className={`whitespace-nowrap px-4 py-2 rounded-xl text-xs font-bold transition-all ${selectedCategory === cat ? "shadow-md" : "bg-white text-gray-500 border border-gray-200 hover:bg-gray-50"}`}
@@ -8389,7 +8491,7 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
                   </div>
                 </div>
               ))}
-              
+
               {filteredProducts.length === 0 && (
                 <div className="col-span-full bg-white rounded-3xl p-12 text-center text-gray-400 font-bold border border-gray-100 shadow-sm">
                   Esta tienda no tiene productos en esta categoría.
@@ -8403,20 +8505,20 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
 
 
       {checkoutProduct && (
-        <CheckoutModal 
-          product={checkoutProduct} 
-          onConfirm={handleConfirmCheckout} 
-          onCancel={() => setCheckoutProduct(null)} 
+        <CheckoutModal
+          product={checkoutProduct}
+          onConfirm={handleConfirmCheckout}
+          onCancel={() => setCheckoutProduct(null)}
           formatUSD={formatUSD}
-          isOnline={true} 
+          isOnline={true}
         />
       )}
-      
+
       {receiptTx && (
-        <ReceiptModal 
-          tx={receiptTx} 
-          product={db.products.find((p:any) => p.id === receiptTx.productId)}
-          onClose={() => setReceiptTx(null)} 
+        <ReceiptModal
+          tx={receiptTx}
+          product={db.products.find((p: any) => p.id === receiptTx.productId)}
+          onClose={() => setReceiptTx(null)}
           formatUSD={formatUSD}
           triggerGhostTrap={triggerGhostTrap}
           showToast={showToast}
@@ -8450,7 +8552,7 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
       if (!navigator.geolocation) { showToast("GPS no disponible en este dispositivo.", "error"); return; }
       const id = navigator.geolocation.watchPosition(
         (pos) => updateRiderGPS(currentUser.id, pos.coords.latitude, pos.coords.longitude),
-        () => {}, { enableHighAccuracy: true, maximumAge: 10000 }
+        () => { }, { enableHighAccuracy: true, maximumAge: 10000 }
       );
       gpsWatchRef.current = id;
       setGpsSharing(true);
@@ -8481,11 +8583,11 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
       <div className="bg-gradient-to-br from-[#0A1128] to-[#1a2b5e] rounded-b-[3rem] shadow-[0_10px_30px_rgba(10,17,40,0.3)] pt-6 pb-12 px-6 text-white relative z-10">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
-            <span className="bg-white/20 p-2 rounded-xl text-[#C5A184]"><Truck size={20}/></span>
+            <span className="bg-white/20 p-2 rounded-xl text-[#C5A184]"><Truck size={20} /></span>
             <h1 className="font-black text-xl tracking-tight">KFS Delivery</h1>
           </div>
           <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
-            <LogOut size={16}/>
+            <LogOut size={16} />
           </button>
         </div>
 
@@ -8515,19 +8617,19 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
             </h3>
             <p className="text-xs text-gray-500 font-bold">Horas acumuladas: <span className="text-[#C5A184] font-black">{(riderInfo.totalHours || 0).toFixed(1)} h</span></p>
             {riderInfo.isWorking && riderInfo.sessionStart && (
-               <p className="text-[10px] text-green-600 font-bold mt-1 animate-pulse bg-green-50 px-2 py-1 rounded-md inline-block">
-                 En turno desde: {new Date(riderInfo.sessionStart).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
-               </p>
+              <p className="text-[10px] text-green-600 font-bold mt-1 animate-pulse bg-green-50 px-2 py-1 rounded-md inline-block">
+                En turno desde: {new Date(riderInfo.sessionStart).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              </p>
             )}
           </div>
           <div className="w-full md:w-auto">
             {riderInfo.isWorking ? (
               <button onClick={() => riderCheckOut(riderInfo.id)} className="w-full bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-xl font-black shadow-lg shadow-red-500/30 transition-all cursor-pointer flex justify-center items-center gap-2">
-                <LogOut size={18}/> Desconectarse
+                <LogOut size={18} /> Desconectarse
               </button>
             ) : (
               <button onClick={() => riderCheckIn(riderInfo.id)} className="w-full bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl font-black shadow-lg shadow-green-500/30 transition-all cursor-pointer flex justify-center items-center gap-2">
-                <LogIn size={18}/> Conectarse
+                <LogIn size={18} /> Conectarse
               </button>
             )}
           </div>
@@ -8537,25 +8639,25 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-white rounded-3xl p-5 text-center shadow-sm border border-gray-100 flex flex-col items-center justify-center">
-                <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center mb-2"><Truck size={20}/></div>
+                <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center mb-2"><Truck size={20} /></div>
                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Entregas</p>
                 <p className="text-3xl font-black text-[#0A1128] mt-1">{myDeliveries.length}</p>
               </div>
               <div className="bg-[#0A1128] rounded-3xl p-5 text-center shadow-lg border border-[#0A1128] flex flex-col items-center justify-center">
-                <div className="w-10 h-10 rounded-full bg-[#C5A184]/20 text-[#C5A184] flex items-center justify-center mb-2"><DollarSign size={20}/></div>
+                <div className="w-10 h-10 rounded-full bg-[#C5A184]/20 text-[#C5A184] flex items-center justify-center mb-2"><DollarSign size={20} /></div>
                 <p className="text-[10px] text-gray-300 font-bold uppercase tracking-wider">Ganado</p>
                 <p className="text-3xl font-black text-[#C5A184] mt-1">${totalEarnings}</p>
               </div>
             </div>
 
             <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 space-y-4">
-              <h3 className="font-black text-sm text-[#0A1128] uppercase tracking-wider flex items-center gap-2"><Store size={16} className="text-[#C5A184]"/> Negocios Asociados ({myBusinesses.length}/2)</h3>
+              <h3 className="font-black text-sm text-[#0A1128] uppercase tracking-wider flex items-center gap-2"><Store size={16} className="text-[#C5A184]" /> Negocios Asociados ({myBusinesses.length}/2)</h3>
               {myBusinesses.length === 0 ? (
                 <p className="text-xs text-gray-400 italic text-center py-4">Aún no estás asociado a ningún negocio.</p>
               ) : myBusinesses.map((b: any) => (
                 <div key={b.id} className="flex items-center gap-3 bg-gray-50 rounded-2xl p-4 border border-gray-100">
                   <div className="w-12 h-12 rounded-full bg-[#C5A184]/20 flex items-center justify-center font-black text-[#0A1128] text-sm flex-shrink-0">
-                    {b.company?.slice(0,2).toUpperCase()}
+                    {b.company?.slice(0, 2).toUpperCase()}
                   </div>
                   <div>
                     <p className="font-black text-sm text-[#0A1128]">{b.company}</p>
@@ -8567,7 +8669,7 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
 
             <div className="bg-[#C5A184] rounded-[2rem] p-6 shadow-lg relative overflow-hidden">
               <div className="relative z-10">
-                <h3 className="font-black text-sm text-[#0A1128] flex items-center gap-2 mb-2"><CreditCard size={16}/> Cómo cobras</h3>
+                <h3 className="font-black text-sm text-[#0A1128] flex items-center gap-2 mb-2"><CreditCard size={16} /> Cómo cobras</h3>
                 <p className="text-xs text-[#0A1128]/80 leading-relaxed font-bold">Por cada pedido que entregues, el cliente te pagará <span className="font-black text-white bg-[#0A1128] px-1.5 py-0.5 rounded-md">$2.00 USD</span> directamente a tu Pago Móvil.</p>
               </div>
               <Star size={100} className="absolute -right-6 -bottom-6 opacity-10 text-white transform -rotate-12" />
@@ -8578,15 +8680,14 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
               <div className="bg-white rounded-[2rem] p-5 text-center shadow-sm border border-gray-100 flex flex-col items-center justify-center">
                 <p className="text-[9px] text-gray-400 font-bold uppercase tracking-wider">Calificación</p>
                 <div className="flex justify-center gap-0.5 mt-2">
-                  {[1,2,3,4,5].map(s => <span key={s} className={`text-xl ${s <= Math.round(avgRating) ? 'text-yellow-400' : 'text-gray-200'}`}>★</span>)}
+                  {[1, 2, 3, 4, 5].map(s => <span key={s} className={`text-xl ${s <= Math.round(avgRating) ? 'text-yellow-400' : 'text-gray-200'}`}>★</span>)}
                 </div>
                 <p className="text-xs font-black text-[#0A1128] mt-1">{avgRating > 0 ? avgRating.toFixed(1) : "Sin calif."} <span className="text-gray-400 font-normal">({riderInfo.totalRatings || 0})</span></p>
               </div>
               <button
                 onClick={toggleGPS}
-                className={`rounded-[2rem] p-5 text-center border transition-all cursor-pointer shadow-sm flex flex-col items-center justify-center ${
-                  gpsSharing ? 'bg-green-500 border-green-600 text-white' : 'bg-white border-gray-100 hover:bg-gray-50'
-                }`}
+                className={`rounded-[2rem] p-5 text-center border transition-all cursor-pointer shadow-sm flex flex-col items-center justify-center ${gpsSharing ? 'bg-green-500 border-green-600 text-white' : 'bg-white border-gray-100 hover:bg-gray-50'
+                  }`}
               >
                 <p className={`text-[9px] font-bold uppercase tracking-wider ${gpsSharing ? 'text-green-100' : 'text-gray-400'}`}>GPS en Vivo</p>
                 <p className="text-3xl mt-2">{gpsSharing ? '📍' : '📍'}</p>
@@ -8625,9 +8726,8 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
                     </div>
                     <div className="text-right">
                       <p className="font-black text-green-400">+$2.00</p>
-                      <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${
-                        tx.shippingStatus === "dispatched" ? "bg-blue-500/20 text-blue-400" : tx.shippingStatus === "picked_up" ? "bg-purple-500/20 text-purple-400" : "bg-green-500/20 text-green-400"
-                      }`}>
+                      <span className={`inline-block mt-1 px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${tx.shippingStatus === "dispatched" ? "bg-blue-500/20 text-blue-400" : tx.shippingStatus === "picked_up" ? "bg-purple-500/20 text-purple-400" : "bg-green-500/20 text-green-400"
+                        }`}>
                         {tx.shippingStatus === "dispatched" ? "🛵 Asignado" : tx.shippingStatus === "picked_up" ? "📦 En camino" : "✅ Completado"}
                       </span>
                     </div>
@@ -8637,7 +8737,7 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
                   {fullAddress ? (
                     <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-3 space-y-2">
                       <p className="text-[9px] text-orange-300 font-black uppercase tracking-wider flex items-center gap-1">
-                        <Truck size={11}/> Dirección de entrega
+                        <Truck size={11} /> Dirección de entrega
                       </p>
                       <div>
                         <p className="text-sm font-black text-white">{fullAddress}</p>
@@ -8648,13 +8748,13 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
                       {/* Navigation Map */}
                       {(tx.shippingStatus === "dispatched" || tx.shippingStatus === "picked_up") && (
                         <div className="mt-4 mb-2">
-                           <LiveMap 
-                              role="rider"
-                              storePos={getStoreCoords(tx.clientId)}
-                              customerPos={getCustomerCoords(tx.customerPhone || "default_cust")}
-                              riderPos={ riderInfo?.lastLat && riderInfo?.lastLng ? { lat: riderInfo.lastLat, lng: riderInfo.lastLng } : getStoreCoords(tx.clientId) }
-                              className="h-48"
-                           />
+                          <LiveMap
+                            role="rider"
+                            storePos={getStoreCoords(tx.clientId)}
+                            customerPos={getCustomerCoords(tx.customerPhone || "default_cust")}
+                            riderPos={riderInfo?.lastLat && riderInfo?.lastLng ? { lat: riderInfo.lastLat, lng: riderInfo.lastLng } : getStoreCoords(tx.clientId)}
+                            className="h-48"
+                          />
                         </div>
                       )}
                       {/* Navigation Button */}
@@ -8665,7 +8765,7 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
                         className="flex items-center justify-center gap-2 w-full py-2.5 bg-orange-500 hover:bg-orange-400 active:scale-95 text-white font-black rounded-xl transition-all text-xs cursor-pointer shadow-lg shadow-orange-500/30"
                       >
                         <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
                         </svg>
                         🗺️ Iniciar Navegación en Google Maps
                       </a>
@@ -8673,7 +8773,7 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
                   ) : (
                     <div className="bg-white/5 border border-white/10 rounded-xl p-3">
                       <p className="text-[10px] text-gray-500 font-bold flex items-center gap-1">
-                        <Truck size={11}/> El dueño no ha configurado dirección de delivery aún.
+                        <Truck size={11} /> El dueño no ha configurado dirección de delivery aún.
                       </p>
                     </div>
                   )}
@@ -8692,7 +8792,7 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
                       onClick={() => markAsPickedUp(tx.id)}
                       className="w-full py-3 bg-purple-600 hover:bg-purple-500 active:scale-95 text-white font-black rounded-xl transition-all text-sm cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-purple-500/30 mb-2"
                     >
-                      <Package size={16}/> Marcar Recogido (En Tránsito)
+                      <Package size={16} /> Marcar Recogido (En Tránsito)
                     </button>
                   )}
                   {(tx.shippingStatus === "picked_up" || tx.shippingStatus === "dispatched") && (
@@ -8700,7 +8800,7 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
                       onClick={() => confirmDelivery(tx.id)}
                       className="w-full py-3 bg-green-500 hover:bg-green-400 active:scale-95 text-white font-black rounded-xl transition-all text-sm cursor-pointer flex items-center justify-center gap-2 shadow-lg shadow-green-500/30"
                     >
-                      <CheckCircle size={16}/> Confirmar Entrega Completada
+                      <CheckCircle size={16} /> Confirmar Entrega Completada
                     </button>
                   )}
                   {tx.shippingStatus === "delivered" && (
@@ -8719,7 +8819,7 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
         {activeTab === "pago" && (
           <div className="space-y-4">
             <div className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-4">
-              <h3 className="font-black text-sm text-[#C5A184] uppercase tracking-wider flex items-center gap-2"><CreditCard size={16}/> Datos de Pago Móvil</h3>
+              <h3 className="font-black text-sm text-[#C5A184] uppercase tracking-wider flex items-center gap-2"><CreditCard size={16} /> Datos de Pago Móvil</h3>
               {!editingPM ? (
                 <>
                   <div className="space-y-2">
@@ -8734,18 +8834,18 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
                       </div>
                     ))}
                   </div>
-                  <button onClick={() => { setPmForm(riderInfo.pagoMovil || { banco:"",telefono:"",cedula:"" }); setEditingPM(true); }} className="w-full py-3 bg-[#C5A184] text-[#0A1128] font-black rounded-xl hover:scale-[1.02] active:scale-95 transition-all cursor-pointer text-sm">
+                  <button onClick={() => { setPmForm(riderInfo.pagoMovil || { banco: "", telefono: "", cedula: "" }); setEditingPM(true); }} className="w-full py-3 bg-[#C5A184] text-[#0A1128] font-black rounded-xl hover:scale-[1.02] active:scale-95 transition-all cursor-pointer text-sm">
                     ✏️ Editar Datos de Pago Móvil
                   </button>
                 </>
               ) : (
                 <div className="space-y-3">
-                  <select value={pmForm.banco} onChange={e => setPmForm(p => ({...p, banco: e.target.value}))} className="w-full bg-[#0A1128] border border-[#C5A184]/50 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184]">
+                  <select value={pmForm.banco} onChange={e => setPmForm(p => ({ ...p, banco: e.target.value }))} className="w-full bg-[#0A1128] border border-[#C5A184]/50 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184]">
                     <option value="">— Banco —</option>
-                    {["Banesco","Mercantil","Banco de Venezuela","Provincial","BOD","Bancaribe","Bicentenario","BNC","Exterior","Tesoro"].map(b => <option key={b} value={b}>{b}</option>)}
+                    {["Banesco", "Mercantil", "Banco de Venezuela", "Provincial", "BOD", "Bancaribe", "Bicentenario", "BNC", "Exterior", "Tesoro"].map(b => <option key={b} value={b}>{b}</option>)}
                   </select>
-                  <input type="tel" placeholder="Teléfono PM" value={pmForm.telefono} onChange={e => setPmForm(p => ({...p, telefono: e.target.value}))} className="w-full bg-[#0A1128] border border-[#C5A184]/50 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184]" />
-                  <input placeholder="Cédula Titular" value={pmForm.cedula} onChange={e => setPmForm(p => ({...p, cedula: e.target.value}))} className="w-full bg-[#0A1128] border border-[#C5A184]/50 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184]" />
+                  <input type="tel" placeholder="Teléfono PM" value={pmForm.telefono} onChange={e => setPmForm(p => ({ ...p, telefono: e.target.value }))} className="w-full bg-[#0A1128] border border-[#C5A184]/50 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184]" />
+                  <input placeholder="Cédula Titular" value={pmForm.cedula} onChange={e => setPmForm(p => ({ ...p, cedula: e.target.value }))} className="w-full bg-[#0A1128] border border-[#C5A184]/50 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184]" />
                   <div className="flex gap-2">
                     <button onClick={() => setEditingPM(false)} className="w-1/3 py-3 border border-white/20 text-gray-300 font-bold rounded-xl hover:bg-white/5 cursor-pointer text-sm">Cancelar</button>
                     <button onClick={handleSavePM} className="w-2/3 py-3 bg-[#C5A184] text-[#0A1128] font-black rounded-xl hover:scale-[1.02] cursor-pointer text-sm">Guardar</button>
@@ -8800,7 +8900,7 @@ export default function Home() {
   const {
     isClient, isBooting, view, setView, currentUser, setCurrentUser,
     toast, db, setDb, formatUSD, formatEUR, showToast,
-    handleLogin, logout, registerClient, registerPromotora, approvePromotora, rejectPromotora, settlePromotoraEarnings, addProduct, addExpense, processPurchase,
+    handleLogin, logout, registerClient, registerFreeUser, upgradeToPremium, registerPromotora, approvePromotora, rejectPromotora, settlePromotoraEarnings, addProduct, addExpense, processPurchase,
     submitOnlineOrder, approveOrder, rejectOrder, dispatchOrder, generateZReport, registerCrmExpress,
     paySubscription, approveSubscription, requestPayout,
     ghostTrapLocked, setGhostTrapLocked, triggerGhostTrap, logAction
@@ -8828,7 +8928,7 @@ export default function Home() {
   };
 
   const protectedViews = ["core", "client", "promotora", "vendedor", "customer", "rider"];
-  
+
   let isUserValid = true;
   if (currentUser) {
     if (currentUser.role === "dueño" && db.clients?.length > 0 && !db.clients.some((c: any) => c.id === currentUser.id)) isUserValid = false;
@@ -8849,7 +8949,7 @@ export default function Home() {
       }
     }
   }, [currentUser, isUserValid, logout, setView, showToast, setCurrentUser]);
-  
+
   const safeView = (!currentUser || !isUserValid) && protectedViews.includes(view) ? "landing" : view;
 
   if (isBooting || !isClient) {
@@ -8872,7 +8972,7 @@ export default function Home() {
         <div className="fixed inset-0 bg-[#0B0104]/95 backdrop-blur-xl z-[9999] flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-[#1A050A] border-2 border-red-500/30 rounded-[2.5rem] w-full max-w-lg p-10 shadow-[0_0_50px_rgba(239,68,68,0.25)] text-center relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-red-600 via-pink-500 to-red-600 animate-pulse"></div>
-            
+
             <div className="flex justify-center mb-6">
               <div className="w-20 h-20 bg-red-950/50 border border-red-500/40 rounded-full flex items-center justify-center animate-bounce text-red-500 shadow-[0_0_30px_rgba(239,68,68,0.2)]">
                 <Lock size={36} className="animate-pulse" />
@@ -8888,19 +8988,19 @@ export default function Home() {
 
             <div className="bg-black/55 border border-red-500/10 rounded-2xl p-6 mb-6 text-left font-mono text-xs text-red-300 space-y-3 leading-relaxed">
               <p className="flex justify-between border-b border-white/5 pb-2">
-                <span>[ TERMINAL ]</span> 
+                <span>[ TERMINAL ]</span>
                 <span className="text-white font-bold">{currentUser?.name || "Vendedor Terminal"} ({currentUser?.role || "Terminal"})</span>
               </p>
               <p className="flex justify-between border-b border-white/5 pb-2">
-                <span>[ ACCIÓN ]</span> 
+                <span>[ ACCIÓN ]</span>
                 <span className="text-red-500 font-black">RECHAZO SOSPECHOSO DE ORDEN ONLINE</span>
               </p>
               <p className="flex justify-between border-b border-white/5 pb-2">
-                <span>[ PROTOCOLO ]</span> 
+                <span>[ PROTOCOLO ]</span>
                 <span className="text-yellow-500 font-black">BLOQUEO ANTIFRAUDE INMEDIATO</span>
               </p>
               <p className="flex justify-between">
-                <span>[ TIMESTAMP ]</span> 
+                <span>[ TIMESTAMP ]</span>
                 <span className="text-white">{new Date().toLocaleString()}</span>
               </p>
             </div>
@@ -8911,11 +9011,11 @@ export default function Home() {
 
             <div className="space-y-4">
               <div>
-                <input 
-                  type="password" 
-                  placeholder="Master Password o PIN de Supervisor" 
-                  value={ghostPassword} 
-                  onChange={(e) => setGhostPassword(e.target.value)} 
+                <input
+                  type="password"
+                  placeholder="Master Password o PIN de Supervisor"
+                  value={ghostPassword}
+                  onChange={(e) => setGhostPassword(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleUnlockGhostTrap()}
                   className="w-full bg-black/60 border-2 border-red-500/20 focus:border-red-500 rounded-xl px-5 py-4 text-center font-black tracking-widest text-white text-lg focus:outline-none focus:ring-0 placeholder:text-gray-600 transition-colors"
                 />
@@ -8923,7 +9023,7 @@ export default function Home() {
               </div>
 
               <div className="grid grid-cols-2 gap-3">
-                <a 
+                <a
                   href={`https://wa.me/584141234567?text=ALERTA%20DE%20SEGURIDAD%20KFS%20OS:%20Se%20ha%20detonado%20el%20Protocolo%20Ghost%20Trap%20en%20el%20terminal%20de%20ventas.%20Operador:%20${currentUser?.name || "Vendedor"}.%20Acción:%20Rechazo%20de%20Orden.%20Favor%20auditar.`}
                   target="_blank"
                   rel="noreferrer"
@@ -8931,8 +9031,8 @@ export default function Home() {
                 >
                   💬 Reportar a WhatsApp
                 </a>
-                
-                <button 
+
+                <button
                   onClick={handleUnlockGhostTrap}
                   className="py-4 rounded-xl font-black text-xs text-white bg-red-600 hover:bg-red-700 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-lg hover:shadow-red-600/20"
                 >
@@ -8946,29 +9046,29 @@ export default function Home() {
 
       {safeView === "landing" && <LandingPageView setView={setView} />}
       {safeView === "b2b-onboarding" && <B2BSelfOnboarding setView={setView} />}
-      
+
       {safeView === "login" && (
-        <LoginView 
-          handleLogin={handleLogin} 
-          registerClient={registerClient} 
-          registerPromotora={registerPromotora} 
-          db={db} 
+        <LoginView
+          handleLogin={handleLogin}
+          registerClient={registerClient}
+          registerPromotora={registerPromotora}
+          db={db}
           setView={setView}
           currentUser={currentUser}
           logout={logout}
         />
       )}
       {safeView === "marketplace" && (
-        <MarketplaceView 
-          db={db} 
-          submitOnlineOrder={submitOnlineOrder} 
-          formatUSD={formatUSD} 
-          logout={logout} 
+        <MarketplaceView
+          db={db}
+          submitOnlineOrder={submitOnlineOrder}
+          formatUSD={formatUSD}
+          logout={logout}
           currentUser={currentUser}
         />
       )}
       {safeView === "customer" && (
-        <CustomerDashboard 
+        <CustomerDashboard
           db={db}
           currentUser={currentUser}
           logout={logout}
@@ -8976,43 +9076,44 @@ export default function Home() {
         />
       )}
       {safeView === "core" && (
-        <CoreDashboard 
-          db={db} 
-          setDb={setDb} 
+        <CoreDashboard
+          db={db}
+          setDb={setDb}
           approvePromotora={approvePromotora}
           rejectPromotora={rejectPromotora}
           settlePromotoraEarnings={settlePromotoraEarnings}
-          showToast={showToast} 
-          formatUSD={formatUSD} 
-          formatEUR={formatEUR} 
+          showToast={showToast}
+          formatUSD={formatUSD}
+          formatEUR={formatEUR}
           currentUser={currentUser}
           logout={logout}
           approveSubscription={approveSubscription}
         />
       )}
       {safeView === "promotora" && (
-        <PromotoraDashboard 
-          db={db} 
-          setDb={setDb} 
-          currentUser={currentUser} 
-          registerClient={registerClient} 
+        <PromotoraDashboard
+          db={db}
+          setDb={setDb}
+          currentUser={currentUser}
+          registerClient={registerClient}
+          upgradeToPremium={upgradeToPremium}
           settlePromotoraEarnings={settlePromotoraEarnings}
-          formatUSD={formatUSD} 
-          formatEUR={formatEUR} 
+          formatUSD={formatUSD}
+          formatEUR={formatEUR}
           logout={logout}
           requestPayout={requestPayout}
         />
       )}
       {safeView === "client" && (
-        <ClientDashboard 
-          db={db} 
-          setDb={setDb} 
-          currentUser={currentUser} 
-          addProduct={addProduct} 
+        <ClientDashboard
+          db={db}
+          setDb={setDb}
+          currentUser={currentUser}
+          addProduct={addProduct}
           addExpense={addExpense}
-          showToast={showToast} 
-          formatUSD={formatUSD} 
-          formatEUR={formatEUR} 
+          showToast={showToast}
+          formatUSD={formatUSD}
+          formatEUR={formatEUR}
           logout={logout}
           approveOrder={approveOrder}
           rejectOrder={rejectOrder}
@@ -9022,14 +9123,14 @@ export default function Home() {
         />
       )}
       {safeView === "vendedor" && (
-        <VendedorDashboard 
-          db={db} 
-          setDb={setDb} 
-          currentUser={currentUser} 
-          addProduct={addProduct} 
-          processPurchase={processPurchase} 
-          showToast={showToast} 
-          formatUSD={formatUSD} 
+        <VendedorDashboard
+          db={db}
+          setDb={setDb}
+          currentUser={currentUser}
+          addProduct={addProduct}
+          processPurchase={processPurchase}
+          showToast={showToast}
+          formatUSD={formatUSD}
           logout={logout}
           approveOrder={approveOrder}
           rejectOrder={rejectOrder}
