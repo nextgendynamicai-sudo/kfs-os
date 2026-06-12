@@ -598,7 +598,52 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     };
     window.addEventListener("popstate", handlePopState);
 
-    
+    const cleanupOldDemos = (currentDb: any) => {
+      if (!currentDb) return currentDb;
+      const THREE_HOURS_MS = 3 * 60 * 60 * 1000;
+      const now = Date.now();
+
+      const isExpiredDemo = (id: string) => {
+        if (!id || !id.startsWith("demo-")) return false;
+        const parts = id.split("-");
+        const timestampStr = parts[parts.length - 1];
+        const timestamp = parseInt(timestampStr, 10);
+        if (isNaN(timestamp)) return false;
+        return now - timestamp > THREE_HOURS_MS;
+      };
+
+      const expiredClientIds = new Set((currentDb.clients || []).filter((c:any) => isExpiredDemo(c.id)).map((c:any) => c.id));
+      
+      let needsCleanup = expiredClientIds.size > 0 || 
+          (currentDb.customers || []).some((c:any) => isExpiredDemo(c.id)) ||
+          (currentDb.promotoras || []).some((c:any) => isExpiredDemo(c.id)) ||
+          (currentDb.vendedores || []).some((c:any) => isExpiredDemo(c.id)) ||
+          (currentDb.riders || []).some((c:any) => isExpiredDemo(c.id));
+
+      if (!needsCleanup) return currentDb;
+
+      console.log("[Demo Cleanup] Limpiando cuentas de demostración caducadas (>3h) y su rastro...");
+
+      return {
+        ...currentDb,
+        clients: (currentDb.clients || []).filter((c:any) => !isExpiredDemo(c.id)),
+        customers: (currentDb.customers || []).filter((c:any) => !isExpiredDemo(c.id)),
+        promotoras: (currentDb.promotoras || []).filter((c:any) => !isExpiredDemo(c.id)),
+        vendedores: (currentDb.vendedores || []).filter((v:any) => !isExpiredDemo(v.id)),
+        riders: (currentDb.riders || []).filter((r:any) => !isExpiredDemo(r.id)),
+        products: (currentDb.products || []).filter((p:any) => !expiredClientIds.has(p.clientId)),
+        orders: (currentDb.orders || []).filter((o:any) => !expiredClientIds.has(o.clientId)),
+        transactions: (currentDb.transactions || []).filter((t:any) => !expiredClientIds.has(t.clientId)),
+        posTerminals: (currentDb.posTerminals || []).filter((p:any) => !expiredClientIds.has(p.clientId)),
+        vales: (currentDb.vales || []).filter((v:any) => !expiredClientIds.has(v.clientId)),
+        expenses: (currentDb.expenses || []).filter((e:any) => !expiredClientIds.has(e.clientId))
+      };
+    };
+
+    const demoCleanupInterval = setInterval(() => {
+      setDb((prev: any) => cleanupOldDemos(prev));
+    }, 60000); // Verificar cada minuto
+
     // Sincronización con el Banco Central de Venezuela (API Route) con Polling de 30s
     const fetchBcvRates = () => {
       fetch("/api/bcv")
@@ -701,6 +746,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           }
 
           if (parsed) {
+            parsed = cleanupOldDemos(parsed);
             if (parsed.kreatekCore?.wipeVersion !== CURRENT_WIPE_VERSION) {
               console.log("[KFS] Database version mismatch. Resetting database to 0.");
               setDb(initialDB);
