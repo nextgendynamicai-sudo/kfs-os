@@ -1509,14 +1509,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast(`Recarga de $${amountUSD} acreditada vía ${gateway} (Offline Mode).`, "success");
   };
 
-  const requestTopUp = (userId: string, userType: 'client' | 'customer', amountUSD: number, paymentReference: string, screenshotBase64: string) => {
-    if (userType === 'customer') {
-      fundCustomerWallet(userId, amountUSD, `Transferencia (${paymentReference})`);
-    } else {
-      fundWallet(userId, amountUSD);
-    }
-    showToast(`Recarga por $${formatUSD(amountUSD)} confirmada. Ref: ${paymentReference}`);
-  };
+
 
   const registerCustomer = async (phone: string, password: string, name: string, referralCode?: string, kycPhoto?: string, kycCedula?: string, kycAddress?: string) => {
     const existing = db.customers?.find((c: any) => c.phone === phone);
@@ -3351,7 +3344,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   // DELIVERY RIDER FUNCTIONS
   // ==========================================
 
-  const registerRider = (riderData: any) => {
+  const registerRider = async (riderData: any) => {
     const existing = db.riders?.find((r: any) => r.email === riderData.email);
     if (existing) {
       showToast("Este correo ya está registrado como rider.", "error");
