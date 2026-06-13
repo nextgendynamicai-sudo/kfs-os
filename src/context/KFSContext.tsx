@@ -116,6 +116,7 @@ interface KFSContextType {
   registerFreeUser: (clientData: any, promotoraId: string) => Promise<any>;
   upgradeToPremium: (clientId: string, promotoraId: string) => Promise<void>;
   registerPromotora: (promoData: any) => void;
+  registerVendedor: (vendedorData: any) => void;
   approvePromotora: (id: string) => void;
   rejectPromotora: (id: string) => void;
   settlePromotoraEarnings: (promotoraId: string) => void;
@@ -1776,6 +1777,23 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     });
     
     showToast("Upgrade a Premium completado. Bono desbloqueado.", "success");
+  };
+
+  const registerVendedor = (vendedorData: any) => {
+    logAction("Vendedor", "CREATE", `Creación de vendedor: ${vendedorData.name}`);
+    setDb((prev: any) => ({
+      ...prev,
+      vendedores: [
+        ...(prev.vendedores || []),
+        {
+          ...vendedorData,
+          id: `vend_${Date.now()}`,
+          role: 'vendedor',
+          createdAt: new Date().toISOString()
+        }
+      ]
+    }));
+    showToast("Vendedor activado y registrado exitosamente.", "success");
   };
 
   const registerClient = async (clientData: any, promotoraId: string, kfsFeePercentage: number) => {
@@ -3633,7 +3651,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     <KFSContext.Provider value={{
       isClient, isBooting, view, setView, currentUser, setCurrentUser,
       toast, showToast, rates, updateBcvRates, db, setDb, formatUSD, formatEUR,
-      handleLogin, logout, registerClient, registerFreeUser, upgradeToPremium, registerPromotora, approvePromotora, rejectPromotora, settlePromotoraEarnings,
+      handleLogin, logout, registerClient, registerFreeUser, upgradeToPremium, registerPromotora, registerVendedor, approvePromotora, rejectPromotora, settlePromotoraEarnings,
       addProduct, addExpense, processPurchase, submitOnlineOrder, approveOrder, rejectOrder, dispatchOrder, generateZReport,
       originalUser, impersonateClient, stopImpersonating,
       networkState, setNetworkState, smsConciliator, registerCrmExpress,

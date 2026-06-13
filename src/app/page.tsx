@@ -4467,8 +4467,9 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 };
 
 // Promotora Dashboard
-const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToPremium, settlePromotoraEarnings, formatUSD, formatEUR, logout }: any) => {
+const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToPremium, settlePromotoraEarnings, formatUSD, formatEUR, logout, registerVendedor }: any) => {
   const [showRegister, setShowRegister] = useState(false);
+  const [showRegisterVendedor, setShowRegisterVendedor] = useState(false);
   const [showCustomerRegister, setShowCustomerRegister] = useState(false);
   const [searchClient, setSearchClient] = useState("");
   const [customizingClient, setCustomizingClient] = useState<any>(null);
@@ -4820,9 +4821,8 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
             <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
               <div className="w-40 h-40 bg-gray-100 rounded-xl flex items-center justify-center border-4 border-[#C5A184] flex-shrink-0">
                 {/* Mock QR */}
-                <div className="text-center">
-                  <QrCode size={64} className="mx-auto text-gray-800" />
-                  <p className="text-xs font-bold mt-2">Scan Me</p>
+                <div className="text-center w-full h-full flex flex-col items-center justify-center p-2">
+                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://kfs-os.vercel.app/#landing?ref=' + currentUser.id)}`} alt="QR Afiliado" className="w-full h-auto object-contain rounded-lg" />
                 </div>
               </div>
               <div className="flex-1">
@@ -4869,6 +4869,74 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
         </div>
       )}
 
+      {activeTab === "vendedores" && (
+        <div className="space-y-6">
+          {!showRegisterVendedor ? (
+            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 relative overflow-hidden">
+              <div className="flex justify-between items-center mb-8 border-b border-gray-100 pb-4">
+                <h3 className="text-xl font-black text-[#0A1128]">Vendedores Activados</h3>
+                <button onClick={() => setShowRegisterVendedor(true)} className="bg-[#0A1128] text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors shadow-md cursor-pointer">+ Nuevo Vendedor</button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                 {(db.vendedores || []).filter((v: any) => v.promotoraId === currentUser.id).map((v: any) => (
+                   <div key={v.id} className="p-4 border border-gray-100 rounded-xl bg-gray-50 flex justify-between items-center">
+                      <div>
+                        <p className="font-bold text-[#0A1128]">{v.name}</p>
+                        <p className="text-xs text-gray-500">{v.email}</p>
+                        {v.clientId && <p className="text-[10px] bg-[#C5A184] text-[#0A1128] font-bold px-2 py-0.5 rounded-md inline-block mt-1">Ref: {myClients.find((c: any) => c.id === v.clientId)?.company || v.clientId}</p>}
+                      </div>
+                      <span className="text-[10px] text-indigo-600 bg-indigo-50 px-2 py-1 rounded-full uppercase font-black">Activo</span>
+                   </div>
+                 ))}
+                 {(db.vendedores || []).filter((v: any) => v.promotoraId === currentUser.id).length === 0 && (
+                    <p className="text-sm text-gray-500">No hay vendedores registrados.</p>
+                 )}
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 max-w-2xl mx-auto">
+              <div className="flex justify-between mb-4 items-center">
+                <h3 className="text-xl font-black text-[#0A1128]">Activar Nuevo Vendedor</h3>
+                <button onClick={() => setShowRegisterVendedor(false)} className="text-gray-400 hover:text-black cursor-pointer"><X size={20}/></button>
+              </div>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const target = e.target as any;
+                registerVendedor({
+                  name: target.vName.value,
+                  email: target.vEmail.value,
+                  password: target.vPassword.value,
+                  promotoraId: currentUser.id,
+                  clientId: target.vClient.value || null
+                });
+                setShowRegisterVendedor(false);
+              }} className="space-y-4">
+                <div>
+                  <label className="text-xs font-bold text-gray-400 block mb-1">Nombre Completo</label>
+                  <input name="vName" required className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#C5A184]" placeholder="Ej: Vendedor Alpha" />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-400 block mb-1">Correo Electrónico (Login)</label>
+                  <input type="email" name="vEmail" required className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#C5A184]" placeholder="vendedor@kfs.com" />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-400 block mb-1">Contraseña</label>
+                  <input type="password" name="vPassword" required className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#C5A184]" placeholder="*****" />
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-gray-400 block mb-1">Asignar a Comercio (Opcional)</label>
+                  <select name="vClient" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#C5A184] text-gray-700">
+                    <option value="">Independiente (Sin Comercio Fijo)</option>
+                    {myClients.map((c: any) => <option key={c.id} value={c.id}>{c.company}</option>)}
+                  </select>
+                </div>
+                <button type="submit" className="w-full bg-[#0A1128] hover:bg-gray-800 transition-colors text-white py-4 rounded-xl font-black mt-6 shadow-md cursor-pointer">Activar y Registrar Vendedor</button>
+              </form>
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Customer Register Modal */}
       {showCustomerRegister && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
@@ -4902,6 +4970,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
           {[
             { id: "panel", icon: Activity, label: "Panel" },
             { id: "negocios", icon: Store, label: "Comercios", badge: myClients.length },
+            { id: "vendedores", icon: Briefcase, label: "Vendedores", badge: (db.vendedores || []).filter((v: any) => v.promotoraId === currentUser.id).length },
             { id: "afiliados", icon: Users, label: "Afiliados", badge: myCustomers.length }
           ].map(tab => {
             const Icon = tab.icon;
@@ -5941,10 +6010,11 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
     const reader = new FileReader();
     reader.onload = (event) => {
       const text = event.target?.result as string;
-      const lines = text.split('\n');
+      const lines = text.split(/\r?\n/);
       if (lines.length > 1) {
         const newProducts: any[] = [];
         lines.slice(1).forEach(line => {
+          if (!line.trim()) return;
           const cols = line.split(',');
           if (cols.length >= 2) {
             const name = cols[0]?.trim();
@@ -6102,10 +6172,22 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
   const submitProduct = (e: React.FormEvent) => {
     e.preventDefault();
+    const parsedPrice = parseFloat(newProd.price);
+    const parsedCost = parseFloat(newProd.cost) || 0;
+
+    if (isNaN(parsedPrice) || parsedPrice <= 0) {
+      showToast("El precio de venta debe ser mayor a 0", "error");
+      return;
+    }
+    if (parsedCost > 0 && parsedPrice <= parsedCost) {
+      showToast("El precio de venta debe ser mayor al costo de insumo", "error");
+      return;
+    }
+
     addProduct({
       name: newProd.name,
-      priceUSD: parseFloat(newProd.price),
-      costUSD: parseFloat(newProd.cost) || 0,
+      priceUSD: parsedPrice,
+      costUSD: parsedCost,
       stock: parseInt(newProd.stock) || 0,
       image: newProd.imgUrl || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60",
       clientId: currentUser.id,
@@ -6245,26 +6327,10 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                     <select
                       value={currentUser.kfsTier || 'velocity'}
                       onChange={(e) => changeTier(e.target.value)}
-                      disabled={!currentUser.isImpersonated}
+                      disabled={true}
                       className="bg-transparent text-sm font-black text-white focus:outline-none cursor-pointer disabled:opacity-80 disabled:cursor-not-allowed"
                     >
-                      {currentUser.isImpersonated ? (
-                        <>
-                          <option value="velocity" className="text-black font-bold bg-gray-100">Flow Velocity (3%)</option>
-                          <option value="matrix" className="text-black font-bold bg-gray-100">Flow Matrix (5%)</option>
-                          <option value="monopoly" className="text-black font-bold bg-gray-100">Flow Monopoly (10%)</option>
-                          <optgroup label="Tramo 1 (0.1% - 1.0%)" className="text-black bg-white">
-                            {[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0].map(val => (
-                              <option key={`t1_${val}`} value={`tramo_1_${val}`} className="text-black">Tramo 1 ({val}%)</option>
-                            ))}
-                          </optgroup>
-                          <optgroup label="Tramo 2 (1.5% - 12%)" className="text-black bg-white">
-                            {Array.from({length: 22}, (_, i) => 1.5 + (i * 0.5)).map(val => (
-                              <option key={`t2_${val}`} value={`tramo_2_${val}`} className="text-black">Tramo 2 ({val}%)</option>
-                            ))}
-                          </optgroup>
-                        </>
-                      ) : (
+                      {true ? (
                         <option value={currentUser.kfsTier || 'velocity'} className="text-black">
                           {currentUser.kfsTier === 'velocity' ? 'Flow Velocity (3%)' :
                            currentUser.kfsTier === 'matrix' ? 'Flow Matrix (5%)' :
@@ -6299,10 +6365,9 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   Logra que 50 clientes se afilien usando tu código o QR y tu comisión B2B se reducirá automáticamente al 3% de forma permanente.
                 </p>
               </div>
-              <div className="w-32 h-32 bg-gray-50 rounded-xl border-4 border-[#C5A184] flex items-center justify-center flex-shrink-0 text-center relative shadow-sm">
-                <div className="text-center">
-                  <QrCode size={48} className="mx-auto text-gray-800" />
-                  <p className="text-[10px] font-bold mt-1">Tu QR</p>
+              <div className="w-32 h-32 bg-gray-50 rounded-xl border-4 border-[#C5A184] flex items-center justify-center flex-shrink-0 text-center relative shadow-sm p-2">
+                <div className="text-center w-full h-full">
+                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://kfs-os.vercel.app/#landing?ref=' + currentUser.id)}`} alt="Tu QR" className="w-full h-full object-contain mix-blend-multiply rounded-lg" />
                 </div>
               </div>
             </div>
@@ -9263,6 +9328,7 @@ export default function Home() {
           formatEUR={formatEUR}
           logout={logout}
           requestPayout={requestPayout}
+          registerVendedor={registerVendedor}
         />
       )}
       {safeView === "client" && (

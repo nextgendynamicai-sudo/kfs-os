@@ -9,6 +9,7 @@ interface ProductItem {
   priceUSD: number;
   pointsPrice: number;
   icon: any;
+  image?: string;
   description: string;
 }
 
@@ -32,6 +33,7 @@ export function FlowExpressCatalog({ currentUser, formatUSD }: FlowExpressCatalo
       priceUSD: 0.50,
       pointsPrice: 500,
       icon: BookOpen,
+      image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&q=80&w=800",
       description: "Aprende los fundamentos del float financiero y la liquidez prepagada en 15 minutos."
     },
     {
@@ -40,6 +42,7 @@ export function FlowExpressCatalog({ currentUser, formatUSD }: FlowExpressCatalo
       priceUSD: 5.00,
       pointsPrice: 5000,
       icon: FileText,
+      image: "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&q=80&w=800",
       description: "Contratos de co-pago y formatos de facturación fiscal listos para imprimir y usar."
     },
     {
@@ -48,6 +51,7 @@ export function FlowExpressCatalog({ currentUser, formatUSD }: FlowExpressCatalo
       priceUSD: 8.00,
       pointsPrice: 8000,
       icon: Award,
+      image: "https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&q=80&w=800",
       description: "Sesión estratégica remota con un asesor especializado en escalamiento y optimización de caja."
     },
     {
@@ -56,6 +60,7 @@ export function FlowExpressCatalog({ currentUser, formatUSD }: FlowExpressCatalo
       priceUSD: 10.00,
       pointsPrice: 10000,
       icon: Star,
+      image: "https://images.unsplash.com/photo-1620712943543-bcc4688e7485?auto=format&fit=crop&q=80&w=800",
       description: "Script generativo de IA para descripciones de tienda e integraciones de API BCV."
     }
   ];
@@ -123,26 +128,31 @@ export function FlowExpressCatalog({ currentUser, formatUSD }: FlowExpressCatalo
           return (
             <div
               key={p.id}
-              className="bg-black/35 border border-white/5 rounded-2xl p-5 flex flex-col justify-between hover:border-[#C5A184]/40 transition-all gap-4 group"
+              className="bg-black/35 border border-white/5 rounded-2xl overflow-hidden flex flex-col justify-between hover:border-[#C5A184]/40 transition-all group shadow-md"
             >
-              <div className="space-y-2">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-[#C5A184]/10 text-[#C5A184] flex items-center justify-center font-bold">
-                    <Icon size={20} />
+              <div>
+                {p.image && (
+                  <div className="h-32 w-full relative overflow-hidden bg-[#0A1128]">
+                    <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                    <div className="absolute top-2 right-2 w-8 h-8 rounded-lg bg-black/60 backdrop-blur-sm text-[#C5A184] flex items-center justify-center shadow-lg border border-white/10">
+                      <Icon size={16} />
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="font-black text-gray-100 text-sm md:text-base group-hover:text-[#C5A184] transition-colors">
-                      {p.name}
-                    </h4>
-                    <p className="text-[10px] text-gray-500 font-mono">
-                      {p.pointsPrice.toLocaleString()} KP / {formatUSD(p.priceUSD)}
-                    </p>
-                  </div>
+                )}
+                <div className="p-5 space-y-2">
+                  <h4 className="font-black text-gray-100 text-sm md:text-base group-hover:text-[#C5A184] transition-colors leading-tight">
+                    {p.name}
+                  </h4>
+                  <p className="text-[10px] text-gray-500 font-mono">
+                    {p.pointsPrice.toLocaleString()} KP / {formatUSD(p.priceUSD)}
+                  </p>
+                  <p className="text-xs text-gray-400 leading-relaxed mt-2">
+                    {p.description}
+                  </p>
                 </div>
-                <p className="text-xs text-gray-400 leading-relaxed">
-                  {p.description}
-                </p>
               </div>
+              
+              <div className="p-5 pt-0 mt-auto">
 
               {isOwned ? (
                 <div className="w-full bg-green-500/10 border border-green-500/30 text-green-400 font-black text-xs py-3 rounded-xl flex items-center justify-center gap-2">
@@ -156,6 +166,7 @@ export function FlowExpressCatalog({ currentUser, formatUSD }: FlowExpressCatalo
                   Adquirir con Pago Híbrido
                 </button>
               )}
+              </div>
             </div>
           );
         })}

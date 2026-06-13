@@ -4,10 +4,18 @@ import { compressImage } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useKFS } from '../context/KFSContext';
 
-export const TopUpModal = ({ isOpen, onClose, amount, setAmount, onSubmit, userType }: any) => {
+export const TopUpModal = ({ isOpen, onClose, amount: initialAmount, onSubmit, userType }: any) => {
   const { showToast } = useKFS() as any;
   const [screenshot, setScreenshot] = useState("");
   const [reference, setReference] = useState("");
+  const [localAmount, setLocalAmount] = useState(initialAmount || "");
+
+  // Update localAmount when modal opens with a pre-filled amount
+  React.useEffect(() => {
+    if (isOpen) {
+      setLocalAmount(initialAmount || "");
+    }
+  }, [isOpen, initialAmount]);
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -23,12 +31,12 @@ export const TopUpModal = ({ isOpen, onClose, amount, setAmount, onSubmit, userT
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount || amount <= 0) return showToast("Ingresa un monto válido", "error");
+    if (!localAmount || parseFloat(localAmount) <= 0) return showToast("Ingresa un monto válido", "error");
     if (!reference) return showToast("Ingresa el número de referencia", "error");
     if (!screenshot) return showToast("Sube el comprobante de pago", "error");
 
-    onSubmit(parseFloat(amount), reference, screenshot);
-    setAmount("");
+    onSubmit(parseFloat(localAmount), reference, screenshot);
+    setLocalAmount("");
     setReference("");
     setScreenshot("");
     onClose();
@@ -65,7 +73,7 @@ export const TopUpModal = ({ isOpen, onClose, amount, setAmount, onSubmit, userT
                 <label className="text-xs font-bold text-gray-400 block mb-1">Monto a Recargar (USD)</label>
                 <div className="relative">
                   <DollarSign size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <input type="number" step="any" min="1" required value={amount} onChange={(e) => setAmount(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white font-black text-lg focus:outline-none focus:border-[#C5A184] transition-colors" placeholder="0.00" />
+                  <input type="number" step="any" min="1" required value={localAmount} onChange={(e) => setLocalAmount(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white font-black text-lg focus:outline-none focus:border-[#C5A184] transition-colors" placeholder="0.00" />
                 </div>
               </div>
 
