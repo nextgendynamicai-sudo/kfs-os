@@ -28,8 +28,8 @@ const LiveMap = dynamic(() => import('../components/LiveMap'), { ssr: false });
 
 // Theme and Global Constants
 const KREATEK_COLORS = {
-  navy: "#0A1128",
-  bronze: "#C5A184",
+  navy: "violet-900",
+  bronze: "violet-600",
   white: "#F8F9FA"
 };
 
@@ -52,7 +52,7 @@ const KREATEK_COLORS = {
 const Toast = ({ toast }: { toast: any }) => {
   if (!toast.show) return null;
   return (
-    <div className={`fixed top-6 left-1/2 -translate-x-1/2 z-[9999] px-6 py-3 rounded-full shadow-2xl backdrop-blur-md font-bold text-sm transition-all duration-300 flex items-center gap-2 ${toast.type === "error" ? "bg-red-500/90 text-white border border-red-400" : "bg-[#C5A184]/90 text-[#0A1128] border border-white/20"}`}>
+    <div className={`fixed top-6 left-1/2 -translate-x-1/2 z-[9999] px-6 py-3 rounded-full shadow-2xl backdrop-blur-md font-bold text-sm transition-all duration-300 flex items-center gap-2 ${toast.type === "error" ? "bg-red-500/90 text-white border border-red-400" : "bg-[violet-600]/90 text-[violet-900] border border-white/20"}`}>
       {toast.type === "success" ? <CheckCircle size={18} /> : <Activity size={18} />}
       {toast.message}
     </div>
@@ -88,27 +88,27 @@ const CvViewerModal = ({ isOpen, onClose, candidate }: any) => {
               @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800;900&display=swap');
               body {
                 font-family: 'Outfit', sans-serif;
-                color: #0A1128;
+                color: violet-900;
                 background: white;
                 margin: 40px;
                 line-height: 1.5;
                 font-size: 14px;
               }
               .header {
-                border-bottom: 2px solid #C5A184;
+                border-bottom: 2px solid violet-600;
                 padding-bottom: 20px;
                 margin-bottom: 25px;
               }
               .name {
                 font-size: 28px;
                 font-weight: 900;
-                color: #0A1128;
+                color: violet-900;
                 margin: 0;
               }
               .role {
                 font-size: 16px;
                 font-weight: 800;
-                color: #C5A184;
+                color: violet-600;
                 text-transform: uppercase;
                 letter-spacing: 1px;
                 margin-top: 5px;
@@ -126,7 +126,7 @@ const CvViewerModal = ({ isOpen, onClose, candidate }: any) => {
                 font-weight: 800;
                 text-transform: uppercase;
                 letter-spacing: 1px;
-                color: #0A1128;
+                color: violet-900;
                 border-bottom: 1px solid #eee;
                 padding-bottom: 5px;
                 margin-top: 25px;
@@ -146,7 +146,7 @@ const CvViewerModal = ({ isOpen, onClose, candidate }: any) => {
               .skill-tag {
                 background: #F4F4F6;
                 border: 1px solid #E4E4E7;
-                color: #0A1128;
+                color: violet-900;
                 padding: 4px 10px;
                 border-radius: 8px;
                 font-size: 11px;
@@ -166,13 +166,13 @@ const CvViewerModal = ({ isOpen, onClose, candidate }: any) => {
               }
               .grid-label {
                 font-weight: 800;
-                color: #C5A184;
+                color: violet-600;
                 text-transform: uppercase;
                 font-size: 9px;
               }
               .grid-value {
                 font-weight: 600;
-                color: #0A1128;
+                color: violet-900;
                 margin-top: 2px;
               }
               .footer {
@@ -208,17 +208,17 @@ const CvViewerModal = ({ isOpen, onClose, candidate }: any) => {
 
   return (
     <div className="fixed inset-0 z-[10000] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="bg-white text-[#0A1128] rounded-[2rem] w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-white/20 animate-scale-up">
+      <div className="bg-white text-[violet-900] rounded-[2rem] w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-white/20 animate-scale-up">
         {/* Modal Actions */}
         <div className="bg-gray-50 border-b border-gray-100 p-5 flex justify-between items-center shrink-0">
           <div>
-            <h3 className="font-black text-lg text-[#0A1128]">Previsualizar CV Digital</h3>
+            <h3 className="font-black text-lg text-[violet-900]">Previsualizar CV Digital</h3>
             <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Generador de PDF KFS OS</p>
           </div>
           <div className="flex gap-2">
             <button
               onClick={handlePrint}
-              className="bg-[#0A1128] text-white hover:bg-gray-800 px-4 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-md transition-colors"
+              className="bg-[violet-900] text-white hover:bg-gray-800 px-4 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-md transition-colors"
             >
               🖨️ Imprimir / PDF
             </button>
@@ -371,12 +371,12 @@ const SMSConciliatorSimulator = () => {
         const flash = document.createElement("div");
         flash.className = "fixed inset-0 pointer-events-none z-[99999] flex items-center justify-center animate-fade-in";
         flash.innerHTML = `
-          <div class="absolute inset-0 bg-[#C5A184]/20 backdrop-blur-sm transition-all duration-1000"></div>
-          <div class="bg-[#0A1128] border-2 border-[#C5A184] p-10 rounded-[3rem] shadow-2xl flex flex-col items-center justify-center max-w-sm text-center transform scale-95 animate-scale-up animate-pulse" style="box-shadow: 0 0 50px rgba(197, 161, 132, 0.4)">
-            <div class="w-16 h-16 bg-[#C5A184]/20 rounded-full flex items-center justify-center mb-4">
+          <div class="absolute inset-0 bg-[violet-600]/20 backdrop-blur-sm transition-all duration-1000"></div>
+          <div class="bg-[violet-900] border-2 border-[violet-600] p-10 rounded-[3rem] shadow-2xl flex flex-col items-center justify-center max-w-sm text-center transform scale-95 animate-scale-up animate-pulse" style="box-shadow: 0 0 50px rgba(197, 161, 132, 0.4)">
+            <div class="w-16 h-16 bg-[violet-600]/20 rounded-full flex items-center justify-center mb-4">
               <span class="text-3xl">🛎️</span>
             </div>
-            <h2 class="text-2xl font-black text-[#C5A184] mb-2 uppercase tracking-widest">Pago Conciliado</h2>
+            <h2 class="text-2xl font-black text-[violet-600] mb-2 uppercase tracking-widest">Pago Conciliado</h2>
             <p class="text-xs text-white/80 font-mono mb-4">Smart SMS Sync Engine</p>
             <div class="bg-white/5 border border-white/10 p-4 rounded-2xl w-full mb-2">
               <span class="text-[10px] text-gray-400 font-bold block uppercase">Referencia</span>
@@ -405,7 +405,7 @@ const SMSConciliatorSimulator = () => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 left-6 z-[80] w-14 h-14 bg-gradient-to-br from-[#C5A184] to-[#a38063] rounded-full shadow-[0_4px_20px_rgba(197,161,132,0.4)] flex items-center justify-center text-[#0A1128] hover:scale-110 active:scale-95 transition-all cursor-pointer group animate-bounce"
+        className="fixed bottom-6 left-6 z-[80] w-14 h-14 bg-gradient-to-br from-[violet-600] to-[#a38063] rounded-full shadow-[0_4px_20px_rgba(197,161,132,0.4)] flex items-center justify-center text-[violet-900] hover:scale-110 active:scale-95 transition-all cursor-pointer group animate-bounce"
         style={{ animationDuration: '3s' }}
       >
         <span className="text-2xl group-hover:rotate-12 transition-transform">🛎️</span>
@@ -415,13 +415,13 @@ const SMSConciliatorSimulator = () => {
       </button>
 
       {isOpen && (
-        <div className="fixed inset-y-0 left-0 w-full max-w-sm bg-[#0A1128]/95 backdrop-blur-xl border-r border-white/10 z-[90] shadow-2xl p-6 overflow-y-auto animate-slide-right flex flex-col justify-between text-white">
+        <div className="fixed inset-y-0 left-0 w-full max-w-sm bg-[violet-900]/95 backdrop-blur-xl border-r border-white/10 z-[90] shadow-2xl p-6 overflow-y-auto animate-slide-right flex flex-col justify-between text-white">
           <div className="space-y-6">
             <div className="flex justify-between items-center border-b border-white/10 pb-4">
               <div className="flex items-center gap-2">
                 <span className="text-xl">🛎️</span>
                 <div>
-                  <h3 className="font-black text-sm tracking-wide text-[#C5A184]">KFS SMART CONCILIATOR</h3>
+                  <h3 className="font-black text-sm tracking-wide text-[violet-600]">KFS SMART CONCILIATOR</h3>
                   <p className="text-[9px] text-gray-400 font-mono">Simulador de Telemetría SMS</p>
                 </div>
               </div>
@@ -429,7 +429,7 @@ const SMSConciliatorSimulator = () => {
             </div>
 
             <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3">
-              <span className="text-[10px] font-black text-[#C5A184] uppercase tracking-widest block font-mono">Órdenes Pendientes</span>
+              <span className="text-[10px] font-black text-[violet-600] uppercase tracking-widest block font-mono">Órdenes Pendientes</span>
               {pendingOrders.length === 0 ? (
                 <p className="text-xs text-gray-400 font-bold">No hay órdenes online pendientes. Crea una en Flow Express para probar el auto-llenado.</p>
               ) : (
@@ -439,7 +439,7 @@ const SMSConciliatorSimulator = () => {
                       key={o.id}
                       type="button"
                       onClick={() => handleAutofillReference(o.paymentReference, o.amountUSD, o.customerPhone)}
-                      className="w-full text-left bg-white/5 hover:bg-[#C5A184]/15 border border-white/10 p-2.5 rounded-xl transition-all flex justify-between items-center group cursor-pointer"
+                      className="w-full text-left bg-white/5 hover:bg-[violet-600]/15 border border-white/10 p-2.5 rounded-xl transition-all flex justify-between items-center group cursor-pointer"
                     >
                       <div>
                         <span className="text-[9px] font-mono block text-gray-400 group-hover:text-white">Ref: {o.paymentReference}</span>
@@ -458,7 +458,7 @@ const SMSConciliatorSimulator = () => {
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Banco</label>
-                  <select value={bank} onChange={e => setBank(e.target.value)} className="w-full bg-[#0A1128] border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-[#C5A184] text-white">
+                  <select value={bank} onChange={e => setBank(e.target.value)} className="w-full bg-[violet-900] border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-[violet-600] text-white">
                     <option value="Mercantil">Mercantil</option>
                     <option value="Banesco">Banesco</option>
                     <option value="Provincial">Provincial</option>
@@ -467,18 +467,18 @@ const SMSConciliatorSimulator = () => {
                 </div>
                 <div>
                   <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Monto (Bs o $)</label>
-                  <input type="text" value={amount} onChange={e => setAmount(e.target.value)} className="w-full bg-[#0A1128] border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-[#C5A184] text-white font-mono" />
+                  <input type="text" value={amount} onChange={e => setAmount(e.target.value)} className="w-full bg-[violet-900] border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-[violet-600] text-white font-mono" />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Referencia</label>
-                  <input type="text" value={reference} onChange={e => setReference(e.target.value)} className="w-full bg-[#0A1128] border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-[#C5A184] text-white font-mono" placeholder="Ej: 123456" />
+                  <input type="text" value={reference} onChange={e => setReference(e.target.value)} className="w-full bg-[violet-900] border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-[violet-600] text-white font-mono" placeholder="Ej: 123456" />
                 </div>
                 <div>
                   <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Teléfono Emisor</label>
-                  <input type="text" value={phone} onChange={e => setPhone(e.target.value)} className="w-full bg-[#0A1128] border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-[#C5A184] text-white font-mono" />
+                  <input type="text" value={phone} onChange={e => setPhone(e.target.value)} className="w-full bg-[violet-900] border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-[violet-600] text-white font-mono" />
                 </div>
               </div>
 
@@ -488,7 +488,7 @@ const SMSConciliatorSimulator = () => {
                   value={customSMS}
                   onChange={e => setCustomSMS(e.target.value)}
                   rows={3}
-                  className="w-full bg-[#0A1128] border border-white/20 rounded-lg p-2.5 text-xs focus:outline-none focus:border-[#C5A184] text-white font-mono"
+                  className="w-full bg-[violet-900] border border-white/20 rounded-lg p-2.5 text-xs focus:outline-none focus:border-[violet-600] text-white font-mono"
                 />
               </div>
             </div>
@@ -511,7 +511,7 @@ const SMSConciliatorSimulator = () => {
             <button
               type="button"
               onClick={handleSimulateSync}
-              className="w-full py-4 bg-gradient-to-br from-[#C5A184] to-[#a38063] text-[#0A1128] font-black rounded-xl text-xs hover:scale-[1.02] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer"
+              className="w-full py-4 bg-gradient-to-br from-[violet-600] to-[#a38063] text-[violet-900] font-black rounded-xl text-xs hover:scale-[1.02] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer"
             >
               🚀 Detonar Conciliación Zero-Clic
             </button>
@@ -540,14 +540,14 @@ const KFSFinancialSplitCalculator = ({ formatUSD, formatEUR, clientFeePercentage
   const finalNetEUR = kfsNetEUR - adBudgetEUR;
 
   return (
-    <div className="bg-[#0A1128] text-white p-6 md:p-8 rounded-[2rem] border border-[#C5A184]/30 shadow-2xl relative overflow-hidden animate-fade-in w-full">
+    <div className="bg-[violet-900] text-white p-6 md:p-8 rounded-[2rem] border border-[violet-600]/30 shadow-2xl relative overflow-hidden animate-fade-in w-full">
       <div className="relative z-10 space-y-6">
-        <div className="flex justify-between items-center border-b border-[#C5A184]/20 pb-4">
+        <div className="flex justify-between items-center border-b border-[violet-600]/20 pb-4">
           <div>
-            <h3 className="text-lg font-black text-[#C5A184] tracking-wide uppercase">Oráculo Financiero & Splits</h3>
+            <h3 className="text-lg font-black text-[violet-600] tracking-wide uppercase">Oráculo Financiero & Splits</h3>
             <p className="text-[10px] text-gray-400 font-mono">Simulador de Ecosistema KFS OS</p>
           </div>
-          <span className="bg-[#C5A184]/15 border border-[#C5A184]/30 text-[#C5A184] text-[9px] font-black px-2 py-1 rounded-full uppercase tracking-wider font-mono">Fórmula SaaS + POS</span>
+          <span className="bg-[violet-600]/15 border border-[violet-600]/30 text-[violet-600] text-[9px] font-black px-2 py-1 rounded-full uppercase tracking-wider font-mono">Fórmula SaaS + POS</span>
         </div>
 
         {/* Interactive controls */}
@@ -561,9 +561,9 @@ const KFSFinancialSplitCalculator = ({ formatUSD, formatEUR, clientFeePercentage
                 max="1000"
                 value={inputAmt}
                 onChange={(e) => setInputAmt(parseInt(e.target.value))}
-                className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#C5A184]"
+                className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[violet-600]"
               />
-              <span className="text-xl font-black font-mono text-[#C5A184] min-w-[70px] text-right">${inputAmt}</span>
+              <span className="text-xl font-black font-mono text-[violet-600] min-w-[70px] text-right">${inputAmt}</span>
             </div>
           </div>
 
@@ -575,7 +575,7 @@ const KFSFinancialSplitCalculator = ({ formatUSD, formatEUR, clientFeePercentage
                   key={pct}
                   type="button"
                   onClick={() => setFeePercentage(pct)}
-                  className={`py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${feePercentage === pct ? "bg-[#C5A184] text-[#0A1128]" : "bg-white/5 text-[#C5A184] border border-[#C5A184]/20 hover:bg-white/10"}`}
+                  className={`py-2 rounded-xl text-xs font-black transition-all cursor-pointer ${feePercentage === pct ? "bg-[violet-600] text-[violet-900]" : "bg-white/5 text-[violet-600] border border-[violet-600]/20 hover:bg-white/10"}`}
                 >
                   {pct * 100}%
                 </button>
@@ -585,7 +585,7 @@ const KFSFinancialSplitCalculator = ({ formatUSD, formatEUR, clientFeePercentage
         </div>
 
         {/* Real-time splits visualization */}
-        <div className="space-y-4 pt-4 border-t border-[#C5A184]/15">
+        <div className="space-y-4 pt-4 border-t border-[violet-600]/15">
           <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block font-mono">Distribución del Flujo de Capital</span>
 
           {/* 1. Commerce share */}
@@ -602,7 +602,7 @@ const KFSFinancialSplitCalculator = ({ formatUSD, formatEUR, clientFeePercentage
           {/* 2. Total KFS Fee split */}
           <div className="bg-white/5 border border-white/10 p-5 rounded-2xl space-y-4">
             <div className="flex justify-between items-center border-b border-white/10 pb-2">
-              <span className="text-xs font-black text-[#C5A184]">Comisión Total Kreatek KFS</span>
+              <span className="text-xs font-black text-[violet-600]">Comisión Total Kreatek KFS</span>
               <span className="text-red-400 font-mono font-black text-sm">{formatUSD(kfsFeeTotalUSD)}</span>
             </div>
             <p className="text-[9px] text-gray-400 leading-normal mb-2">Se distribuye en caliente de forma instantánea al registrar el cobro:</p>
@@ -620,8 +620,8 @@ const KFSFinancialSplitCalculator = ({ formatUSD, formatEUR, clientFeePercentage
                 <span className="text-[8px] text-gray-500 font-mono block">Inyección de Campañas</span>
               </div>
 
-              <div className="bg-[#C5A184]/10 border border-[#C5A184]/20 p-3 rounded-xl">
-                <span className="text-[9px] text-[#C5A184] font-black block uppercase tracking-wider">Arquitecto (Neto Neto)</span>
+              <div className="bg-[violet-600]/10 border border-[violet-600]/20 p-3 rounded-xl">
+                <span className="text-[9px] text-[violet-600] font-black block uppercase tracking-wider">Arquitecto (Neto Neto)</span>
                 <span className="text-sm font-black text-green-400 block mt-1">{formatEUR(finalNetEUR)}</span>
                 <span className="text-[8px] text-gray-400 font-mono block">Ganancia Neta KFS</span>
               </div>
@@ -688,7 +688,7 @@ const FiscalPrinterSetupWidget = () => {
             <Shield size={24} />
           </div>
           <div>
-            <h3 className="font-black text-sm text-[#0A1128] uppercase tracking-wider">🛡️ Sincro-Shield Fiscal (SENIAT)</h3>
+            <h3 className="font-black text-sm text-[violet-900] uppercase tracking-wider">🛡️ Sincro-Shield Fiscal (SENIAT)</h3>
             <p className="text-[10px] text-gray-500 mt-1">Conexión con impresoras fiscales de Venezuela en red local.</p>
           </div>
         </div>
@@ -706,13 +706,13 @@ const FiscalPrinterSetupWidget = () => {
                 type="text"
                 value={proxyUrl}
                 onChange={(e) => setProxyUrl(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-xs text-gray-900 focus:outline-none font-mono"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-xs text-gray-900 focus:outline-none font-mono"
               />
               <button
                 type="button"
                 onClick={testConnection}
                 disabled={testing}
-                className="bg-[#0A1128] text-white px-4 rounded-xl font-bold text-xs hover:bg-gray-800 disabled:opacity-50 flex-shrink-0 cursor-pointer"
+                className="bg-[violet-900] text-white px-4 rounded-xl font-bold text-xs hover:bg-gray-800 disabled:opacity-50 flex-shrink-0 cursor-pointer"
               >
                 {testing ? "Probando..." : "Probar"}
               </button>
@@ -720,7 +720,7 @@ const FiscalPrinterSetupWidget = () => {
           </div>
 
           <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 font-mono text-[9px] text-gray-500 space-y-1">
-            <p className="font-bold text-[#0A1128] uppercase tracking-wider text-[8px]">Telemetría Local:</p>
+            <p className="font-bold text-[violet-900] uppercase tracking-wider text-[8px]">Telemetría Local:</p>
             {details ? (
               <>
                 <p>• Impresora: <span className="text-green-600 font-bold">{details.model}</span></p>
@@ -733,14 +733,14 @@ const FiscalPrinterSetupWidget = () => {
           </div>
         </div>
 
-        <div className="bg-[#0A1128] text-white p-4 rounded-xl border border-white/5 flex flex-col justify-between">
+        <div className="bg-[violet-900] text-white p-4 rounded-xl border border-white/5 flex flex-col justify-between">
           <p className="text-[10px] text-gray-300 leading-relaxed">
             Descarga el script `fiscal-proxy.js` y ejecútalo en la PC que tenga la impresora fiscal física conectada por serial.
           </p>
           <button
             type="button"
             onClick={downloadProxyScript}
-            className="w-full mt-2 py-2 bg-[#C5A184] hover:bg-[#b08e72] text-[#0A1128] font-black rounded-lg text-xs transition-colors cursor-pointer text-center"
+            className="w-full mt-2 py-2 bg-[violet-600] hover:bg-[#b08e72] text-[violet-900] font-black rounded-lg text-xs transition-colors cursor-pointer text-center"
           >
             Descargar fiscal-proxy.js
           </button>
@@ -817,13 +817,13 @@ const KFSIoTEdgeConsole = ({ showToast }: { showToast: any }) => {
   };
 
   return (
-    <div className="bg-[#0A1128] text-white p-6 rounded-[2rem] border border-white/10 shadow-2xl relative overflow-hidden animate-fade-in w-full">
+    <div className="bg-[violet-900] text-white p-6 rounded-[2rem] border border-white/10 shadow-2xl relative overflow-hidden animate-fade-in w-full">
       <div className="relative z-10 space-y-6">
         <div className="flex justify-between items-center border-b border-white/10 pb-4">
           <div className="flex items-center gap-2">
             <span className="text-xl">🎛️</span>
             <div>
-              <h3 className="text-sm font-black text-[#C5A184] tracking-wide uppercase">CONEXIÓN IoT EDGE & HARDWARE</h3>
+              <h3 className="text-sm font-black text-[violet-600] tracking-wide uppercase">CONEXIÓN IoT EDGE & HARDWARE</h3>
               <p className="text-[9px] text-gray-400 font-mono">Controladores de Caja y Gaveta de 5V</p>
             </div>
           </div>
@@ -841,7 +841,7 @@ const KFSIoTEdgeConsole = ({ showToast }: { showToast: any }) => {
               type="button"
               onClick={handleScanUSB}
               disabled={isScanningUSB}
-              className="w-full py-3 bg-white/5 hover:bg-[#C5A184]/15 border border-white/15 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+              className="w-full py-3 bg-white/5 hover:bg-[violet-600]/15 border border-white/15 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
             >
               🔌 {isScanningUSB ? "Buscando USB..." : "Conectar Tiquetera USB (WebUSB)"}
             </button>
@@ -850,7 +850,7 @@ const KFSIoTEdgeConsole = ({ showToast }: { showToast: any }) => {
               type="button"
               onClick={handleScanBluetooth}
               disabled={isScanningBT}
-              className="w-full py-3 bg-white/5 hover:bg-[#C5A184]/15 border border-white/15 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+              className="w-full py-3 bg-white/5 hover:bg-[violet-600]/15 border border-white/15 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
             >
               📡 {isScanningBT ? "Escaneando BT..." : "Vincular por Bluetooth (WebBluetooth)"}
             </button>
@@ -865,7 +865,7 @@ const KFSIoTEdgeConsole = ({ showToast }: { showToast: any }) => {
                   <span className="flex items-center gap-1.5">
                     <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block"></span> {dev}
                   </span>
-                  <span className="text-[8px] text-[#C5A184] uppercase font-black">Activo</span>
+                  <span className="text-[8px] text-[violet-600] uppercase font-black">Activo</span>
                 </div>
               ))}
             </div>
@@ -969,7 +969,7 @@ const Navbar = ({ title, showBack = false, onBack }: { title?: string, showBack?
           <span className="font-normal">{latestNotif.message}</span>
         </div>
       )}
-      <nav className="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-white/5 bg-[#0A1128] sticky top-0 z-40 backdrop-blur-md gap-3 w-full">
+      <nav className="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-white/5 bg-[violet-900] sticky top-0 z-40 backdrop-blur-md gap-3 w-full">
         <div className="flex items-center gap-3">
           {showBack && (
             <button
@@ -1002,7 +1002,7 @@ const Navbar = ({ title, showBack = false, onBack }: { title?: string, showBack?
           {title && <span className="text-white/80 text-xs sm:text-sm uppercase tracking-wider font-mono bg-white/5 px-3 py-1.5 rounded-full">{title}</span>}
 
           {currentUser && currentUser.role !== "marketplace" && (
-            <label className="relative w-8 h-8 rounded-full border border-[#C5A184]/50 cursor-pointer overflow-hidden flex items-center justify-center bg-white/10 hover:bg-white/20 transition-all shadow-inner group" title="Toca tu foto para actualizar tu imagen de perfil">
+            <label className="relative w-8 h-8 rounded-full border border-[violet-600]/50 cursor-pointer overflow-hidden flex items-center justify-center bg-white/10 hover:bg-white/20 transition-all shadow-inner group" title="Toca tu foto para actualizar tu imagen de perfil">
               <input
                 type="file"
                 accept="image/*"
@@ -1041,7 +1041,7 @@ const Navbar = ({ title, showBack = false, onBack }: { title?: string, showBack?
               {currentUser.avatar ? (
                 <img src={currentUser.avatar} className="w-full h-full object-cover" alt="Perfil" />
               ) : (
-                <div className="w-full h-full bg-[#C5A184] text-[#0A1128] font-black text-[10px] flex items-center justify-center">
+                <div className="w-full h-full bg-[violet-600] text-[violet-900] font-black text-[10px] flex items-center justify-center">
                   {currentUser.name ? currentUser.name.slice(0, 2).toUpperCase() : (currentUser.company ? currentUser.company.slice(0, 2).toUpperCase() : "KF")}
                 </div>
               )}
@@ -1093,10 +1093,10 @@ const RegisterClientForm = ({ onRegister, onCancel, standalone = true, defaultRe
 
   return (
     <form onSubmit={(e) => { e.preventDefault(); if (acceptedToS) onRegister(formData, defaultReferralCode, 0.03); else alert("Debes aceptar los Términos de Servicio y Privacidad."); }} className={`space-y-3 ${standalone ? "text-white animate-fade-in" : "text-gray-800"}`}>
-      <h3 className={`text-lg font-black mb-4 border-b pb-2 ${standalone ? "text-[#C5A184] border-[#C5A184]/30" : "text-[#0A1128] border-gray-200"}`}>Setup de Nuevo Comercio</h3>
+      <h3 className={`text-lg font-black mb-4 border-b pb-2 ${standalone ? "text-[violet-600] border-[violet-600]/30" : "text-[violet-900] border-gray-200"}`}>Setup de Nuevo Comercio</h3>
 
       <div className="flex flex-col items-center gap-2 mb-4">
-        <label className="relative w-20 h-20 rounded-full border-2 border-dashed border-[#C5A184]/50 cursor-pointer overflow-hidden flex items-center justify-center bg-[#0A1128]/40 hover:bg-[#0A1128]/60 transition-colors group">
+        <label className="relative w-20 h-20 rounded-full border-2 border-dashed border-[violet-600]/50 cursor-pointer overflow-hidden flex items-center justify-center bg-[violet-900]/40 hover:bg-[violet-900]/60 transition-colors group">
           <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
           {avatar ? (
             <img src={avatar} className="w-full h-full object-cover" alt="Avatar" />
@@ -1111,12 +1111,12 @@ const RegisterClientForm = ({ onRegister, onCancel, standalone = true, defaultRe
       </div>
 
       <div className="flex flex-col items-center gap-2 mb-4">
-        <label className={`relative w-full h-20 rounded-xl border-2 border-dashed border-[#C5A184]/50 cursor-pointer overflow-hidden flex items-center justify-center transition-colors group ${standalone ? "bg-[#0A1128]/40 hover:bg-[#0A1128]/60" : "bg-gray-50 hover:bg-gray-100"}`}>
+        <label className={`relative w-full h-20 rounded-xl border-2 border-dashed border-[violet-600]/50 cursor-pointer overflow-hidden flex items-center justify-center transition-colors group ${standalone ? "bg-[violet-900]/40 hover:bg-[violet-900]/60" : "bg-gray-50 hover:bg-gray-100"}`}>
           <input type="file" accept="image/*" className="hidden" onChange={handleCedulaChange} required />
           {kycCedula ? (
             <img src={kycCedula} className="w-full h-full object-cover opacity-80" alt="Cédula" />
           ) : (
-            <div className={`text-center transition-colors ${standalone ? "text-gray-400 group-hover:text-white" : "text-gray-500 group-hover:text-[#0A1128]"}`}>
+            <div className={`text-center transition-colors ${standalone ? "text-gray-400 group-hover:text-white" : "text-gray-500 group-hover:text-[violet-900]"}`}>
               <Camera size={24} className="mx-auto" />
               <span className="text-[10px] font-bold block mt-1">Subir Cédula del Representante (KYC)</span>
             </div>
@@ -1124,35 +1124,35 @@ const RegisterClientForm = ({ onRegister, onCancel, standalone = true, defaultRe
         </label>
       </div>
 
-      <input required placeholder="Nombre Completo" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, name: e.target.value })} />
-      <input required placeholder="Cédula / RIF" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, idCard: e.target.value })} />
-      <input required placeholder="Nombre de la Empresa" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, company: e.target.value })} />
-      <textarea required placeholder="Dirección Comercial" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, address: e.target.value })} />
-      <input required type="number" placeholder="Facturación Promedio Diaria ($)" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, avgBilling: e.target.value })} />
+      <input required placeholder="Nombre Completo" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+      <input required placeholder="Cédula / RIF" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, idCard: e.target.value })} />
+      <input required placeholder="Nombre de la Empresa" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, company: e.target.value })} />
+      <textarea required placeholder="Dirección Comercial" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, address: e.target.value })} />
+      <input required type="number" placeholder="Facturación Promedio Diaria ($)" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, avgBilling: e.target.value })} />
 
       <div className="flex flex-col mb-2">
         <label className={`text-xs font-bold mb-2 uppercase tracking-widest ${standalone ? "text-gray-400" : "text-gray-500"}`}>Tarifa BOS (Comisión Kreatek)</label>
-        <select required value={formData.kfsFeePercentage} onChange={e => setFormData({ ...formData, kfsFeePercentage: parseFloat(e.target.value) })} className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all font-bold ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`}>
+        <select required value={formData.kfsFeePercentage} onChange={e => setFormData({ ...formData, kfsFeePercentage: parseFloat(e.target.value) })} className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all font-bold ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`}>
           <option value={0.03}>Plan Base (3%)</option>
           <option value={0.05}>Plan Estándar (5%)</option>
           <option value={0.10}>Plan Premium (10%)</option>
         </select>
       </div>
 
-      <input required placeholder="Teléfono Personal" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
-      <input required type="email" placeholder="Correo Electrónico" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, email: e.target.value })} />
-      <input required type="password" placeholder="Crear Clave de Acceso" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all ${standalone ? "bg-[#0A1128]/80 border-[#C5A184]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, password: e.target.value })} />
+      <input required placeholder="Teléfono Personal" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
+      <input required type="email" placeholder="Correo Electrónico" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, email: e.target.value })} />
+      <input required type="password" placeholder="Crear Clave de Acceso" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, password: e.target.value })} />
 
       <div className="flex items-start gap-2 pt-2 mb-2">
         <input type="checkbox" required checked={acceptedToS} onChange={(e) => setAcceptedToS(e.target.checked)} className="mt-1 cursor-pointer" />
         <span className={`text-[10px] leading-tight ${standalone ? "text-gray-400" : "text-gray-500"}`}>
-          He leído y acepto los <strong className="text-[#C5A184] cursor-pointer hover:underline">Términos de Servicio (ToS)</strong>. Entiendo que KFS cobra $6 mensuales por mantenimiento, y que Kreatek no asume responsabilidad financiera sobre el comercio frente al cliente final.
+          He leído y acepto los <strong className="text-[violet-600] cursor-pointer hover:underline">Términos de Servicio (ToS)</strong>. Entiendo que KFS cobra $6 mensuales por mantenimiento, y que Kreatek no asume responsabilidad financiera sobre el comercio frente al cliente final.
         </span>
       </div>
 
       <div className="flex gap-3 pt-4">
         <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl bg-gray-200/20 hover:bg-gray-200/30 text-white font-bold transition-all text-sm cursor-pointer">Cancelar</button>
-        <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-[#0A1128] text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-lg cursor-pointer" style={{ backgroundColor: KREATEK_COLORS.bronze }}>Aprobar Setup</button>
+        <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-[violet-900] text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-lg cursor-pointer" style={{ backgroundColor: KREATEK_COLORS.bronze }}>Aprobar Setup</button>
       </div>
     </form>
   );
@@ -1184,10 +1184,10 @@ const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCode = "" 
 
   return (
     <form onSubmit={(e) => { e.preventDefault(); onRegister({ ...formData, referralCode: defaultReferralCode }); }} className="space-y-3 text-white animate-fade-in">
-      <h3 className="text-lg font-black mb-4 border-b border-[#C5A184]/30 pb-2 text-[#C5A184]">Autogestión de Promotora</h3>
+      <h3 className="text-lg font-black mb-4 border-b border-[violet-600]/30 pb-2 text-[violet-600]">Autogestión de Promotora</h3>
 
       <div className="flex flex-col items-center gap-2 mb-4">
-        <label className="relative w-20 h-20 rounded-full border-2 border-dashed border-[#C5A184]/50 cursor-pointer overflow-hidden flex items-center justify-center bg-[#0A1128]/40 hover:bg-[#0A1128]/60 transition-colors group">
+        <label className="relative w-20 h-20 rounded-full border-2 border-dashed border-[violet-600]/50 cursor-pointer overflow-hidden flex items-center justify-center bg-[violet-900]/40 hover:bg-[violet-900]/60 transition-colors group">
           <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
           {avatar ? (
             <img src={avatar} className="w-full h-full object-cover" alt="Avatar" />
@@ -1202,7 +1202,7 @@ const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCode = "" 
       </div>
 
       <div className="flex flex-col items-center gap-2 mb-4">
-        <label className="relative w-full h-20 rounded-xl border-2 border-dashed border-[#C5A184]/50 cursor-pointer overflow-hidden flex items-center justify-center bg-[#0A1128]/40 hover:bg-[#0A1128]/60 transition-colors group">
+        <label className="relative w-full h-20 rounded-xl border-2 border-dashed border-[violet-600]/50 cursor-pointer overflow-hidden flex items-center justify-center bg-[violet-900]/40 hover:bg-[violet-900]/60 transition-colors group">
           <input type="file" accept="image/*" className="hidden" onChange={handleCedulaChange} required />
           {kycCedula ? (
             <img src={kycCedula} className="w-full h-full object-cover opacity-80" alt="Cédula" />
@@ -1215,15 +1215,15 @@ const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCode = "" 
         </label>
       </div>
 
-      <input required placeholder="Nombre Completo" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({ ...formData, name: e.target.value })} />
-      <textarea required placeholder="Dirección Completa (KYC)" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({ ...formData, kycAddress: e.target.value })} />
-      <input required type="email" placeholder="Correo Electrónico" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({ ...formData, email: e.target.value })} />
-      <input required type="password" placeholder="Crear Clave de Acceso" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({ ...formData, password: e.target.value })} />
-      <input required placeholder="Binance ID (Ej: 184592...)" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({ ...formData, binanceId: e.target.value })} />
-      <input required placeholder="Pago Móvil (Ej: 0412...)" className="w-full bg-[#0A1128]/80 border border-[#C5A184]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all" onChange={e => setFormData({ ...formData, pagoMovil: e.target.value })} />
+      <input required placeholder="Nombre Completo" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all" onChange={e => setFormData({ ...formData, name: e.target.value })} />
+      <textarea required placeholder="Dirección Completa (KYC)" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all" onChange={e => setFormData({ ...formData, kycAddress: e.target.value })} />
+      <input required type="email" placeholder="Correo Electrónico" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all" onChange={e => setFormData({ ...formData, email: e.target.value })} />
+      <input required type="password" placeholder="Crear Clave de Acceso" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all" onChange={e => setFormData({ ...formData, password: e.target.value })} />
+      <input required placeholder="Binance ID (Ej: 184592...)" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all" onChange={e => setFormData({ ...formData, binanceId: e.target.value })} />
+      <input required placeholder="Pago Móvil (Ej: 0412...)" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all" onChange={e => setFormData({ ...formData, pagoMovil: e.target.value })} />
       <div className="flex gap-3 pt-4">
         <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl bg-gray-200/20 hover:bg-gray-200/30 text-white font-bold transition-all text-sm cursor-pointer">Cancelar</button>
-        <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-[#0A1128] text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-lg cursor-pointer" style={{ backgroundColor: KREATEK_COLORS.bronze }}>Registrar Perfil</button>
+        <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-[violet-900] text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-lg cursor-pointer" style={{ backgroundColor: KREATEK_COLORS.bronze }}>Registrar Perfil</button>
       </div>
     </form>
   );
@@ -1231,23 +1231,23 @@ const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCode = "" 
 
 const LandingPageView = ({ setView }: any) => {
   return (
-    <div className="min-h-screen bg-[#0A1128] text-white font-sans overflow-x-hidden selection:bg-[#C5A184] selection:text-[#0A1128]">
+    <div className="min-h-screen bg-[#EEF2F5] text-violet-900 font-sans overflow-x-hidden selection:bg-violet-600 selection:text-white">
       {/* Navbar */}
-      <nav className="fixed w-full z-50 bg-[#0A1128]/80 backdrop-blur-xl border-b border-white/5 py-4 px-6 sm:px-10 flex justify-between items-center transition-all duration-300">
+      <nav className="fixed w-full z-50 bg-[#EEF2F5]/80 backdrop-blur-xl border-b border-white/50 py-4 px-6 sm:px-10 flex justify-between items-center transition-all duration-300">
         <div className="flex items-center gap-3">
-          <KreatekLogo className="h-8 w-auto" />
+          <KreatekLogo className="h-8 w-auto text-violet-600" />
         </div>
         <div className="flex gap-4">
-          <button onClick={() => setView("login")} className="text-sm font-bold text-[#C5A184] hover:text-white transition-colors cursor-pointer pt-2">
+          <button onClick={() => setView("login")} className="text-sm font-bold text-violet-600 hover:text-violet-800 transition-colors cursor-pointer pt-2">
             Soy Cliente
           </button>
-          <button onClick={() => setView("login")} className="text-sm font-bold text-gray-300 hover:text-white transition-colors cursor-pointer hidden sm:block pt-2">
+          <button onClick={() => setView("login")} className="text-sm font-bold text-gray-500 hover:text-violet-600 transition-colors cursor-pointer hidden sm:block pt-2">
             Soy Tienda / Promotora
           </button>
-          <button onClick={() => setView("b2b-onboarding")} className="text-[#C5A184] text-sm font-bold hover:text-white transition-colors cursor-pointer hidden sm:block pt-2">
+          <button onClick={() => setView("b2b-onboarding")} className="text-violet-600 text-sm font-bold hover:text-violet-800 transition-colors cursor-pointer hidden sm:block pt-2">
             Afiliar Comercio (B2B)
           </button>
-          <button onClick={() => setView("login")} className="bg-[#C5A184] text-[#0A1128] px-5 py-2 rounded-xl font-black text-sm hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(197,161,132,0.3)] cursor-pointer">
+          <button onClick={() => setView("login")} className="bg-violet-600 text-white px-5 py-2 rounded-xl font-black text-sm hover:scale-105 active:scale-95 transition-all shadow-[0_10px_20px_rgba(139,92,246,0.3)] cursor-pointer border-none">
             Acceder
           </button>
         </div>
@@ -1255,185 +1255,185 @@ const LandingPageView = ({ setView }: any) => {
 
       {/* Hero Section */}
       <section className="relative pt-40 pb-20 px-6 sm:px-10 max-w-7xl mx-auto flex flex-col md:flex-row items-center gap-12 min-h-[90vh]">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-[#C5A184]/20 rounded-full blur-[100px] -z-10 animate-pulse"></div>
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-blue-900/20 rounded-full blur-[120px] -z-10"></div>
+        <div className="absolute top-20 left-10 w-72 h-72 bg-violet-400/20 rounded-full blur-[100px] -z-10 animate-pulse"></div>
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-emerald-400/20 rounded-full blur-[120px] -z-10"></div>
 
         <div className="flex-1 space-y-8 z-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-bold text-[#C5A184] uppercase tracking-widest backdrop-blur-md">
-            <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/50 border border-white/50 text-xs font-bold text-violet-600 uppercase tracking-widest backdrop-blur-md shadow-sm">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             El Ecosistema Financiero Definitivo
           </div>
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-black leading-[1.1] tracking-tight">
             Gobierna tu <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#C5A184] to-yellow-200">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-600 to-emerald-500">
               Comercio Local
             </span>
           </h1>
-          <p className="text-lg text-gray-400 max-w-xl leading-relaxed">
+          <p className="text-lg text-gray-500 max-w-xl leading-relaxed">
             Punto de venta físico (POS), E-Commerce integrado con descripciones optimizadas, proxy fiscal SENIAT y conciliación automatizada en una sola plataforma en la nube.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 pt-4">
-            <button onClick={() => setView("login")} className="bg-[#C5A184] text-[#0A1128] px-8 py-4 rounded-xl font-black text-lg hover:scale-105 active:scale-95 transition-all shadow-xl cursor-pointer flex items-center justify-center gap-2">
+            <button onClick={() => setView("login")} className="bg-violet-600 text-white px-8 py-4 rounded-xl font-black text-lg hover:scale-105 active:scale-95 transition-all shadow-[0_10px_20px_rgba(139,92,246,0.3)] cursor-pointer flex items-center justify-center gap-2 border-none">
               <Zap size={20} /> Empezar Ahora
             </button>
             <button onClick={() => {
               const el = document.getElementById("pricing");
               el?.scrollIntoView({ behavior: 'smooth' });
-            }} className="border border-white/20 hover:border-white/50 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all cursor-pointer flex items-center justify-center gap-2">
+            }} className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] text-violet-900 px-8 py-4 rounded-xl font-bold text-lg transition-all cursor-pointer flex items-center justify-center gap-2 border-none hover:scale-105">
               Ver Planes y Precios
             </button>
           </div>
         </div>
 
         <div className="flex-1 w-full relative z-10">
-          <div className="bg-gradient-to-tr from-[#0A1128] to-[#141E3A] border border-white/10 rounded-[2rem] p-2 shadow-2xl transition-transform duration-700 ease-out">
-            <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?q=80&w=1000&auto=format&fit=crop" alt="Dashboard Preview" className="w-full h-auto rounded-xl opacity-80" />
+          <div className="bg-[#EEF2F5] rounded-[2rem] p-4 shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none transition-transform duration-700 ease-out">
+            <img src="/hero_neumorphic.png" alt="Dashboard Preview" className="w-full h-auto rounded-xl object-cover" />
           </div>
         </div>
       </section>
 
       {/* Benefits Section */}
-      <section id="benefits" className="py-20 px-6 sm:px-10 max-w-7xl mx-auto border-t border-white/5">
+      <section id="benefits" className="py-20 px-6 sm:px-10 max-w-7xl mx-auto">
         <div className="text-center mb-16 space-y-4">
-          <h2 className="text-3xl md:text-5xl font-black tracking-tight">Todo lo que necesitas, <span className="text-[#C5A184]">sin licencias extra</span>.</h2>
-          <p className="text-gray-400 max-w-2xl mx-auto">Reemplazamos tu sistema viejo, el hardware obsoleto y las comisiones ocultas por un hub centralizado de alto rendimiento.</p>
+          <h2 className="text-3xl md:text-5xl font-black tracking-tight text-violet-900">Todo lo que necesitas, <span className="text-violet-600">sin licencias extra</span>.</h2>
+          <p className="text-gray-500 max-w-2xl mx-auto">Reemplazamos tu sistema viejo, el hardware obsoleto y las comisiones ocultas por un hub centralizado de alto rendimiento.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Benefit 1 */}
-          <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] hover:bg-white/10 transition-colors group">
-            <div className="w-14 h-14 bg-[#C5A184]/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-              <ShoppingCart className="text-[#C5A184]" size={28} />
+          <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none p-8 rounded-[2rem] hover:scale-105 transition-transform group">
+            <div className="w-14 h-14 bg-violet-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-inner">
+              <ShoppingCart className="text-violet-600" size={28} />
             </div>
-            <h3 className="text-xl font-black mb-3 text-white">Flow Express (E-Commerce)</h3>
-            <p className="text-sm text-gray-400 leading-relaxed">Tu inventario físico se refleja automáticamente en tu vitrina e-commerce gratuita. Los clientes compran online en tiempo real.</p>
+            <h3 className="text-xl font-black mb-3 text-violet-900">Flow Express (E-Commerce)</h3>
+            <p className="text-sm text-gray-500 leading-relaxed">Tu inventario físico se refleja automáticamente en tu vitrina e-commerce gratuita. Los clientes compran online en tiempo real.</p>
           </div>
 
           {/* Benefit 2 */}
-          <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] hover:bg-white/10 transition-colors group">
-            <div className="w-14 h-14 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-              <Printer className="text-blue-400" size={28} />
+          <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none p-8 rounded-[2rem] hover:scale-105 transition-transform group">
+            <div className="w-14 h-14 bg-violet-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-inner">
+              <Printer className="text-violet-600" size={28} />
             </div>
-            <h3 className="text-xl font-black mb-3 text-white">Sincro-Shield Fiscal (SENIAT)</h3>
-            <p className="text-sm text-gray-400 leading-relaxed">Conéctate directamente a tu impresora fiscal en red local cumpliendo las normativas del SENIAT sin pagar licencias de intermediarios.</p>
+            <h3 className="text-xl font-black mb-3 text-violet-900">Sincro-Shield Fiscal (SENIAT)</h3>
+            <p className="text-sm text-gray-500 leading-relaxed">Conéctate directamente a tu impresora fiscal en red local cumpliendo las normativas del SENIAT sin pagar licencias de intermediarios.</p>
           </div>
 
           {/* Benefit 3 */}
-          <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] hover:bg-white/10 transition-colors group">
-            <div className="w-14 h-14 bg-green-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-              <Smartphone className="text-green-400" size={28} />
+          <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none p-8 rounded-[2rem] hover:scale-105 transition-transform group">
+            <div className="w-14 h-14 bg-violet-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-inner">
+              <Smartphone className="text-violet-600" size={28} />
             </div>
-            <h3 className="text-xl font-black mb-3 text-white">Auto-Conciliación SMS</h3>
-            <p className="text-sm text-gray-400 leading-relaxed">Evita fraudes de captures falsos. Nuestro conciliador en la nube lee el SMS del banco y aprueba las órdenes online de forma autónoma.</p>
+            <h3 className="text-xl font-black mb-3 text-violet-900">Auto-Conciliación SMS</h3>
+            <p className="text-sm text-gray-500 leading-relaxed">Evita fraudes de captures falsos. Nuestro conciliador en la nube lee el SMS del banco y aprueba las órdenes online de forma autónoma.</p>
           </div>
 
           {/* Benefit 4 */}
-          <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] hover:bg-white/10 transition-colors group">
-            <div className="w-14 h-14 bg-[#C5A184]/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-              <Lock className="text-[#C5A184]" size={28} />
+          <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none p-8 rounded-[2rem] hover:scale-105 transition-transform group">
+            <div className="w-14 h-14 bg-violet-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-inner">
+              <Lock className="text-violet-600" size={28} />
             </div>
-            <h3 className="text-xl font-black mb-3 text-white">Bóveda Criptográfica</h3>
-            <p className="text-sm text-gray-400 leading-relaxed">Configura tus datos de Pago Móvil, Zinli, AirTM, Ubbi, Wally y Binance Pay. Tus compradores los verán directamente y podrán subir referencias y captures.</p>
+            <h3 className="text-xl font-black mb-3 text-violet-900">Bóveda Criptográfica</h3>
+            <p className="text-sm text-gray-500 leading-relaxed">Configura tus datos de Pago Móvil, Zinli, AirTM, Ubbi, Wally y Binance Pay. Tus compradores los verán directamente y podrán subir referencias y captures.</p>
           </div>
 
           {/* Benefit 5 */}
-          <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] hover:bg-white/10 transition-colors group">
-            <div className="w-14 h-14 bg-blue-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-              <Zap className="text-blue-400" size={28} />
+          <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none p-8 rounded-[2rem] hover:scale-105 transition-transform group">
+            <div className="w-14 h-14 bg-violet-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-inner">
+              <Zap className="text-violet-600" size={28} />
             </div>
-            <h3 className="text-xl font-black mb-3 text-white">Instalación PWA Móvil</h3>
-            <p className="text-sm text-gray-400 leading-relaxed">Instala la aplicación en tu pantalla de inicio móvil con un icono nativo en un segundo, sin descargar tiendas App Store o Google Play.</p>
+            <h3 className="text-xl font-black mb-3 text-violet-900">Instalación PWA Móvil</h3>
+            <p className="text-sm text-gray-500 leading-relaxed">Instala la aplicación en tu pantalla de inicio móvil con un icono nativo en un segundo, sin descargar tiendas App Store o Google Play.</p>
           </div>
 
           {/* Benefit 6 */}
-          <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] hover:bg-white/10 transition-colors group">
-            <div className="w-14 h-14 bg-green-500/20 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-              <Users className="text-green-400" size={28} />
+          <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none p-8 rounded-[2rem] hover:scale-105 transition-transform group">
+            <div className="w-14 h-14 bg-violet-100 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-inner">
+              <Users className="text-violet-600" size={28} />
             </div>
-            <h3 className="text-xl font-black mb-3 text-white">CRM & Fidelización Express</h3>
-            <p className="text-sm text-gray-400 leading-relaxed">Registra compras vinculando la cédula del cliente (escaneo manual o cámara), otorga puntos KFS y premia su fidelidad.</p>
+            <h3 className="text-xl font-black mb-3 text-violet-900">CRM & Fidelización Express</h3>
+            <p className="text-sm text-gray-500 leading-relaxed">Registra compras vinculando la cédula del cliente (escaneo manual o cámara), otorga puntos KFS y premia su fidelidad.</p>
           </div>
         </div>
       </section>
 
       {/* Pricing / Packages Section */}
-      <section id="pricing" className="py-20 px-6 sm:px-10 max-w-7xl mx-auto border-t border-white/5">
+      <section id="pricing" className="py-20 px-6 sm:px-10 max-w-7xl mx-auto">
         <div className="text-center mb-16 space-y-4">
-          <h2 className="text-3xl md:text-5xl font-black tracking-tight">Planes y Comisiones Claras</h2>
-          <p className="text-gray-400 max-w-xl mx-auto">Selecciona el nivel operativo que mejor se adapte al flujo de ventas y tamaño de tu negocio.</p>
+          <h2 className="text-3xl md:text-5xl font-black tracking-tight text-violet-900">Planes y Comisiones Claras</h2>
+          <p className="text-gray-500 max-w-xl mx-auto">Selecciona el nivel operativo que mejor se adapte al flujo de ventas y tamaño de tu negocio.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Plan 1 */}
-          <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 flex flex-col justify-between hover:border-[#C5A184]/50 transition-colors relative">
+          <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2.5rem] p-8 flex flex-col justify-between hover:scale-105 transition-transform relative">
             <div>
-              <span className="bg-[#C5A184]/20 text-[#C5A184] text-[10px] font-black tracking-widest px-3 py-1.5 rounded-full uppercase block w-max mb-4">Inicial</span>
-              <h3 className="text-2xl font-black text-white">Flow Velocity</h3>
-              <p className="text-sm text-gray-400 mt-2">Para tiendas y emprendedores pequeños que inician su viaje digital.</p>
+              <span className="bg-violet-100 text-violet-600 text-[10px] font-black tracking-widest px-3 py-1.5 rounded-full uppercase block w-max mb-4">Inicial</span>
+              <h3 className="text-2xl font-black text-violet-900">Flow Velocity</h3>
+              <p className="text-sm text-gray-500 mt-2">Para tiendas y emprendedores pequeños que inician su viaje digital.</p>
 
               <div className="my-8">
-                <span className="text-5xl font-black text-white">3%</span>
-                <span className="text-sm text-gray-400 block mt-1">Por Venta Realizada en Caja / POS</span>
+                <span className="text-5xl font-black text-violet-900">3%</span>
+                <span className="text-sm text-gray-500 block mt-1">Por Venta Realizada en Caja / POS</span>
               </div>
 
-              <ul className="space-y-3 border-t border-white/5 pt-6 text-sm text-gray-300">
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-[#C5A184]" /> E-Commerce Flow Express</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-[#C5A184]" /> Gestión de Inventario Local</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-[#C5A184]" /> Cobros Multimoneda (USD/Bs)</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-[#C5A184]" /> 1 Caja Registradora</li>
-                <li className="flex items-center gap-2 text-gray-400"><CheckCircle size={16} className="text-gray-500" /> Publicidad Básica en Directorio KFS</li>
-                <li className="flex items-center gap-2 text-gray-400"><CheckCircle size={16} className="text-gray-500" /> Creación de Contenido Manual</li>
+              <ul className="space-y-3 pt-6 text-sm text-gray-600">
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> E-Commerce Flow Express</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Gestión de Inventario Local</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Cobros Multimoneda (USD/Bs)</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> 1 Caja Registradora</li>
+                <li className="flex items-center gap-2 text-gray-400"><CheckCircle size={16} className="text-gray-400" /> Publicidad Básica en Directorio KFS</li>
+                <li className="flex items-center gap-2 text-gray-400"><CheckCircle size={16} className="text-gray-400" /> Creación de Contenido Manual</li>
               </ul>
             </div>
-            <button onClick={() => setView("login")} className="w-full bg-white/5 hover:bg-white/10 text-white font-bold py-4 rounded-xl mt-8 cursor-pointer transition-colors">Empezar</button>
+            <button onClick={() => setView("login")} className="w-full bg-white text-violet-600 font-bold py-4 rounded-xl mt-8 cursor-pointer transition-colors shadow-sm hover:bg-gray-50 border-none">Empezar</button>
           </div>
 
           {/* Plan 2 */}
-          <div className="bg-[#0D1530] border-2 border-[#C5A184] rounded-[2.5rem] p-8 flex flex-col justify-between relative shadow-2xl scale-105">
-            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#C5A184] text-[#0A1128] text-[9px] font-black tracking-widest px-4 py-1.5 rounded-full uppercase">Recomendado</div>
+          <div className="bg-[#EEF2F5] shadow-[inset_10px_10px_20px_#d1d9e6,inset_-10px_-10px_20px_#ffffff] border-none rounded-[2.5rem] p-8 flex flex-col justify-between relative scale-105">
+            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-violet-600 text-white shadow-[0_5px_15px_rgba(139,92,246,0.3)] text-[9px] font-black tracking-widest px-4 py-1.5 rounded-full uppercase">Recomendado</div>
             <div>
-              <h3 className="text-2xl font-black text-white mt-2">Flow Matrix AI</h3>
-              <p className="text-sm text-gray-400 mt-2">Para medianos comercios con alta rotación y necesidad de analítica.</p>
+              <h3 className="text-2xl font-black text-violet-900 mt-2">Flow Matrix AI</h3>
+              <p className="text-sm text-gray-500 mt-2">Para medianos comercios con alta rotación y necesidad de analítica.</p>
 
               <div className="my-8">
-                <span className="text-5xl font-black text-white">5%</span>
-                <span className="text-sm text-gray-400 block mt-1">Por Venta + $6 USD/mes Suscripción Nube</span>
+                <span className="text-5xl font-black text-violet-900">5%</span>
+                <span className="text-sm text-gray-500 block mt-1">Por Venta + $6 USD/mes Suscripción Nube</span>
               </div>
 
-              <ul className="space-y-3 border-t border-white/5 pt-6 text-sm text-gray-300">
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-[#C5A184]" /> Todo lo de Flow Velocity</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-[#C5A184]" /> Auto-Conciliación SMS Integrada</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-[#C5A184]" /> CRM & Vales de Crédito (3 POS)</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-[#C5A184]" /> **Marketing AI**: Sugerencias de descripciones</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-[#C5A184]" /> **Flujos cada 4 días**: Ofertas planificadas</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-[#C5A184]" /> Generación de Posts listos para Ads</li>
+              <ul className="space-y-3 pt-6 text-sm text-gray-600">
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Todo lo de Flow Velocity</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Auto-Conciliación SMS Integrada</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> CRM & Vales de Crédito (3 POS)</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> **Marketing AI**: Sugerencias de descripciones</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> **Flujos cada 4 días**: Ofertas planificadas</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Generación de Posts listos para Ads</li>
               </ul>
             </div>
-            <button onClick={() => setView("login")} className="w-full bg-[#C5A184] text-[#0A1128] font-black py-4 rounded-xl mt-8 cursor-pointer hover:scale-[1.02] active:scale-95 transition-transform">Suscribirme</button>
+            <button onClick={() => setView("login")} className="w-full bg-violet-600 text-white shadow-[0_10px_20px_rgba(139,92,246,0.3)] font-black py-4 rounded-xl mt-8 cursor-pointer hover:scale-[1.02] active:scale-95 transition-transform border-none">Suscribirme</button>
           </div>
 
           {/* Plan 3 */}
-          <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 flex flex-col justify-between hover:border-[#C5A184]/50 transition-colors relative">
+          <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2.5rem] p-8 flex flex-col justify-between hover:scale-105 transition-transform relative">
             <div>
-              <span className="bg-purple-950/40 text-purple-400 text-[10px] font-black tracking-widest px-3 py-1.5 rounded-full uppercase block w-max mb-4">Líder</span>
-              <h3 className="text-2xl font-black text-white">Flow Monopoly OS</h3>
-              <p className="text-sm text-gray-400 mt-2">El ecosistema financiero corporativo total para grandes franquicias.</p>
+              <span className="bg-emerald-500/10 text-emerald-600 text-[10px] font-black tracking-widest px-3 py-1.5 rounded-full uppercase block w-max mb-4">Líder</span>
+              <h3 className="text-2xl font-black text-violet-900">Flow Monopoly OS</h3>
+              <p className="text-sm text-gray-500 mt-2">El ecosistema financiero corporativo total para grandes franquicias.</p>
 
               <div className="my-8">
-                <span className="text-5xl font-black text-white">10%</span>
-                <span className="text-sm text-gray-400 block mt-1">Por Venta + $6 USD/mes Suscripción Nube</span>
+                <span className="text-5xl font-black text-violet-900">10%</span>
+                <span className="text-sm text-gray-500 block mt-1">Por Venta + $6 USD/mes Suscripción Nube</span>
               </div>
 
-              <ul className="space-y-3 border-t border-white/5 pt-6 text-sm text-gray-300">
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-[#C5A184]" /> Todo lo de Flow Matrix AI</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-[#C5A184]" /> POS ilimitados + SENIAT Proxy PnP</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-[#C5A184]" /> **Presupuesto Ads Directo**: Incluido en fee</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-[#C5A184]" /> **Omnicanalidad**: Ads en IG, FB y WhatsApp</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-[#C5A184]" /> IA para buscar clientes en redes</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-[#C5A184]" /> Diseños y Copys de contenido automatizados</li>
+              <ul className="space-y-3 pt-6 text-sm text-gray-600">
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Todo lo de Flow Matrix AI</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> POS ilimitados + SENIAT Proxy PnP</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> **Presupuesto Ads Directo**: Incluido en fee</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> **Omnicanalidad**: Ads en IG, FB y WhatsApp</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> IA para buscar clientes en redes</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Diseños y Copys de contenido automatizados</li>
               </ul>
             </div>
-            <button onClick={() => setView("login")} className="w-full bg-white/5 hover:bg-white/10 text-white font-bold py-4 rounded-xl mt-8 cursor-pointer transition-colors">Empezar</button>
+            <button onClick={() => setView("login")} className="w-full bg-white text-violet-600 font-bold py-4 rounded-xl mt-8 cursor-pointer transition-colors shadow-sm hover:bg-gray-50 border-none">Empezar</button>
           </div>
 
         </div>
@@ -1442,8 +1442,8 @@ const LandingPageView = ({ setView }: any) => {
       {/* AI Deep Dive Section */}
       <section className="py-20 px-6 sm:px-10 max-w-7xl mx-auto border-t border-white/5 bg-gradient-to-b from-transparent to-white/[0.02] rounded-[3rem]">
         <div className="text-center mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#C5A184]/10 border border-[#C5A184]/20 text-xs font-black text-[#C5A184] uppercase tracking-widest">
-            <span className="w-2 h-2 rounded-full bg-[#C5A184] animate-pulse"></span>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[violet-600]/10 border border-[violet-600]/20 text-xs font-black text-[violet-600] uppercase tracking-widest">
+            <span className="w-2 h-2 rounded-full bg-[violet-600] animate-pulse"></span>
             Inteligencia Artificial Proactiva
           </div>
           <h2 className="text-3xl md:text-5xl font-black tracking-tight">
@@ -1456,7 +1456,7 @@ const LandingPageView = ({ setView }: any) => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Card 1: Outreach */}
-          <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] hover:border-[#C5A184]/30 transition-colors">
+          <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] hover:border-[violet-600]/30 transition-colors">
             <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center mb-6">
               <Zap className="text-blue-400" size={24} />
             </div>
@@ -1470,9 +1470,9 @@ const LandingPageView = ({ setView }: any) => {
           </div>
 
           {/* Card 2: Copywriting Optimizer */}
-          <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] hover:border-[#C5A184]/30 transition-colors">
-            <div className="w-12 h-12 bg-[#C5A184]/20 rounded-xl flex items-center justify-center mb-6">
-              <ShoppingCart className="text-[#C5A184]" size={24} />
+          <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] hover:border-[violet-600]/30 transition-colors">
+            <div className="w-12 h-12 bg-[violet-600]/20 rounded-xl flex items-center justify-center mb-6">
+              <ShoppingCart className="text-[violet-600]" size={24} />
             </div>
             <h4 className="font-black text-xl text-white mb-3">Optimización del Marketplace</h4>
             <p className="text-sm text-gray-400 leading-relaxed">
@@ -1481,7 +1481,7 @@ const LandingPageView = ({ setView }: any) => {
           </div>
 
           {/* Card 3: Social Media Lead Hunting */}
-          <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] hover:border-[#C5A184]/30 transition-colors">
+          <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] hover:border-[violet-600]/30 transition-colors">
             <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center mb-6">
               <Users className="text-green-400" size={24} />
             </div>
@@ -1496,8 +1496,8 @@ const LandingPageView = ({ setView }: any) => {
       {/* Contract, Setup and Promotoras Details */}
       <section className="py-20 px-6 sm:px-10 max-w-7xl mx-auto border-t border-white/5">
         <div className="text-center mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#C5A184]/10 border border-[#C5A184]/20 text-xs font-black text-[#C5A184] uppercase tracking-widest">
-            <span className="w-2 h-2 rounded-full bg-[#C5A184] animate-pulse"></span>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[violet-600]/10 border border-[violet-600]/20 text-xs font-black text-[violet-600] uppercase tracking-widest">
+            <span className="w-2 h-2 rounded-full bg-[violet-600] animate-pulse"></span>
             Estructura Financiera y de Afiliación
           </div>
           <h2 className="text-3xl md:text-5xl font-black tracking-tight">
@@ -1512,7 +1512,7 @@ const LandingPageView = ({ setView }: any) => {
           {/* Card 1: Setup Fee */}
           <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] relative overflow-hidden">
             <h4 className="font-black text-lg text-white mb-2">Cuota de Setup (Instalación)</h4>
-            <div className="text-4xl font-black text-[#C5A184] my-4">$75 USD <span className="text-xs text-gray-400 font-normal">pago único</span></div>
+            <div className="text-4xl font-black text-[violet-600] my-4">$75 USD <span className="text-xs text-gray-400 font-normal">pago único</span></div>
             <p className="text-xs text-gray-400 leading-relaxed mb-6">
               Cubre la provisión del nodo en Supabase, el aprovisionamiento del proxy fiscal, la configuración del catálogo digital inicial y la asignación del soporte local.
             </p>
@@ -1527,7 +1527,7 @@ const LandingPageView = ({ setView }: any) => {
           {/* Card 2: Cloud Maintenance */}
           <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] relative overflow-hidden">
             <h4 className="font-black text-lg text-white mb-2">Mantenimiento Mensual Nube</h4>
-            <div className="text-4xl font-black text-[#C5A184] my-4">$6 USD <span className="text-xs text-gray-400 font-normal">al mes</span></div>
+            <div className="text-4xl font-black text-[violet-600] my-4">$6 USD <span className="text-xs text-gray-400 font-normal">al mes</span></div>
             <p className="text-xs text-gray-400 leading-relaxed mb-6">
               Cubre el hosting seguro SSL en Vercel, almacenamiento continuo de bases de datos, actualizaciones de seguridad y el conciliador automático de SMS del banco.
             </p>
@@ -1542,7 +1542,7 @@ const LandingPageView = ({ setView }: any) => {
           {/* Card 3: Royalties */}
           <div className="bg-white/5 border border-white/10 p-8 rounded-[2rem] relative overflow-hidden">
             <h4 className="font-black text-lg text-white mb-2">Regalías de Venta (Comisiones)</h4>
-            <div className="text-4xl font-black text-[#C5A184] my-4">3% / 5% / 10% <span className="text-xs text-gray-400 font-normal">por venta real</span></div>
+            <div className="text-4xl font-black text-[violet-600] my-4">3% / 5% / 10% <span className="text-xs text-gray-400 font-normal">por venta real</span></div>
             <p className="text-xs text-gray-400 leading-relaxed mb-6">
               KFS no te cobra licencias de software fijas si no vendes. La comisión se descuenta automáticamente por venta confirmada en caja POS o Marketplace online.
             </p>
@@ -1559,7 +1559,7 @@ const LandingPageView = ({ setView }: any) => {
       {/* Why Kreatek / Value Proposition Section */}
       <section className="py-20 px-6 sm:px-10 max-w-7xl mx-auto border-t border-white/5 bg-gradient-to-tr from-[#0D1530]/50 to-[#141E3A]/20 rounded-[3rem]">
         <div className="text-center mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#C5A184]/10 border border-[#C5A184]/20 text-xs font-black text-[#C5A184] uppercase tracking-widest">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[violet-600]/10 border border-[violet-600]/20 text-xs font-black text-[violet-600] uppercase tracking-widest">
             ¿Por qué Kreatek Flow Systems?
           </div>
           <h2 className="text-3xl md:text-5xl font-black tracking-tight">
@@ -1572,16 +1572,16 @@ const LandingPageView = ({ setView }: any) => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
           {/* Business Value Proposition */}
-          <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 sm:p-10 flex flex-col justify-between hover:border-[#C5A184]/20 transition-all">
+          <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 sm:p-10 flex flex-col justify-between hover:border-[violet-600]/20 transition-all">
             <div className="space-y-6">
-              <span className="text-[#C5A184] text-xs font-black uppercase tracking-widest block">Para Dueños de Negocio</span>
+              <span className="text-[violet-600] text-xs font-black uppercase tracking-widest block">Para Dueños de Negocio</span>
               <h3 className="text-3xl font-black text-white">Simplifica tu operación y reduce tus gastos al mínimo</h3>
               <p className="text-sm text-gray-400 leading-relaxed">
                 KFS OS unifica tu tienda física y e-commerce bajo un mismo motor lógico. Olvídate de pagar suscripciones separadas de inventario, pasarelas de pago externas y licencias para conectar impresoras fiscales.
               </p>
 
               <div className="space-y-4 border-t border-white/5 pt-6">
-                <h4 className="font-bold text-[#C5A184] text-sm uppercase tracking-wider">Ahorro Garantizado:</h4>
+                <h4 className="font-bold text-[violet-600] text-sm uppercase tracking-wider">Ahorro Garantizado:</h4>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-gray-300">
                   <li className="flex items-start gap-2">
                     <span className="text-green-500 font-bold">✓</span>
@@ -1611,7 +1611,7 @@ const LandingPageView = ({ setView }: any) => {
                   }
                   setView("login");
                 }}
-                className="w-full sm:w-auto bg-[#C5A184] text-[#0A1128] px-8 py-4 rounded-xl font-black text-sm hover:scale-[1.02] active:scale-95 transition-transform shadow-lg cursor-pointer"
+                className="w-full sm:w-auto bg-[violet-600] text-[violet-900] px-8 py-4 rounded-xl font-black text-sm hover:scale-[1.02] active:scale-95 transition-transform shadow-lg cursor-pointer"
               >
                 Registrar mi Comercio (Setup)
               </button>
@@ -1619,18 +1619,18 @@ const LandingPageView = ({ setView }: any) => {
           </div>
 
           {/* Promotoras Value Proposition */}
-          <div className="bg-[#0A1128] border border-white/10 rounded-[2.5rem] p-8 sm:p-10 flex flex-col justify-between hover:border-[#C5A184]/20 transition-all relative overflow-hidden">
-            <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-[#C5A184]/5 rounded-full blur-[80px] -z-10"></div>
+          <div className="bg-[violet-900] border border-white/10 rounded-[2.5rem] p-8 sm:p-10 flex flex-col justify-between hover:border-[violet-600]/20 transition-all relative overflow-hidden">
+            <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-[violet-600]/5 rounded-full blur-[80px] -z-10"></div>
 
             <div className="space-y-6">
-              <span className="text-[#C5A184] text-xs font-black uppercase tracking-widest block">Para Promotoras de Expansión</span>
+              <span className="text-[violet-600] text-xs font-black uppercase tracking-widest block">Para Promotoras de Expansión</span>
               <h3 className="text-3xl font-black text-white">Construye una fuente de ingresos pasivos de por vida</h3>
               <p className="text-sm text-gray-400 leading-relaxed">
                 No vendes un software convencional; afilias comercios al hardware transaccional más avanzado de la región. Trabaja a tu propio ritmo buscando tiendas locales y cobrando comisiones recurrentes.
               </p>
 
               <div className="space-y-4 border-t border-white/5 pt-6">
-                <h4 className="font-bold text-[#C5A184] text-sm uppercase tracking-wider">Tus Beneficios y Labores:</h4>
+                <h4 className="font-bold text-[violet-600] text-sm uppercase tracking-wider">Tus Beneficios y Labores:</h4>
                 <ul className="space-y-3 text-xs text-gray-300">
                   <li className="flex items-start gap-2">
                     <span className="text-green-500 font-bold">✓</span>
@@ -1660,7 +1660,7 @@ const LandingPageView = ({ setView }: any) => {
                   }
                   setView("login");
                 }}
-                className="w-full sm:w-auto border border-[#C5A184] text-[#C5A184] hover:bg-[#C5A184]/5 px-8 py-4 rounded-xl font-black text-sm hover:scale-[1.02] active:scale-95 transition-transform cursor-pointer"
+                className="w-full sm:w-auto border border-[violet-600] text-[violet-600] hover:bg-[violet-600]/5 px-8 py-4 rounded-xl font-black text-sm hover:scale-[1.02] active:scale-95 transition-transform cursor-pointer"
               >
                 Sé Promotora de Kreatek Flow Systems OS
               </button>
@@ -1680,28 +1680,28 @@ const LandingPageView = ({ setView }: any) => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
           {/* Step 1 */}
           <div className="bg-white/5 border border-white/10 p-6 rounded-[2rem] relative">
-            <span className="text-6xl font-black text-[#C5A184]/20 absolute right-6 top-6">01</span>
+            <span className="text-6xl font-black text-[violet-600]/20 absolute right-6 top-6">01</span>
             <h4 className="font-black text-lg text-white mb-2">Registro de Cuenta</h4>
             <p className="text-sm text-gray-400">Regístrate en menos de un minuto como dueño del comercio e ingresa los detalles básicos.</p>
           </div>
 
           {/* Step 2 */}
           <div className="bg-white/5 border border-white/10 p-6 rounded-[2rem] relative">
-            <span className="text-6xl font-black text-[#C5A184]/20 absolute right-6 top-6">02</span>
+            <span className="text-6xl font-black text-[violet-600]/20 absolute right-6 top-6">02</span>
             <h4 className="font-black text-lg text-white mb-2">Configurar Bóveda</h4>
             <p className="text-sm text-gray-400">Establece tus cuentas de Pago Móvil, Zinli, AirTM, Ubbi, Wally y Binance Pay en la bóveda cifrada en tu panel.</p>
           </div>
 
           {/* Step 3 */}
           <div className="bg-white/5 border border-white/10 p-6 rounded-[2rem] relative">
-            <span className="text-6xl font-black text-[#C5A184]/20 absolute right-6 top-6">03</span>
+            <span className="text-6xl font-black text-[violet-600]/20 absolute right-6 top-6">03</span>
             <h4 className="font-black text-lg text-white mb-2">Subir Productos</h4>
             <p className="text-sm text-gray-400">Sube fotos de tus productos, ponles precio, stock y una descripción detallada en tu inventario.</p>
           </div>
 
           {/* Step 4 */}
           <div className="bg-white/5 border border-white/10 p-6 rounded-[2rem] relative">
-            <span className="text-6xl font-black text-[#C5A184]/20 absolute right-6 top-6">04</span>
+            <span className="text-6xl font-black text-[violet-600]/20 absolute right-6 top-6">04</span>
             <h4 className="font-black text-lg text-white mb-2">Cobrar y Vender</h4>
             <p className="text-sm text-gray-400">Publica el enlace de tu Marketplace o usa la caja POS física. Valida captures y emite facturas.</p>
           </div>
@@ -1744,11 +1744,11 @@ const LandingPageView = ({ setView }: any) => {
       </section>
 
       {/* Footer CTA */}
-      <section className="py-24 px-6 sm:px-10 text-center relative overflow-hidden">
-        <div className="absolute inset-0 bg-[#C5A184]/10 -z-10"></div>
-        <h2 className="text-4xl md:text-5xl font-black mb-6">Lanza tu plataforma hoy.</h2>
-        <p className="text-xl text-[#C5A184] mb-10 font-bold">Sin contratos complejos. Comisiones transparentes.</p>
-        <button onClick={() => setView("login")} className="bg-[#C5A184] text-[#0A1128] px-10 py-5 rounded-2xl font-black text-xl hover:scale-105 active:scale-95 transition-all shadow-[0_0_30px_rgba(197,161,132,0.4)] cursor-pointer">
+      <section className="py-32 px-6 text-center border-t border-violet-100 relative">
+        <div className="absolute inset-0 bg-violet-600/5 -z-10"></div>
+        <h2 className="text-4xl md:text-6xl font-black mb-6 text-violet-900 tracking-tight">El Nuevo Estándar <br className="hidden md:block"/> Financiero.</h2>
+        <p className="text-xl text-violet-600 mb-10 font-bold">Sin contratos complejos. Comisiones transparentes.</p>
+        <button onClick={() => setView("login")} className="bg-violet-600 text-white px-10 py-5 rounded-2xl font-black text-xl hover:scale-105 active:scale-95 transition-all shadow-[0_10px_20px_rgba(139,92,246,0.3)] border-none cursor-pointer">
           Acceder al Sistema
         </button>
       </section>
@@ -1784,23 +1784,23 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0A1128] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-[#141E3A] to-[#0A1128] font-sans">
+    <div className="min-h-screen flex flex-col bg-[#EEF2F5] font-sans">
       <Navbar />
       <div className="flex-1 flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2.5rem] p-8 shadow-[0_0_50px_rgba(0,0,0,0.5)] animate-fade-in">
+        <div className="w-full max-w-md bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2.5rem] p-8 animate-fade-in">
           {currentUser ? (
             <div className="space-y-6 text-center py-4">
-              <div className="w-20 h-20 bg-[#C5A184]/10 rounded-full border border-[#C5A184]/30 flex items-center justify-center mx-auto shadow-lg overflow-hidden">
+              <div className="w-20 h-20 bg-violet-100 rounded-full border border-violet-600/20 flex items-center justify-center mx-auto shadow-inner overflow-hidden">
                 {currentUser.avatar ? (
                   <img src={currentUser.avatar} className="w-full h-full object-cover" alt="Perfil" />
                 ) : (
-                  <span className="text-[#C5A184] font-black text-xl">{currentUser.name ? currentUser.name.slice(0, 2).toUpperCase() : (currentUser.company ? currentUser.company.slice(0, 2).toUpperCase() : "KF")}</span>
+                  <span className="text-violet-600 font-black text-xl">{currentUser.name ? currentUser.name.slice(0, 2).toUpperCase() : (currentUser.company ? currentUser.company.slice(0, 2).toUpperCase() : "KF")}</span>
                 )}
               </div>
               <div className="space-y-2">
-                <h2 className="text-xl font-black text-white">Sesión Activa Detectada</h2>
-                <p className="text-sm text-gray-400">
-                  Ya has iniciado sesión como <strong className="text-white">{currentUser.name || currentUser.company}</strong> (<span className="capitalize">{currentUser.role}</span>).
+                <h2 className="text-xl font-black text-violet-900">Sesión Activa Detectada</h2>
+                <p className="text-sm text-gray-500">
+                  Ya has iniciado sesión como <strong className="text-violet-900">{currentUser.name || currentUser.company}</strong> (<span className="capitalize">{currentUser.role}</span>).
                 </p>
               </div>
               <div className="space-y-3 pt-2">
@@ -1815,7 +1815,7 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
                     else if (role === "rider") setView("rider");
                     else setView("landing");
                   }}
-                  className="w-full py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-lg text-[#0A1128] bg-[#C5A184] cursor-pointer text-sm"
+                  className="w-full py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_10px_20px_rgba(139,92,246,0.3)] border-none text-white bg-violet-600 cursor-pointer text-sm"
                 >
                   Ir a mi Panel de Control <ChevronRight size={18} />
                 </button>
@@ -1830,25 +1830,25 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
           ) : (
             <>
               <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-[#C5A184]/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-[#C5A184]/30">
-                  <Shield className="text-[#C5A184]" size={32} />
+                <div className="w-16 h-16 bg-violet-100 rounded-full flex items-center justify-center mx-auto mb-4 shadow-inner">
+                  <Shield className="text-violet-600" size={32} />
                 </div>
-                <h1 className="text-2xl font-black text-white tracking-tight">KFS Core <span className="text-[#C5A184]">Access</span></h1>
-                <p className="text-sm text-gray-400 mt-2 font-mono">Seleccione su vector de entrada</p>
+                <h1 className="text-2xl font-black text-violet-900 tracking-tight">KFS Core <span className="text-violet-600">Access</span></h1>
+                <p className="text-sm text-gray-500 mt-2 font-mono">Seleccione su vector de entrada</p>
               </div>
 
               <div className="flex flex-wrap justify-center gap-2 mb-8">
-                <button onClick={() => setActiveTab("marketplace")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "marketplace" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Flow Exp.</button>
-                <button onClick={() => setActiveTab("customer")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "customer" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Cliente</button>
-                <button onClick={() => setActiveTab("dueño")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "dueño" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Dueño</button>
-                <button onClick={() => setActiveTab("vendedor")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "vendedor" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Vendedor</button>
-                <button onClick={() => setActiveTab("promotora")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "promotora" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Promotora</button>
-                <button onClick={() => setActiveTab("rider")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer ${activeTab === "rider" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]" : "bg-white/5 text-[#C5A184] hover:bg-white/10"}`}>Delivery</button>
-                <button onClick={() => setActiveTab("core")} className={`w-full py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all border border-[#C5A184]/30 cursor-pointer ${activeTab === "core" ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_20px_rgba(197,161,132,0.5)]" : "bg-transparent text-[#C5A184] hover:bg-white/5"}`}>Arquitecto</button>
+                <button onClick={() => setActiveTab("marketplace")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "marketplace" ? "bg-violet-600 text-white shadow-[0_5px_15px_rgba(139,92,246,0.3)]" : "bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] text-violet-600 hover:text-violet-800"}`}>Flow Exp.</button>
+                <button onClick={() => setActiveTab("customer")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "customer" ? "bg-violet-600 text-white shadow-[0_5px_15px_rgba(139,92,246,0.3)]" : "bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] text-violet-600 hover:text-violet-800"}`}>Cliente</button>
+                <button onClick={() => setActiveTab("dueño")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "dueño" ? "bg-violet-600 text-white shadow-[0_5px_15px_rgba(139,92,246,0.3)]" : "bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] text-violet-600 hover:text-violet-800"}`}>Dueño</button>
+                <button onClick={() => setActiveTab("vendedor")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "vendedor" ? "bg-violet-600 text-white shadow-[0_5px_15px_rgba(139,92,246,0.3)]" : "bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] text-violet-600 hover:text-violet-800"}`}>Vendedor</button>
+                <button onClick={() => setActiveTab("promotora")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "promotora" ? "bg-violet-600 text-white shadow-[0_5px_15px_rgba(139,92,246,0.3)]" : "bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] text-violet-600 hover:text-violet-800"}`}>Promotora</button>
+                <button onClick={() => setActiveTab("rider")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "rider" ? "bg-violet-600 text-white shadow-[0_5px_15px_rgba(139,92,246,0.3)]" : "bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] text-violet-600 hover:text-violet-800"}`}>Delivery</button>
+                <button onClick={() => setActiveTab("core")} className={`w-full py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all border-none cursor-pointer ${activeTab === "core" ? "bg-slate-800 text-white shadow-[0_5px_15px_rgba(30,41,59,0.3)]" : "bg-white shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] text-slate-500 hover:text-slate-800"}`}>Arquitecto</button>
               </div>
 
               {activeTab === "marketplace" && (
-                <button onClick={() => handleLogin("marketplace", "")} className="w-full py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-lg text-[#0A1128] bg-[#C5A184] cursor-pointer">
+                <button onClick={() => handleLogin("marketplace", "")} className="w-full py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_10px_20px_rgba(139,92,246,0.3)] border-none text-white bg-violet-600 cursor-pointer">
                   <ShoppingCart size={20} /> Entrar a Flow Express
                 </button>
               )}
@@ -1856,32 +1856,32 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
               {(activeTab === "core" || activeTab === "promotora" || activeTab === "dueño" || activeTab === "vendedor" || activeTab === "customer" || activeTab === "rider") && (
                 <div className="space-y-4">
                   {(activeTab === "dueño" || activeTab === "vendedor" || activeTab === "promotora" || activeTab === "customer" || activeTab === "rider") && (
-                    <input type="text" placeholder={activeTab === "customer" ? "Número de Teléfono (Ej: +584141234567)" : "Correo Electrónico de Usuario"} value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-4 text-white focus:outline-none focus:border-[#C5A184] focus:ring-1 focus:ring-[#C5A184] transition-all" />
+                    <input type="text" placeholder={activeTab === "customer" ? "Número de Teléfono (Ej: +584141234567)" : "Correo Electrónico de Usuario"} value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-4 text-violet-900 placeholder:text-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all" />
                   )}
                   <div className="relative">
-                    <Lock className="absolute left-4 top-4 text-[#C5A184]/50" size={20} />
-                    <input type="password" placeholder="Clave de Seguridad" value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl pl-12 pr-4 py-4 text-white focus:outline-none focus:border-[#C5A184] focus:ring-1 focus:ring-[#C5A184] transition-all" />
+                    <Lock className="absolute left-4 top-4 text-violet-400" size={20} />
+                    <input type="password" placeholder="Clave de Seguridad" value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-12 pr-4 py-4 text-violet-900 placeholder:text-violet-300 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all" />
                   </div>
-                  <button onClick={() => handleLogin(activeTab, password, email)} className="w-full py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-lg text-[#0A1128] bg-[#C5A184] cursor-pointer">
+                  <button onClick={() => handleLogin(activeTab, password, email)} className="w-full py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-[0_10px_20px_rgba(139,92,246,0.3)] border-none text-white bg-violet-600 cursor-pointer">
                     Entrar a mi Panel <ChevronRight size={20} />
                   </button>
                   {activeTab === "dueño" && (
-                    <button onClick={() => setActiveTab("register")} className="w-full text-center text-sm font-bold text-[#C5A184] hover:text-white transition-colors mt-4 cursor-pointer">
+                    <button onClick={() => setActiveTab("register")} className="w-full text-center text-sm font-bold text-violet-600 hover:text-violet-800 transition-colors mt-4 cursor-pointer border-none bg-transparent">
                       ¿Comercio nuevo? Iniciar Setup
                     </button>
                   )}
                   {activeTab === "promotora" && (
-                    <button onClick={() => setActiveTab("registerPromo")} className="w-full text-center text-sm font-bold text-[#C5A184] hover:text-white transition-colors mt-4 cursor-pointer">
+                    <button onClick={() => setActiveTab("registerPromo")} className="w-full text-center text-sm font-bold text-violet-600 hover:text-violet-800 transition-colors mt-4 cursor-pointer border-none bg-transparent">
                       ¿Nueva Promotora? Registrarse
                     </button>
                   )}
                   {activeTab === "customer" && (
-                    <button onClick={() => setActiveTab("registerCustomer")} className="w-full text-center text-sm font-bold text-[#C5A184] hover:text-white transition-colors mt-4 cursor-pointer">
+                    <button onClick={() => setActiveTab("registerCustomer")} className="w-full text-center text-sm font-bold text-violet-600 hover:text-violet-800 transition-colors mt-4 cursor-pointer border-none bg-transparent">
                       ¿Nuevo Cliente? Crea tu cuenta
                     </button>
                   )}
                   {activeTab === "rider" && (
-                    <button onClick={() => setActiveTab("registerRider")} className="w-full text-center text-sm font-bold text-[#C5A184] hover:text-white transition-colors mt-4 cursor-pointer">
+                    <button onClick={() => setActiveTab("registerRider")} className="w-full text-center text-sm font-bold text-violet-600 hover:text-violet-800 transition-colors mt-4 cursor-pointer border-none bg-transparent">
                       ¿Nuevo Rider? Regístrate como Delivery
                     </button>
                   )}
@@ -1895,8 +1895,8 @@ const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView
             </>
           )}
 
-          <div className="mt-8 pt-6 border-t border-white/10 text-center">
-            <button onClick={() => setView("landing")} className="text-sm font-black text-[#C5A184] hover:text-white transition-colors cursor-pointer flex items-center justify-center gap-2 mx-auto">
+          <div className="mt-8 pt-6 border-t border-violet-200 text-center">
+            <button onClick={() => setView("landing")} className="text-sm font-black text-violet-600 hover:text-violet-800 transition-colors cursor-pointer flex items-center justify-center gap-2 mx-auto border-none bg-transparent">
               <Star size={16} /> Ver Landing de Ventas - KFS OS
             </button>
           </div>
@@ -1942,13 +1942,13 @@ const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCancel: () 
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 animate-fade-in">
-      <input required type="text" placeholder="Nombre y Apellido" value={name} onChange={e => setName(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184] transition-all" />
+      <input required type="text" placeholder="Nombre y Apellido" value={name} onChange={e => setName(e.target.value)} className="w-full bg-[violet-900]/80 border border-[violet-600]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[violet-600] transition-all" />
 
       <div className="flex gap-2">
         <select
           value={phonePrefix}
           onChange={e => setPhonePrefix(e.target.value)}
-          className="bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-[#C5A184] text-sm cursor-pointer"
+          className="bg-[violet-900]/80 border border-[violet-600]/30 rounded-xl px-3 py-3 text-white focus:outline-none focus:border-[violet-600] text-sm cursor-pointer"
         >
           <option value="+58">VE (+58)</option>
           <option value="+57">CO (+57)</option>
@@ -1961,11 +1961,11 @@ const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCancel: () 
           <option value="+1">US/CA (+1)</option>
           <option value="+1809">DO (+1-809)</option>
         </select>
-        <input required type="text" placeholder="Número Telefónico (Ej: 4141234567)" value={phoneBody} onChange={e => setPhoneBody(e.target.value)} className="flex-1 bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184] transition-all" />
+        <input required type="text" placeholder="Número Telefónico (Ej: 4141234567)" value={phoneBody} onChange={e => setPhoneBody(e.target.value)} className="flex-1 bg-[violet-900]/80 border border-[violet-600]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[violet-600] transition-all" />
       </div>
 
       <div className="flex gap-4 mb-2">
-        <label className="flex-1 relative h-24 rounded-xl border-2 border-dashed border-[#C5A184]/50 cursor-pointer overflow-hidden flex items-center justify-center bg-[#0A1128]/40 hover:bg-[#0A1128]/60 transition-colors group">
+        <label className="flex-1 relative h-24 rounded-xl border-2 border-dashed border-[violet-600]/50 cursor-pointer overflow-hidden flex items-center justify-center bg-[violet-900]/40 hover:bg-[violet-900]/60 transition-colors group">
           <input type="file" accept="image/*" className="hidden" onChange={e => handlePhotoUpload(e, setKycPhoto)} required />
           {kycPhoto ? (
             <img src={kycPhoto} className="w-full h-full object-cover opacity-80" alt="Selfie" />
@@ -1976,7 +1976,7 @@ const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCancel: () 
             </div>
           )}
         </label>
-        <label className="flex-1 relative h-24 rounded-xl border-2 border-dashed border-[#C5A184]/50 cursor-pointer overflow-hidden flex items-center justify-center bg-[#0A1128]/40 hover:bg-[#0A1128]/60 transition-colors group">
+        <label className="flex-1 relative h-24 rounded-xl border-2 border-dashed border-[violet-600]/50 cursor-pointer overflow-hidden flex items-center justify-center bg-[violet-900]/40 hover:bg-[violet-900]/60 transition-colors group">
           <input type="file" accept="image/*" className="hidden" onChange={e => handlePhotoUpload(e, setKycCedula)} required />
           {kycCedula ? (
             <img src={kycCedula} className="w-full h-full object-cover opacity-80" alt="Cédula" />
@@ -1989,12 +1989,12 @@ const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCancel: () 
         </label>
       </div>
 
-      <textarea required placeholder="Dirección Residencial Completa" value={kycAddress} onChange={e => setKycAddress(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184] transition-all text-sm h-20 resize-none" />
+      <textarea required placeholder="Dirección Residencial Completa" value={kycAddress} onChange={e => setKycAddress(e.target.value)} className="w-full bg-[violet-900]/80 border border-[violet-600]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[violet-600] transition-all text-sm h-20 resize-none" />
 
-      <input required type="password" placeholder="Crear Contraseña" value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184] transition-all" />
+      <input required type="password" placeholder="Crear Contraseña" value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-[violet-900]/80 border border-[violet-600]/30 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[violet-600] transition-all" />
       <div className="flex gap-2 pt-2">
         <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl border border-white/20 text-gray-300 font-bold hover:bg-white/5 transition-all">Atrás</button>
-        <button type="submit" className="w-2/3 py-3 rounded-xl bg-[#C5A184] text-[#0A1128] font-black hover:scale-[1.02] active:scale-95 transition-all">Crear Cuenta</button>
+        <button type="submit" className="w-2/3 py-3 rounded-xl bg-[violet-600] text-[violet-900] font-black hover:scale-[1.02] active:scale-95 transition-all">Crear Cuenta</button>
       </div>
     </form>
   )
@@ -2034,7 +2034,7 @@ const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCancel: (
   };
 
   const DocUploadField = ({ label, icon, field, fileKey, uploaded }: { label: string; icon: string; field: "cedulaImg" | "medCertImg" | "licenseImg"; fileKey: "cedula" | "med" | "license"; uploaded: boolean }) => (
-    <label className={`relative flex flex-col items-center justify-center gap-2 p-4 border-2 border-dashed rounded-2xl cursor-pointer transition-all group ${uploaded ? "border-green-500/60 bg-green-500/10" : "border-[#C5A184]/30 bg-[#0A1128]/40 hover:bg-[#0A1128]/60"}`}>
+    <label className={`relative flex flex-col items-center justify-center gap-2 p-4 border-2 border-dashed rounded-2xl cursor-pointer transition-all group ${uploaded ? "border-green-500/60 bg-green-500/10" : "border-[violet-600]/30 bg-[violet-900]/40 hover:bg-[violet-900]/60"}`}>
       <input type="file" accept="image/*,application/pdf" className="hidden" onChange={(e) => handleDocUpload(e, field, fileKey)} />
       <span className="text-3xl">{uploaded ? "✅" : icon}</span>
       <span className={`text-[10px] font-black uppercase tracking-wider text-center ${uploaded ? "text-green-400" : "text-gray-400 group-hover:text-white"}`}>
@@ -2046,25 +2046,25 @@ const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCancel: (
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 animate-fade-in w-full pb-4">
-      <div className="text-center pb-2 border-b border-[#C5A184]/20">
-        <div className="w-12 h-12 bg-[#C5A184]/10 rounded-full flex items-center justify-center mx-auto mb-2 border border-[#C5A184]/30">
-          <Truck className="text-[#C5A184]" size={24} />
+      <div className="text-center pb-2 border-b border-[violet-600]/20">
+        <div className="w-12 h-12 bg-[violet-600]/10 rounded-full flex items-center justify-center mx-auto mb-2 border border-[violet-600]/30">
+          <Truck className="text-[violet-600]" size={24} />
         </div>
-        <h3 className="text-base font-black text-[#C5A184] uppercase tracking-wider">Registro Rider Delivery</h3>
+        <h3 className="text-base font-black text-[violet-600] uppercase tracking-wider">Registro Rider Delivery</h3>
         <p className="text-[10px] text-gray-400 mt-1">Sujeto a aprobación del Arquitecto KFS</p>
       </div>
 
       {/* Personal Data */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <input required placeholder="Nombre Completo" value={formData.name} onChange={e => setFormData(p => ({ ...p, name: e.target.value }))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
-        <input required type="tel" placeholder="Teléfono (Ej: 04141234567)" value={formData.phone} onChange={e => setFormData(p => ({ ...p, phone: e.target.value }))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
-        <input required type="email" placeholder="Correo Electrónico" value={formData.email} onChange={e => setFormData(p => ({ ...p, email: e.target.value }))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
-        <input required type="password" placeholder="Crear Contraseña" value={formData.password} onChange={e => setFormData(p => ({ ...p, password: e.target.value }))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
+        <input required placeholder="Nombre Completo" value={formData.name} onChange={e => setFormData(p => ({ ...p, name: e.target.value }))} className="w-full bg-[violet-900]/80 border border-[violet-600]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[violet-600] transition-all" />
+        <input required type="tel" placeholder="Teléfono (Ej: 04141234567)" value={formData.phone} onChange={e => setFormData(p => ({ ...p, phone: e.target.value }))} className="w-full bg-[violet-900]/80 border border-[violet-600]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[violet-600] transition-all" />
+        <input required type="email" placeholder="Correo Electrónico" value={formData.email} onChange={e => setFormData(p => ({ ...p, email: e.target.value }))} className="w-full bg-[violet-900]/80 border border-[violet-600]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[violet-600] transition-all" />
+        <input required type="password" placeholder="Crear Contraseña" value={formData.password} onChange={e => setFormData(p => ({ ...p, password: e.target.value }))} className="w-full bg-[violet-900]/80 border border-[violet-600]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[violet-600] transition-all" />
       </div>
 
       {/* Document Uploads */}
       <div className="space-y-1 mt-2">
-        <p className="text-[10px] font-black text-[#C5A184] uppercase tracking-widest">Documentos Requeridos</p>
+        <p className="text-[10px] font-black text-[violet-600] uppercase tracking-widest">Documentos Requeridos</p>
         <p className="text-[9px] text-gray-500">Sube fotos directas desde tu galería o cámara</p>
       </div>
       <div className="grid grid-cols-3 gap-2">
@@ -2075,16 +2075,16 @@ const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCancel: (
 
       {/* Pago Móvil */}
       <div className="space-y-1">
-        <p className="text-[10px] font-black text-[#C5A184] uppercase tracking-widest">Pago Móvil (Cobro de Delivery $2)</p>
+        <p className="text-[10px] font-black text-[violet-600] uppercase tracking-widest">Pago Móvil (Cobro de Delivery $2)</p>
         <p className="text-[9px] text-gray-500">Los clientes te pagarán directamente aquí</p>
       </div>
-      <select required value={formData.pagoMovil.banco} onChange={e => setFormData(p => ({ ...p, pagoMovil: { ...p.pagoMovil, banco: e.target.value } }))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all">
+      <select required value={formData.pagoMovil.banco} onChange={e => setFormData(p => ({ ...p, pagoMovil: { ...p.pagoMovil, banco: e.target.value } }))} className="w-full bg-[violet-900]/80 border border-[violet-600]/30 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[violet-600] transition-all">
         <option value="">— Selecciona Banco —</option>
         {["Banesco", "Mercantil", "Banco de Venezuela", "Provincial", "BOD", "Bancaribe", "Bicentenario", "BNC", "Exterior", "Tesoro"].map(b => <option key={b} value={b}>{b}</option>)}
       </select>
       <div className="grid grid-cols-2 gap-2">
-        <input required type="tel" placeholder="Teléfono PM (04xx...)" value={formData.pagoMovil.telefono} onChange={e => setFormData(p => ({ ...p, pagoMovil: { ...p.pagoMovil, telefono: e.target.value } }))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-3 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
-        <input required placeholder="Cédula Titular" value={formData.pagoMovil.cedula} onChange={e => setFormData(p => ({ ...p, pagoMovil: { ...p.pagoMovil, cedula: e.target.value } }))} className="w-full bg-[#0A1128]/80 border border-[#C5A184]/30 rounded-xl px-3 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184] transition-all" />
+        <input required type="tel" placeholder="Teléfono PM (04xx...)" value={formData.pagoMovil.telefono} onChange={e => setFormData(p => ({ ...p, pagoMovil: { ...p.pagoMovil, telefono: e.target.value } }))} className="w-full bg-[violet-900]/80 border border-[violet-600]/30 rounded-xl px-3 py-3 text-white text-sm focus:outline-none focus:border-[violet-600] transition-all" />
+        <input required placeholder="Cédula Titular" value={formData.pagoMovil.cedula} onChange={e => setFormData(p => ({ ...p, pagoMovil: { ...p.pagoMovil, cedula: e.target.value } }))} className="w-full bg-[violet-900]/80 border border-[violet-600]/30 rounded-xl px-3 py-3 text-white text-sm focus:outline-none focus:border-[violet-600] transition-all" />
       </div>
 
       <div className="bg-amber-900/20 border border-amber-500/30 rounded-xl p-3">
@@ -2093,7 +2093,7 @@ const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCancel: (
 
       <div className="flex gap-3 pt-2">
         <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl border border-white/20 text-gray-300 font-bold hover:bg-white/5 transition-all text-sm cursor-pointer">Atrás</button>
-        <button type="submit" className="w-2/3 py-3 rounded-xl bg-[#C5A184] text-[#0A1128] font-black hover:scale-[1.02] active:scale-95 transition-all text-sm cursor-pointer flex items-center justify-center gap-2">
+        <button type="submit" className="w-2/3 py-3 rounded-xl bg-[violet-600] text-[violet-900] font-black hover:scale-[1.02] active:scale-95 transition-all text-sm cursor-pointer flex items-center justify-center gap-2">
           <Truck size={16} /> Enviar Solicitud
         </button>
       </div>
@@ -2243,12 +2243,12 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-[#0A1128] font-sans pb-24 relative">
+    <div className="min-h-screen bg-[#EEF2F5] text-[violet-900] font-sans pb-24 relative">
       {/* Wavy Header */}
-      <div className="bg-gradient-to-br from-[#0A1128] to-[#1a2b5e] rounded-b-[3rem] shadow-[0_10px_30px_rgba(10,17,40,0.3)] pt-6 pb-12 px-6 text-white relative z-10">
+      <div className="bg-gradient-to-br from-[violet-900] to-[#1a2b5e] rounded-b-[3rem] shadow-[0_10px_30px_rgba(10,17,40,0.3)] pt-6 pb-12 px-6 text-white relative z-10">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
-            <span className="bg-white/20 p-2 rounded-xl text-[#C5A184]"><UserCheck size={20} /></span>
+            <span className="bg-white/20 p-2 rounded-xl text-[violet-600]"><UserCheck size={20} /></span>
             <h1 className="font-black text-xl tracking-tight">KFS Customer</h1>
           </div>
           <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
@@ -2257,12 +2257,12 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-[#C5A184] rounded-full flex items-center justify-center text-[#0A1128] font-black text-2xl flex-shrink-0 shadow-lg border-4 border-[#0A1128]">
+          <div className="w-16 h-16 bg-[violet-600] rounded-full flex items-center justify-center text-[violet-900] font-black text-2xl flex-shrink-0 shadow-lg border-4 border-[violet-900]">
             {currentUser.name?.slice(0, 2).toUpperCase()}
           </div>
           <div>
             <h2 className="text-xl md:text-2xl font-black tracking-tight truncate">{currentUser.name}</h2>
-            <p className="text-[#C5A184] font-mono text-xs mt-1 bg-[#0A1128] inline-block px-2 py-0.5 rounded-md">{currentUser.phone}</p>
+            <p className="text-[violet-600] font-mono text-xs mt-1 bg-[violet-900] inline-block px-2 py-0.5 rounded-md">{currentUser.phone}</p>
           </div>
         </div>
       </div>
@@ -2291,9 +2291,9 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
             />
 
             {/* P2P Transfer Form */}
-            <div className="bg-gradient-to-tr from-[#0A1128]/85 to-[#141E3A]/85 backdrop-blur-xl border border-[#C5A184]/20 rounded-[2.5rem] p-6 sm:p-8 shadow-2xl space-y-5">
+            <div className="bg-gradient-to-tr from-[violet-900]/85 to-[#141E3A]/85 backdrop-blur-xl border border-[violet-600]/20 rounded-[2.5rem] p-6 sm:p-8 shadow-2xl space-y-5">
               <div>
-                <h3 className="text-xl font-black text-[#C5A184] flex items-center gap-2">
+                <h3 className="text-xl font-black text-[violet-600] flex items-center gap-2">
                   <Users size={24} /> Transferencias P2P Instantáneas
                 </h3>
                 <p className="text-xs text-gray-400 mt-1">
@@ -2302,12 +2302,12 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
               </div>
 
               {/* Banner P2P Viral */}
-              <div className="bg-[#1A1108]/80 border border-[#C5A184]/40 p-4 rounded-2xl flex items-center gap-4">
-                <div className="w-12 h-12 bg-[#C5A184]/20 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Gift size={24} className="text-[#C5A184]" />
+              <div className="bg-[#1A1108]/80 border border-[violet-600]/40 p-4 rounded-2xl flex items-center gap-4">
+                <div className="w-12 h-12 bg-[violet-600]/20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Gift size={24} className="text-[violet-600]" />
                 </div>
                 <div>
-                  <h4 className="font-black text-[#C5A184] text-sm">Bono Viral Embajador</h4>
+                  <h4 className="font-black text-[violet-600] text-sm">Bono Viral Embajador</h4>
                   <p className="text-xs text-gray-300 leading-tight mt-1">
                     Comparte tu código de afiliado <span className="font-mono bg-black/50 px-1.5 py-0.5 rounded text-white">{currentUser.id}</span> con tus amigos. ¡Cuando se registren y hagan su primera recarga, recibirás <strong>500 K-Points</strong> automáticos!
                   </p>
@@ -2323,7 +2323,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                       placeholder="Ej: 04121234567 o Nombre"
                       value={p2pRecipient}
                       onChange={(e) => setP2pRecipient(e.target.value)}
-                      className="w-full bg-black/45 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#C5A184] transition-colors"
+                      className="w-full bg-black/45 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[violet-600] transition-colors"
                     />
                   </div>
                   <div>
@@ -2334,7 +2334,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                       placeholder="Ej: 5.00 o 500"
                       value={p2pAmount}
                       onChange={(e) => setP2pAmount(e.target.value)}
-                      className="w-full bg-black/45 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#C5A184] transition-colors"
+                      className="w-full bg-black/45 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[violet-600] transition-colors"
                     />
                   </div>
                 </div>
@@ -2344,21 +2344,21 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                     <button
                       type="button"
                       onClick={() => setP2pType("real_balance")}
-                      className={`py-2 px-4 rounded-xl text-xs font-bold border transition-all cursor-pointer ${p2pType === "real_balance" ? "bg-[#C5A184] text-[#0A1128] border-[#C5A184]" : "bg-white/5 border-white/10 text-gray-300 hover:border-white/20"}`}
+                      className={`py-2 px-4 rounded-xl text-xs font-bold border transition-all cursor-pointer ${p2pType === "real_balance" ? "bg-[violet-600] text-[violet-900] border-[violet-600]" : "bg-white/5 border-white/10 text-gray-300 hover:border-white/20"}`}
                     >
                       Saldo Real (USD)
                     </button>
                     <button
                       type="button"
                       onClick={() => setP2pType("k_points")}
-                      className={`py-2 px-4 rounded-xl text-xs font-bold border transition-all cursor-pointer ${p2pType === "k_points" ? "bg-[#C5A184] text-[#0A1128] border-[#C5A184]" : "bg-white/5 border-white/10 text-gray-300 hover:border-white/20"}`}
+                      className={`py-2 px-4 rounded-xl text-xs font-bold border transition-all cursor-pointer ${p2pType === "k_points" ? "bg-[violet-600] text-[violet-900] border-[violet-600]" : "bg-white/5 border-white/10 text-gray-300 hover:border-white/20"}`}
                     >
                       K-Points
                     </button>
                   </div>
                   <button
                     type="submit"
-                    className="bg-white/10 hover:bg-[#C5A184] hover:text-[#0A1128] border border-white/10 rounded-xl px-6 py-2.5 text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-md self-end sm:self-auto font-sans"
+                    className="bg-white/10 hover:bg-[violet-600] hover:text-[violet-900] border border-white/10 rounded-xl px-6 py-2.5 text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-md self-end sm:self-auto font-sans"
                   >
                     Transferir Balance <ArrowUpRight size={14} />
                   </button>
@@ -2372,7 +2372,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
             {/* Logistics Tracking */}
             {(activeOrders.length > 0 || logisticsTxs.length > 0) && (
               <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 md:p-8 shadow-xl">
-                <h3 className="text-xl font-black mb-6 text-[#C5A184] flex items-center gap-2"><Truck size={24} /> Rastreo de Envíos Activos</h3>
+                <h3 className="text-xl font-black mb-6 text-[violet-600] flex items-center gap-2"><Truck size={24} /> Rastreo de Envíos Activos</h3>
                 <div className="space-y-4">
                   {activeOrders.map((o: any) => {
                     const p = db.products.find((prod: any) => prod.id === o.productId);
@@ -2468,10 +2468,10 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
 
             {/* Purchase History */}
             <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 md:p-8 shadow-xl">
-              <h3 className="text-xl font-black mb-6 text-[#C5A184] flex items-center gap-2"><Activity size={24} /> Historial de Tiendas Visitadas</h3>
+              <h3 className="text-xl font-black mb-6 text-[violet-600] flex items-center gap-2"><Activity size={24} /> Historial de Tiendas Visitadas</h3>
               {historyEntries.length === 0 ? (
                 <div className="text-center py-10 opacity-70">
-                  <Package size={48} className="mx-auto mb-4 text-[#C5A184]" />
+                  <Package size={48} className="mx-auto mb-4 text-[violet-600]" />
                   <p className="font-bold text-gray-300">Aún no tienes historial de compras.</p>
                   <p className="text-xs text-gray-500 mt-1">Visita tiendas KFS o compra en Flow Express.</p>
                 </div>
@@ -2480,9 +2480,9 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                   {historyEntries.map((c: any, i: number) => {
                     const store = db.clients.find((cl: any) => cl.id === c.clientId);
                     return (
-                      <div key={i} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-5 bg-black/40 rounded-xl border border-white/5 hover:border-[#C5A184]/30 transition-colors gap-4">
+                      <div key={i} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-5 bg-black/40 rounded-xl border border-white/5 hover:border-[violet-600]/30 transition-colors gap-4">
                         <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-[#C5A184]">
+                          <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center text-[violet-600]">
                             <Store size={18} />
                           </div>
                           <div>
@@ -2492,7 +2492,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                         </div>
                         <div className="text-left sm:text-right w-full sm:w-auto bg-white/5 sm:bg-transparent p-3 sm:p-0 rounded-lg">
                           <p className="text-[10px] text-gray-400 font-mono">Volumen Gastado</p>
-                          <p className="text-[#C5A184] font-black text-xl">{formatUSD(c.totalSpent)}</p>
+                          <p className="text-[violet-600] font-black text-xl">{formatUSD(c.totalSpent)}</p>
                         </div>
                       </div>
                     )
@@ -2508,7 +2508,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
             {currentCandidate?.notifications && currentCandidate.notifications.length > 0 && (
               <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 space-y-4 animate-fade-in">
                 <div className="flex justify-between items-center border-b border-white/10 pb-3">
-                  <h4 className="text-sm font-black text-[#C5A184] uppercase tracking-wider flex items-center gap-2">
+                  <h4 className="text-sm font-black text-[violet-600] uppercase tracking-wider flex items-center gap-2">
                     <Bell size={16} /> Notificaciones de Empleo
                   </h4>
                   {unreadNotifsCount > 0 && (
@@ -2523,7 +2523,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                 </div>
                 <div className="space-y-3 max-h-48 overflow-y-auto pr-2">
                   {[...currentCandidate.notifications].reverse().map((n: any) => (
-                    <div key={n.id} className={`p-4 rounded-xl border transition-all text-xs ${n.read ? 'bg-black/35 border-white/5 text-gray-400' : 'bg-[#C5A184]/10 border-[#C5A184]/30 text-white font-bold'}`}>
+                    <div key={n.id} className={`p-4 rounded-xl border transition-all text-xs ${n.read ? 'bg-black/35 border-white/5 text-gray-400' : 'bg-[violet-600]/10 border-[violet-600]/30 text-white font-bold'}`}>
                       <div className="flex justify-between items-start gap-2">
                         <span className="uppercase tracking-wider font-black">{n.title}</span>
                         <span className="text-[9px] text-gray-500 font-mono shrink-0">{new Date(n.timestamp).toLocaleDateString()}</span>
@@ -2545,7 +2545,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                   <p className="text-sm text-gray-400 leading-relaxed">
                     Hemos recibido tu postulación laboral y tu reporte de pago de **$1.00 USD**. Nuestro equipo de soporte técnico de KFS OS está verificando la transferencia y auditando tu CV.
                   </p>
-                  <p className="text-xs text-[#C5A184] font-mono mt-1">
+                  <p className="text-xs text-[violet-600] font-mono mt-1">
                     Referencia de pago de activación: <span className="font-bold">{currentCandidate.registrationPaymentRef}</span>
                   </p>
                 </div>
@@ -2558,7 +2558,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
               <div className="bg-white/5 border border-white/10 rounded-[2rem] p-6 md:p-8 shadow-xl space-y-6">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-white/10 pb-6">
                   <div>
-                    <h3 className="text-2xl font-black text-[#C5A184] flex items-center gap-2">
+                    <h3 className="text-2xl font-black text-[violet-600] flex items-center gap-2">
                       <Briefcase size={26} /> Mi Perfil Laboral
                     </h3>
                     <p className="text-xs text-gray-400 mt-1">Configura tu perfil profesional para ser visible ante dueños de comercios KFS OS.</p>
@@ -2584,7 +2584,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                 <form onSubmit={handleSaveCandidate} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider mb-2 block">Nombre Completo</label>
+                      <label className="text-xs font-bold text-[violet-600] uppercase tracking-wider mb-2 block">Nombre Completo</label>
                       <input
                         type="text"
                         disabled
@@ -2593,7 +2593,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider mb-2 block">Teléfono (WhatsApp)</label>
+                      <label className="text-xs font-bold text-[violet-600] uppercase tracking-wider mb-2 block">Teléfono (WhatsApp)</label>
                       <input
                         type="text"
                         disabled
@@ -2605,22 +2605,22 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider mb-2 block">Correo Electrónico (Obligatorio)</label>
+                      <label className="text-xs font-bold text-[violet-600] uppercase tracking-wider mb-2 block">Correo Electrónico (Obligatorio)</label>
                       <input
                         type="email"
                         required
                         placeholder="ejemplo@correo.com"
                         value={email}
                         onChange={e => setEmail(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-[#C5A184] focus:outline-none"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-[violet-600] focus:outline-none"
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider mb-2 block">Cargo de Interés</label>
+                      <label className="text-xs font-bold text-[violet-600] uppercase tracking-wider mb-2 block">Cargo de Interés</label>
                       <select
                         value={selectedRole}
                         onChange={e => setSelectedRole(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-[#C5A184] focus:outline-none focus:bg-[#0A1128]"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white focus:border-[violet-600] focus:outline-none focus:bg-[violet-900]"
                       >
                         <option value="Cajero">Cajero / Cajera</option>
                         <option value="Vendedor">Vendedor de Tienda</option>
@@ -2632,24 +2632,24 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider mb-2 block">Presentación y Experiencia Laboral (Obligatorio)</label>
+                    <label className="text-xs font-bold text-[violet-600] uppercase tracking-wider mb-2 block">Presentación y Experiencia Laboral (Obligatorio)</label>
                     <textarea
                       required
                       rows={4}
                       placeholder="Describe detalladamente tu experiencia, referencias y por qué eres un excelente candidato..."
                       value={bio}
                       onChange={e => setBio(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-600 focus:border-[#C5A184] focus:outline-none"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-gray-600 focus:border-[violet-600] focus:outline-none"
                     />
                   </div>
 
                   <div>
                     <div className="flex justify-between items-center mb-2">
-                      <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider block">Currículum Vitae (Obligatorio)</label>
+                      <label className="text-xs font-bold text-[violet-600] uppercase tracking-wider block">Currículum Vitae (Obligatorio)</label>
                       <button
                         type="button"
                         onClick={() => setUseKfsCvBuilder(!useKfsCvBuilder)}
-                        className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${useKfsCvBuilder ? "bg-[#C5A184] text-[#0A1128]" : "bg-white/5 text-gray-400 hover:text-white"}`}
+                        className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${useKfsCvBuilder ? "bg-[violet-600] text-[violet-900]" : "bg-white/5 text-gray-400 hover:text-white"}`}
                       >
                         {useKfsCvBuilder ? "⚡ Usando CV Digital KFS" : "📄 Usar CV Digital KFS"}
                       </button>
@@ -2664,7 +2664,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                         <button
                           type="button"
                           onClick={() => setShowCvModal(true)}
-                          className="px-4 py-2 rounded-xl bg-[#0A1128] text-[#C5A184] border border-[#C5A184]/35 font-bold text-xs hover:bg-[#C5A184] hover:text-[#0A1128] transition-all cursor-pointer"
+                          className="px-4 py-2 rounded-xl bg-[violet-900] text-[violet-600] border border-[violet-600]/35 font-bold text-xs hover:bg-[violet-600] hover:text-[violet-900] transition-all cursor-pointer"
                         >
                           Previsualizar / Imprimir CV
                         </button>
@@ -2723,7 +2723,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-[#C5A184] uppercase tracking-wider mb-3 block">Habilidades Técnicas</label>
+                    <label className="text-xs font-bold text-[violet-600] uppercase tracking-wider mb-3 block">Habilidades Técnicas</label>
                     <div className="flex flex-wrap gap-2">
                       {availableSkills.map(skill => {
                         const isSelected = selectedSkills.includes(skill);
@@ -2732,7 +2732,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                             key={skill}
                             type="button"
                             onClick={() => handleToggleSkill(skill)}
-                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${isSelected ? "bg-[#C5A184] text-[#0A1128] shadow-md" : "bg-white/5 text-gray-400 hover:text-white hover:bg-white/10"}`}
+                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${isSelected ? "bg-[violet-600] text-[violet-900] shadow-md" : "bg-white/5 text-gray-400 hover:text-white hover:bg-white/10"}`}
                           >
                             {isSelected && <Check size={12} />}
                             {skill}
@@ -2743,7 +2743,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                   </div>
 
                   <div className="bg-white/5 border border-white/10 p-6 rounded-2xl space-y-4">
-                    <h4 className="text-[#C5A184] text-xs font-black uppercase tracking-widest flex items-center gap-1.5">
+                    <h4 className="text-[violet-600] text-xs font-black uppercase tracking-widest flex items-center gap-1.5">
                       <Shield size={14} /> Micro-Encuesta de Compatibilidad
                     </h4>
 
@@ -2753,7 +2753,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                         <select
                           value={answers.availability}
                           onChange={e => setAnswers(prev => ({ ...prev, availability: e.target.value }))}
-                          className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#C5A184]"
+                          className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[violet-600]"
                         >
                           <option value="full-time">Tiempo Completo (Full-time)</option>
                           <option value="part-time">Medio Tiempo (Part-time)</option>
@@ -2766,7 +2766,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                         <select
                           value={answers.location}
                           onChange={e => setAnswers(prev => ({ ...prev, location: e.target.value }))}
-                          className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#C5A184]"
+                          className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[violet-600]"
                         >
                           <option value="Caracas - Este">Caracas - Este</option>
                           <option value="Caracas - Oeste">Caracas - Oeste</option>
@@ -2780,7 +2780,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                         <select
                           value={answers.experienceYears}
                           onChange={e => setAnswers(prev => ({ ...prev, experienceYears: e.target.value }))}
-                          className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#C5A184]"
+                          className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[violet-600]"
                         >
                           <option value="0-1">Menos de 1 año</option>
                           <option value="1-3">1 a 3 años</option>
@@ -2793,7 +2793,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                         <select
                           value={answers.hasVehicle}
                           onChange={e => setAnswers(prev => ({ ...prev, hasVehicle: e.target.value }))}
-                          className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#C5A184]"
+                          className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[violet-600]"
                         >
                           <option value="no">No posee</option>
                           <option value="moto">Moto propia</option>
@@ -2805,7 +2805,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
 
                   {currentCandidate?.registrationPaymentStatus !== "approved" && (
                     <div className="bg-white/5 border border-white/10 p-6 rounded-[2rem] space-y-4">
-                      <h4 className="text-sm font-black text-[#C5A184] uppercase tracking-wider border-b border-[#C5A184]/15 pb-2">
+                      <h4 className="text-sm font-black text-[violet-600] uppercase tracking-wider border-b border-[violet-600]/15 pb-2">
                         Pago de Activación de Perfil ($1.00 USD)
                       </h4>
                       <p className="text-xs text-gray-300 leading-relaxed">
@@ -2832,7 +2832,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                             placeholder="Número de referencia de $1 USD"
                             value={regRefNum}
                             onChange={e => setRegRefNum(e.target.value)}
-                            className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#C5A184]"
+                            className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[violet-600]"
                           />
                         </div>
                         <div>
@@ -2876,7 +2876,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                   <div className="flex justify-end pt-4">
                     <button
                       type="submit"
-                      className="bg-[#C5A184] text-[#0A1128] px-8 py-4 rounded-xl font-black hover:scale-[1.03] active:scale-95 transition-transform flex items-center justify-center gap-2 cursor-pointer shadow-xl"
+                      className="bg-[violet-600] text-[violet-900] px-8 py-4 rounded-xl font-black hover:scale-[1.03] active:scale-95 transition-transform flex items-center justify-center gap-2 cursor-pointer shadow-xl"
                     >
                       <FileText size={18} /> {currentCandidate ? "Actualizar Perfil Laboral" : "Publicar Perfil Profesional"}
                     </button>
@@ -2904,8 +2904,8 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                 onClick={() => setSubTab(tab.id)}
                 className="relative flex flex-col items-center justify-center w-20 h-12 cursor-pointer group"
               >
-                {isActive && <span className="absolute -top-4 w-12 h-1 bg-[#C5A184] rounded-b-full shadow-[0_4px_10px_rgba(197,161,132,0.5)]" />}
-                <div className={`relative transition-all duration-300 ${isActive ? '-translate-y-2 text-[#0A1128]' : 'text-gray-400 group-hover:text-gray-600'}`}>
+                {isActive && <span className="absolute -top-4 w-12 h-1 bg-[violet-600] rounded-b-full shadow-[0_4px_10px_rgba(197,161,132,0.5)]" />}
+                <div className={`relative transition-all duration-300 ${isActive ? '-translate-y-2 text-[violet-900]' : 'text-gray-400 group-hover:text-gray-600'}`}>
                   <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
                   {tab.badge ? (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full border-2 border-white animate-pulse">
@@ -2913,7 +2913,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                     </span>
                   ) : null}
                 </div>
-                <span className={`text-[9px] font-bold mt-1 transition-all duration-300 ${isActive ? 'opacity-100 text-[#0A1128]' : 'opacity-0 translate-y-2'}`}>{tab.label}</span>
+                <span className={`text-[9px] font-bold mt-1 transition-all duration-300 ${isActive ? 'opacity-100 text-[violet-900]' : 'opacity-0 translate-y-2'}`}>{tab.label}</span>
               </button>
             )
           })}
@@ -3050,27 +3050,27 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
   })).slice(-15);
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24 font-sans text-[#0A1128] relative">
+    <div className="min-h-screen bg-[#EEF2F5] pb-24 font-sans text-violet-900 relative">
       {/* Wavy Header */}
-      <div className="bg-gradient-to-br from-[#0A1128] to-[#1a2b5e] rounded-b-[3rem] shadow-[0_10px_30px_rgba(10,17,40,0.3)] pt-6 pb-12 px-6 text-white relative z-10">
+      <div className="bg-[#EEF2F5] rounded-b-[3rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none pt-6 pb-12 px-6 text-violet-900 relative z-10">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
-            <span className="bg-white/20 p-2 rounded-xl text-[#C5A184]"><Shield size={20} /></span>
+            <span className="bg-violet-100 p-2 rounded-xl text-violet-600 shadow-inner"><Shield size={20} /></span>
             <h1 className="font-black text-xl tracking-tight">KFS OS (Arquitecto)</h1>
           </div>
-          <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
+          <button onClick={logout} className="p-2 bg-white shadow-sm rounded-xl hover:text-red-500 transition-colors cursor-pointer text-gray-500 border-none">
             <LogOut size={16} />
           </button>
         </div>
 
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-[#C5A184] rounded-full flex items-center justify-center text-[#0A1128] font-black text-2xl flex-shrink-0 shadow-lg border-4 border-[#0A1128]">
+            <div className="w-16 h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-full flex items-center justify-center text-violet-600 font-black text-2xl flex-shrink-0 border-none">
               AQ
             </div>
             <div>
-              <h2 className="text-xl md:text-2xl font-black tracking-tight truncate">Control Matriz KFS</h2>
-              <p className="text-[#C5A184] font-mono text-xs mt-1 bg-[#0A1128] inline-block px-2 py-0.5 rounded-md">Vista de Dios • Arquitectura de Red</p>
+              <h2 className="text-xl md:text-2xl font-black tracking-tight truncate text-violet-900">Control Matriz KFS</h2>
+              <p className="text-violet-600 font-mono text-xs mt-1 bg-violet-100 shadow-inner inline-block px-2 py-0.5 rounded-md">Vista de Dios • Arquitectura de Red</p>
             </div>
           </div>
         </div>
@@ -3081,67 +3081,67 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
           <div className="space-y-8 flex flex-col">
             {/* Global Metrics Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-6 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
+              <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] text-violet-900 p-6 rounded-[2rem] relative overflow-hidden border-none flex flex-col">
                 <div className="relative z-10">
-                  <span className="text-[#C5A184] text-[10px] font-black uppercase tracking-widest mb-1 block">Nodos Globales</span>
+                  <span className="text-violet-600 text-[10px] font-black uppercase tracking-widest mb-1 block">Nodos Globales</span>
                   <div className="flex items-baseline gap-2 mt-1">
-                    <h2 className="text-4xl font-black text-white">{totalDueños}</h2>
-                    <span className="text-xs text-white/50 font-bold">comercios</span>
+                    <h2 className="text-4xl font-black text-violet-900">{totalDueños}</h2>
+                    <span className="text-xs text-gray-500 font-bold">comercios</span>
                   </div>
                 </div>
-                <Activity size={80} className="absolute -right-5 -bottom-5 text-white/5" />
+                <Activity size={80} className="absolute -right-5 -bottom-5 text-violet-600/5" />
               </div>
-              <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-6 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
+              <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] text-violet-900 p-6 rounded-[2rem] relative overflow-hidden border-none flex flex-col">
                 <div className="relative z-10">
-                  <span className="text-[#C5A184] text-[10px] font-black uppercase tracking-widest mb-1 block">Fuerza de Ventas</span>
+                  <span className="text-violet-600 text-[10px] font-black uppercase tracking-widest mb-1 block">Fuerza de Ventas</span>
                   <div className="flex items-baseline gap-2 mt-1">
-                    <h2 className="text-4xl font-black text-white">{totalPromotoras}</h2>
-                    <span className="text-xs text-white/50 font-bold">promotoras</span>
+                    <h2 className="text-4xl font-black text-violet-900">{totalPromotoras}</h2>
+                    <span className="text-xs text-gray-500 font-bold">promotoras</span>
                   </div>
-                  <span className="text-[10px] text-white/40 font-bold mt-2 block">{totalSetups} setups históricos</span>
+                  <span className="text-[10px] text-gray-400 font-bold mt-2 block">{totalSetups} setups históricos</span>
                 </div>
-                <Users size={80} className="absolute -right-5 -bottom-5 text-white/5" />
+                <Users size={80} className="absolute -right-5 -bottom-5 text-violet-600/5" />
               </div>
-              <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-6 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
+              <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] text-violet-900 p-6 rounded-[2rem] relative overflow-hidden border-none flex flex-col">
                 <div className="relative z-10">
-                  <span className="text-[#C5A184] text-[10px] font-black uppercase tracking-widest mb-1 block">Facturación Global</span>
+                  <span className="text-violet-600 text-[10px] font-black uppercase tracking-widest mb-1 block">Facturación Global</span>
                   <div className="flex items-baseline gap-2 mt-1">
-                    <h2 className="text-4xl font-black text-green-400"><AnimatedCounter value={globalSalesUSD} format={formatUSD} /></h2>
+                    <h2 className="text-4xl font-black text-emerald-500"><AnimatedCounter value={globalSalesUSD} format={formatUSD} /></h2>
                   </div>
                 </div>
-                <TrendingUp size={80} className="absolute -right-5 -bottom-5 text-white/5" />
+                <TrendingUp size={80} className="absolute -right-5 -bottom-5 text-violet-600/5" />
               </div>
-              <div className="bg-gradient-to-br from-[#1A0A0A] to-[#2A1111] text-white p-6 rounded-[2rem] shadow-2xl relative overflow-hidden border border-red-900/50 flex flex-col">
+              <div className="bg-[#EEF2F5] shadow-[inset_10px_10px_20px_#d1d9e6,inset_-10px_-10px_20px_#ffffff] text-violet-900 p-6 rounded-[2rem] relative overflow-hidden border-none flex flex-col">
                 <div className="relative z-10">
                   <span className="text-red-400 text-[10px] font-black uppercase tracking-widest mb-1 block">Deuda Total x Cobrar</span>
                   <div className="flex items-baseline gap-2 mt-1">
                     <h2 className="text-4xl font-black text-red-500"><AnimatedCounter value={globalDebtUSD} format={formatUSD} /></h2>
                   </div>
                 </div>
-                <Activity size={80} className="absolute -right-5 -bottom-5 text-white/5" />
+                <Activity size={80} className="absolute -right-5 -bottom-5 text-red-500/5" />
               </div>
             </div>
 
             {/* BCV Rate Manual Update */}
-            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-6 flex flex-col md:flex-row items-center justify-between gap-4">
               <div>
-                <h3 className="font-black text-[#0A1128] text-lg">Tasa Oficial Banco Central</h3>
+                <h3 className="font-black text-violet-900 text-lg">Tasa Oficial Banco Central</h3>
                 <p className="text-xs text-gray-500">Actualización manual / forzada en el sistema</p>
               </div>
               <div className="flex items-center gap-4 w-full md:w-auto">
                 <div className="flex-1 md:w-32">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase">Tasa USD (Bs)</label>
-                  <input type="number" id="manualUsdRate" defaultValue={rates.USD} step="0.01" className="w-full border border-gray-200 rounded p-2 font-bold" />
+                  <label className="text-[10px] font-bold text-gray-500 uppercase">Tasa USD (Bs)</label>
+                  <input type="number" id="manualUsdRate" defaultValue={rates.USD} step="0.01" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-2 font-bold text-violet-900 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all" />
                 </div>
                 <div className="flex-1 md:w-32">
-                  <label className="text-[10px] font-bold text-gray-400 uppercase">Tasa EUR (Bs)</label>
-                  <input type="number" id="manualEurRate" defaultValue={rates.EUR} step="0.01" className="w-full border border-gray-200 rounded p-2 font-bold" />
+                  <label className="text-[10px] font-bold text-gray-500 uppercase">Tasa EUR (Bs)</label>
+                  <input type="number" id="manualEurRate" defaultValue={rates.EUR} step="0.01" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-2 font-bold text-violet-900 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all" />
                 </div>
                 <button onClick={() => {
                   const usd = parseFloat((document.getElementById('manualUsdRate') as HTMLInputElement).value);
                   const eur = parseFloat((document.getElementById('manualEurRate') as HTMLInputElement).value);
                   if (usd > 0 && eur > 0) updateBcvRates(usd, eur);
-                }} className="bg-[#0A1128] text-white rounded-lg px-6 py-2 h-10 mt-5 font-black hover:bg-[#1a2b5e] transition-colors">
+                }} className="bg-violet-600 text-white rounded-xl px-6 py-2 h-10 mt-5 font-black hover:bg-violet-800 transition-colors shadow-[0_5px_15px_rgba(139,92,246,0.3)] border-none">
                   Fijar
                 </button>
               </div>
@@ -3149,60 +3149,60 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 
             {/* Net Earnings and Ad Budget Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden">
+              <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] text-violet-900 p-8 rounded-[2rem] border-none relative overflow-hidden">
                 <div className="relative z-10">
-                  <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><DollarSign size={14} className="text-green-500" /> Ganancia Neta KFS</p>
-                  <h2 className="text-5xl font-black mb-1 text-green-400">{formatEUR(db.kreatekCore?.netEarningsEUR || 0)}</h2>
-                  <p className="text-xs text-gray-400 mt-2">Libre de pago a promotoras y fondos.</p>
+                  <p className="text-violet-600 text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><DollarSign size={14} className="text-emerald-500" /> Ganancia Neta KFS</p>
+                  <h2 className="text-5xl font-black mb-1 text-emerald-500">{formatEUR(db.kreatekCore?.netEarningsEUR || 0)}</h2>
+                  <p className="text-xs text-gray-500 mt-2">Libre de pago a promotoras y fondos.</p>
                 </div>
-                <Activity size={100} className="absolute -right-10 -bottom-10 text-white/5" />
+                <Activity size={100} className="absolute -right-10 -bottom-10 text-violet-600/5" />
               </div>
 
               {/* Float & Liquidez (Phase E) */}
-              <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden">
+              <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] text-violet-900 p-8 rounded-[2rem] border-none relative overflow-hidden">
                 <div className="relative z-10">
-                  <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><CheckCircle size={14} className="text-blue-500" /> Float Liquidez (USD)</p>
-                  <h2 className="text-5xl font-black mb-1 text-blue-400">{formatUSD(usdFloat)}</h2>
-                  <p className="text-xs text-gray-400 mt-2">Dinero real pre-pagado por usuarios, listo para invertir.</p>
+                  <p className="text-violet-600 text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><CheckCircle size={14} className="text-sky-500" /> Float Liquidez (USD)</p>
+                  <h2 className="text-5xl font-black mb-1 text-sky-500">{formatUSD(usdFloat)}</h2>
+                  <p className="text-xs text-gray-500 mt-2">Dinero real pre-pagado por usuarios, listo para invertir.</p>
                 </div>
-                <Activity size={100} className="absolute -right-10 -bottom-10 text-white/5" />
+                <Activity size={100} className="absolute -right-10 -bottom-10 text-violet-600/5" />
               </div>
 
               {/* K-Points Emitidos (Phase E) */}
-              <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden">
+              <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] text-violet-900 p-8 rounded-[2rem] border-none relative overflow-hidden">
                 <div className="relative z-10">
-                  <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><TrendingUp size={14} className="text-purple-500" /> Total K-Points Emitidos</p>
-                  <h2 className="text-5xl font-black mb-1 text-purple-400">{totalKPoints} K-Pts</h2>
-                  <p className="text-xs text-gray-400 mt-2">Deuda interna en la economía. {(totalKPoints * 0.001).toFixed(2)} USD (Ref).</p>
+                  <p className="text-violet-600 text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><TrendingUp size={14} className="text-purple-500" /> Total K-Points Emitidos</p>
+                  <h2 className="text-5xl font-black mb-1 text-purple-500">{totalKPoints} K-Pts</h2>
+                  <p className="text-xs text-gray-500 mt-2">Deuda interna en la economía. {(totalKPoints * 0.001).toFixed(2)} USD (Ref).</p>
                 </div>
-                <Activity size={100} className="absolute -right-10 -bottom-10 text-white/5" />
+                <Activity size={100} className="absolute -right-10 -bottom-10 text-violet-600/5" />
               </div>
 
-              <div className="bg-gradient-to-br from-indigo-900 to-indigo-950 p-8 rounded-[2rem] shadow-lg border border-indigo-800 flex flex-col justify-center relative overflow-hidden">
+              <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] text-violet-900 p-8 rounded-[2rem] border-none flex flex-col justify-center relative overflow-hidden">
                 <div className="relative z-10">
-                  <p className="text-indigo-300 text-xs font-black uppercase tracking-widest mb-2">Fondo Publicidad KFS</p>
-                  <h2 className="text-5xl font-black text-white">{formatEUR(db.kreatekCore?.adBudgetEUR || 0)}</h2>
-                  <p className="text-xs text-indigo-200 mt-2">Fondo sugerido para inyección días 13-17 y 28-2.</p>
+                  <p className="text-violet-600 text-xs font-black uppercase tracking-widest mb-2">Fondo Publicidad KFS</p>
+                  <h2 className="text-5xl font-black text-violet-900">{formatEUR(db.kreatekCore?.adBudgetEUR || 0)}</h2>
+                  <p className="text-xs text-gray-500 mt-2">Fondo sugerido para inyección días 13-17 y 28-2.</p>
                 </div>
               </div>
             </div>
 
             <KFSFinancialSplitCalculator formatUSD={formatUSD} formatEUR={formatEUR} />
 
-            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
-              <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><TrendingUp className="text-[#C5A184]" /> Flujo de Comisiones KFS</h3>
+            <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8">
+              <h3 className="text-xl font-black mb-6 text-violet-900 flex items-center gap-2"><TrendingUp className="text-violet-600" /> Flujo de Comisiones KFS</h3>
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={chartData}>
                     <defs>
                       <linearGradient id="colorKreatekFee" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#C5A184" stopOpacity={0.4}/>
-                        <stop offset="95%" stopColor="#C5A184" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.4}/>
+                        <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
-                    <XAxis dataKey="name" fontSize={10} stroke="#cbd5e1" />
+                    <XAxis dataKey="name" fontSize={10} stroke="#94a3b8" />
                     <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
-                    <Area type="monotone" dataKey="kreatekFee" stroke="#C5A184" strokeWidth={4} fill="url(#colorKreatekFee)" />
+                    <Area type="monotone" dataKey="kreatekFee" stroke="#8B5CF6" strokeWidth={4} fill="url(#colorKreatekFee)" />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
@@ -3213,34 +3213,34 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
         {activeTab === "red" && (
           <div className="space-y-8 flex flex-col">
             {/* Tactical Buttons Row for RED */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              <button onClick={() => setActiveModal('store')} className="bg-[#C5A184]/10 border border-[#C5A184]/30 hover:bg-[#C5A184]/20 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group cursor-pointer">
-                <div className="bg-[#C5A184] text-[#0A1128] p-3 rounded-xl group-hover:scale-110 transition-transform"><Store size={24} /></div>
-                <span className="font-black text-[#0A1128] text-sm text-center font-bold">Alta de Comercio</span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <button onClick={() => setActiveModal('store')} className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] hover:shadow-[inset_5px_5px_10px_#d1d9e6,inset_-5px_-5px_10px_#ffffff] border-none p-6 rounded-[2rem] flex flex-col items-center gap-3 transition-all hover:scale-[0.98] group cursor-pointer">
+                <div className="bg-violet-600 text-white p-3 rounded-xl shadow-[0_5px_15px_rgba(139,92,246,0.3)] group-hover:scale-110 transition-transform"><Store size={24} /></div>
+                <span className="font-black text-violet-900 text-sm text-center">Alta de Comercio</span>
               </button>
-              <button onClick={() => setActiveModal('assign')} className="bg-[#0A1128]/5 border border-[#0A1128]/10 hover:bg-[#0A1128]/10 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group cursor-pointer">
-                <div className="bg-[#0A1128] text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Users size={24} /></div>
-                <span className="font-black text-[#0A1128] text-sm text-center font-bold">Asignar Promotora</span>
+              <button onClick={() => setActiveModal('assign')} className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] hover:shadow-[inset_5px_5px_10px_#d1d9e6,inset_-5px_-5px_10px_#ffffff] border-none p-6 rounded-[2rem] flex flex-col items-center gap-3 transition-all hover:scale-[0.98] group cursor-pointer">
+                <div className="bg-violet-900 text-white p-3 rounded-xl shadow-[0_5px_15px_rgba(76,29,149,0.3)] group-hover:scale-110 transition-transform"><Users size={24} /></div>
+                <span className="font-black text-violet-900 text-sm text-center">Asignar Promotora</span>
               </button>
-              <button onClick={() => setAssignRiderModal({ riderId: "", riderName: "" })} className="bg-orange-50 border border-orange-100 hover:bg-orange-100 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group cursor-pointer">
-                <div className="bg-orange-500 text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Truck size={24} /></div>
-                <span className="font-black text-[#0A1128] text-sm text-center font-bold">Asignar Rider a Negocio</span>
+              <button onClick={() => setAssignRiderModal({ riderId: "", riderName: "" })} className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] hover:shadow-[inset_5px_5px_10px_#d1d9e6,inset_-5px_-5px_10px_#ffffff] border-none p-6 rounded-[2rem] flex flex-col items-center gap-3 transition-all hover:scale-[0.98] group cursor-pointer">
+                <div className="bg-amber-500 text-white p-3 rounded-xl shadow-[0_5px_15px_rgba(245,158,11,0.3)] group-hover:scale-110 transition-transform"><Truck size={24} /></div>
+                <span className="font-black text-violet-900 text-sm text-center">Asignar Rider a Negocio</span>
               </button>
             </div>
 
             {/* Control y Gobernanza de Promotoras */}
-            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
+            <div className="bg-[#EEF2F5] rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none p-8">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><Shield className="text-[#C5A184]" /> Control y Gobernanza de Promotoras</h3>
+                <h3 className="text-xl font-black text-violet-900 flex items-center gap-2"><Shield className="text-violet-600" /> Control y Gobernanza de Promotoras</h3>
                 <div className="relative w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                  <input type="text" placeholder="Buscar promotora..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchPromotora} onChange={e => setSearchPromotora(e.target.value)} />
+                  <input type="text" placeholder="Buscar promotora..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all text-violet-900" value={searchPromotora} onChange={e => setSearchPromotora(e.target.value)} />
                 </div>
               </div>
 
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto rounded-xl">
                 <table className="w-full text-sm text-left">
-                  <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black">
+                  <thead className="bg-violet-100 text-violet-700 uppercase text-xs font-black">
                     <tr>
                       <th className="py-4 px-4 rounded-tl-xl">Promotora</th>
                       <th className="py-4 px-4">Accesos</th>
@@ -3251,8 +3251,8 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                   </thead>
                   <tbody>
                     {db.promotoras.filter((p: any) => p.name.toLowerCase().includes(searchPromotora.toLowerCase()) || p.email.toLowerCase().includes(searchPromotora.toLowerCase())).map((p: any) => (
-                      <tr key={p.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                        <td className="py-4 px-4 font-bold text-[#0A1128]">{p.name}</td>
+                      <tr key={p.id} className="border-b border-violet-100 hover:bg-violet-50 transition-colors">
+                        <td className="py-4 px-4 font-bold text-violet-900">{p.name}</td>
                         <td className="py-4 px-4 text-gray-500"><span className="text-xs font-mono block">{p.email}</span><span className="text-xs font-mono">P: {p.password}</span></td>
                         <td className="py-4 px-4 text-gray-500"><span className="text-xs font-mono block">BIN: {p.binanceId || "N/A"}</span><span className="text-xs font-mono block">PM: {p.pagoMovil || "N/A"}</span></td>
                         <td className="py-4 px-4 text-center">
@@ -3260,8 +3260,8 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                             <span className="bg-yellow-100 text-yellow-700 text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-wider">Pendiente</span>
                           ) : (
                             <div>
-                              <span className="font-black text-[#0A1128] block">{p.setups || 0} Setups</span>
-                              <span className="font-black text-green-600 block">{formatEUR(p.earningsEUR || 0)}</span>
+                              <span className="font-black text-violet-900 block">{p.setups || 0} Setups</span>
+                              <span className="font-black text-emerald-500 block">{formatEUR(p.earningsEUR || 0)}</span>
                             </div>
                           )}
                         </td>
@@ -3275,7 +3275,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                             <div className="flex justify-end gap-2">
                               <span className="bg-gray-100 text-gray-500 text-[10px] font-black px-2 py-2 rounded-lg uppercase tracking-wider flex items-center">Habilitada</span>
                               {(p.passiveEarningsEUR || 0) > 0 && (
-                                <button onClick={() => settlePromotoraEarnings(p.id)} className="bg-[#C5A184] text-[#0A1128] px-3 py-1.5 rounded-lg font-bold text-xs shadow-md hover:bg-[#b08d70] cursor-pointer inline-flex items-center gap-1">
+                                <button onClick={() => settlePromotoraEarnings(p.id)} className="bg-[violet-600] text-[violet-900] px-3 py-1.5 rounded-lg font-bold text-xs shadow-md hover:bg-[#b08d70] cursor-pointer inline-flex items-center gap-1">
                                   <CheckCircle size={14} /> Liquidar Regalías
                                 </button>
                               )}
@@ -3291,17 +3291,17 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             </div>
 
             {/* Estado de Cobranza Diaria (BOS) */}
-            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
+            <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><DollarSign className="text-red-500" /> Estado de Cobranza Diaria (BOS)</h3>
+                <h3 className="text-xl font-black text-violet-900 flex items-center gap-2"><DollarSign className="text-red-500" /> Estado de Cobranza Diaria (BOS)</h3>
                 <div className="relative w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                  <input type="text" placeholder="Buscar comercio..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchClient} onChange={e => setSearchClient(e.target.value)} />
+                  <input type="text" placeholder="Buscar comercio..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all text-violet-900" value={searchClient} onChange={e => setSearchClient(e.target.value)} />
                 </div>
               </div>
-              <div className="overflow-x-auto">
+              <div className="overflow-x-auto rounded-xl">
                 <table className="w-full text-sm text-left">
-                  <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black">
+                  <thead className="bg-violet-100 text-violet-700 uppercase text-xs font-black">
                     <tr>
                       <th className="py-4 px-4 rounded-tl-xl">Comercio</th>
                       <th className="py-4 px-4">Teléfono (WhatsApp)</th>
@@ -3314,9 +3314,9 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                     {db.clients.filter((c: any) => c.company.toLowerCase().includes(searchClient.toLowerCase()) || c.name.toLowerCase().includes(searchClient.toLowerCase())).map((c: any) => {
                       const isBlocked = c.subscription?.status === 'past_due';
                       return (
-                        <tr key={c.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                        <tr key={c.id} className="border-b border-violet-100 hover:bg-violet-50 transition-colors">
                           <td className="py-4 px-4">
-                            <span className="font-bold text-[#0A1128] block">{c.company}</span>
+                            <span className="font-bold text-[violet-900] block">{c.company}</span>
                             <span className={`inline-block text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full mt-1 ${isBlocked ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-green-100 text-green-700 border border-green-200'}`}>
                               {isBlocked ? '🔴 Bloqueado' : '🟢 Activo'}
                             </span>
@@ -3371,17 +3371,17 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             </div>
 
             {/* Fuerza Laboral (Vendedores) */}
-            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
+            <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><UserCheck className="text-[#C5A184]" /> Fuerza Laboral (Vendedores)</h3>
+                <h3 className="text-xl font-black text-violet-900 flex items-center gap-2"><UserCheck className="text-violet-600" /> Fuerza Laboral (Vendedores)</h3>
                 <div className="relative w-48">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                  <input type="text" placeholder="Buscar vendedor..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchVendedor} onChange={e => setSearchVendedor(e.target.value)} />
+                  <input type="text" placeholder="Buscar vendedor..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 text-violet-900 transition-all" value={searchVendedor} onChange={e => setSearchVendedor(e.target.value)} />
                 </div>
               </div>
-              <div className="overflow-x-auto max-h-96">
+              <div className="overflow-x-auto max-h-96 rounded-xl">
                 <table className="w-full text-sm text-left">
-                  <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black sticky top-0">
+                  <thead className="bg-violet-100 text-violet-700 uppercase text-xs font-black sticky top-0">
                     <tr>
                       <th className="py-4 px-4 rounded-tl-xl">Vendedor</th>
                       <th className="py-4 px-4">Comercio</th>
@@ -3392,8 +3392,8 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                     {(db.vendedores || []).filter((v: any) => v.name.toLowerCase().includes(searchVendedor.toLowerCase()) || v.email.toLowerCase().includes(searchVendedor.toLowerCase())).map((vend: any) => {
                       const client = db.clients.find((c: any) => c.id === vend.clientId);
                       return (
-                        <tr key={vend.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                          <td className="py-4 px-4 font-bold text-[#0A1128]">{vend.name}</td>
+                        <tr key={vend.id} className="border-b border-violet-100 hover:bg-violet-50 transition-colors">
+                          <td className="py-4 px-4 font-bold text-violet-900">{vend.name}</td>
                           <td className="py-4 px-4 text-gray-500 text-xs">{client?.company || "N/A"}</td>
                           <td className="py-4 px-4 text-right text-gray-500">
                             <span className="text-[10px] font-mono block">{vend.email}</span>
@@ -3409,54 +3409,54 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             </div>
 
             {/* Riders de Delivery */}
-            <div className="bg-white rounded-[2rem] shadow-lg overflow-hidden border border-gray-100">
-              <div className="flex items-center justify-between p-6 border-b border-gray-100">
+            <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] overflow-hidden">
+              <div className="flex items-center justify-between p-6 border-b border-violet-100">
                 <div>
-                  <h2 className="text-xl font-black text-[#0A1128] flex items-center gap-2">
-                    <Truck size={20} className="text-[#C5A184]" /> Riders de Delivery
+                  <h2 className="text-xl font-black text-violet-900 flex items-center gap-2">
+                    <Truck size={20} className="text-violet-600" /> Riders de Delivery
                   </h2>
-                  <p className="text-xs text-gray-400 mt-0.5">Aprobación, revisión de documentos y gestión de riders</p>
+                  <p className="text-xs text-gray-500 mt-0.5">Aprobación, revisión de documentos y gestión de riders</p>
                 </div>
                 <div className="flex gap-2 items-center">
                   {(db.riders?.filter((r: any) => r.status === "pending") || []).length > 0 && (
-                    <span className="bg-amber-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full animate-pulse">
+                    <span className="bg-amber-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full animate-pulse shadow-sm border-none">
                       {(db.riders?.filter((r: any) => r.status === "pending") || []).length} pendientes
                     </span>
                   )}
-                  <span className="bg-[#0A1128] text-white text-[10px] font-black px-3 py-1.5 rounded-full">
+                  <span className="bg-violet-600 text-white text-[10px] font-black px-3 py-1.5 rounded-full shadow-sm border-none">
                     {(db.riders || []).length} total
                   </span>
                 </div>
               </div>
 
               {/* Metrics Banner */}
-              <div className="bg-gray-50 border-b border-gray-100 p-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
+              <div className="bg-violet-100/50 border-b border-violet-100 p-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-4 rounded-xl flex items-center justify-between">
                   <div>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Entregas</p>
-                    <p className="text-xl font-black text-[#0A1128]">
+                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Total Entregas</p>
+                    <p className="text-xl font-black text-violet-900">
                       {(db.riders || []).reduce((acc: number, r: any) => acc + (r.deliveriesCompleted || 0), 0)}
                     </p>
                   </div>
                   <div className="bg-orange-100 text-orange-600 p-2 rounded-lg"><Truck size={20} /></div>
                 </div>
-                <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
+                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-4 rounded-xl flex items-center justify-between">
                   <div>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Ganancias Generadas</p>
-                    <p className="text-xl font-black text-green-500">
+                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Ganancias Generadas</p>
+                    <p className="text-xl font-black text-emerald-500">
                       {formatUSD((db.riders || []).reduce((acc: number, r: any) => acc + (r.totalEarningsUSD || 0), 0))}
                     </p>
                   </div>
-                  <div className="bg-green-100 text-green-600 p-2 rounded-lg"><DollarSign size={20} /></div>
+                  <div className="bg-emerald-100 text-emerald-600 p-2 rounded-lg"><DollarSign size={20} /></div>
                 </div>
-                <div className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm flex items-center justify-between">
+                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-4 rounded-xl flex items-center justify-between">
                   <div>
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Riders Activos</p>
-                    <p className="text-xl font-black text-[#0A1128]">
+                    <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Riders Activos</p>
+                    <p className="text-xl font-black text-violet-900">
                       {(db.riders || []).filter((r: any) => r.status === "approved").length}
                     </p>
                   </div>
-                  <div className="bg-blue-100 text-blue-600 p-2 rounded-lg"><Users size={20} /></div>
+                  <div className="bg-sky-100 text-sky-600 p-2 rounded-lg"><Users size={20} /></div>
                 </div>
               </div>
 
@@ -3480,7 +3480,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <h3 className="font-black text-[#0A1128]">{rider.name}</h3>
+                              <h3 className="font-black text-[violet-900]">{rider.name}</h3>
                               <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${rider.status === "approved" ? "bg-green-100 text-green-700" : rider.status === "rejected" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>
                                 {rider.status === "approved" ? "✅ Aprobado" : rider.status === "rejected" ? "❌ Rechazado" : "⏳ Pendiente"}
                               </span>
@@ -3573,7 +3573,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
         {activeTab === "soporte" && (
           <div className="space-y-8 flex flex-col">
             {/* Help Desk */}
-            <div className="bg-[#0A1128] rounded-[2rem] shadow-sm border border-red-500/20 p-8 text-white mt-8">
+            <div className="bg-[violet-900] rounded-[2rem] shadow-sm border border-red-500/20 p-8 text-white mt-8">
               <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-red-400"><Bell className="text-red-400" /> Help Desk (Tickets de Soporte Global)</h3>
               <div className="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
                 {(db.supportTickets || []).slice().reverse().map((ticket: any) => {
@@ -3584,23 +3584,23 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                         <p className="text-sm font-bold text-gray-200">[{ticket.status === 'open' ? '🔴 ABIERTO' : '🟢 CERRADO'}] {client?.company || "Comercio"} - {ticket.subject}</p>
                         <span className="text-[10px] text-gray-500 font-mono">{new Date(ticket.createdAt).toLocaleString()}</span>
                       </div>
-                      <div className="space-y-2 mt-2 pl-4 border-l-2 border-[#C5A184]/30">
+                      <div className="space-y-2 mt-2 pl-4 border-l-2 border-[violet-600]/30">
                         {ticket.messages.map((m: any, i: number) => (
                           <div key={i} className="text-xs">
-                            <span className="font-bold text-[#C5A184]">{m.author}:</span> <span className="text-gray-300">{m.text}</span>
+                            <span className="font-bold text-[violet-600]">{m.author}:</span> <span className="text-gray-300">{m.text}</span>
                           </div>
                         ))}
                       </div>
                       {ticket.status === 'open' && (
                         <div className="flex gap-2 mt-2">
-                          <input type="text" id={`reply-${ticket.id}`} placeholder="Respuesta Kreatek..." className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#C5A184]" />
+                          <input type="text" id={`reply-${ticket.id}`} placeholder="Respuesta Kreatek..." className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[violet-600]" />
                           <button onClick={() => {
                             const input = document.getElementById(`reply-${ticket.id}`) as HTMLInputElement;
                             if (input && input.value) {
                               replyTicket(ticket.id, "Kreatek Core", input.value);
                               input.value = "";
                             }
-                          }} className="bg-[#C5A184] text-[#0A1128] px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer hover:bg-[#b08d70]">Responder</button>
+                          }} className="bg-[violet-600] text-[violet-900] px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer hover:bg-[#b08d70]">Responder</button>
                           <button onClick={() => {
                             closeTicket(ticket.id);
                           }} className="bg-white/10 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-white/20 cursor-pointer">Cerrar Ticket</button>
@@ -3617,13 +3617,13 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 
             {/* Suscripciones Pendientes */}
             {db.clients.filter((c: any) => c.subscription?.status === 'pending_verification').length > 0 && (
-              <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 mb-8">
-                <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><CreditCard className="text-green-500" /> Suscripciones por Aprobar ($6)</h3>
+              <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8 mb-8">
+                <h3 className="text-xl font-black mb-6 text-[violet-900] flex items-center gap-2"><CreditCard className="text-green-500" /> Suscripciones por Aprobar ($6)</h3>
                 <div className="space-y-4">
                   {db.clients.filter((c: any) => c.subscription?.status === 'pending_verification').map((c: any) => (
                     <div key={c.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-green-50/50 rounded-2xl border border-green-100 shadow-sm gap-4">
                       <div>
-                        <h4 className="font-bold text-[#0A1128]">{c.company}</h4>
+                        <h4 className="font-bold text-[violet-900]">{c.company}</h4>
                         <p className="text-sm text-gray-600 font-mono mt-1">Ref Bancaria Enviada: <span className="font-black text-green-700">{c.subscription.lastPaymentRef}</span></p>
                       </div>
                       <button onClick={() => approveSubscription(c.id)} className="w-full md:w-auto px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md">
@@ -3637,15 +3637,15 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 
             {/* Registros de Candidatos Pendientes ($1) */}
             {db.candidates?.filter((c: any) => c.registrationPaymentStatus === 'pending_approval').length > 0 && (
-              <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 mb-8 animate-fade-in">
-                <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2">
+              <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8 mb-8 animate-fade-in">
+                <h3 className="text-xl font-black mb-6 text-[violet-900] flex items-center gap-2">
                   <Briefcase className="text-green-500" /> Registraciones de Bolsa de Empleo por Aprobar ($1)
                 </h3>
                 <div className="space-y-4">
                   {db.candidates.filter((c: any) => c.registrationPaymentStatus === 'pending_approval').map((cand: any) => (
                     <div key={cand.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-green-50/50 rounded-2xl border border-green-100 shadow-sm gap-4">
                       <div>
-                        <h4 className="font-black text-[#0A1128]">Candidato: {cand.name}</h4>
+                        <h4 className="font-black text-[violet-900]">Candidato: {cand.name}</h4>
                         <p className="text-xs text-gray-600 mt-1">
                           Cargo: <strong>{cand.role}</strong> | Teléfono: <strong>{cand.phone}</strong>
                         </p>
@@ -3699,8 +3699,8 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 
             {/* Desbloqueos de Contactos Pendientes ($10) */}
             {db.unlockedContacts?.filter((u: any) => u.status === 'pending_approval').length > 0 && (
-              <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 mb-8 animate-fade-in">
-                <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2">
+              <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8 mb-8 animate-fade-in">
+                <h3 className="text-xl font-black mb-6 text-[violet-900] flex items-center gap-2">
                   <CreditCard className="text-green-500" /> Desbloqueos de Bolsa de Empleo por Aprobar ($10)
                 </h3>
                 <div className="space-y-4">
@@ -3710,7 +3710,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                     return (
                       <div key={u.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-green-50/50 rounded-2xl border border-green-100 shadow-sm gap-4">
                         <div>
-                          <h4 className="font-black text-[#0A1128]">Comercio: {client?.company || "Desconocido"}</h4>
+                          <h4 className="font-black text-[violet-900]">Comercio: {client?.company || "Desconocido"}</h4>
                           <p className="text-xs text-gray-600 mt-1">
                             Candidato Target: <strong>{candidate?.name || "Desconocido"}</strong> ({candidate?.role})
                           </p>
@@ -3750,13 +3750,13 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             )}
 
             {/* Verificaciones y Respaldo de Candidatos */}
-            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 mb-8 animate-fade-in">
-              <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2">
+            <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8 mb-8 animate-fade-in">
+              <h3 className="text-xl font-black mb-6 text-[violet-900] flex items-center gap-2">
                 <Award className="text-yellow-500" /> Verificaciones de Bolsa de Empleo
               </h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
-                  <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black">
+                  <thead className="bg-violet-100 text-violet-700 uppercase text-xs font-black">
                     <tr>
                       <th className="py-4 px-4 rounded-tl-xl">Candidato</th>
                       <th className="py-4 px-4">Cargo & Habilidades</th>
@@ -3767,13 +3767,13 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                   </thead>
                   <tbody>
                     {db.candidates?.map((cand: any) => (
-                      <tr key={cand.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                      <tr key={cand.id} className="border-b border-violet-100 hover:bg-violet-50 transition-colors">
                         <td className="py-4 px-4">
-                          <p className="font-bold text-[#0A1128]">{cand.name}</p>
+                          <p className="font-bold text-[violet-900]">{cand.name}</p>
                           <p className="text-[10px] text-gray-400 font-mono mt-0.5">ID: {cand.id}</p>
                         </td>
                         <td className="py-4 px-4">
-                          <span className="text-xs font-black text-[#0A1128] block">{cand.role}</span>
+                          <span className="text-xs font-black text-[violet-900] block">{cand.role}</span>
                           <div className="flex flex-wrap gap-1 mt-1">
                             {cand.skills?.map((s: string) => (
                               <span key={s} className="text-[8px] font-bold text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded">
@@ -3814,7 +3814,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                         <td className="py-4 px-4 text-right">
                           <button
                             onClick={() => toggleCandidateBacking(cand.id)}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer transition-colors ${cand.status === 'backed' ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-yellow-500 text-[#0A1128] hover:bg-yellow-600'}`}
+                            className={`px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer transition-colors ${cand.status === 'backed' ? 'bg-red-100 text-red-600 hover:bg-red-200' : 'bg-yellow-500 text-[violet-900] hover:bg-yellow-600'}`}
                           >
                             {cand.status === 'backed' ? "Quitar Aval KFS" : "Otorgar Aval KFS"}
                           </button>
@@ -3841,11 +3841,11 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 font-sans">
               <button onClick={() => setActiveModal('product')} className="bg-indigo-50 border border-indigo-100 hover:bg-indigo-100 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group cursor-pointer">
                 <div className="bg-indigo-600 text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Package size={24} /></div>
-                <span className="font-black text-[#0A1128] text-sm text-center font-bold">Catálogo Global KFS</span>
+                <span className="font-black text-[violet-900] text-sm text-center font-bold">Catálogo Global KFS</span>
               </button>
               <button onClick={() => setActiveModal('push')} className="bg-red-50 border border-red-100 hover:bg-red-100 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group cursor-pointer">
                 <div className="bg-red-500 text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Bell size={24} /></div>
-                <span className="font-black text-[#0A1128] text-sm text-center font-bold">Alerta Push Network</span>
+                <span className="font-black text-[violet-900] text-sm text-center font-bold">Alerta Push Network</span>
               </button>
               <button onClick={handleWipeDatabase} className="bg-red-100 border border-red-200 hover:bg-red-200 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group cursor-pointer">
                 <div className="bg-red-600 text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Shield size={24} /></div>
@@ -3872,7 +3872,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                             </a>
                           )}
                           <div>
-                            <p className="font-bold text-sm text-[#0A1128]">{name} <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded-full text-gray-500 uppercase ml-2">{t.userType}</span></p>
+                            <p className="font-bold text-sm text-[violet-900]">{name} <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded-full text-gray-500 uppercase ml-2">{t.userType}</span></p>
                             <p className="text-xs text-gray-500 font-mono mt-1">Ref: {t.paymentReference} | {new Date(t.timestamp).toLocaleString()}</p>
                           </div>
                         </div>
@@ -3934,21 +3934,21 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             </div>
 
             {/* Auditoría de Cierre */}
-            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
+            <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><Lock className="text-[#C5A184]" /> Auditoría de Cierre (Reportes Z Globales)</h3>
+                <h3 className="text-xl font-black text-[violet-900] flex items-center gap-2"><Lock className="text-[violet-600]" /> Auditoría de Cierre (Reportes Z Globales)</h3>
                 <div className="flex gap-2">
                   <button onClick={() => showToast("Comando TFHKA Z (SENIAT) enviado al Spooler...", "success")} className="bg-amber-100 text-amber-900 px-4 py-2 rounded-xl font-bold text-sm hover:bg-amber-200 transition-colors cursor-pointer flex items-center gap-2 border border-amber-300">
                     Emitir Z Fiscal
                   </button>
-                  <button onClick={() => window.print()} className="bg-[#0A1128] text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors cursor-pointer flex items-center gap-2">
+                  <button onClick={() => window.print()} className="bg-[violet-900] text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors cursor-pointer flex items-center gap-2">
                     Imprimir Listado
                   </button>
                 </div>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
-                  <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black">
+                  <thead className="bg-violet-100 text-violet-700 uppercase text-xs font-black">
                     <tr>
                       <th className="py-4 px-4 rounded-tl-xl">Comercio</th>
                       <th className="py-4 px-4">Fecha / Vendedor</th>
@@ -3961,11 +3961,11 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                       const client = db.clients.find((c: any) => c.id === z.clientId);
                       const vendedor = db.vendedores?.find((v: any) => v.id === z.vendedorId);
                       return (
-                        <tr key={z.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                          <td className="py-4 px-4 font-bold text-[#0A1128]">{client?.company || "N/A"}</td>
+                        <tr key={z.id} className="border-b border-violet-100 hover:bg-violet-50 transition-colors">
+                          <td className="py-4 px-4 font-bold text-[violet-900]">{client?.company || "N/A"}</td>
                           <td className="py-4 px-4 text-gray-500">
                             <span className="block font-mono text-xs">{new Date(z.timestamp).toLocaleString()}</span>
-                            <span className="block font-bold text-[#0A1128] text-xs">Operador: {vendedor?.name || "N/A"}</span>
+                            <span className="block font-bold text-[violet-900] text-xs">Operador: {vendedor?.name || "N/A"}</span>
                           </td>
                           <td className="py-4 px-4 font-mono text-gray-500">{z.txCount} TXs</td>
                           <td className="py-4 px-4 text-right font-black text-green-600">{formatUSD(z.totalUSD)}</td>
@@ -3979,12 +3979,12 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             </div>
 
             {/* Registro Inmutable de Auditoría */}
-            <div className="bg-[#0A1128] rounded-[2rem] shadow-sm border border-white/10 p-8 text-white mt-8">
-              <h3 className="text-xl font-black mb-6 flex items-center gap-2"><Shield className="text-[#C5A184]" /> Registro Inmutable de Auditoría (Logs)</h3>
+            <div className="bg-[violet-900] rounded-[2rem] shadow-sm border border-white/10 p-8 text-white mt-8">
+              <h3 className="text-xl font-black mb-6 flex items-center gap-2"><Shield className="text-[violet-600]" /> Registro Inmutable de Auditoría (Logs)</h3>
               <div className="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
                 {(db.auditLogs || []).slice().reverse().map((log: any) => (
                   <div key={log.id} className="bg-white/5 border border-white/10 p-4 rounded-xl flex items-start gap-4">
-                    <div className="bg-[#C5A184]/20 text-[#C5A184] p-2 rounded-lg">
+                    <div className="bg-[violet-600]/20 text-[violet-600] p-2 rounded-lg">
                       <Terminal size={20} />
                     </div>
                     <div>
@@ -4001,11 +4001,11 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             </div>
 
             {/* Catálogo Global de Productos */}
-            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
-              <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><Store className="text-[#C5A184]" /> Catálogo Global de Productos</h3>
+            <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8">
+              <h3 className="text-xl font-black mb-6 text-[violet-900] flex items-center gap-2"><Store className="text-[violet-600]" /> Catálogo Global de Productos</h3>
               <div className="overflow-x-auto max-h-96">
                 <table className="w-full text-sm text-left">
-                  <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black sticky top-0">
+                  <thead className="bg-violet-100 text-violet-700 uppercase text-xs font-black sticky top-0">
                     <tr>
                       <th className="py-4 px-4 rounded-tl-xl">Producto</th>
                       <th className="py-4 px-4">Comercio</th>
@@ -4017,8 +4017,8 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                     {db.products.map((prod: any) => {
                       const client = db.clients.find((c: any) => c.id === prod.clientId);
                       return (
-                        <tr key={prod.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                          <td className="py-4 px-4 font-bold text-[#0A1128]">{prod.name}</td>
+                        <tr key={prod.id} className="border-b border-violet-100 hover:bg-violet-50 transition-colors">
+                          <td className="py-4 px-4 font-bold text-[violet-900]">{prod.name}</td>
                           <td className="py-4 px-4 text-gray-500 text-xs">{client?.company || "N/A"}</td>
                           <td className="py-4 px-4 text-gray-500 font-mono">{prod.stock}</td>
                           <td className="py-4 px-4 text-right font-black text-green-600">{formatUSD(prod.price)}</td>
@@ -4035,11 +4035,11 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 
         {activeTab === "kyc" && (
           <div className="space-y-8 flex flex-col">
-            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
-              <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><FileText className="text-[#C5A184]" /> Bóveda KYC (Know Your Customer)</h3>
+            <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8">
+              <h3 className="text-xl font-black mb-6 text-[violet-900] flex items-center gap-2"><FileText className="text-[violet-600]" /> Bóveda KYC (Know Your Customer)</h3>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm text-left">
-                  <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black">
+                  <thead className="bg-violet-100 text-violet-700 uppercase text-xs font-black">
                     <tr>
                       <th className="py-4 px-4 rounded-tl-xl">Usuario / Entidad</th>
                       <th className="py-4 px-4">Rol</th>
@@ -4051,9 +4051,9 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                   <tbody>
                     {/* Clientes */}
                     {db.clients?.map((client: any) => (
-                      <tr key={client.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                        <td className="py-4 px-4 font-bold text-[#0A1128]">{client.name} <span className="text-xs text-gray-500 font-normal block">{client.company}</span></td>
-                        <td className="py-4 px-4 text-xs font-bold text-[#C5A184]">Dueño</td>
+                      <tr key={client.id} className="border-b border-violet-100 hover:bg-violet-50 transition-colors">
+                        <td className="py-4 px-4 font-bold text-[violet-900]">{client.name} <span className="text-xs text-gray-500 font-normal block">{client.company}</span></td>
+                        <td className="py-4 px-4 text-xs font-bold text-[violet-600]">Dueño</td>
                         <td className="py-4 px-4 text-xs text-gray-600 max-w-xs truncate" title={client.kyc_address || client.address}>{client.kyc_address || client.address || "N/A"}</td>
                         <td className="py-4 px-4 text-center">
                           <div className="flex justify-center gap-2">
@@ -4068,8 +4068,8 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                     ))}
                     {/* Promotoras */}
                     {db.promotoras?.map((promo: any) => (
-                      <tr key={promo.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                        <td className="py-4 px-4 font-bold text-[#0A1128]">{promo.name}</td>
+                      <tr key={promo.id} className="border-b border-violet-100 hover:bg-violet-50 transition-colors">
+                        <td className="py-4 px-4 font-bold text-[violet-900]">{promo.name}</td>
                         <td className="py-4 px-4 text-xs font-bold text-indigo-600">Promotora</td>
                         <td className="py-4 px-4 text-xs text-gray-600 max-w-xs truncate" title={promo.kyc_address}>{promo.kyc_address || "N/A"}</td>
                         <td className="py-4 px-4 text-center">
@@ -4085,8 +4085,8 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                     ))}
                     {/* Customers */}
                     {db.customers?.map((cust: any) => (
-                      <tr key={cust.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                        <td className="py-4 px-4 font-bold text-[#0A1128]">{cust.name} <span className="text-xs text-gray-500 font-normal block">{cust.phone}</span></td>
+                      <tr key={cust.id} className="border-b border-violet-100 hover:bg-violet-50 transition-colors">
+                        <td className="py-4 px-4 font-bold text-[violet-900]">{cust.name} <span className="text-xs text-gray-500 font-normal block">{cust.phone}</span></td>
                         <td className="py-4 px-4 text-xs font-bold text-gray-600">Usuario</td>
                         <td className="py-4 px-4 text-xs text-gray-600 max-w-xs truncate" title={cust.kyc_address}>{cust.kyc_address || "N/A"}</td>
                         <td className="py-4 px-4 text-center">
@@ -4109,8 +4109,8 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 
         {activeTab === "nodos" && (
           <div className="space-y-8 flex flex-col">
-            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 animate-fade-in">
-              <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><QrCode className="text-[#C5A184]" /> Creador de Nodos KFS (Invitaciones)</h3>
+            <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8 animate-fade-in">
+              <h3 className="text-xl font-black mb-6 text-[violet-900] flex items-center gap-2"><QrCode className="text-[violet-600]" /> Creador de Nodos KFS (Invitaciones)</h3>
               <p className="text-sm text-gray-500 mb-6">Genera enlaces QR oficiales para registrar nuevos actores en la economía KFS como tus referidos.</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
@@ -4126,13 +4126,13 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                   const url = `${host}?role=${invite.role}&ref=arquitecto`;
                   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}`;
                   return (
-                    <div key={idx} className="bg-gray-50 border border-gray-200 p-6 rounded-2xl flex flex-col items-center text-center shadow-sm">
-                      <h4 className="font-black text-[#0A1128] mb-4">{invite.title}</h4>
+                    <div key={idx} className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-6 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                      <h4 className="font-black text-[violet-900] mb-4">{invite.title}</h4>
                       <div className="bg-white p-2 rounded-xl border border-gray-100 shadow-sm mb-4">
                         <img src={qrUrl} alt={`QR ${invite.title}`} className="w-32 h-32 rounded-lg" />
                       </div>
                       <input type="text" readOnly value={url} className="w-full text-[10px] bg-white border border-gray-200 rounded p-2 text-gray-500 mb-2 focus:outline-none" />
-                      <button onClick={() => { navigator.clipboard.writeText(url); showToast('Enlace copiado', 'success'); }} className="w-full py-2 bg-[#C5A184] text-[#0A1128] font-bold text-xs rounded hover:bg-[#b08d70] transition-colors">Copiar Enlace</button>
+                      <button onClick={() => { navigator.clipboard.writeText(url); showToast('Enlace copiado', 'success'); }} className="w-full py-2 bg-[violet-600] text-[violet-900] font-bold text-xs rounded hover:bg-[#b08d70] transition-colors">Copiar Enlace</button>
                     </div>
                   );
                 })}
@@ -4161,20 +4161,20 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
               <div className="space-y-4">
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 block">Comercio (Target)</label>
-                  <select value={targetClientId} onChange={e => setTargetClientId(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold">
+                  <select value={targetClientId} onChange={e => setTargetClientId(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold">
                     <option value="">Seleccione Comercio...</option>
                     {db.clients.map((c: any) => <option key={c.id} value={c.id}>{c.company}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 block">Nueva Promotora</label>
-                  <select value={targetPromotoraId} onChange={e => setTargetPromotoraId(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold">
+                  <select value={targetPromotoraId} onChange={e => setTargetPromotoraId(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold">
                     <option value="">Seleccione Promotora...</option>
                     <option value="none">Sin Promotora (100% KFS)</option>
                     {db.promotoras.filter((p: any) => p.status !== 'pending').map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
                   </select>
                 </div>
-                <button onClick={() => { if (targetClientId && targetPromotoraId) { assignPromotoraToClient(targetClientId, targetPromotoraId === 'none' ? '' : targetPromotoraId); setActiveModal(null); } }} className="w-full bg-[#0A1128] text-white py-4 rounded-xl font-black shadow-lg">Aplicar Reasignación</button>
+                <button onClick={() => { if (targetClientId && targetPromotoraId) { assignPromotoraToClient(targetClientId, targetPromotoraId === 'none' ? '' : targetPromotoraId); setActiveModal(null); } }} className="w-full bg-[violet-900] text-white py-4 rounded-xl font-black shadow-lg">Aplicar Reasignación</button>
               </div>
             </div>
           </div>
@@ -4188,9 +4188,9 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                 <button onClick={() => setActiveModal(null)}><X size={24} className="text-gray-400" /></button>
               </div>
               <div className="space-y-4">
-                <input type="text" placeholder="Nombre del Producto" value={globalProdName} onChange={e => setGlobalProdName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold" />
-                <input type="number" placeholder="Precio ($ USD)" value={globalProdPrice} onChange={e => setGlobalProdPrice(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold" />
-                <input type="text" placeholder="Categoría" value={globalProdCategory} onChange={e => setGlobalProdCategory(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold" />
+                <input type="text" placeholder="Nombre del Producto" value={globalProdName} onChange={e => setGlobalProdName(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold" />
+                <input type="number" placeholder="Precio ($ USD)" value={globalProdPrice} onChange={e => setGlobalProdPrice(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold" />
+                <input type="text" placeholder="Categoría" value={globalProdCategory} onChange={e => setGlobalProdCategory(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold" />
                 <label className="flex items-center gap-2 text-sm font-bold text-gray-700 cursor-pointer p-3 border border-gray-200 rounded-xl bg-gray-50">
                   <input type="checkbox" id="globalKPoints" className="w-5 h-5 accent-indigo-600 rounded" defaultChecked={true} />
                   Permitir pago mixto con K-Points (Lealtad)
@@ -4219,15 +4219,15 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
               <div className="space-y-4">
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 block">Audiencia Destino</label>
-                  <select value={notifTarget} onChange={e => setNotifTarget(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold">
+                  <select value={notifTarget} onChange={e => setNotifTarget(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold">
                     <option value="all">Toda la Red KFS</option>
                     <option value="dueño">Comercios Afiliados</option>
                     <option value="promotora">Fuerza de Promotoras</option>
                     <option value="vendedor">Terminales (Vendedores)</option>
                   </select>
                 </div>
-                <input type="text" placeholder="Título Breve" value={notifTitle} onChange={e => setNotifTitle(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold text-red-600" />
-                <textarea placeholder="Mensaje de impacto..." value={notifMsg} onChange={e => setNotifMsg(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold h-24 resize-none" />
+                <input type="text" placeholder="Título Breve" value={notifTitle} onChange={e => setNotifTitle(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold text-red-600" />
+                <textarea placeholder="Mensaje de impacto..." value={notifMsg} onChange={e => setNotifMsg(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold h-24 resize-none" />
                 <button onClick={() => { if (notifTitle && notifMsg) { sendNotification(notifTarget, notifTitle, notifMsg); setActiveModal(null); } }} className="w-full bg-red-600 text-white py-4 rounded-xl font-black shadow-lg flex justify-center gap-2 items-center"><Bell size={20} /> Broadcast Instantáneo</button>
               </div>
             </div>
@@ -4241,7 +4241,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
               <img src={viewingKycPhoto} alt="Visor KYC" className="w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl bg-white/5" />
               <div className="mt-6 flex gap-4 w-full max-w-sm">
                 {currentUser?.role === 'core' && (
-                  <a href={viewingKycPhoto} download="kfs_kyc_document.jpg" className="flex-1 bg-[#C5A184] text-[#0A1128] py-3 rounded-xl font-black text-center shadow-[0_0_20px_rgba(197,161,132,0.4)] hover:scale-105 transition-transform flex items-center justify-center gap-2 cursor-pointer">
+                  <a href={viewingKycPhoto} download="kfs_kyc_document.jpg" className="flex-1 bg-[violet-600] text-[violet-900] py-3 rounded-xl font-black text-center shadow-[0_0_20px_rgba(197,161,132,0.4)] hover:scale-105 transition-transform flex items-center justify-center gap-2 cursor-pointer">
                     <DownloadCloud size={20} /> Descargar Documento
                   </a>
                 )}
@@ -4255,7 +4255,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6">
               <div className="flex justify-between items-center border-b border-gray-100 pb-4">
                 <div>
-                  <h3 className="text-xl font-black text-[#0A1128] flex items-center gap-2"><Truck className="text-orange-500" size={22} /> Asignar Rider a Negocio</h3>
+                  <h3 className="text-xl font-black text-[violet-900] flex items-center gap-2"><Truck className="text-orange-500" size={22} /> Asignar Rider a Negocio</h3>
                   <p className="text-xs text-gray-400 mt-0.5">Máx. 2 negocios por rider • Máx. 2 riders por negocio</p>
                 </div>
                 <button onClick={() => { setAssignRiderModal(null); setAssignRiderBusinessId(""); }}><X size={24} className="text-gray-400 hover:text-gray-700 cursor-pointer" /></button>
@@ -4269,7 +4269,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                       const r = db.riders?.find((r: any) => r.id === e.target.value);
                       setAssignRiderModal({ riderId: e.target.value, riderName: r?.name || "" });
                     }}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold text-[#0A1128] focus:outline-none focus:ring-2 focus:ring-orange-300"
+                    className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold text-[violet-900] focus:outline-none focus:ring-2 focus:ring-orange-300"
                   >
                     <option value="">Seleccione un Rider...</option>
                     {(db.riders || []).filter((r: any) => r.status === "approved").map((r: any) => (
@@ -4287,7 +4287,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                   <select
                     value={assignRiderBusinessId}
                     onChange={e => setAssignRiderBusinessId(e.target.value)}
-                    className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 font-bold text-[#0A1128] focus:outline-none focus:ring-2 focus:ring-orange-300"
+                    className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold text-[violet-900] focus:outline-none focus:ring-2 focus:ring-orange-300"
                   >
                     <option value="">Seleccione un Comercio...</option>
                     {db.clients.map((c: any) => {
@@ -4343,7 +4343,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
               <div className="space-y-8">
                 {/* Tabla de Z-Reports (Flujos de Caja) */}
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                  <h4 className="text-[#C5A184] font-black uppercase tracking-widest text-sm mb-4">Flujos de Caja Consolidados (Z-Reports)</h4>
+                  <h4 className="text-[violet-600] font-black uppercase tracking-widest text-sm mb-4">Flujos de Caja Consolidados (Z-Reports)</h4>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs font-mono">
                       <thead className="text-gray-500 border-b border-white/10">
@@ -4370,7 +4370,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 
                 {/* Tabla de Usuarios Activos */}
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                  <h4 className="text-[#C5A184] font-black uppercase tracking-widest text-sm mb-4">Usuarios Activos en Red</h4>
+                  <h4 className="text-[violet-600] font-black uppercase tracking-widest text-sm mb-4">Usuarios Activos en Red</h4>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="bg-black/50 p-4 rounded-xl border border-white/5">
                       <span className="text-[10px] text-gray-500 block uppercase">Dueños</span>
@@ -4393,7 +4393,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 
                 {/* Tabla de Últimas Transacciones */}
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                  <h4 className="text-[#C5A184] font-black uppercase tracking-widest text-sm mb-4">Pipeline de Transacciones</h4>
+                  <h4 className="text-[violet-600] font-black uppercase tracking-widest text-sm mb-4">Pipeline de Transacciones</h4>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs font-mono">
                       <thead className="text-gray-500 border-b border-white/10">
@@ -4453,8 +4453,8 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                 onClick={() => setActiveTab(tab.id)}
                 className="relative flex flex-col items-center justify-center w-20 h-12 cursor-pointer group"
               >
-                {isActive && <span className="absolute -top-4 w-12 h-1 bg-[#C5A184] rounded-b-full shadow-[0_4px_10px_rgba(197,161,132,0.5)]" />}
-                <div className={`relative transition-all duration-300 ${isActive ? '-translate-y-2 text-[#0A1128]' : 'text-gray-400 group-hover:text-gray-600'}`}>
+                {isActive && <span className="absolute -top-4 w-12 h-1 bg-[violet-600] rounded-b-full shadow-[0_4px_10px_rgba(197,161,132,0.5)]" />}
+                <div className={`relative transition-all duration-300 ${isActive ? '-translate-y-2 text-[violet-900]' : 'text-gray-400 group-hover:text-gray-600'}`}>
                   <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
                   {tab.badge ? (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full border-2 border-white animate-pulse">
@@ -4462,7 +4462,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                     </span>
                   ) : null}
                 </div>
-                <span className={`text-[9px] font-bold mt-1 transition-all duration-300 ${isActive ? 'opacity-100 text-[#0A1128]' : 'opacity-0 translate-y-2'}`}>{tab.label}</span>
+                <span className={`text-[9px] font-bold mt-1 transition-all duration-300 ${isActive ? 'opacity-100 text-[violet-900]' : 'opacity-0 translate-y-2'}`}>{tab.label}</span>
               </button>
             )
           })}
@@ -4495,12 +4495,12 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
   const [showPayoutModal, setShowPayoutModal] = useState(false);
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24 font-sans text-[#0A1128] relative">
+    <div className="min-h-screen bg-[#EEF2F5] pb-24 font-sans text-[violet-900] relative">
       {/* Wavy Header */}
-      <div className="bg-gradient-to-br from-[#0A1128] to-[#1a2b5e] rounded-b-[3rem] shadow-[0_10px_30px_rgba(10,17,40,0.3)] pt-6 pb-12 px-6 text-white relative z-10">
+      <div className="bg-gradient-to-br from-[violet-900] to-[#1a2b5e] rounded-b-[3rem] shadow-[0_10px_30px_rgba(10,17,40,0.3)] pt-6 pb-12 px-6 text-white relative z-10">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
-            <span className="bg-white/20 p-2 rounded-xl text-[#C5A184]"><CheckCircle size={20} /></span>
+            <span className="bg-white/20 p-2 rounded-xl text-[violet-600]"><CheckCircle size={20} /></span>
             <h1 className="font-black text-xl tracking-tight">KFS Promotora</h1>
           </div>
           <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
@@ -4509,12 +4509,12 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-[#C5A184] rounded-full flex items-center justify-center text-[#0A1128] font-black text-2xl flex-shrink-0 shadow-lg border-4 border-[#0A1128]">
+          <div className="w-16 h-16 bg-[violet-600] rounded-full flex items-center justify-center text-[violet-900] font-black text-2xl flex-shrink-0 shadow-lg border-4 border-[violet-900]">
             {currentUser.name?.slice(0, 2).toUpperCase()}
           </div>
           <div>
             <h2 className="text-xl md:text-2xl font-black tracking-tight truncate">{currentUser.name}</h2>
-            <p className="text-[#C5A184] font-mono text-xs mt-1 bg-[#0A1128] inline-block px-2 py-0.5 rounded-md">{currentUser.phone}</p>
+            <p className="text-[violet-600] font-mono text-xs mt-1 bg-[violet-900] inline-block px-2 py-0.5 rounded-md">{currentUser.phone}</p>
           </div>
         </div>
       </div>
@@ -4524,13 +4524,13 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
         {activeTab === "panel" && (
           <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
+              <div className="bg-gradient-to-br from-[violet-900] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
                 <div className="relative z-10">
-                  <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><CreditCard size={14} className="text-green-500" /> Regalías Liquidadas (BOS)</p>
+                  <p className="text-[violet-600] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><CreditCard size={14} className="text-green-500" /> Regalías Liquidadas (BOS)</p>
                   <h2 className="text-5xl font-black mb-1 text-green-400">{formatEUR(myPromotoraData?.passiveEarningsEUR || 0)}</h2>
                   <p className="text-xs text-gray-400 mt-2">Modelo Revenue Share (20%)</p>
                   {(myPromotoraData?.passiveEarningsEUR || 0) > 0 && (
-                    <button onClick={() => setShowPayoutModal(true)} className="w-full bg-[#C5A184] text-[#0A1128] py-3 rounded-xl font-bold text-sm hover:scale-[1.02] transition-transform cursor-pointer shadow-lg flex justify-center items-center gap-2 mt-4">
+                    <button onClick={() => setShowPayoutModal(true)} className="w-full bg-[violet-600] text-[violet-900] py-3 rounded-xl font-bold text-sm hover:scale-[1.02] transition-transform cursor-pointer shadow-lg flex justify-center items-center gap-2 mt-4">
                       <CheckCircle size={18} /> Solicitar Retiro
                     </button>
                   )}
@@ -4538,9 +4538,9 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
                 <Activity size={100} className="absolute -right-10 -bottom-10 text-white/5" />
               </div>
 
-              <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
+              <div className="bg-gradient-to-br from-[violet-900] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
                 <div className="relative z-10">
-                  <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><CheckCircle size={14} className="text-white/50" /> Nodos Captados</p>
+                  <p className="text-[violet-600] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><CheckCircle size={14} className="text-white/50" /> Nodos Captados</p>
                   <h2 className="text-5xl font-black mb-1 text-white">{myPromotoraData?.setups || 0}</h2>
                   <p className="text-xs text-gray-400 mt-2">Comercios afiliados activos</p>
                 </div>
@@ -4549,7 +4549,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
             </div>
 
             {pendingTopUps.length > 0 && (
-              <div className="bg-[#0A1128] rounded-[2rem] shadow-sm border border-green-500/30 p-8 text-white mt-8 animate-fade-in">
+              <div className="bg-[violet-900] rounded-[2rem] shadow-sm border border-green-500/30 p-8 text-white mt-8 animate-fade-in">
                 <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-green-400"><DollarSign className="text-green-400" /> Recargas Pendientes por Validar</h3>
                 <div className="space-y-4">
                   {pendingTopUps.map((t: any) => {
@@ -4564,7 +4564,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
                             </a>
                           )}
                           <div>
-                            <p className="font-bold text-sm text-gray-200">{name} <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded-full text-[#C5A184] uppercase ml-2">{t.userType}</span></p>
+                            <p className="font-bold text-sm text-gray-200">{name} <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded-full text-[violet-600] uppercase ml-2">{t.userType}</span></p>
                             <p className="text-xs text-gray-400 font-mono mt-1">Ref: {t.paymentReference} | {new Date(t.timestamp).toLocaleString()}</p>
                           </div>
                         </div>
@@ -4589,7 +4589,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
               </div>
             )}
 
-            <div className="bg-[#0A1128] rounded-[2rem] shadow-sm border border-red-500/20 p-8 text-white mt-8">
+            <div className="bg-[violet-900] rounded-[2rem] shadow-sm border border-red-500/20 p-8 text-white mt-8">
               <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-red-400"><Bell className="text-red-400" /> Tickets de Mis Comercios</h3>
               <div className="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
                 {(db.supportTickets || []).slice().reverse().filter((t: any) => {
@@ -4603,23 +4603,23 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
                         <p className="text-sm font-bold text-gray-200">[{ticket.status === 'open' ? '🔴 ABIERTO' : '🟢 CERRADO'}] {client?.company || "Comercio"} - {ticket.subject}</p>
                         <span className="text-[10px] text-gray-500 font-mono">{new Date(ticket.createdAt).toLocaleString()}</span>
                       </div>
-                      <div className="space-y-2 mt-2 pl-4 border-l-2 border-[#C5A184]/30">
+                      <div className="space-y-2 mt-2 pl-4 border-l-2 border-[violet-600]/30">
                         {ticket.messages.map((m: any, i: number) => (
                           <div key={i} className="text-xs">
-                            <span className="font-bold text-[#C5A184]">{m.author}:</span> <span className="text-gray-300">{m.text}</span>
+                            <span className="font-bold text-[violet-600]">{m.author}:</span> <span className="text-gray-300">{m.text}</span>
                           </div>
                         ))}
                       </div>
                       {ticket.status === 'open' && (
                         <div className="flex gap-2 mt-2">
-                          <input type="text" id={`reply-promo-${ticket.id}`} placeholder="Respuesta..." className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#C5A184]" />
+                          <input type="text" id={`reply-promo-${ticket.id}`} placeholder="Respuesta..." className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[violet-600]" />
                           <button onClick={() => {
                             const input = document.getElementById(`reply-promo-${ticket.id}`) as HTMLInputElement;
                             if (input && input.value) {
                               replyTicket(ticket.id, `Promotora ${currentUser.name}`, input.value);
                               input.value = "";
                             }
-                          }} className="bg-[#C5A184] text-[#0A1128] px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer hover:bg-[#b08d70]">Responder</button>
+                          }} className="bg-[violet-600] text-[violet-900] px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer hover:bg-[#b08d70]">Responder</button>
                         </div>
                       )}
                     </div>
@@ -4632,19 +4632,19 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
             </div>
 
             {/* Manuals Section */}
-            <div className="bg-[#0A1128] text-white p-8 md:p-10 rounded-[2rem] shadow-xl relative overflow-hidden">
+            <div className="bg-[violet-900] text-white p-8 md:p-10 rounded-[2rem] shadow-xl relative overflow-hidden">
               <h3 className="text-xl font-black mb-6">Centro de Aprendizaje y Manuales</h3>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <button onClick={() => setActiveManual('sales')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
-                  <BookOpen size={32} className="text-[#C5A184]" />
+                  <BookOpen size={32} className="text-[violet-600]" />
                   <span className="font-bold text-sm">Manual de Ventas</span>
                 </button>
                 <button onClick={() => setActiveManual('implementation')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
-                  <Settings size={32} className="text-[#C5A184]" />
+                  <Settings size={32} className="text-[violet-600]" />
                   <span className="font-bold text-sm">Guía de Implementación</span>
                 </button>
                 <button onClick={() => setActiveManual('installation')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
-                  <DownloadCloud size={32} className="text-[#C5A184]" />
+                  <DownloadCloud size={32} className="text-[violet-600]" />
                   <span className="font-bold text-sm">Setup Fiscal Proxy</span>
                 </button>
               </div>
@@ -4655,20 +4655,20 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
         {activeTab === "negocios" && (
           <div className="space-y-6">
             {!showRegister ? (
-              <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 relative overflow-hidden">
+              <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8 relative overflow-hidden">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 border-b border-gray-100 pb-4 gap-4">
-                  <h3 className="text-xl font-black text-[#0A1128]">Mis Comercios Activados</h3>
+                  <h3 className="text-xl font-black text-[violet-900]">Mis Comercios Activados</h3>
                   <div className="flex flex-wrap gap-4 w-full md:w-auto">
                     <div className="relative flex-1 md:w-48">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                      <input type="text" placeholder="Buscar comercio..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchClient} onChange={e => setSearchClient(e.target.value)} />
+                      <input type="text" placeholder="Buscar comercio..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]" value={searchClient} onChange={e => setSearchClient(e.target.value)} />
                     </div>
-                    <button onClick={() => setShowRegister(true)} className="bg-[#0A1128] text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors shadow-md cursor-pointer">+ Nuevo Setup</button>
+                    <button onClick={() => setShowRegister(true)} className="bg-[violet-900] text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors shadow-md cursor-pointer">+ Nuevo Setup</button>
                   </div>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm text-left">
-                    <thead className="bg-gray-50 text-gray-500 uppercase text-xs font-black">
+                    <thead className="bg-violet-100 text-violet-700 uppercase text-xs font-black">
                       <tr>
                         <th className="py-4 px-4">Nodo Comercial</th>
                         <th className="py-4 px-4">Contacto</th>
@@ -4679,29 +4679,29 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
                     </thead>
                     <tbody>
                       {filteredClients.map((c: any) => (
-                        <tr key={c.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
-                          <td className="py-4 px-4 font-bold text-[#0A1128]">
+                        <tr key={c.id} className="border-b border-violet-100 hover:bg-violet-50 transition-colors">
+                          <td className="py-4 px-4 font-bold text-[violet-900]">
                             <div className="flex items-center gap-2">
                               {c.company}
                               {c.account_tier === 'free' && (
                                 <button
                                   onClick={() => upgradeToPremium(c.id, currentUser.id)}
-                                  className="bg-gradient-to-r from-[#C5A184] to-yellow-600 text-white px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider hover:opacity-90 transition-opacity whitespace-nowrap shadow-sm"
+                                  className="bg-gradient-to-r from-[violet-600] to-yellow-600 text-white px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider hover:opacity-90 transition-opacity whitespace-nowrap shadow-sm"
                                 >
                                   Upgrade $5
                                 </button>
                               )}
                               {c.account_tier === 'premium' && (
-                                <span className="bg-[#0A1128] text-[#C5A184] px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider shadow-sm">
+                                <span className="bg-[violet-900] text-[violet-600] px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider shadow-sm">
                                   Premium
                                 </span>
                               )}
                             </div>
                           </td>
                           <td className="py-4 px-4 text-gray-500">{c.name}<br /><span className="text-xs font-mono">{c.phone}</span></td>
-                          <td className="py-4 px-4 font-bold text-[#C5A184]">{(c.kfsFeePercentage || 0.03) * 100}%</td>
+                          <td className="py-4 px-4 font-bold text-[violet-600]">{(c.kfsFeePercentage || 0.03) * 100}%</td>
                           <td className="py-4 px-4 text-center">
-                            <button onClick={() => setCustomizingClient(c)} className="bg-gray-100 hover:bg-gray-200 text-[#0A1128] px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1 mx-auto">
+                            <button onClick={() => setCustomizingClient(c)} className="bg-gray-100 hover:bg-gray-200 text-[violet-900] px-3 py-1.5 rounded-lg text-xs font-bold transition-colors cursor-pointer flex items-center gap-1 mx-auto">
                               <Palette size={14} /> Diseño
                             </button>
                           </td>
@@ -4714,7 +4714,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
                 </div>
               </div>
             ) : (
-              <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 max-w-2xl mx-auto">
+              <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8 max-w-2xl mx-auto">
                 <RegisterClientForm onRegister={(data: any) => { registerClient(data, currentUser.id, data.kfsFeePercentage); setShowRegister(false); }} onCancel={() => setShowRegister(false)} standalone={false} />
               </div>
             )}
@@ -4725,7 +4725,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
       {customizingClient && (
         <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-white rounded-[2rem] w-full max-w-lg relative p-2 shadow-2xl">
-            <button onClick={() => setCustomizingClient(null)} className="absolute top-4 right-4 text-gray-400 hover:text-[#0A1128] transition-colors cursor-pointer z-10">
+            <button onClick={() => setCustomizingClient(null)} className="absolute top-4 right-4 text-gray-400 hover:text-[violet-900] transition-colors cursor-pointer z-10">
               <X size={24} />
             </button>
             <StorefrontCustomizer client={customizingClient} updateStoreSettings={(id: string, settings: any) => {
@@ -4738,29 +4738,29 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
 
       {activeManual && (
         <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
-          <div className="bg-white text-[#0A1128] rounded-[2rem] w-full max-w-2xl max-h-[85vh] overflow-y-auto relative p-8 shadow-2xl border-4 border-[#0A1128]">
-            <button onClick={() => setActiveManual(null)} className="absolute top-6 right-6 text-gray-500 hover:text-[#0A1128] transition-colors cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200">
+          <div className="bg-white text-[violet-900] rounded-[2rem] w-full max-w-2xl max-h-[85vh] overflow-y-auto relative p-8 shadow-2xl border-4 border-[violet-900]">
+            <button onClick={() => setActiveManual(null)} className="absolute top-6 right-6 text-gray-500 hover:text-[violet-900] transition-colors cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200">
               <X size={20} />
             </button>
 
             {activeManual === 'sales' && (
               <div>
-                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><BookOpen className="text-[#C5A184]" size={28} /> Manual de Ventas: KFS Ecosistema</h2>
+                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><BookOpen className="text-[violet-600]" size={28} /> Manual de Ventas: KFS Ecosistema</h2>
                 <div className="space-y-5 text-gray-700 text-sm leading-relaxed">
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">1. Elevator Pitch (El Gancho):</p>
+                    <p className="font-black text-[violet-900] mb-1">1. Elevator Pitch (El Gancho):</p>
                     <p>Kreatek Flow Systems OS no es solo un punto de venta. Es un sistema operativo integral que fusiona facturación fiscal, control de inventario y un marketplace E-Commerce automatizado llamado "Flow Express".</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">2. Beneficio Principal (Comercio):</p>
+                    <p className="font-black text-[violet-900] mb-1">2. Beneficio Principal (Comercio):</p>
                     <p>Eliminación de hardware obsoleto. Nuestro Sincro-Shield fiscal proxy permite conectar la nube directamente con impresoras fiscales sin pagar licencias de terceros anuales altísimas.</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">3. Beneficio Principal (Tú como Promotor):</p>
+                    <p className="font-black text-[violet-900] mb-1">3. Beneficio Principal (Tú como Promotor):</p>
                     <p>Recibes <span className="font-black text-green-600">20% de Revenue Share (Regalías)</span> de por vida sobre las comisiones generadas por los nodos comerciales que afilies. Esto es ingreso pasivo real y escalable.</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">4. Manejo de Objeciones:</p>
+                    <p className="font-black text-[violet-900] mb-1">4. Manejo de Objeciones:</p>
                     <p>"Ya tengo un sistema". Respuesta: "KFS es gratis de instalar y de licencia perpetua en la nube. Reemplazamos sus licencias caras y les damos E-Commerce gratis integrado en una sola app web."</p>
                   </div>
                 </div>
@@ -4768,22 +4768,22 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
             )}
             {activeManual === 'implementation' && (
               <div>
-                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><Settings className="text-[#C5A184]" size={28} /> Guía de Implementación KFS</h2>
+                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><Settings className="text-[violet-600]" size={28} /> Guía de Implementación KFS</h2>
                 <div className="space-y-5 text-gray-700 text-sm leading-relaxed">
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">1. Registro del Comercio:</p>
+                    <p className="font-black text-[violet-900] mb-1">1. Registro del Comercio:</p>
                     <p>En este panel, haz clic en "+ Nuevo Setup". Llena los datos reales del comercio, asignando el email del dueño y una clave genérica para su primer acceso.</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">2. Configuración de Tarifa BOS:</p>
+                    <p className="font-black text-[violet-900] mb-1">2. Configuración de Tarifa BOS:</p>
                     <p>El default es 3% del total facturado. Puedes negociar hasta un 1% para clientes de alto volumen. Ese % es de lo que tú ganarás el 20%.</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">3. Personalización UI:</p>
+                    <p className="font-black text-[violet-900] mb-1">3. Personalización UI:</p>
                     <p>Usa el botón "Diseño" en la tabla de comercios para subir el logo del cliente, fondo y colores de su Flow Express Marketplace.</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">4. Carga de Inventario:</p>
+                    <p className="font-black text-[violet-900] mb-1">4. Carga de Inventario:</p>
                     <p>Acompaña al dueño en la creación de los primeros 5 productos para asegurar que entienda cómo funciona el código de barras y la vinculación de precios base.</p>
                   </div>
                 </div>
@@ -4791,26 +4791,26 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
             )}
             {activeManual === 'installation' && (
               <div>
-                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><DownloadCloud className="text-[#C5A184]" size={28} /> Setup Sincro-Shield Fiscal</h2>
+                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><DownloadCloud className="text-[violet-600]" size={28} /> Setup Sincro-Shield Fiscal</h2>
                 <div className="space-y-5 text-gray-700 text-sm leading-relaxed">
                   <div className="bg-red-50 border border-red-200 p-4 rounded-xl mb-4">
                     <p className="font-black text-red-800 text-xs uppercase tracking-widest mb-1">Obligatorio por Ley SENIAT</p>
                     <p className="text-red-700 text-xs">Esta integración garantiza que el comercio cumpla con las normativas fiscales venezolanas.</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">1. Requisitos de Hardware:</p>
+                    <p className="font-black text-[violet-900] mb-1">1. Requisitos de Hardware:</p>
                     <p>Máquina fiscal compatible (Ej: The Factory HKA modelo Bixolon, Aclas) conectada por cable USB a la PC principal de Caja (Windows/Mac).</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">2. Descarga del Proxy Local:</p>
+                    <p className="font-black text-[violet-900] mb-1">2. Descarga del Proxy Local:</p>
                     <p>En el dashboard del Cliente o Vendedor, se debe descargar "Sincro-Shield Fiscal Proxy" y tener Node.js instalado en el sistema operativo del cliente.</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">3. Ejecución y Servicio:</p>
+                    <p className="font-black text-[violet-900] mb-1">3. Ejecución y Servicio:</p>
                     <p>Abrir una terminal en la PC de la caja y ejecutar <code>node fiscal-proxy.js</code>. Opcionalmente configurar PM2 para arranque automático. Se mantendrá corriendo en el puerto 8080.</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">4. Pruebas de Transmisión:</p>
+                    <p className="font-black text-[violet-900] mb-1">4. Pruebas de Transmisión:</p>
                     <p>En KFS OS (Caja), abrir el Setup Sincro-Shield y presionar "Probar Conexión Proxy". Si responde, marcar la casilla "Imprimir Copias Fiscales por Defecto".</p>
                   </div>
                 </div>
@@ -4822,10 +4822,10 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
       {activeTab === "afiliados" && (
         <div className="space-y-6">
           {/* Captación de Clientes Panel */}
-          <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 relative overflow-hidden text-[#0A1128]">
+          <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8 relative overflow-hidden text-[violet-900]">
             <h3 className="text-xl font-black mb-4">Captación de Clientes</h3>
             <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
-              <div className="w-40 h-40 bg-gray-100 rounded-xl flex items-center justify-center border-4 border-[#C5A184] flex-shrink-0">
+              <div className="w-40 h-40 bg-gray-100 rounded-xl flex items-center justify-center border-4 border-[violet-600] flex-shrink-0">
                 {/* Mock QR */}
                 <div className="text-center w-full h-full flex flex-col items-center justify-center p-2">
                   <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://kfs-os.vercel.app/#landing?ref=' + currentUser.id)}`} alt="QR Afiliado" className="w-full h-auto object-contain rounded-lg" />
@@ -4842,7 +4842,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
                     <p className="text-[10px] text-green-600/80 mt-1">Ganas $1.00 USD cuando tu referido recarga sus primeros $5.00 USD en la billetera.</p>
                   </div>
                   <div className="flex items-center">
-                    <button onClick={() => setShowCustomerRegister(true)} className="w-full bg-[#0A1128] text-white py-4 rounded-xl font-black shadow-lg hover:bg-gray-800 transition-colors flex justify-center items-center gap-2 cursor-pointer">
+                    <button onClick={() => setShowCustomerRegister(true)} className="w-full bg-[violet-900] text-white py-4 rounded-xl font-black shadow-lg hover:bg-gray-800 transition-colors flex justify-center items-center gap-2 cursor-pointer">
                       <UserPlus size={20} /> Registrar Cliente en Vivo
                     </button>
                   </div>
@@ -4851,14 +4851,14 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
             </div>
           </div>
 
-          <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8">
+          <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8">
             <h3 className="text-lg font-black mb-4">Mis Clientes Afiliados ({myCustomers.length})</h3>
             {myCustomers.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {myCustomers.map((c: any) => (
                   <div key={c.id} className="p-4 border border-gray-100 rounded-xl flex justify-between items-center bg-gray-50">
                     <div>
-                      <p className="font-bold text-sm text-[#0A1128]">{c.name}</p>
+                      <p className="font-bold text-sm text-[violet-900]">{c.name}</p>
                       <p className="text-xs text-gray-500 font-mono">{c.phone}</p>
                     </div>
                     <div className="text-right">
@@ -4878,18 +4878,18 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
       {activeTab === "vendedores" && (
         <div className="space-y-6">
           {!showRegisterVendedor ? (
-            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 relative overflow-hidden">
+            <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8 relative overflow-hidden">
               <div className="flex justify-between items-center mb-8 border-b border-gray-100 pb-4">
-                <h3 className="text-xl font-black text-[#0A1128]">Vendedores Activados</h3>
-                <button onClick={() => setShowRegisterVendedor(true)} className="bg-[#0A1128] text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors shadow-md cursor-pointer">+ Nuevo Vendedor</button>
+                <h3 className="text-xl font-black text-[violet-900]">Vendedores Activados</h3>
+                <button onClick={() => setShowRegisterVendedor(true)} className="bg-[violet-900] text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors shadow-md cursor-pointer">+ Nuevo Vendedor</button>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                  {(db.vendedores || []).filter((v: any) => v.promotoraId === currentUser.id).map((v: any) => (
                    <div key={v.id} className="p-4 border border-gray-100 rounded-xl bg-gray-50 flex justify-between items-center">
                       <div>
-                        <p className="font-bold text-[#0A1128]">{v.name}</p>
+                        <p className="font-bold text-[violet-900]">{v.name}</p>
                         <p className="text-xs text-gray-500">{v.email}</p>
-                        {v.clientId && <p className="text-[10px] bg-[#C5A184] text-[#0A1128] font-bold px-2 py-0.5 rounded-md inline-block mt-1">Ref: {myClients.find((c: any) => c.id === v.clientId)?.company || v.clientId}</p>}
+                        {v.clientId && <p className="text-[10px] bg-[violet-600] text-[violet-900] font-bold px-2 py-0.5 rounded-md inline-block mt-1">Ref: {myClients.find((c: any) => c.id === v.clientId)?.company || v.clientId}</p>}
                       </div>
                       <span className="text-[10px] text-indigo-600 bg-indigo-50 px-2 py-1 rounded-full uppercase font-black">Activo</span>
                    </div>
@@ -4900,9 +4900,9 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
               </div>
             </div>
           ) : (
-            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 max-w-2xl mx-auto">
+            <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8 max-w-2xl mx-auto">
               <div className="flex justify-between mb-4 items-center">
-                <h3 className="text-xl font-black text-[#0A1128]">Activar Nuevo Vendedor</h3>
+                <h3 className="text-xl font-black text-[violet-900]">Activar Nuevo Vendedor</h3>
                 <button onClick={() => setShowRegisterVendedor(false)} className="text-gray-400 hover:text-black cursor-pointer"><X size={20}/></button>
               </div>
               <form onSubmit={(e) => {
@@ -4919,24 +4919,24 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
               }} className="space-y-4">
                 <div>
                   <label className="text-xs font-bold text-gray-400 block mb-1">Nombre Completo</label>
-                  <input name="vName" required className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#C5A184]" placeholder="Ej: Vendedor Alpha" />
+                  <input name="vName" required className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:border-[violet-600]" placeholder="Ej: Vendedor Alpha" />
                 </div>
                 <div>
                   <label className="text-xs font-bold text-gray-400 block mb-1">Correo Electrónico (Login)</label>
-                  <input type="email" name="vEmail" required className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#C5A184]" placeholder="vendedor@kfs.com" />
+                  <input type="email" name="vEmail" required className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:border-[violet-600]" placeholder="vendedor@kfs.com" />
                 </div>
                 <div>
                   <label className="text-xs font-bold text-gray-400 block mb-1">Contraseña</label>
-                  <input type="password" name="vPassword" required className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#C5A184]" placeholder="*****" />
+                  <input type="password" name="vPassword" required className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:border-[violet-600]" placeholder="*****" />
                 </div>
                 <div>
                   <label className="text-xs font-bold text-gray-400 block mb-1">Asignar a Comercio (Opcional)</label>
-                  <select name="vClient" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-[#C5A184] text-gray-700">
+                  <select name="vClient" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:border-[violet-600] text-gray-700">
                     <option value="">Independiente (Sin Comercio Fijo)</option>
                     {myClients.map((c: any) => <option key={c.id} value={c.id}>{c.company}</option>)}
                   </select>
                 </div>
-                <button type="submit" className="w-full bg-[#0A1128] hover:bg-gray-800 transition-colors text-white py-4 rounded-xl font-black mt-6 shadow-md cursor-pointer">Activar y Registrar Vendedor</button>
+                <button type="submit" className="w-full bg-[violet-900] hover:bg-gray-800 transition-colors text-white py-4 rounded-xl font-black mt-6 shadow-md cursor-pointer">Activar y Registrar Vendedor</button>
               </form>
             </div>
           )}
@@ -4949,7 +4949,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
           <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative p-2 shadow-2xl">
             <button onClick={() => setShowCustomerRegister(false)} className="absolute top-6 right-6 z-50 text-gray-400 hover:text-black cursor-pointer"><X size={24} /></button>
             <div className="p-4 border-b border-gray-100 mb-4">
-              <h3 className="text-xl font-black text-center text-[#0A1128]">Registro Rápido de Cliente</h3>
+              <h3 className="text-xl font-black text-center text-[violet-900]">Registro Rápido de Cliente</h3>
               <p className="text-xs text-center text-gray-500 mt-1">Este cliente quedará atado a tu ID: <span className="font-mono font-bold text-indigo-600">{currentUser.id}</span></p>
             </div>
             <RegisterCustomerForm onCancel={() => setShowCustomerRegister(false)} defaultReferralCode={currentUser.id} />
@@ -4987,8 +4987,8 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
                 onClick={() => setActiveTab(tab.id)}
                 className="relative flex flex-col items-center justify-center w-20 h-12 cursor-pointer group"
               >
-                {isActive && <span className="absolute -top-4 w-12 h-1 bg-[#C5A184] rounded-b-full shadow-[0_4px_10px_rgba(197,161,132,0.5)]" />}
-                <div className={`relative transition-all duration-300 ${isActive ? '-translate-y-2 text-[#0A1128]' : 'text-gray-400 group-hover:text-gray-600'}`}>
+                {isActive && <span className="absolute -top-4 w-12 h-1 bg-[violet-600] rounded-b-full shadow-[0_4px_10px_rgba(197,161,132,0.5)]" />}
+                <div className={`relative transition-all duration-300 ${isActive ? '-translate-y-2 text-[violet-900]' : 'text-gray-400 group-hover:text-gray-600'}`}>
                   <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
                   {tab.badge ? (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full border-2 border-white animate-pulse">
@@ -4996,7 +4996,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
                     </span>
                   ) : null}
                 </div>
-                <span className={`text-[9px] font-bold mt-1 transition-all duration-300 ${isActive ? 'opacity-100 text-[#0A1128]' : 'opacity-0 translate-y-2'}`}>{tab.label}</span>
+                <span className={`text-[9px] font-bold mt-1 transition-all duration-300 ${isActive ? 'opacity-100 text-[violet-900]' : 'opacity-0 translate-y-2'}`}>{tab.label}</span>
               </button>
             )
           })}
@@ -5011,7 +5011,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
     profilePicUrl: "",
     coverPhotoUrl: "",
     bioText: "",
-    themeColor: "#C5A184",
+    themeColor: "violet-600",
     typography: "font-sans",
     layoutType: "grid",
     deliveryAddress: "",
@@ -5049,7 +5049,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
 
   return (
     <div className="bg-white p-6 md:p-8 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col gap-6 h-full">
-      <h4 className="font-black text-[#0A1128] text-lg flex items-center gap-2"><Palette className="text-[#C5A184]" /> Personalizar Tienda</h4>
+      <h4 className="font-black text-[violet-900] text-lg flex items-center gap-2"><Palette className="text-[violet-600]" /> Personalizar Tienda</h4>
       <p className="text-xs text-gray-500">Ajusta la apariencia visual de tu vitrina pública en Flow Express.</p>
 
       <div className="space-y-4 pt-4">
@@ -5066,7 +5066,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
                 )}
               </label>
               <div className="flex-grow">
-                <p className="text-xs font-bold text-[#0A1128]">Subir desde Galería</p>
+                <p className="text-xs font-bold text-[violet-900]">Subir desde Galería</p>
                 <p className="text-[9px] text-gray-400 mt-0.5 leading-normal">Se guardará directamente en tu base de datos KFS.</p>
               </div>
             </div>
@@ -5084,7 +5084,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
                 )}
               </label>
               <div className="flex-grow">
-                <p className="text-xs font-bold text-[#0A1128]">Subir desde Galería</p>
+                <p className="text-xs font-bold text-[violet-900]">Subir desde Galería</p>
                 <p className="text-[9px] text-gray-400 mt-0.5 leading-normal">Banner panorámico para tu Flow Express.</p>
               </div>
             </div>
@@ -5093,7 +5093,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
 
         <div className="flex flex-col gap-1">
           <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Biografía o Eslogan (Max 150 char)</label>
-          <textarea maxLength={150} value={settings.bioText} onChange={e => setSettings({ ...settings, bioText: e.target.value })} placeholder="Los mejores productos..." className="w-full h-16 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C5A184] resize-none" />
+          <textarea maxLength={150} value={settings.bioText} onChange={e => setSettings({ ...settings, bioText: e.target.value })} placeholder="Los mejores productos..." className="w-full h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[violet-600] resize-none" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -5102,7 +5102,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
             <div className="flex flex-wrap items-center gap-2">
               <input type="color" value={settings.themeColor} onChange={e => setSettings({ ...settings, themeColor: e.target.value })} className="h-10 w-10 rounded-full cursor-pointer border-none shadow-sm p-0 overflow-hidden" title="Elegir color personalizado" />
               <div className="flex gap-1 border-l pl-2 border-gray-200">
-                {["#0A1128", "#4F46E5", "#10B981", "#F59E0B", "#EF4444", "#C5A184"].map(c => (
+                {["violet-900", "#4F46E5", "#10B981", "#F59E0B", "#EF4444", "violet-600"].map(c => (
                   <button key={c} onClick={() => setSettings({ ...settings, themeColor: c })} className={`w-8 h-8 rounded-full border-2 ${settings.themeColor === c ? 'border-gray-900 shadow-md' : 'border-transparent'}`} style={{ backgroundColor: c }} />
                 ))}
               </div>
@@ -5110,7 +5110,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
           </div>
           <div>
             <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Tipografía</label>
-            <select value={settings.typography} onChange={e => setSettings({ ...settings, typography: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none">
+            <select value={settings.typography} onChange={e => setSettings({ ...settings, typography: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none">
               <option value="font-sans">Moderna (Sans)</option>
               <option value="font-serif">Clásica (Serif)</option>
               <option value="font-mono">Técnica (Mono)</option>
@@ -5120,7 +5120,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
 
         <div>
           <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Disposición (Layout)</label>
-          <select value={settings.layoutType} onChange={e => setSettings({ ...settings, layoutType: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none">
+          <select value={settings.layoutType} onChange={e => setSettings({ ...settings, layoutType: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none">
             <option value="grid">Grilla de Tarjetas (Recomendado)</option>
             <option value="list">Lista Compacta</option>
           </select>
@@ -5133,7 +5133,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
               <Truck size={18} />
             </div>
             <div>
-              <h5 className="font-black text-[#0A1128] text-sm">Dirección de Delivery</h5>
+              <h5 className="font-black text-[violet-900] text-sm">Dirección de Delivery</h5>
               <p className="text-[10px] text-gray-400">Esta dirección se enviará al rider cuando despaches un pedido.</p>
             </div>
           </div>
@@ -5145,7 +5145,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
                 value={settings.deliveryAddress || ""}
                 onChange={e => setSettings({ ...settings, deliveryAddress: e.target.value })}
                 placeholder="Ej: Av. Principal, Edificio Torre Norte, Local 4"
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
               />
             </div>
             <div>
@@ -5155,7 +5155,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
                 value={settings.deliveryCity || ""}
                 onChange={e => setSettings({ ...settings, deliveryCity: e.target.value })}
                 placeholder="Ej: Caracas, Miranda"
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
               />
             </div>
             <div>
@@ -5165,7 +5165,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
                 value={settings.deliveryReference || ""}
                 onChange={e => setSettings({ ...settings, deliveryReference: e.target.value })}
                 placeholder="Ej: Frente al banco, puerta azul"
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
               />
             </div>
             {settings.deliveryAddress && (
@@ -5181,7 +5181,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
           </div>
         </div>
 
-        <button onClick={handleSave} className="w-full mt-4 bg-[#0A1128] text-white py-3 rounded-xl font-bold hover:bg-gray-800 transition-colors">
+        <button onClick={handleSave} className="w-full mt-4 bg-[violet-900] text-white py-3 rounded-xl font-bold hover:bg-gray-800 transition-colors">
           Guardar Diseño y Dirección
         </button>
       </div>
@@ -5228,17 +5228,17 @@ const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A1128] flex flex-col items-center justify-center p-4 text-white animate-fade-in relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-[#0A1128] via-[#C5A184]/10 to-[#0A1128] opacity-50"></div>
+    <div className="min-h-screen bg-[violet-900] flex flex-col items-center justify-center p-4 text-white animate-fade-in relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-[violet-900] via-[violet-600]/10 to-[violet-900] opacity-50"></div>
 
       <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 max-w-lg w-full relative z-10 shadow-2xl flex flex-col items-center text-center">
         <KreatekLogo className="h-16 sm:h-20 w-auto mb-6" />
-        <h2 className="text-3xl font-black mb-2 text-[#C5A184]">Setup Inicial</h2>
+        <h2 className="text-3xl font-black mb-2 text-[violet-600]">Setup Inicial</h2>
         <p className="text-gray-300 mb-8 font-light">Vamos a preparar tu ecosistema {currentUser.company} para la nueva era digital en 3 simples pasos.</p>
 
         <div className="flex gap-2 mb-8">
           {[1, 2, 3].map(s => (
-            <div key={s} className={`h-2 flex-1 rounded-full ${s <= step ? 'bg-[#C5A184]' : 'bg-white/10'}`}></div>
+            <div key={s} className={`h-2 flex-1 rounded-full ${s <= step ? 'bg-[violet-600]' : 'bg-white/10'}`}></div>
           ))}
         </div>
 
@@ -5246,7 +5246,7 @@ const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
           <div className="space-y-4 animate-slide-up">
             <h3 className="text-xl font-bold">1. Cumplimiento Legal (KYC)</h3>
             <p className="text-sm text-gray-400">Por normativas internacionales anti-lavado de dinero (AML), debes adjuntar una foto de tu RIF o Documento de Identidad Fiscal.</p>
-            <label className="border-2 border-dashed border-[#C5A184]/50 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-colors">
+            <label className="border-2 border-dashed border-[violet-600]/50 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-colors">
               <input type="file" accept="image/*" className="hidden" onChange={handleKycUpload} />
               {kycDoc ? (
                 <div className="text-green-400 font-bold flex items-center gap-2"><CheckCircle size={20} /> Documento Cargado</div>
@@ -5257,7 +5257,7 @@ const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
                 </div>
               )}
             </label>
-            <button disabled={!kycDoc} onClick={() => setStep(2)} className="w-full bg-[#C5A184] text-[#0A1128] py-4 rounded-xl font-black mt-6 shadow-lg shadow-[#C5A184]/20 hover:scale-[1.02] disabled:opacity-50 transition-transform cursor-pointer">Siguiente Paso →</button>
+            <button disabled={!kycDoc} onClick={() => setStep(2)} className="w-full bg-[violet-600] text-[violet-900] py-4 rounded-xl font-black mt-6 shadow-lg shadow-[violet-600]/20 hover:scale-[1.02] disabled:opacity-50 transition-transform cursor-pointer">Siguiente Paso →</button>
           </div>
         )}
 
@@ -5266,9 +5266,9 @@ const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
             <h3 className="text-xl font-bold">2. Sube un Producto</h3>
             <p className="text-sm text-gray-400">Personaliza tu inventario ahora mismo. Sube una foto de tu producto directamente desde la galería.</p>
 
-            <input type="text" placeholder="Nombre de tu producto (Ej. Refresco)" value={productName} onChange={e => setProductName(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#C5A184]" />
+            <input type="text" placeholder="Nombre de tu producto (Ej. Refresco)" value={productName} onChange={e => setProductName(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[violet-600]" />
 
-            <label className="border-2 border-dashed border-[#C5A184]/50 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-colors">
+            <label className="border-2 border-dashed border-[violet-600]/50 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-colors">
               <input type="file" accept="image/*" className="hidden" onChange={handleProductUpload} />
               {productImage ? (
                 <img src={productImage} alt="Preview" className="h-32 object-contain rounded-lg" />
@@ -5279,7 +5279,7 @@ const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
                 </div>
               )}
             </label>
-            <button onClick={saveOnboardingProduct} className="w-full bg-[#C5A184] text-[#0A1128] py-4 rounded-xl font-black mt-6 shadow-lg shadow-[#C5A184]/20 hover:scale-[1.02] transition-transform cursor-pointer">Guardar y Continuar →</button>
+            <button onClick={saveOnboardingProduct} className="w-full bg-[violet-600] text-[violet-900] py-4 rounded-xl font-black mt-6 shadow-lg shadow-[violet-600]/20 hover:scale-[1.02] transition-transform cursor-pointer">Guardar y Continuar →</button>
           </div>
         )}
 
@@ -5290,7 +5290,7 @@ const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
             </div>
             <h3 className="text-xl font-bold">3. ¡Todo Listo!</h3>
             <p className="text-sm text-gray-400 mb-6">El sistema base de datos, el POS y la tienda online están desplegados y 100% enlazados en tiempo real.</p>
-            <button onClick={() => finishOnboarding(currentUser.id, kycDoc)} className="w-full bg-[#C5A184] text-[#0A1128] py-4 rounded-xl font-black shadow-lg shadow-[#C5A184]/20 hover:scale-[1.02] transition-transform cursor-pointer">Ir a mi Panel de Control</button>
+            <button onClick={() => finishOnboarding(currentUser.id, kycDoc)} className="w-full bg-[violet-600] text-[violet-900] py-4 rounded-xl font-black shadow-lg shadow-[violet-600]/20 hover:scale-[1.02] transition-transform cursor-pointer">Ir a mi Panel de Control</button>
           </div>
         )}
       </div>
@@ -5434,8 +5434,8 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
     <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 w-full space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-100 pb-6">
         <div>
-          <h3 className="font-black text-2xl text-[#0A1128] flex items-center gap-2">
-            <Users className="text-[#C5A184]" /> Reclutamiento & Bolsa de Trabajo
+          <h3 className="font-black text-2xl text-[violet-900] flex items-center gap-2">
+            <Users className="text-[violet-600]" /> Reclutamiento & Bolsa de Trabajo
           </h3>
           <p className="text-xs text-gray-500 mt-1">Busca talento verificado y respaldado por la red KFS OS en Venezuela.</p>
         </div>
@@ -5443,19 +5443,19 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
         <div className="flex gap-2 p-1 bg-gray-50 rounded-xl border border-gray-200 text-xs">
           <button
             onClick={() => setActiveWidgetTab("search")}
-            className={`px-4 py-2 font-bold rounded-lg cursor-pointer transition-colors ${activeWidgetTab === "search" ? "bg-[#0A1128] text-white" : "text-gray-500 hover:text-[#0A1128]"}`}
+            className={`px-4 py-2 font-bold rounded-lg cursor-pointer transition-colors ${activeWidgetTab === "search" ? "bg-[violet-900] text-white" : "text-gray-500 hover:text-[violet-900]"}`}
           >
             Buscar Candidatos
           </button>
           <button
             onClick={() => setActiveWidgetTab("preset")}
-            className={`px-4 py-2 font-bold rounded-lg cursor-pointer transition-colors ${activeWidgetTab === "preset" ? "bg-[#0A1128] text-white" : "text-gray-500 hover:text-[#0A1128]"}`}
+            className={`px-4 py-2 font-bold rounded-lg cursor-pointer transition-colors ${activeWidgetTab === "preset" ? "bg-[violet-900] text-white" : "text-gray-500 hover:text-[violet-900]"}`}
           >
             Configurar Criterios
           </button>
           <button
             onClick={() => setActiveWidgetTab("unlocked")}
-            className={`px-4 py-2 font-bold rounded-lg cursor-pointer transition-colors ${activeWidgetTab === "unlocked" ? "bg-[#0A1128] text-white" : "text-gray-500 hover:text-[#0A1128]"}`}
+            className={`px-4 py-2 font-bold rounded-lg cursor-pointer transition-colors ${activeWidgetTab === "unlocked" ? "bg-[violet-900] text-white" : "text-gray-500 hover:text-[violet-900]"}`}
           >
             Desbloqueados
           </button>
@@ -5464,7 +5464,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
 
       {activeWidgetTab === "preset" && (
         <form onSubmit={handleSavePreset} className="space-y-6">
-          <h4 className="text-sm font-black text-[#0A1128] uppercase tracking-wider">¿Qué perfil necesitas contratar?</h4>
+          <h4 className="text-sm font-black text-[violet-900] uppercase tracking-wider">¿Qué perfil necesitas contratar?</h4>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -5472,7 +5472,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
               <select
                 value={role}
                 onChange={e => setRole(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]"
               >
                 <option value="Cajero">Cajero / Cajera</option>
                 <option value="Vendedor">Vendedor de Tienda</option>
@@ -5487,7 +5487,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
               <select
                 value={location}
                 onChange={e => setLocation(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]"
               >
                 <option value="Caracas - Este">Caracas - Este</option>
                 <option value="Caracas - Oeste">Caracas - Oeste</option>
@@ -5503,7 +5503,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
               <select
                 value={experienceYears}
                 onChange={e => setExperienceYears(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]"
               >
                 <option value="0-1">Menos de 1 año</option>
                 <option value="1-3">1 a 3 años</option>
@@ -5516,7 +5516,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
               <select
                 value={availability}
                 onChange={e => setAvailability(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]"
               >
                 <option value="full-time">Tiempo Completo (Full-time)</option>
                 <option value="part-time">Medio Tiempo (Part-time)</option>
@@ -5535,7 +5535,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                     key={skill}
                     type="button"
                     onClick={() => handleToggleSkill(skill)}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${isSelected ? "bg-[#0A1128] text-white shadow-md" : "bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100"}`}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${isSelected ? "bg-[violet-900] text-white shadow-md" : "bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100"}`}
                   >
                     {isSelected && <Check size={12} />}
                     {skill}
@@ -5548,7 +5548,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
           <div className="flex justify-end pt-4 border-t border-gray-100">
             <button
               type="submit"
-              className="bg-[#0A1128] text-white px-8 py-4 rounded-xl font-black hover:scale-[1.03] active:scale-95 transition-transform flex items-center justify-center gap-2 cursor-pointer shadow-lg"
+              className="bg-[violet-900] text-white px-8 py-4 rounded-xl font-black hover:scale-[1.03] active:scale-95 transition-transform flex items-center justify-center gap-2 cursor-pointer shadow-lg"
             >
               Guardar Configuración de Búsqueda
             </button>
@@ -5582,7 +5582,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                         <span className="text-[10px] font-black uppercase text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
                           {cand.role}
                         </span>
-                        <h4 className="text-lg font-black text-[#0A1128] mt-1 filter blur-[4px] select-none">
+                        <h4 className="text-lg font-black text-[violet-900] mt-1 filter blur-[4px] select-none">
                           {cand.name}
                         </h4>
                         {(() => {
@@ -5616,17 +5616,17 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
 
                     <div className="flex flex-wrap gap-1">
                       {cand.skills?.map((s: string) => (
-                        <span key={s} className="text-[9px] font-bold text-gray-500 bg-gray-50 border border-gray-200 px-2 py-0.5 rounded-md">
+                        <span key={s} className="text-[9px] font-bold text-gray-500 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none px-2 py-0.5 rounded-md">
                           {s}
                         </span>
                       ))}
                     </div>
 
                     <div className="grid grid-cols-2 gap-2 text-[10px] text-gray-500 font-bold bg-gray-50/50 p-3 rounded-xl">
-                      <div>📍 Residencia: <span className="text-[#0A1128]">{cand.answers?.location || "No especificada"}</span></div>
-                      <div>⏳ Experiencia: <span className="text-[#0A1128]">{cand.answers?.experienceYears || "0-1"} años</span></div>
-                      <div>🚗 Vehículo: <span className="text-[#0A1128]">{cand.answers?.hasVehicle === "no" ? "No posee" : cand.answers?.hasVehicle === "moto" ? "Moto" : "Carro"}</span></div>
-                      <div>⏰ Horario: <span className="text-[#0A1128]">{cand.answers?.availability === "full-time" ? "Completo" : "Parcial"}</span></div>
+                      <div>📍 Residencia: <span className="text-[violet-900]">{cand.answers?.location || "No especificada"}</span></div>
+                      <div>⏳ Experiencia: <span className="text-[violet-900]">{cand.answers?.experienceYears || "0-1"} años</span></div>
+                      <div>🚗 Vehículo: <span className="text-[violet-900]">{cand.answers?.hasVehicle === "no" ? "No posee" : cand.answers?.hasVehicle === "moto" ? "Moto" : "Carro"}</span></div>
+                      <div>⏰ Horario: <span className="text-[violet-900]">{cand.answers?.availability === "full-time" ? "Completo" : "Parcial"}</span></div>
                     </div>
                   </div>
 
@@ -5640,7 +5640,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                       <div className="space-y-4 bg-gray-50 p-4 rounded-2xl border border-gray-200 animate-slide-up">
                         <div className="flex justify-between items-center text-xs border-b border-gray-200 pb-2">
                           <span className="font-bold text-gray-500">Forma de Pago</span>
-                          <span className="font-black text-[#0A1128]">Monto: $10.00 USD</span>
+                          <span className="font-black text-[violet-900]">Monto: $10.00 USD</span>
                         </div>
 
                         {unlockStatus === "rejected" && (
@@ -5706,9 +5706,9 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                         )}
                         <button
                           onClick={() => setPayingCandidateId(cand.id)}
-                          className="w-full bg-[#0A1128] text-white hover:bg-gray-800 transition-colors font-black text-xs py-3 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
+                          className="w-full bg-[violet-900] text-white hover:bg-gray-800 transition-colors font-black text-xs py-3 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
                         >
-                          <Lock size={14} className="text-[#C5A184]" /> Desbloquear Datos ($10)
+                          <Lock size={14} className="text-[violet-600]" /> Desbloquear Datos ($10)
                         </button>
                       </div>
                     )}
@@ -5745,7 +5745,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                         <span className="text-[10px] font-black uppercase text-green-700 bg-green-100 px-2 py-0.5 rounded-full">
                           {cand.role}
                         </span>
-                        <h4 className="text-lg font-black text-[#0A1128] mt-1 flex items-center gap-1.5">
+                        <h4 className="text-lg font-black text-[violet-900] mt-1 flex items-center gap-1.5">
                           {cand.name}
                           <CheckCircle size={16} className="text-green-600 shrink-0" />
                         </h4>
@@ -5770,22 +5770,22 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                     </div>
 
                     <div className="grid grid-cols-2 gap-2 text-[10px] text-gray-500 font-bold bg-gray-50/50 p-3 rounded-xl border border-gray-100">
-                      <div>📍 Residencia: <span className="text-[#0A1128]">{cand.answers?.location || "No especificada"}</span></div>
-                      <div>⏳ Experiencia: <span className="text-[#0A1128]">{cand.answers?.experienceYears || "0-1"} años</span></div>
-                      <div>🚗 Vehículo: <span className="text-[#0A1128]">{cand.answers?.hasVehicle === "no" ? "No posee" : cand.answers?.hasVehicle === "moto" ? "Moto" : "Carro"}</span></div>
-                      <div>⏰ Horario: <span className="text-[#0A1128]">{cand.answers?.availability === "full-time" ? "Completo" : "Parcial"}</span></div>
+                      <div>📍 Residencia: <span className="text-[violet-900]">{cand.answers?.location || "No especificada"}</span></div>
+                      <div>⏳ Experiencia: <span className="text-[violet-900]">{cand.answers?.experienceYears || "0-1"} años</span></div>
+                      <div>🚗 Vehículo: <span className="text-[violet-900]">{cand.answers?.hasVehicle === "no" ? "No posee" : cand.answers?.hasVehicle === "moto" ? "Moto" : "Carro"}</span></div>
+                      <div>⏰ Horario: <span className="text-[violet-900]">{cand.answers?.availability === "full-time" ? "Completo" : "Parcial"}</span></div>
                     </div>
 
-                    <div className="bg-[#0A1128] text-white p-4 rounded-xl space-y-2 border border-[#C5A184]/20 shadow-inner">
+                    <div className="bg-[violet-900] text-white p-4 rounded-xl space-y-2 border border-[violet-600]/20 shadow-inner">
                       <div className="flex justify-between items-center text-xs font-bold">
                         <span className="text-gray-400">Teléfono:</span>
-                        <span className="text-[#C5A184] font-mono">{cand.phone}</span>
+                        <span className="text-[violet-600] font-mono">{cand.phone}</span>
                       </div>
                       <div className="flex justify-between items-center text-xs font-bold">
                         <span className="text-gray-400">Email:</span>
                         <span className="text-white font-mono select-all text-[10px]">{cand.email}</span>
                       </div>
-                      <div className="flex justify-between items-center text-[10px] font-bold border-t border-[#C5A184]/10 pt-2 mt-1">
+                      <div className="flex justify-between items-center text-[10px] font-bold border-t border-[violet-600]/10 pt-2 mt-1">
                         <span className="text-gray-400">Estado de Contratación:</span>
                         <span className={`uppercase tracking-wider font-black px-1.5 py-0.5 rounded ${cand.hiringState === 'hired' ? 'bg-green-500/20 text-green-400' :
                             cand.hiringState === 'interviewing' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-gray-500/20 text-gray-400'
@@ -5806,7 +5806,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                                 window.open(cand.cvFile, '_blank');
                               }
                             }}
-                            className="text-[#C5A184] underline cursor-pointer text-[10px]"
+                            className="text-[violet-600] underline cursor-pointer text-[10px]"
                           >
                             👁️ {cand.useKfsCvBuilder ? "Ver CV Digital KFS" : "Ver CV Adjunto"}
                           </button>
@@ -5820,7 +5820,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                           {cand.reviews.map((r: any) => (
                             <div key={r.id} className="p-3 bg-white border border-gray-200 rounded-lg text-[10px] space-y-1">
                               <div className="flex justify-between items-center font-bold">
-                                <span className="text-[#0A1128]">{r.clientName}</span>
+                                <span className="text-[violet-900]">{r.clientName}</span>
                                 <div className="flex items-center gap-1">
                                   {renderStars(r.rating)}
                                   <span className="text-gray-500 font-mono">({r.rating})</span>
@@ -5909,9 +5909,9 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
       )}
       {ratingCandidateId && (
         <div className="fixed inset-0 z-[11000] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white text-[#0A1128] rounded-[2rem] p-8 w-full max-w-md shadow-2xl border border-white/20 animate-scale-up space-y-6">
+          <div className="bg-white text-[violet-900] rounded-[2rem] p-8 w-full max-w-md shadow-2xl border border-white/20 animate-scale-up space-y-6">
             <div className="text-center">
-              <h3 className="text-xl font-black text-[#0A1128]">Calificar Candidato</h3>
+              <h3 className="text-xl font-black text-[violet-900]">Calificar Candidato</h3>
               <p className="text-xs text-gray-500 mt-1">Comparte tu experiencia para ayudar a otros comercios de la red KFS.</p>
             </div>
 
@@ -5937,7 +5937,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                 placeholder="Ej: Excelente actitud, muy rápido en el POS y puntual. Altamente recomendado."
                 value={ratingComment}
                 onChange={(e) => setRatingComment(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#C5A184] text-[#0A1128] font-bold"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[violet-600] text-[violet-900] font-bold"
               />
             </div>
 
@@ -5959,7 +5959,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                   releaseCandidate(ratingCandidateId, currentUser.id, { rating: ratingStars, comment: ratingComment });
                   setRatingCandidateId(null);
                 }}
-                className="w-1/2 py-3 bg-[#0A1128] hover:bg-gray-800 text-white rounded-xl font-black text-xs transition-colors cursor-pointer text-center shadow-md"
+                className="w-1/2 py-3 bg-[violet-900] hover:bg-gray-800 text-white rounded-xl font-black text-xs transition-colors cursor-pointer text-center shadow-md"
               >
                 Enviar y Liberar
               </button>
@@ -6229,12 +6229,12 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
   if (isPastDue || isPendingVerification) {
     return (
-      <div className="min-h-screen bg-[#0A1128] flex flex-col items-center justify-center p-6 text-center">
-        <div className="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full p-10 border-t-8 border-[#C5A184] animate-fade-in relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-full bg-[#C5A184]/5 z-0 pointer-events-none"></div>
+      <div className="min-h-screen bg-[violet-900] flex flex-col items-center justify-center p-6 text-center">
+        <div className="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full p-10 border-t-8 border-[violet-600] animate-fade-in relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-full bg-[violet-600]/5 z-0 pointer-events-none"></div>
 
-          <Lock size={64} className="text-[#C5A184] mx-auto mb-6 relative z-10" />
-          <h2 className="text-3xl font-black text-[#0A1128] mb-2 relative z-10">
+          <Lock size={64} className="text-[violet-600] mx-auto mb-6 relative z-10" />
+          <h2 className="text-3xl font-black text-[violet-900] mb-2 relative z-10">
             {isPendingVerification ? "Pago en Verificación" : "Suscripción Vencida"}
           </h2>
           <p className="text-gray-600 mb-8 font-bold relative z-10 text-lg">
@@ -6244,8 +6244,8 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           </p>
 
           {!isPendingVerification && (
-            <div className="bg-gray-50 border border-gray-200 p-6 rounded-2xl mb-8 relative z-10">
-              <h3 className="font-bold text-[#0A1128] mb-4">¿Cómo reactivar tu Tienda?</h3>
+            <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-6 rounded-2xl mb-8 relative z-10">
+              <h3 className="font-bold text-[violet-900] mb-4">¿Cómo reactivar tu Tienda?</h3>
               <p className="text-sm text-gray-500 mb-4">Transfiere $6 USD vía Zinli, AirTM, Wally, Ubbi, Binance Pay o Pago Móvil y escribe la referencia bancaria a continuación:</p>
 
               <form onSubmit={(e) => {
@@ -6258,9 +6258,9 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   name="reference"
                   required
                   placeholder="Ej: 12345678"
-                  className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-[#C5A184] focus:outline-none"
+                  className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-[violet-600] focus:outline-none"
                 />
-                <button type="submit" className="w-full bg-[#C5A184] text-white font-black py-4 rounded-xl hover:bg-[#b08e72] transition-colors cursor-pointer flex justify-center items-center gap-2 shadow-md">
+                <button type="submit" className="w-full bg-[violet-600] text-white font-black py-4 rounded-xl hover:bg-[#b08e72] transition-colors cursor-pointer flex justify-center items-center gap-2 shadow-md">
                   <Upload size={18} /> Enviar Comprobante al Core
                 </button>
               </form>
@@ -6280,11 +6280,11 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   }
 
   return (
-    <div className="min-h-screen bg-[#EEF2F5] pb-24 font-sans text-[#0A1128] relative">
+    <div className="min-h-screen bg-[#EEF2F5] pb-24 font-sans text-[violet-900] relative">
       {currentUser?.isImpersonated && (
-        <div className="bg-amber-500 text-[#0A1128] px-4 py-3 font-bold text-center flex items-center justify-center gap-4 text-sm shadow-md animate-pulse sticky top-[64px] z-50">
+        <div className="bg-amber-500 text-[violet-900] px-4 py-3 font-bold text-center flex items-center justify-center gap-4 text-sm shadow-md animate-pulse sticky top-[64px] z-50">
           <span>⚠️ MODO IMPERSONACIÓN ACTIVO: Estás controlando el panel de {currentUser.company}</span>
-          <button onClick={stopImpersonating} className="bg-[#0A1128] text-white px-4 py-1.5 rounded-xl text-xs font-black hover:bg-gray-800 transition-colors shadow cursor-pointer">
+          <button onClick={stopImpersonating} className="bg-[violet-900] text-white px-4 py-1.5 rounded-xl text-xs font-black hover:bg-gray-800 transition-colors shadow cursor-pointer">
             Regresar a Panel Core
           </button>
         </div>
@@ -6317,11 +6317,11 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
         {activeTab === "resumen" && (
           <div className="space-y-6">
-            <div className="bg-[#EEF2F5] p-8 md:p-12 rounded-[2.5rem] shadow-[10px_10px_30px_#d1d9e6,-10px_-10px_30px_#ffffff] relative overflow-hidden text-[#0A1128]">
+            <div className="bg-[#EEF2F5] p-8 md:p-12 rounded-[2.5rem] shadow-[10px_10px_30px_#d1d9e6,-10px_-10px_30px_#ffffff] relative overflow-hidden text-[violet-900]">
               <div className="relative z-10 w-full flex flex-col md:flex-row md:justify-between md:items-end gap-6">
                 <div>
                   <p className="text-violet-500 text-xs font-black uppercase tracking-widest mb-4">Ganancia Neta (USD)</p>
-                  <h2 className="text-6xl md:text-8xl font-black tracking-tighter mb-4 text-[#0A1128]"><AnimatedCounter value={netProfitUSD} format={formatUSD} /></h2>
+                  <h2 className="text-6xl md:text-8xl font-black tracking-tighter mb-4 text-[violet-900]"><AnimatedCounter value={netProfitUSD} format={formatUSD} /></h2>
                   <div className="flex gap-4 text-sm font-bold text-gray-500">
                     <span>Ventas Brutas: <span className="text-emerald-500"><AnimatedCounter value={grossSalesUSD} format={formatUSD} /></span></span>
                     <span>Gastos: <span className="text-rose-500">-<AnimatedCounter value={totalExpensesUSD} format={formatUSD} /></span></span>
@@ -6361,7 +6361,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             <div className="bg-[#EEF2F5] rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] p-8 flex flex-col md:flex-row items-center gap-8 border-none">
               <div className="flex-1 w-full">
                 <div className="flex justify-between items-end mb-2">
-                  <h3 className="font-black text-[#0A1128] text-lg">Progreso de Peaje Gamificado</h3>
+                  <h3 className="font-black text-[violet-900] text-lg">Progreso de Peaje Gamificado</h3>
                   <span className="text-sm font-bold text-violet-500">{clientInfo?.onboardedUsers || 0} / 50 Usuarios</span>
                 </div>
                 <div className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] h-4 rounded-full overflow-hidden">
@@ -6388,10 +6388,10 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Open / Close */}
             <div className="bg-[#EEF2F5] rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none p-6 flex flex-col gap-4">
-              <h4 className="font-black text-[#0A1128] flex items-center gap-2"><Store size={20} className="text-violet-500" /> Estado del Negocio</h4>
+              <h4 className="font-black text-[violet-900] flex items-center gap-2"><Store size={20} className="text-violet-500" /> Estado del Negocio</h4>
               <div className="flex items-center justify-between bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-2xl p-4">
                 <div>
-                  <p className="font-black text-sm text-[#0A1128]">{clientInfo.isOpen !== false ? '🟢 Abierto' : '🔴 Cerrado'}</p>
+                  <p className="font-black text-sm text-[violet-900]">{clientInfo.isOpen !== false ? '🟢 Abierto' : '🔴 Cerrado'}</p>
                   <p className="text-[10px] text-gray-400 mt-0.5">Tus clientes verán este estado en tu tienda</p>
                 </div>
                 <button
@@ -6418,7 +6418,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
             {/* Delivery zone */}
             <div className="bg-[#EEF2F5] rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none p-6 flex flex-col gap-4">
-              <h4 className="font-black text-[#0A1128] flex items-center gap-2"><Truck size={20} className="text-emerald-500" /> Zona de Delivery</h4>
+              <h4 className="font-black text-[violet-900] flex items-center gap-2"><Truck size={20} className="text-emerald-500" /> Zona de Delivery</h4>
               <div className="flex flex-col gap-3">
                 <div>
                   <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block mb-2">
@@ -6475,7 +6475,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 <div className="w-16 h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-full flex items-center justify-center">
                   <Package size={32} className="text-violet-500" />
                 </div>
-                <span className="font-black text-lg text-[#0A1128]">Subir Producto</span>
+                <span className="font-black text-lg text-[violet-900]">Subir Producto</span>
               </button>
 
               <div className="bg-[#EEF2F5] border-none p-8 rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] flex flex-col items-center justify-center gap-5 transition-all relative overflow-hidden">
@@ -6500,7 +6500,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         {activeTab === 'resumen' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
             <div className="bg-[#EEF2F5] p-6 md:p-8 rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none h-full">
-              <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2"><TrendingUp className="text-violet-500" /> Rendimiento de Ventas</h3>
+              <h3 className="font-black text-xl text-[violet-900] mb-6 flex items-center gap-2"><TrendingUp className="text-violet-500" /> Rendimiento de Ventas</h3>
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={clientChartData}>
@@ -6554,7 +6554,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
             <div className="bg-[#EEF2F5] p-6 md:p-8 rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none flex flex-col justify-between h-full">
               <div>
-                <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2"><DollarSign className="text-emerald-500" /> Billetera KFS (Billing)</h3>
+                <h3 className="font-black text-xl text-[violet-900] flex items-center gap-2"><DollarSign className="text-emerald-500" /> Billetera KFS (Billing)</h3>
                 <p className="text-xs text-gray-500 mb-4">Suscripción SaaS Activa: $6/mes. Próximo cobro: {new Date(clientInfo.subscription?.nextBillingDate).toLocaleDateString()}</p>
                 <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-4 flex justify-between items-center mb-4">
                   <span className="font-bold text-gray-600">Saldo Actual:</span>
@@ -6585,13 +6585,13 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         {activeTab === 'personal' && (
           <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 w-full">
             <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6 border-b border-gray-100 pb-4">
-              <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2"><Users className="text-[#C5A184]" /> Control de Empleados</h3>
+              <h3 className="font-black text-xl text-[violet-900] flex items-center gap-2"><Users className="text-[violet-600]" /> Control de Empleados</h3>
               <div className="flex gap-4">
                 <div className="relative w-48">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                  <input type="text" placeholder="Buscar vendedor..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchVendedor} onChange={e => setSearchVendedor(e.target.value)} />
+                  <input type="text" placeholder="Buscar vendedor..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]" value={searchVendedor} onChange={e => setSearchVendedor(e.target.value)} />
                 </div>
-                <button onClick={() => setShowAddVendedor(true)} className="text-sm font-bold text-white bg-[#0A1128] px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors cursor-pointer">+ Añadir Vendedor</button>
+                <button onClick={() => setShowAddVendedor(true)} className="text-sm font-bold text-white bg-[violet-900] px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors cursor-pointer">+ Añadir Vendedor</button>
               </div>
             </div>
             <div className="space-y-3">
@@ -6599,20 +6599,20 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 <div key={v.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border border-gray-100">
                   <div className="flex items-center gap-3">
                     {v.avatar ? (
-                      <img src={v.avatar} className="w-10 h-10 rounded-full object-cover border border-[#C5A184]/40" alt="Avatar" />
+                      <img src={v.avatar} className="w-10 h-10 rounded-full object-cover border border-[violet-600]/40" alt="Avatar" />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-[#0A1128]/10 text-[#0A1128] font-black text-xs flex items-center justify-center border border-[#0A1128]/20">
+                      <div className="w-10 h-10 rounded-full bg-[violet-900]/10 text-[violet-900] font-black text-xs flex items-center justify-center border border-[violet-900]/20">
                         {v.name.slice(0, 2).toUpperCase()}
                       </div>
                     )}
                     <div className="flex flex-col">
-                      <span className="font-bold text-[#0A1128]">{v.name}</span>
+                      <span className="font-bold text-[violet-900]">{v.name}</span>
                       <span className="text-xs text-gray-500 font-mono">{v.email}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
                     <span className="bg-green-100 text-green-700 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider hidden sm:inline-block">Activo</span>
-                    <button onClick={() => setShowPayrollModal(v)} className="bg-[#0A1128] text-[#C5A184] border border-[#C5A184]/50 text-[10px] font-black px-3 py-1.5 rounded-lg hover:bg-[#C5A184] hover:text-[#0A1128] transition-colors cursor-pointer uppercase tracking-wider">
+                    <button onClick={() => setShowPayrollModal(v)} className="bg-[violet-900] text-[violet-600] border border-[violet-600]/50 text-[10px] font-black px-3 py-1.5 rounded-lg hover:bg-[violet-600] hover:text-[violet-900] transition-colors cursor-pointer uppercase tracking-wider">
                       Liquidar Nómina
                     </button>
                   </div>
@@ -6625,23 +6625,23 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
         {activeTab === 'config' && (
           <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 relative overflow-hidden w-full">
-            <div className="absolute top-0 right-0 w-40 h-40 bg-[#C5A184]/5 rounded-bl-[100px] -z-10"></div>
+            <div className="absolute top-0 right-0 w-40 h-40 bg-[violet-600]/5 rounded-bl-[100px] -z-10"></div>
             <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6 border-b border-gray-100 pb-4">
-              <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2"><DollarSign className="text-[#C5A184]" /> Datos Oficiales de Liquidación KFS</h3>
+              <h3 className="font-black text-xl text-[violet-900] flex items-center gap-2"><DollarSign className="text-[violet-600]" /> Datos Oficiales de Liquidación KFS</h3>
               <span className="bg-gray-100 text-gray-600 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider border border-gray-200">Transferencia Directa</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="flex flex-col bg-gray-50 p-4 rounded-xl border border-gray-100">
                 <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Entidad Bancaria</span>
-                <span className="font-black text-sm text-[#0A1128]">Banco Nacional de Crédito (BNC)</span>
+                <span className="font-black text-sm text-[violet-900]">Banco Nacional de Crédito (BNC)</span>
               </div>
               <div className="flex flex-col bg-gray-50 p-4 rounded-xl border border-gray-100">
                 <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Teléfono (Pago Móvil)</span>
-                <span className="font-mono font-bold text-sm text-[#0A1128]">0412-7740041</span>
+                <span className="font-mono font-bold text-sm text-[violet-900]">0412-7740041</span>
               </div>
               <div className="flex flex-col bg-gray-50 p-4 rounded-xl border border-gray-100">
                 <span className="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Cédula de Identidad</span>
-                <span className="font-mono font-bold text-sm text-[#0A1128]">V-25.218.648</span>
+                <span className="font-mono font-bold text-sm text-[violet-900]">V-25.218.648</span>
               </div>
             </div>
           </div>
@@ -6649,14 +6649,14 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
         {/* Widget de Cierre y Publicidad para el Dueño */}
         {activeTab === 'resumen' && (
-          <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-6 md:p-8 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/5 animate-fade-in w-full">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-[#C5A184]/5 rounded-full blur-3xl -z-10"></div>
+          <div className="bg-gradient-to-br from-[violet-900] to-[#141E3A] text-white p-6 md:p-8 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/5 animate-fade-in w-full">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[violet-600]/5 rounded-full blur-3xl -z-10"></div>
             <div className="flex flex-col md:flex-row justify-between items-stretch gap-6 relative z-10">
 
               {/* Columna 1: Liquidación Obligatoria al Cierre */}
               <div className="flex-1 flex flex-col justify-between p-6 bg-white/5 rounded-2xl border border-white/10 relative">
                 <div className="space-y-2">
-                  <span className="text-[#C5A184] text-[10px] font-black uppercase tracking-widest block font-mono">Cierre de Caja & Liquidación</span>
+                  <span className="text-[violet-600] text-[10px] font-black uppercase tracking-widest block font-mono">Cierre de Caja & Liquidación</span>
                   <h3 className="text-xl font-black text-white">Pago Requerido al Cierre</h3>
                   <p className="text-xs text-gray-400 leading-relaxed">
                     Para habilitar la sincronización en la nube de tu terminal el día de mañana, debes liquidar tu balance de comisiones BOS de la jornada actual.
@@ -6673,7 +6673,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                       window.dispatchEvent(new CustomEvent('kfs-payment-alert', { detail: { company: currentUser.company, amount: currentUser.kfsFeesOwedUSD } }));
                       showToast("Abriendo WhatsApp y notificando a KFS Core...", "success");
                     }}
-                    className="bg-[#C5A184] text-[#0A1128] font-black text-xs px-5 py-3 rounded-xl shadow-lg hover:scale-105 transition-transform flex items-center gap-1.5 cursor-pointer"
+                    className="bg-[violet-600] text-[violet-900] font-black text-xs px-5 py-3 rounded-xl shadow-lg hover:scale-105 transition-transform flex items-center gap-1.5 cursor-pointer"
                   >
                     <CheckCircle size={14} /> Reportar Pago
                   </button>
@@ -6712,10 +6712,10 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         {activeTab === 'personal' && (
           <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-6">
             <div className="flex justify-between items-center border-b border-gray-100 pb-4">
-              <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2 text-[#C5A184]">
+              <h3 className="font-black text-xl text-[violet-900] flex items-center gap-2 text-[violet-600]">
                 🎫 Vales y Créditos Digitales
               </h3>
-              <span className="bg-[#C5A184]/15 border border-[#C5A184]/30 text-[#C5A184] text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
+              <span className="bg-[violet-600]/15 border border-[violet-600]/30 text-[violet-600] text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
                 Conciliación Automática
               </span>
             </div>
@@ -6759,7 +6759,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                     </select>
                   </div>
                   <input required type="date" name="dueDate" className="w-full bg-white border border-gray-200 rounded-xl px-4 py-2.5 text-xs text-gray-900 focus:outline-none font-mono" />
-                  <button type="submit" className="w-full py-3 bg-[#0A1128] hover:bg-gray-800 text-white font-black rounded-xl text-xs shadow-md transition-all cursor-pointer">
+                  <button type="submit" className="w-full py-3 bg-[violet-900] hover:bg-gray-800 text-white font-black rounded-xl text-xs shadow-md transition-all cursor-pointer">
                     Emitir Vale Criptográfico &rarr;
                   </button>
                 </form>
@@ -6783,7 +6783,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                       {(db.vales || []).map((v: any) => (
                         <tr key={v.id} className="border-b border-gray-100/50 hover:bg-white transition-colors">
                           <td className="py-3 px-3">
-                            <span className="font-mono font-black text-[#0A1128] block">{v.id}</span>
+                            <span className="font-mono font-black text-[violet-900] block">{v.id}</span>
                             <span className="text-[10px] text-gray-500 font-bold block">{v.recipientName}</span>
                           </td>
                           <td className="py-3 px-2 font-bold text-gray-600">
@@ -6826,17 +6826,17 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         {activeTab === 'resumen' && (
           <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-6">
             <div className="flex justify-between items-center border-b border-gray-100 pb-4">
-              <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2">
+              <h3 className="font-black text-xl text-[violet-900] flex items-center gap-2">
                 📊 Inteligencia de Mercado y Metas KFS
               </h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-[#0A1128] text-white p-6 rounded-2xl border border-[#C5A184]/30 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-[#C5A184]/10 rounded-full blur-3xl" />
-                <h4 className="text-[10px] font-black uppercase text-[#C5A184] mb-2 font-mono">Caja & Ganancias Disponibles</h4>
+              <div className="bg-[violet-900] text-white p-6 rounded-2xl border border-[violet-600]/30 relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-[violet-600]/10 rounded-full blur-3xl" />
+                <h4 className="text-[10px] font-black uppercase text-[violet-600] mb-2 font-mono">Caja & Ganancias Disponibles</h4>
                 <p className="text-3xl font-black mb-1">${formatUSD(currentUser.salesUSD || 0)} <span className="text-sm font-light text-gray-400">/ $1,000</span></p>
                 <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden mt-4 mb-4">
-                  <div className="bg-[#C5A184] h-full" style={{ width: `${Math.min(100, ((currentUser.salesUSD || 0) / 1000) * 100)}%` }} />
+                  <div className="bg-[violet-600] h-full" style={{ width: `${Math.min(100, ((currentUser.salesUSD || 0) / 1000) * 100)}%` }} />
                 </div>
                 <button
                   onClick={() => setShowPayoutModal(true)}
@@ -6848,9 +6848,9 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
               <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
                 <h4 className="text-[10px] font-black uppercase text-gray-500 mb-2 font-mono">Categorías Fuertes</h4>
                 <ul className="space-y-2 mt-4 text-sm font-bold text-gray-800">
-                  <li className="flex justify-between items-center"><span>Alimentos</span> <span className="text-[#C5A184]">74%</span></li>
-                  <li className="flex justify-between items-center"><span>Bebidas</span> <span className="text-[#C5A184]">20%</span></li>
-                  <li className="flex justify-between items-center"><span>Limpieza</span> <span className="text-[#C5A184]">6%</span></li>
+                  <li className="flex justify-between items-center"><span>Alimentos</span> <span className="text-[violet-600]">74%</span></li>
+                  <li className="flex justify-between items-center"><span>Bebidas</span> <span className="text-[violet-600]">20%</span></li>
+                  <li className="flex justify-between items-center"><span>Limpieza</span> <span className="text-[violet-600]">6%</span></li>
                 </ul>
               </div>
               <div className="bg-red-50 p-6 rounded-2xl border border-red-100">
@@ -6866,7 +6866,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         {activeTab === 'config' && (
           <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-6">
             <div className="flex justify-between items-center border-b border-gray-100 pb-4">
-              <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2">
+              <h3 className="font-black text-xl text-[violet-900] flex items-center gap-2">
                 🏦 Bóveda Financiera (Métodos de Cobro)
               </h3>
               <span className="bg-green-100 text-green-700 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
@@ -6889,32 +6889,32 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             }} className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Zinli (Email)</label>
-                <input name="zinli" defaultValue={currentUser.paymentMethods?.zinli || ""} placeholder="correo@zinli.com" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[#C5A184]" />
+                <input name="zinli" defaultValue={currentUser.paymentMethods?.zinli || ""} placeholder="correo@zinli.com" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600]" />
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Wally Tech</label>
-                <input name="wallyTech" defaultValue={currentUser.paymentMethods?.wallyTech || ""} placeholder="Usuario o Teléfono" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[#C5A184]" />
+                <input name="wallyTech" defaultValue={currentUser.paymentMethods?.wallyTech || ""} placeholder="Usuario o Teléfono" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600]" />
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">AirTM</label>
-                <input name="airtm" defaultValue={currentUser.paymentMethods?.airtm || ""} placeholder="correo@airtm.com" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[#C5A184]" />
+                <input name="airtm" defaultValue={currentUser.paymentMethods?.airtm || ""} placeholder="correo@airtm.com" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600]" />
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Ubbi App</label>
-                <input name="ubbiApp" defaultValue={currentUser.paymentMethods?.ubbiApp || ""} placeholder="Usuario Ubbi" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[#C5A184]" />
+                <input name="ubbiApp" defaultValue={currentUser.paymentMethods?.ubbiApp || ""} placeholder="Usuario Ubbi" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600]" />
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Binance Pay (Pay ID)</label>
-                <input name="binance" defaultValue={currentUser.paymentMethods?.binance || ""} placeholder="ID de Binance" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[#C5A184]" />
+                <input name="binance" defaultValue={currentUser.paymentMethods?.binance || ""} placeholder="ID de Binance" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600]" />
               </div>
               <div className="space-y-2 border border-gray-200 p-4 rounded-xl">
                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono mb-2 block">Pago Móvil</label>
-                <input name="pMovilBank" defaultValue={currentUser.paymentMethods?.pagoMovilBank || ""} placeholder="Banco (Ej. Banesco 0134)" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#C5A184] mb-2" />
-                <input name="pMovilPhone" defaultValue={currentUser.paymentMethods?.pagoMovilPhone || ""} placeholder="Teléfono" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#C5A184] mb-2" />
-                <input name="pMovilId" defaultValue={currentUser.paymentMethods?.pagoMovilId || ""} placeholder="Cédula/RIF" className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[#C5A184]" />
+                <input name="pMovilBank" defaultValue={currentUser.paymentMethods?.pagoMovilBank || ""} placeholder="Banco (Ej. Banesco 0134)" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[violet-600] mb-2" />
+                <input name="pMovilPhone" defaultValue={currentUser.paymentMethods?.pagoMovilPhone || ""} placeholder="Teléfono" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[violet-600] mb-2" />
+                <input name="pMovilId" defaultValue={currentUser.paymentMethods?.pagoMovilId || ""} placeholder="Cédula/RIF" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[violet-600]" />
               </div>
               <div className="md:col-span-3 flex justify-end">
-                <button type="submit" className="bg-[#0A1128] text-white font-bold py-3 px-8 rounded-xl hover:bg-black transition-colors cursor-pointer active:scale-95">Guardar en Bóveda Criptográfica</button>
+                <button type="submit" className="bg-[violet-900] text-white font-bold py-3 px-8 rounded-xl hover:bg-black transition-colors cursor-pointer active:scale-95">Guardar en Bóveda Criptográfica</button>
               </div>
             </form>
           </div>
@@ -6924,10 +6924,10 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         {activeTab === 'config' && (
           <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-6">
             <div className="flex justify-between items-center border-b border-gray-100 pb-4">
-              <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2 text-[#C5A184]">
+              <h3 className="font-black text-xl text-[violet-900] flex items-center gap-2 text-[violet-600]">
                 🔌 Gobernanza de Puntos de Venta (Multi-POS Integrado)
               </h3>
-              <span className="bg-[#C5A184]/15 border border-[#C5A184]/30 text-[#C5A184] text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
+              <span className="bg-[violet-600]/15 border border-[violet-600]/30 text-[violet-600] text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
                 Sincronización Directa PCI
               </span>
             </div>
@@ -6974,7 +6974,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                     </select>
                   </div>
 
-                  <button type="submit" className="w-full py-3 bg-[#0A1128] hover:bg-gray-800 text-white font-black rounded-xl text-xs shadow-md transition-all cursor-pointer">
+                  <button type="submit" className="w-full py-3 bg-[violet-900] hover:bg-gray-800 text-white font-black rounded-xl text-xs shadow-md transition-all cursor-pointer">
                     ⚡ Conectar POS Integrado &rarr;
                   </button>
                 </form>
@@ -7000,13 +7000,13 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                         return (
                           <tr key={p.id} className="border-b border-gray-100/50 hover:bg-white transition-colors">
                             <td className="py-3 px-3">
-                              <span className="font-bold text-[#0A1128] block">{p.name}</span>
+                              <span className="font-bold text-[violet-900] block">{p.name}</span>
                               <span className="text-[9px] text-gray-400 font-mono block uppercase">ID: {p.id} | {p.connectionType}: {p.connectionInfo}</span>
                             </td>
                             <td className="py-3 px-2 font-bold text-gray-600">
                               {vendedor ? (
-                                <span className="flex items-center gap-1.5 text-[#0A1128]">
-                                  <UserCheck size={12} className="text-[#C5A184]" /> {vendedor.name}
+                                <span className="flex items-center gap-1.5 text-[violet-900]">
+                                  <UserCheck size={12} className="text-[violet-600]" /> {vendedor.name}
                                 </span>
                               ) : (
                                 <span className="text-gray-400 italic">No Asignado</span>
@@ -7055,7 +7055,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           <div className="space-y-6">
             {(myOrders.length > 0 || myPendingDispatch.length > 0) && (
               <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-orange-200 bg-orange-50/30">
-                <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2 text-orange-600">
+                <h3 className="font-black text-xl text-[violet-900] mb-6 flex items-center gap-2 text-orange-600">
                   <Clock className="text-orange-500" /> Órdenes Online ({myOrders.length} por validar, {myPendingDispatch.length} por despachar)
                 </h3>
 
@@ -7068,7 +7068,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                         <div key={order.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-white rounded-2xl border border-orange-100 shadow-sm gap-4 animate-fade-in">
                           <div>
                             <span className="bg-orange-100 text-orange-700 text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-wider mb-2 inline-block">Pendiente</span>
-                            <h4 className="font-bold text-[#0A1128]">{product?.name || "Producto Desconocido"}</h4>
+                            <h4 className="font-bold text-[violet-900]">{product?.name || "Producto Desconocido"}</h4>
                             <p className="text-sm text-gray-500 font-mono mt-1">Ref: <span className="font-bold text-gray-900">{order.paymentReference}</span> | Método: {order.paymentMethod}</p>
                             {order.customerName && (
                               <p className="text-xs text-gray-600 font-bold mt-1">
@@ -7101,7 +7101,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   {/* Columna Centro: Órdenes por Despachar */}
                   {myPendingDispatch.length > 0 && (
                     <div className="lg:col-span-2 space-y-4 mt-8 lg:mt-0 lg:border-t-0 border-t border-orange-100 pt-8 lg:pt-0">
-                      <h4 className="font-bold text-[#0A1128] mb-4 flex items-center gap-2">
+                      <h4 className="font-bold text-[violet-900] mb-4 flex items-center gap-2">
                         <Package className="text-blue-500" /> Listo para Empacar / Despachar ({myPendingDispatch.length})
                       </h4>
                       {myPendingDispatch.map((tx: any) => {
@@ -7112,7 +7112,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                             <div className="flex justify-between items-start flex-wrap gap-2">
                               <div>
                                 <span className="bg-blue-200 text-blue-800 text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-wider mb-2 inline-block">Pago Aprobado</span>
-                                <h4 className="font-bold text-[#0A1128]">{product?.name || "Producto Desconocido"}</h4>
+                                <h4 className="font-bold text-[violet-900]">{product?.name || "Producto Desconocido"}</h4>
                                 <p className="text-sm text-gray-600 font-mono mt-1">Teléfono: <span className="font-bold">{tx.customerPhone}</span></p>
                               </div>
                               <div className="flex gap-2">
@@ -7124,7 +7124,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                             {assignedRider && (
                               <div className="bg-green-50 border border-green-200 rounded-xl p-3">
                                 <p className="text-[10px] text-green-600 font-black uppercase tracking-wider mb-1">🛵 Rider Asignado — El cliente paga $2 directamente</p>
-                                <p className="font-bold text-sm text-[#0A1128]">{assignedRider.name}</p>
+                                <p className="font-bold text-sm text-[violet-900]">{assignedRider.name}</p>
                                 {assignedRider.pagoMovil?.banco && (
                                   <p className="text-xs text-gray-600 mt-0.5">💳 {assignedRider.pagoMovil.banco} · {assignedRider.pagoMovil.telefono} · CI {assignedRider.pagoMovil.cedula}</p>
                                 )}
@@ -7140,7 +7140,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                         const availableRiders = (db.riders || []).filter((r: any) => r.status === "approved" && !(r.associatedBusinesses || []).includes(currentUser.id) && (r.associatedBusinesses || []).length < 2);
                         return (
                           <div className="bg-white border border-blue-100 rounded-2xl p-5 mt-4">
-                            <h4 className="font-black text-[#0A1128] text-sm mb-3 flex items-center gap-2">
+                            <h4 className="font-black text-[violet-900] text-sm mb-3 flex items-center gap-2">
                               <Truck size={16} className="text-blue-500" /> Mis Riders ({myRiders.length}/2)
                             </h4>
                             {myRiders.length === 0 ? (
@@ -7150,7 +7150,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                                 {myRiders.map((r: any) => (
                                   <div key={r.id} className="flex items-center justify-between bg-blue-50 rounded-xl p-3">
                                     <div>
-                                      <p className="font-black text-sm text-[#0A1128]">{r.name}</p>
+                                      <p className="font-black text-sm text-[violet-900]">{r.name}</p>
                                       <p className="text-[10px] text-gray-500">{r.pagoMovil?.banco ? `PM: ${r.pagoMovil.banco}` : "Sin Pago Móvil"}</p>
                                     </div>
                                     <button onClick={() => removeRiderFromBusiness(r.id, currentUser.id)} className="text-[10px] text-red-500 hover:text-red-700 font-bold cursor-pointer px-2 py-1 rounded-lg hover:bg-red-50">Quitar</button>
@@ -7163,8 +7163,8 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                                 <p className="text-[10px] font-black text-gray-500 uppercase tracking-wider mb-2">Riders disponibles para asignar:</p>
                                 <div className="space-y-1">
                                   {availableRiders.slice(0, 5).map((r: any) => (
-                                    <button key={r.id} onClick={() => assignRiderToBusiness(r.id, currentUser.id)} className="w-full text-left px-3 py-2 bg-gray-50 border border-gray-200 rounded-xl hover:bg-blue-50 hover:border-blue-200 transition-colors cursor-pointer">
-                                      <span className="font-bold text-sm text-[#0A1128]">{r.name}</span>
+                                    <button key={r.id} onClick={() => assignRiderToBusiness(r.id, currentUser.id)} className="w-full text-left px-3 py-2 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl hover:bg-blue-50 hover:border-blue-200 transition-colors cursor-pointer">
+                                      <span className="font-bold text-sm text-[violet-900]">{r.name}</span>
                                       <span className="text-[10px] text-gray-400 ml-2">{r.email}</span>
                                       <span className="float-right text-[10px] text-blue-500 font-black">+ Añadir</span>
                                     </button>
@@ -7179,16 +7179,16 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   )}
 
                   {/* Columna Derecha: Conciliador SMS Real */}
-                  <div className="bg-[#0A1128] border border-[#C5A184]/20 rounded-3xl p-6 text-[#F8F9FA] relative overflow-hidden shadow-xl flex flex-col justify-between text-left">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-[#C5A184]/5 rounded-full blur-2xl pointer-events-none"></div>
+                  <div className="bg-[violet-900] border border-[violet-600]/20 rounded-3xl p-6 text-[#F8F9FA] relative overflow-hidden shadow-xl flex flex-col justify-between text-left">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-[violet-600]/5 rounded-full blur-2xl pointer-events-none"></div>
                     <div>
                       <div className="flex items-center gap-3 mb-4">
-                        <div className="p-2.5 rounded-xl bg-[#C5A184]/15 text-[#C5A184]">
+                        <div className="p-2.5 rounded-xl bg-[violet-600]/15 text-[violet-600]">
                           <Bell size={20} className="animate-pulse" />
                         </div>
                         <div>
                           <h4 className="font-black text-sm tracking-wide">CONCILIADOR SMS</h4>
-                          <p className="text-[9px] text-[#C5A184] font-mono uppercase tracking-widest">Tecnología Inteligente KFS</p>
+                          <p className="text-[9px] text-[violet-600] font-mono uppercase tracking-widest">Tecnología Inteligente KFS</p>
                         </div>
                       </div>
 
@@ -7200,14 +7200,14 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                         placeholder="Pega el mensaje de texto bancario recibido aquí..."
                         value={smsInput}
                         onChange={(e) => setSmsInput(e.target.value)}
-                        className="w-full h-24 bg-black/40 border border-white/10 rounded-xl p-3 text-xs font-mono text-gray-200 focus:outline-none focus:border-[#C5A184] placeholder:text-gray-600 resize-none leading-relaxed"
+                        className="w-full h-24 bg-black/40 border border-white/10 rounded-xl p-3 text-xs font-mono text-gray-200 focus:outline-none focus:border-[violet-600] placeholder:text-gray-600 resize-none leading-relaxed"
                       />
                     </div>
 
                     <button
                       type="button"
                       onClick={handleManualSmsConciliation}
-                      className="w-full mt-4 py-3 rounded-xl font-black text-xs text-[#0A1128] bg-[#C5A184] hover:bg-[#b08e72] transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
+                      className="w-full mt-4 py-3 rounded-xl font-black text-xs text-[violet-900] bg-[violet-600] hover:bg-[#b08e72] transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
                     >
                       ⚡ Conciliar SMS Real
                     </button>
@@ -7217,11 +7217,11 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             )}
 
             <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
-              <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2">Registro de Egresos Operativos</h3>
+              <h3 className="font-black text-xl text-[violet-900] mb-6 flex items-center gap-2">Registro de Egresos Operativos</h3>
               <div className="space-y-3">
                 {myExpenses.map((e: any) => (
                   <div key={e.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                    <span className="font-bold text-[#0A1128]">{e.description}</span>
+                    <span className="font-bold text-[violet-900]">{e.description}</span>
                     <span className="text-red-500 font-black">-{formatUSD(e.amountUSD)}</span>
                   </div>
                 ))}
@@ -7233,14 +7233,14 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {/* Low Stock Widget */}
               <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-red-100 bg-red-50/20">
-                <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2 text-red-500">
+                <h3 className="font-black text-xl text-[violet-900] mb-6 flex items-center gap-2 text-red-500">
                   <Activity className="text-red-500" /> Alertas de Inventario
                 </h3>
                 <div className="space-y-3">
                   {lowStockProducts.map((p: any) => (
                     <div key={p.id} className="flex justify-between items-center p-4 bg-white rounded-2xl border border-red-100 shadow-sm">
                       <div className="flex flex-col">
-                        <span className="font-bold text-[#0A1128]">{p.name} <span className="text-[10px] font-black text-white bg-green-500 px-2 py-0.5 rounded-full ml-2">Alerta Verde</span></span>
+                        <span className="font-bold text-[violet-900]">{p.name} <span className="text-[10px] font-black text-white bg-green-500 px-2 py-0.5 rounded-full ml-2">Alerta Verde</span></span>
                         <span className="text-xs text-red-500 font-black">{p.stock} unidades restantes</span>
                       </div>
                       <button onClick={() => window.open(`https://wa.me/?text=Hola,%20necesito%20reabastecer:%20${p.name}`, '_blank')} className="text-xs font-bold bg-green-100 text-green-700 px-3 py-2 rounded-lg hover:bg-green-200 transition-colors cursor-pointer">Reabastecer</button>
@@ -7249,7 +7249,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   {stagnantProducts.map((p: any) => (
                     <div key={`stg-${p.id}`} className="flex justify-between items-center p-4 bg-red-50 rounded-2xl border border-red-200 shadow-sm">
                       <div className="flex flex-col">
-                        <span className="font-bold text-[#0A1128]">{p.name} <span className="text-[10px] font-black text-white bg-red-500 px-2 py-0.5 rounded-full ml-2">Alerta Roja</span></span>
+                        <span className="font-bold text-[violet-900]">{p.name} <span className="text-[10px] font-black text-white bg-red-500 px-2 py-0.5 rounded-full ml-2">Alerta Roja</span></span>
                         <span className="text-xs text-red-500 font-black">Estancado (&gt;15 días sin ventas)</span>
                       </div>
                       <button onClick={() => showToast(`Iniciando campaña de Retargeting forzado para ${p.name}...`)} className="text-xs font-bold bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700 transition-colors cursor-pointer">Forzar Descuento</button>
@@ -7262,14 +7262,14 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
               {/* CRM Widget */}
               <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-                  <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2 text-[#C5A184]">
-                    <Users className="text-[#C5A184]" /> Clientes Frecuentes (CRM)
+                  <h3 className="font-black text-xl text-[violet-900] flex items-center gap-2 text-[violet-600]">
+                    <Users className="text-[violet-600]" /> Clientes Frecuentes (CRM)
                   </h3>
                   <div className="flex items-center gap-3 bg-gray-50 px-4 py-2 rounded-xl border border-gray-100">
                     <span className="text-xs font-bold text-gray-600">Programa Fidelidad KFS</span>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" checked={currentUser.loyaltyProgramActive || false} onChange={e => toggleLoyaltyProgram(currentUser.id, e.target.checked)} className="sr-only peer" />
-                      <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#C5A184]"></div>
+                      <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[violet-600]"></div>
                     </label>
                   </div>
                 </div>
@@ -7277,19 +7277,19 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   {myCrm.map((c: any) => (
                     <div key={c.id} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-gray-50 rounded-2xl border border-gray-100 gap-4">
                       <div className="flex flex-col">
-                        <span className="font-bold text-[#0A1128] font-mono">{c.phone} {c.name && <span className="text-gray-500 font-sans font-medium text-xs ml-1">({c.name})</span>}</span>
+                        <span className="font-bold text-[violet-900] font-mono">{c.phone} {c.name && <span className="text-gray-500 font-sans font-medium text-xs ml-1">({c.name})</span>}</span>
                         <span className="text-xs text-gray-500">{c.purchasesCount} compras registradas</span>
                       </div>
                       <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
                         <div className="text-right">
                           <span className="text-green-600 font-black block">{formatUSD(c.totalSpent)}</span>
-                          {c.kfsPoints > 0 && <span className="text-[10px] font-bold text-[#C5A184] bg-[#C5A184]/10 px-2 py-0.5 rounded-full">{c.kfsPoints.toFixed(1)} KFS Pts</span>}
+                          {c.kfsPoints > 0 && <span className="text-[10px] font-bold text-[violet-600] bg-[violet-600]/10 px-2 py-0.5 rounded-full">{c.kfsPoints.toFixed(1)} KFS Pts</span>}
                         </div>
                         <a
                           href={`https://wa.me/58${c.phone.replace(/^0+/, '').replace(/[^0-9]/g, '')}?text=Hola ${c.name || ''}, ¡Te extrañamos en ${currentUser.company}! 🎁 Tienes puntos acumulados por tus compras.`}
                           target="_blank"
                           rel="noreferrer"
-                          className="bg-[#0A1128] text-white p-2 rounded-xl hover:bg-gray-800 transition-colors shadow-sm flex items-center justify-center"
+                          className="bg-[violet-900] text-white p-2 rounded-xl hover:bg-gray-800 transition-colors shadow-sm flex items-center justify-center"
                           title="Re-Marketing (WhatsApp)"
                         >
                           <Users size={16} />
@@ -7305,8 +7305,8 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             {/* Z-Reports Widget */}
             {myZReports.length > 0 && (
               <div className="bg-white p-8 rounded-[2rem] shadow-sm border border-gray-100">
-                <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2">
-                  <Lock className="text-[#0A1128]" /> Cortes de Caja (Reportes Z)
+                <h3 className="font-black text-xl text-[violet-900] mb-6 flex items-center gap-2">
+                  <Lock className="text-[violet-900]" /> Cortes de Caja (Reportes Z)
                 </h3>
                 <div className="space-y-3">
                   {myZReports.map((z: any) => {
@@ -7314,10 +7314,10 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                     return (
                       <div key={z.id} className="flex justify-between items-center p-5 bg-gray-50 rounded-2xl border border-gray-200">
                         <div className="flex flex-col">
-                          <span className="font-black text-[#0A1128] uppercase tracking-wider text-sm">{vendedor?.name || "Vendedor"} - {new Date(z.timestamp).toLocaleDateString()}</span>
+                          <span className="font-black text-[violet-900] uppercase tracking-wider text-sm">{vendedor?.name || "Vendedor"} - {new Date(z.timestamp).toLocaleDateString()}</span>
                           <span className="text-xs text-gray-500">{z.txCount} transacciones procesadas</span>
                         </div>
-                        <span className="font-black text-xl text-[#0A1128]">{formatUSD(z.totalUSD)}</span>
+                        <span className="font-black text-xl text-[violet-900]">{formatUSD(z.totalUSD)}</span>
                       </div>
                     );
                   })}
@@ -7326,7 +7326,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             )}
 
             <div>
-              <h3 className="font-black text-xl text-[#0A1128] mb-6 pl-2">Inventario en Flow Express</h3>
+              <h3 className="font-black text-xl text-[violet-900] mb-6 pl-2">Inventario en Flow Express</h3>
               <div className="grid grid-cols-1 min-[400px]:grid-cols-2 md:grid-cols-4 gap-4">
                 {myProducts.map((p: any) => {
                   const hasCost = p.costUSD !== undefined && p.costUSD > 0;
@@ -7353,18 +7353,18 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                       </div>
                       <div className="p-4 space-y-3">
                         <div>
-                          <h4 className="font-bold text-sm truncate text-[#0A1128] mb-0.5">{p.name}</h4>
+                          <h4 className="font-bold text-sm truncate text-[violet-900] mb-0.5">{p.name}</h4>
                           <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">{p.category || "General"}</span>
                         </div>
 
                         <div className="grid grid-cols-3 gap-1 bg-gray-50 p-2.5 rounded-xl border border-gray-100 text-[10px] font-mono leading-tight">
                           <div className="flex flex-col text-gray-500">
                             <span>Precio:</span>
-                            <span className="text-[#C5A184] font-black">{formatUSD(p.priceUSD)}</span>
+                            <span className="text-[violet-600] font-black">{formatUSD(p.priceUSD)}</span>
                           </div>
                           <div className="flex flex-col text-gray-500 text-center">
                             <span>Costo:</span>
-                            <span className="text-[#0A1128] font-bold">{hasCost ? formatUSD(p.costUSD) : "N/D"}</span>
+                            <span className="text-[violet-900] font-bold">{hasCost ? formatUSD(p.costUSD) : "N/D"}</span>
                           </div>
                           <div className="flex flex-col text-gray-500 text-right">
                             <span>Margen:</span>
@@ -7388,7 +7388,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
                         <div className="flex justify-between items-center pt-1 border-t border-gray-100 mt-2">
                           <div>
-                            <p className="text-[#0A1128] font-black text-sm">{formatUSD(p.priceUSD)}</p>
+                            <p className="text-[violet-900] font-black text-sm">{formatUSD(p.priceUSD)}</p>
                             <p className="text-[10px] font-bold text-gray-500">Bs. {(p.priceUSD * (rates?.USD || 36.45)).toFixed(2)}</p>
                           </div>
                           <span className={`text-[9px] font-bold px-2 py-0.5 rounded-full ${p.stock && p.stock > 0 ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
@@ -7409,30 +7409,30 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         {showAddModal && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
             <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl">
-              <h3 className="text-2xl font-black mb-6 text-[#0A1128]">Nuevo Producto</h3>
+              <h3 className="text-2xl font-black mb-6 text-[violet-900]">Nuevo Producto</h3>
               <form onSubmit={submitProduct} className="space-y-4">
                 <div className="flex gap-2">
-                  <input type="text" placeholder="Código de Barras (Opcional)" value={newProd.barcode} onChange={e => setNewProd({ ...newProd, barcode: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-mono text-gray-900" />
-                  <button type="button" onClick={() => handleBarcodeSearch(newProd.barcode)} disabled={isFetchingBarcode} className="bg-[#0A1128] text-white px-4 rounded-xl font-bold flex-shrink-0 disabled:opacity-50">
+                  <input type="text" placeholder="Código de Barras (Opcional)" value={newProd.barcode} onChange={e => setNewProd({ ...newProd, barcode: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-mono text-gray-900" />
+                  <button type="button" onClick={() => handleBarcodeSearch(newProd.barcode)} disabled={isFetchingBarcode} className="bg-[violet-900] text-white px-4 rounded-xl font-bold flex-shrink-0 disabled:opacity-50">
                     <Search size={18} />
                   </button>
                 </div>
-                <input required type="text" placeholder="Nombre del Artículo" value={newProd.name} onChange={e => setNewProd({ ...newProd, name: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-bold text-gray-900" />
+                <input required type="text" placeholder="Nombre del Artículo" value={newProd.name} onChange={e => setNewProd({ ...newProd, name: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900" />
                 <div className="grid grid-cols-3 gap-2">
                   <div>
                     <label className="text-[9px] font-black uppercase text-gray-400 block mb-1">Costo Insumo</label>
-                    <input required type="number" step="0.01" placeholder="Costo ($)" value={newProd.cost} onChange={e => setNewProd({ ...newProd, cost: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-bold text-gray-900" />
+                    <input required type="number" step="0.01" placeholder="Costo ($)" value={newProd.cost} onChange={e => setNewProd({ ...newProd, cost: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900" />
                   </div>
                   <div>
                     <label className="text-[9px] font-black uppercase text-gray-400 block mb-1">Precio Venta</label>
-                    <input required type="number" step="0.01" placeholder="Precio ($)" value={newProd.price} onChange={e => setNewProd({ ...newProd, price: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-black text-gray-900 text-center" />
+                    <input required type="number" step="0.01" placeholder="Precio ($)" value={newProd.price} onChange={e => setNewProd({ ...newProd, price: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-black text-gray-900 text-center" />
                   </div>
                   <div>
                     <label className="text-[9px] font-black uppercase text-gray-400 block mb-1">Stock</label>
-                    <input required type="number" placeholder="Cant" value={newProd.stock} onChange={e => setNewProd({ ...newProd, stock: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-bold text-gray-900 text-center" />
+                    <input required type="number" placeholder="Cant" value={newProd.stock} onChange={e => setNewProd({ ...newProd, stock: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900 text-center" />
                   </div>
                 </div>
-                <select value={newProd.category} onChange={e => setNewProd({ ...newProd, category: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-bold text-gray-900">
+                <select value={newProd.category} onChange={e => setNewProd({ ...newProd, category: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900">
                   <option value="Alimentos">Alimentos y Bebidas</option>
                   <option value="Ropa y Calzado">Ropa y Calzado</option>
                   <option value="Tecnología">Tecnología y Electrónica</option>
@@ -7440,7 +7440,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   <option value="Hogar">Hogar y Muebles</option>
                   <option value="Servicios">Servicios Generales</option>
                 </select>
-                <textarea placeholder="Descripción del producto (Opcional)" value={newProd.description} onChange={e => setNewProd({ ...newProd, description: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-medium text-gray-900 text-sm h-20 resize-none" />
+                <textarea placeholder="Descripción del producto (Opcional)" value={newProd.description} onChange={e => setNewProd({ ...newProd, description: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-medium text-gray-900 text-sm h-20 resize-none" />
                 <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 cursor-pointer relative transition-colors">
                   <input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                   {newProd.imgUrl ? (
@@ -7454,7 +7454,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 </div>
                 <div className="flex gap-3 pt-4">
                   <button type="button" onClick={() => setShowAddModal(false)} className="w-1/3 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 cursor-pointer">Cancelar</button>
-                  <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-[#0A1128] bg-[#C5A184] shadow-lg cursor-pointer">Publicar</button>
+                  <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-[violet-900] bg-[violet-600] shadow-lg cursor-pointer">Publicar</button>
                 </div>
               </form>
             </div>
@@ -7465,7 +7465,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         {showAddVendedor && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
             <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl">
-              <h3 className="text-2xl font-black mb-6 text-[#0A1128]">Nuevo Empleado</h3>
+              <h3 className="text-2xl font-black mb-6 text-[violet-900]">Nuevo Empleado</h3>
               <form onSubmit={handleAddVendedor} className="space-y-4">
                 <div className="flex flex-col items-center gap-2 mb-4">
                   <label className="relative w-16 h-16 rounded-full border-2 border-dashed border-gray-300 cursor-pointer overflow-hidden flex items-center justify-center bg-gray-50 hover:bg-gray-100 transition-colors group">
@@ -7492,12 +7492,12 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Foto del Empleado</span>
                 </div>
 
-                <input required type="text" placeholder="Nombre del Vendedor" value={newVendedor.name} onChange={e => setNewVendedor({ ...newVendedor, name: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] text-gray-900" />
-                <input required type="email" placeholder="Correo (Usuario de Acceso)" value={newVendedor.email} onChange={e => setNewVendedor({ ...newVendedor, email: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] text-gray-900" />
-                <input required type="password" placeholder="Clave de Acceso" value={newVendedor.password} onChange={e => setNewVendedor({ ...newVendedor, password: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] text-gray-900" />
+                <input required type="text" placeholder="Nombre del Vendedor" value={newVendedor.name} onChange={e => setNewVendedor({ ...newVendedor, name: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900" />
+                <input required type="email" placeholder="Correo (Usuario de Acceso)" value={newVendedor.email} onChange={e => setNewVendedor({ ...newVendedor, email: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900" />
+                <input required type="password" placeholder="Clave de Acceso" value={newVendedor.password} onChange={e => setNewVendedor({ ...newVendedor, password: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900" />
                 <div className="flex gap-3 pt-4">
                   <button type="button" onClick={() => setShowAddVendedor(false)} className="w-1/3 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 cursor-pointer">Cancelar</button>
-                  <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-white bg-[#0A1128] shadow-lg cursor-pointer">Crear Acceso</button>
+                  <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-white bg-[violet-900] shadow-lg cursor-pointer">Crear Acceso</button>
                 </div>
               </form>
             </div>
@@ -7508,7 +7508,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         {showExpenseModal && (
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
             <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl">
-              <h3 className="text-2xl font-black mb-6 text-[#0A1128]">Registrar Gasto (Egreso)</h3>
+              <h3 className="text-2xl font-black mb-6 text-[violet-900]">Registrar Gasto (Egreso)</h3>
               <form onSubmit={(e) => {
                 e.preventDefault();
                 addExpense({
@@ -7519,8 +7519,8 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 setNewExpense({ description: "", amountUSD: "" });
                 setShowExpenseModal(false);
               }} className="space-y-4">
-                <input required type="text" placeholder="Concepto (Ej. Alquiler, Proveedor)" value={newExpense.description} onChange={e => setNewExpense({ ...newExpense, description: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] text-gray-900" />
-                <input required type="number" step="0.01" placeholder="Monto Total (USD)" value={newExpense.amountUSD} onChange={e => setNewExpense({ ...newExpense, amountUSD: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] text-gray-900" />
+                <input required type="text" placeholder="Concepto (Ej. Alquiler, Proveedor)" value={newExpense.description} onChange={e => setNewExpense({ ...newExpense, description: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900" />
+                <input required type="number" step="0.01" placeholder="Monto Total (USD)" value={newExpense.amountUSD} onChange={e => setNewExpense({ ...newExpense, amountUSD: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900" />
                 <div className="flex gap-3 pt-4">
                   <button type="button" onClick={() => setShowExpenseModal(false)} className="w-1/3 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 cursor-pointer">Cancelar</button>
                   <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-white bg-red-600 hover:bg-red-700 shadow-lg cursor-pointer">Descontar Saldo</button>
@@ -7532,29 +7532,29 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
         {activeManual && (
           <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
-            <div className="bg-white text-[#0A1128] rounded-[2rem] w-full max-w-2xl max-h-[85vh] overflow-y-auto relative p-8 shadow-2xl border-4 border-[#0A1128]">
-              <button onClick={() => setActiveManual(null)} className="absolute top-6 right-6 text-gray-500 hover:text-[#0A1128] transition-colors cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200">
+            <div className="bg-white text-[violet-900] rounded-[2rem] w-full max-w-2xl max-h-[85vh] overflow-y-auto relative p-8 shadow-2xl border-4 border-[violet-900]">
+              <button onClick={() => setActiveManual(null)} className="absolute top-6 right-6 text-gray-500 hover:text-[violet-900] transition-colors cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200">
                 <X size={20} />
               </button>
 
               {activeManual === 'owner' && (
                 <div>
-                  <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><BookOpen className="text-[#C5A184]" size={28} /> Manual de Uso del Dueño</h2>
+                  <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><BookOpen className="text-[violet-600]" size={28} /> Manual de Uso del Dueño</h2>
                   <div className="space-y-5 text-gray-700 text-sm leading-relaxed">
                     <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                      <p className="font-black text-[#0A1128] mb-1">1. ¿Qué es KFS OS?</p>
+                      <p className="font-black text-[violet-900] mb-1">1. ¿Qué es KFS OS?</p>
                       <p>Es tu centro de comando. Desde aquí controlas tus ventas físicas, tu E-Commerce (Flow Express Marketplace), empleados e inventario en un solo lugar.</p>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                      <p className="font-black text-[#0A1128] mb-1">2. Control de Inventario:</p>
+                      <p className="font-black text-[violet-900] mb-1">2. Control de Inventario:</p>
                       <p>Usa la sección "Inventario" para cargar tus productos. Recomendamos usar código de barras reales (EAN/UPC) para que la búsqueda en caja sea instantánea.</p>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                      <p className="font-black text-[#0A1128] mb-1">3. Control de Empleados (Vendedores):</p>
+                      <p className="font-black text-[violet-900] mb-1">3. Control de Empleados (Vendedores):</p>
                       <p>Crea usuarios y contraseñas temporales para tus cajeros. Ellos accederán desde sus propios dispositivos o la PC de la tienda al panel de Caja Registradora.</p>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                      <p className="font-black text-[#0A1128] mb-1">4. Liquidación y Tarifas:</p>
+                      <p className="font-black text-[violet-900] mb-1">4. Liquidación y Tarifas:</p>
                       <p>Tus ganancias netas están en la cima de este panel. La deuda KFS se calcula basada en tu tarifa operativa y debe ser cancelada en los datos de transferencia mostrados abajo.</p>
                     </div>
                   </div>
@@ -7562,22 +7562,22 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
               )}
               {activeManual === 'benefits' && (
                 <div>
-                  <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><Star className="text-[#C5A184]" size={28} /> Whitepaper de Beneficios KFS</h2>
+                  <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><Star className="text-[violet-600]" size={28} /> Whitepaper de Beneficios KFS</h2>
                   <div className="space-y-5 text-gray-700 text-sm leading-relaxed">
                     <div className="bg-blue-50 border border-blue-200 p-4 rounded-xl mb-4">
                       <p className="font-black text-blue-800 text-xs uppercase tracking-widest mb-1">El Ecosistema Financiero</p>
                       <p className="text-blue-700 text-xs">Ahorros masivos al eliminar software de terceros obsoleto.</p>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                      <p className="font-black text-[#0A1128] mb-1">1. E-Commerce Flow Express Gratuito:</p>
+                      <p className="font-black text-[violet-900] mb-1">1. E-Commerce Flow Express Gratuito:</p>
                       <p>Tu inventario está conectado en tiempo real al marketplace Flow Express. Cualquier cliente puede comprar online con pago móvil, Zinli, AirTM, Ubbi, Wally o Binance Pay sin comisiones adicionales.</p>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                      <p className="font-black text-[#0A1128] mb-1">2. Sincro-Shield Fiscal Gratuito:</p>
+                      <p className="font-black text-[violet-900] mb-1">2. Sincro-Shield Fiscal Gratuito:</p>
                       <p>No necesitas pagar licencias anuales a intermediarios. Nuestro proxy conecta tu PC directo a la impresora fiscal bajo las normativas del SENIAT.</p>
                     </div>
                     <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                      <p className="font-black text-[#0A1128] mb-1">3. Conciliación Automática SMS:</p>
+                      <p className="font-black text-[violet-900] mb-1">3. Conciliación Automática SMS:</p>
                       <p>Si activas la función SMS, el sistema verificará pagos móviles entrantes de forma autónoma. Se acabaron los fraudes de capturas falsas.</p>
                     </div>
                   </div>
@@ -7590,12 +7590,12 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in">
             <div className="bg-white rounded-[2rem] max-w-md w-full p-8 space-y-4 shadow-2xl border border-gray-100">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-black text-[#0A1128]">Crear Ticket SOS</h3>
+                <h3 className="text-xl font-black text-[violet-900]">Crear Ticket SOS</h3>
                 <button onClick={() => setShowTicketModal(false)} className="hover:bg-gray-100 p-2 rounded-full cursor-pointer transition-colors"><X size={20} className="text-gray-400" /></button>
               </div>
               <p className="text-xs text-gray-500 mb-2">Nuestro equipo técnico y tu promotora asignada recibirán este reporte inmediatamente.</p>
-              <input type="text" placeholder="Asunto (Ej: Lector no lee)" value={ticketSubject} onChange={e => setTicketSubject(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-[#C5A184]" />
-              <textarea placeholder="Describe el problema..." value={ticketMsg} onChange={e => setTicketMsg(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 h-32 resize-none focus:outline-none focus:border-[#C5A184]" />
+              <input type="text" placeholder="Asunto (Ej: Lector no lee)" value={ticketSubject} onChange={e => setTicketSubject(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-[violet-600]" />
+              <textarea placeholder="Describe el problema..." value={ticketMsg} onChange={e => setTicketMsg(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 h-32 resize-none focus:outline-none focus:border-[violet-600]" />
               <button onClick={() => { if (ticketSubject && ticketMsg) { createTicket(currentUser.id, ticketSubject, ticketMsg); setShowTicketModal(false); } }} className="w-full bg-red-600 text-white font-black py-4 rounded-xl shadow-lg hover:bg-red-700 transition-colors cursor-pointer disabled:opacity-50" disabled={!ticketSubject || !ticketMsg}>
                 Enviar a Soporte Técnico
               </button>
@@ -7604,11 +7604,11 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         )}
         {activeScreenshot && (
           <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
-            <div className="bg-[#0A1128] border border-[#C5A184]/30 rounded-[2.5rem] w-full max-w-lg p-6 shadow-2xl relative flex flex-col items-center">
+            <div className="bg-[violet-900] border border-[violet-600]/30 rounded-[2.5rem] w-full max-w-lg p-6 shadow-2xl relative flex flex-col items-center">
               <button onClick={() => setActiveScreenshot(null)} className="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors cursor-pointer bg-white/10 p-2 rounded-full">
                 <X size={20} />
               </button>
-              <h3 className="text-xl font-black text-[#C5A184] mb-4 text-center">Capture de Transacción</h3>
+              <h3 className="text-xl font-black text-[violet-600] mb-4 text-center">Capture de Transacción</h3>
               <div className="w-full max-h-[70vh] overflow-auto rounded-2xl border border-white/10 bg-black/40 p-2 flex justify-center items-center">
                 <img src={activeScreenshot} alt="Transaction Capture" className="max-w-full h-auto rounded-xl object-contain" />
               </div>
@@ -7633,11 +7633,11 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   onClick={() => setActiveTab(tab.id)}
                   className="relative flex flex-col items-center justify-center w-20 h-12 cursor-pointer group"
                 >
-                  {isActive && <span className="absolute -top-4 w-12 h-1 bg-[#C5A184] rounded-b-full shadow-[0_4px_10px_rgba(197,161,132,0.5)]" />}
-                  <div className={`relative transition-all duration-300 ${isActive ? '-translate-y-2 text-[#0A1128]' : 'text-gray-400 group-hover:text-gray-600'}`}>
+                  {isActive && <span className="absolute -top-4 w-12 h-1 bg-[violet-600] rounded-b-full shadow-[0_4px_10px_rgba(197,161,132,0.5)]" />}
+                  <div className={`relative transition-all duration-300 ${isActive ? '-translate-y-2 text-[violet-900]' : 'text-gray-400 group-hover:text-gray-600'}`}>
                     <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
                   </div>
-                  <span className={`text-[9px] font-bold mt-1 transition-all duration-300 ${isActive ? 'opacity-100 text-[#0A1128]' : 'opacity-0 translate-y-2'}`}>{tab.label}</span>
+                  <span className={`text-[9px] font-bold mt-1 transition-all duration-300 ${isActive ? 'opacity-100 text-[violet-900]' : 'opacity-0 translate-y-2'}`}>{tab.label}</span>
                 </button>
               )
             })}
@@ -7649,7 +7649,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
       {showPayrollModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
           <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-2xl max-w-md w-full animate-scale-in border border-gray-100">
-            <h3 className="text-xl font-black mb-1 flex items-center gap-2 text-[#0A1128]"><DollarSign className="text-blue-500" /> Liquidación de Nómina</h3>
+            <h3 className="text-xl font-black mb-1 flex items-center gap-2 text-[violet-900]"><DollarSign className="text-blue-500" /> Liquidación de Nómina</h3>
             <p className="text-xs text-gray-500 mb-6">Empleado: {showPayrollModal.name}</p>
 
             <div className="space-y-4">
@@ -7657,7 +7657,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Salario / Comisión Base ($)</label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
-                  <input type="number" step="0.01" className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-8 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" placeholder="0.00" value={payrollBaseSalary} onChange={(e) => setPayrollBaseSalary(e.target.value)} />
+                  <input type="number" step="0.01" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-8 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]" placeholder="0.00" value={payrollBaseSalary} onChange={(e) => setPayrollBaseSalary(e.target.value)} />
                 </div>
               </div>
 
@@ -7674,9 +7674,9 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 )}
               </div>
 
-              <div className="flex justify-between items-center bg-[#0A1128] p-4 rounded-xl text-white">
+              <div className="flex justify-between items-center bg-[violet-900] p-4 rounded-xl text-white">
                 <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Total Neto a Pagar</span>
-                <span className="text-xl font-black text-[#C5A184]">
+                <span className="text-xl font-black text-[violet-600]">
                   ${Math.max(0, parseFloat(payrollBaseSalary || "0") - (db.vales || []).filter((v: any) => v.targetId === showPayrollModal.id && v.status === "pending").reduce((acc: number, v: any) => acc + v.totalDueUSD, 0)).toFixed(2)}
                 </span>
               </div>
@@ -7696,7 +7696,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   setShowPayrollModal(null);
                   setPayrollBaseSalary("");
                 }}
-                className="flex-1 px-4 py-3 bg-[#0A1128] text-[#C5A184] text-sm font-black uppercase tracking-wider rounded-xl hover:bg-gray-800 transition-colors cursor-pointer border border-[#C5A184]/30 shadow-lg"
+                className="flex-1 px-4 py-3 bg-[violet-900] text-[violet-600] text-sm font-black uppercase tracking-wider rounded-xl hover:bg-gray-800 transition-colors cursor-pointer border border-[violet-600]/30 shadow-lg"
               >
                 Aprobar Pago
               </button>
@@ -7788,11 +7788,11 @@ const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }: any) 
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col items-center justify-center p-4 animate-fade-in">
-      <div className="w-full max-w-md bg-[#0A1128] border border-white/10 rounded-[2.5rem] p-6 shadow-2xl relative">
+      <div className="w-full max-w-md bg-[violet-900] border border-white/10 rounded-[2.5rem] p-6 shadow-2xl relative">
         <button onClick={onClose} className="absolute right-6 top-6 text-gray-400 hover:text-white cursor-pointer">
           <X size={24} />
         </button>
-        <h3 className="text-xl font-black text-[#C5A184] mb-4 flex items-center gap-2"><QrCode /> Terminal de Escaneo KFS</h3>
+        <h3 className="text-xl font-black text-[violet-600] mb-4 flex items-center gap-2"><QrCode /> Terminal de Escaneo KFS</h3>
 
         {/* Scan Frame */}
         <div id="kfs-reader" className="relative w-full aspect-square bg-black/40 rounded-2xl overflow-hidden border border-white/5 flex flex-col items-center justify-center mb-6">
@@ -7806,19 +7806,19 @@ const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }: any) 
 
         {/* Manual Fallback Entry Section */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3">
-          <span className="text-[10px] font-black text-[#C5A184] uppercase tracking-widest block font-mono">Entrada Manual de Emergencia</span>
+          <span className="text-[10px] font-black text-[violet-600] uppercase tracking-widest block font-mono">Entrada Manual de Emergencia</span>
           <div className="flex gap-2 mb-2 border-b border-white/5 pb-2">
             <button
               type="button"
               onClick={() => setSelectedScanType("product")}
-              className={`flex-1 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${selectedScanType === "product" ? "bg-[#C5A184] text-[#0A1128]" : "bg-white/5 text-gray-400"}`}
+              className={`flex-1 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${selectedScanType === "product" ? "bg-[violet-600] text-[violet-900]" : "bg-white/5 text-gray-400"}`}
             >
               📦 Producto
             </button>
             <button
               type="button"
               onClick={() => setSelectedScanType("cedula")}
-              className={`flex-1 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${selectedScanType === "cedula" ? "bg-[#C5A184] text-[#0A1128]" : "bg-white/5 text-gray-400"}`}
+              className={`flex-1 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${selectedScanType === "cedula" ? "bg-[violet-600] text-[violet-900]" : "bg-white/5 text-gray-400"}`}
             >
               🪪 Cédula PDF417
             </button>
@@ -7826,7 +7826,7 @@ const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }: any) 
 
           {selectedScanType === "product" ? (
             <select
-              className="w-full bg-[#0A1128] text-white border border-[#C5A184]/30 rounded-xl px-3 py-2.5 text-xs focus:outline-none"
+              className="w-full bg-[violet-900] text-white border border-[violet-600]/30 rounded-xl px-3 py-2.5 text-xs focus:outline-none"
               value={selectedProductToSimulate}
               onChange={(e) => setSelectedProductToSimulate(e.target.value)}
             >
@@ -7837,7 +7837,7 @@ const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }: any) 
             </select>
           ) : (
             <select
-              className="w-full bg-[#0A1128] text-white border border-[#C5A184]/30 rounded-xl px-3 py-2.5 text-xs focus:outline-none font-mono"
+              className="w-full bg-[violet-900] text-white border border-[violet-600]/30 rounded-xl px-3 py-2.5 text-xs focus:outline-none font-mono"
               value={selectedCedula}
               onChange={(e) => setSelectedCedula(e.target.value)}
             >
@@ -7850,7 +7850,7 @@ const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }: any) 
           <button
             type="button"
             onClick={handleSimulatedScan}
-            className="w-full py-3 bg-[#C5A184] text-[#0A1128] font-black rounded-xl text-xs hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
+            className="w-full py-3 bg-[violet-600] text-[violet-900] font-black rounded-xl text-xs hover:scale-[1.02] active:scale-95 transition-all cursor-pointer"
           >
             ✓ Confirmar e Ingresar Manualmente
           </button>
@@ -8098,11 +8098,11 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-20 font-sans">
-      <nav className="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-white/5 bg-[#0A1128] sticky top-0 z-40 backdrop-blur-md gap-3 w-full">
+    <div className="min-h-screen bg-[#EEF2F5] pb-20 font-sans">
+      <nav className="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-white/5 bg-[violet-900] sticky top-0 z-40 backdrop-blur-md gap-3 w-full">
         <div className="flex items-center gap-3 justify-between w-full sm:w-auto">
           <KreatekLogo className="h-8 w-auto" />
-          <span className="font-bold text-sm tracking-widest uppercase text-[#C5A184] sm:text-lg">
+          <span className="font-bold text-sm tracking-widest uppercase text-[violet-600] sm:text-lg">
             Terminal: {currentUser.company}
           </span>
         </div>
@@ -8137,9 +8137,9 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
           </div>
         )}
 
-        <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border border-white/10">
+        <div className="bg-gradient-to-br from-[violet-900] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border border-white/10">
           <div className="relative z-10">
-            <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><Activity size={14} className="text-green-500" /> Sesión Operativa</p>
+            <p className="text-[violet-600] text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><Activity size={14} className="text-green-500" /> Sesión Operativa</p>
             <h2 className="text-5xl font-black mb-1">{currentUser.name}</h2>
             <p className="text-xs text-gray-400 mt-2 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse inline-block"></span> Terminal en línea y asegurado.
@@ -8158,21 +8158,21 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
         <KFSIoTEdgeConsole showToast={showToast} />
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <button onClick={() => setShowAddModal(true)} className="bg-white border border-gray-100 p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-4 hover:border-[#C5A184]/50 transition-all cursor-pointer">
-            <div className="w-12 h-12 bg-[#0A1128]/5 rounded-full flex items-center justify-center">
-              <Upload size={24} className="text-[#0A1128]" />
+          <button onClick={() => setShowAddModal(true)} className="bg-white border border-gray-100 p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-4 hover:border-[violet-600]/50 transition-all cursor-pointer">
+            <div className="w-12 h-12 bg-[violet-900]/5 rounded-full flex items-center justify-center">
+              <Upload size={24} className="text-[violet-900]" />
             </div>
-            <span className="font-black text-[#0A1128]">Subir Producto</span>
+            <span className="font-black text-[violet-900]">Subir Producto</span>
           </button>
-          <button onClick={() => { setShowScanner(true); showToast("Cámara de escaneo activada."); }} className="bg-white border border-gray-100 p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-4 hover:border-[#C5A184]/50 transition-all cursor-pointer">
-            <div className="w-12 h-12 bg-[#0A1128]/5 rounded-full flex items-center justify-center">
-              <QrCode size={24} className="text-[#0A1128]" />
+          <button onClick={() => { setShowScanner(true); showToast("Cámara de escaneo activada."); }} className="bg-white border border-gray-100 p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-4 hover:border-[violet-600]/50 transition-all cursor-pointer">
+            <div className="w-12 h-12 bg-[violet-900]/5 rounded-full flex items-center justify-center">
+              <QrCode size={24} className="text-[violet-900]" />
             </div>
-            <span className="font-black text-[#0A1128]">Escanear QR / Compra</span>
+            <span className="font-black text-[violet-900]">Escanear QR / Compra</span>
           </button>
-          <button onClick={() => setActiveManual('operator')} className="bg-[#0A1128] text-white p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-4 hover:bg-gray-900 transition-all cursor-pointer">
+          <button onClick={() => setActiveManual('operator')} className="bg-[violet-900] text-white p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-4 hover:bg-gray-900 transition-all cursor-pointer">
             <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center">
-              <BookOpen size={24} className="text-[#C5A184]" />
+              <BookOpen size={24} className="text-[violet-600]" />
             </div>
             <span className="font-black text-white">Manual de Operación</span>
           </button>
@@ -8180,7 +8180,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
 
         {myOrders.length > 0 && (
           <div className="bg-white p-6 rounded-3xl shadow-sm border border-orange-200 bg-orange-50/30">
-            <h3 className="font-black text-xl text-[#0A1128] mb-4 flex items-center gap-2 text-orange-600">
+            <h3 className="font-black text-xl text-[violet-900] mb-4 flex items-center gap-2 text-orange-600">
               <Clock className="text-orange-500" /> Órdenes Online ({myOrders.length})
             </h3>
 
@@ -8193,7 +8193,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
                     <div key={order.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white rounded-xl border border-orange-100 shadow-sm gap-3 animate-fade-in">
                       <div>
                         <span className="bg-orange-100 text-orange-700 text-[9px] font-black px-2 py-1 rounded-full uppercase tracking-wider mb-1 inline-block">Validación Pendiente</span>
-                        <h4 className="font-bold text-sm text-[#0A1128]">{product?.name || "Producto Desconocido"}</h4>
+                        <h4 className="font-bold text-sm text-[violet-900]">{product?.name || "Producto Desconocido"}</h4>
                         <p className="text-xs text-gray-500 font-mono mt-0.5">Ref: <span className="font-bold text-gray-900">{order.paymentReference}</span> | {order.paymentMethod}</p>
                         {order.customerName && (
                           <p className="text-[10px] text-gray-600 font-bold mt-1">
@@ -8224,11 +8224,11 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
               </div>
 
               {/* Columna Derecha: Conciliador SMS Real */}
-              <div className="bg-[#0A1128] border border-[#C5A184]/20 rounded-3xl p-5 text-[#F8F9FA] relative overflow-hidden shadow-xl flex flex-col justify-between text-left">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-[#C5A184]/5 rounded-full blur-2xl pointer-events-none"></div>
+              <div className="bg-[violet-900] border border-[violet-600]/20 rounded-3xl p-5 text-[#F8F9FA] relative overflow-hidden shadow-xl flex flex-col justify-between text-left">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-[violet-600]/5 rounded-full blur-2xl pointer-events-none"></div>
                 <div>
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="p-2 rounded-lg bg-[#C5A184]/15 text-[#C5A184]">
+                    <div className="p-2 rounded-lg bg-[violet-600]/15 text-[violet-600]">
                       <Bell size={16} className="animate-pulse" />
                     </div>
                     <div>
@@ -8244,14 +8244,14 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
                     placeholder="Pega el SMS recibido..."
                     value={smsInput}
                     onChange={(e) => setSmsInput(e.target.value)}
-                    className="w-full h-20 bg-black/40 border border-white/10 rounded-xl p-2.5 text-xs font-mono text-gray-200 focus:outline-none focus:border-[#C5A184] placeholder:text-gray-600 resize-none leading-relaxed"
+                    className="w-full h-20 bg-black/40 border border-white/10 rounded-xl p-2.5 text-xs font-mono text-gray-200 focus:outline-none focus:border-[violet-600] placeholder:text-gray-600 resize-none leading-relaxed"
                   />
                 </div>
 
                 <button
                   type="button"
                   onClick={handleManualSmsConciliation}
-                  className="w-full mt-3 py-2.5 rounded-xl font-black text-xs text-[#0A1128] bg-[#C5A184] hover:bg-[#b08e72] transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full mt-3 py-2.5 rounded-xl font-black text-xs text-[violet-900] bg-[violet-600] hover:bg-[#b08e72] transition-all shadow-md active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   ⚡ Conciliar SMS
                 </button>
@@ -8262,10 +8262,10 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
 
         <div className="bg-white p-6 rounded-3xl border border-gray-100">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
-            <h3 className="font-black text-[#0A1128] text-lg flex items-center gap-2"><Package size={20} className="text-[#C5A184]" /> Catálogo de {currentUser.company}</h3>
+            <h3 className="font-black text-[violet-900] text-lg flex items-center gap-2"><Package size={20} className="text-[violet-600]" /> Catálogo de {currentUser.company}</h3>
             <div className="relative w-full md:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-              <input type="text" placeholder="Buscar producto o barcode..." className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#C5A184]" value={searchProduct} onChange={e => setSearchProduct(e.target.value)} />
+              <input type="text" placeholder="Buscar producto o barcode..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]" value={searchProduct} onChange={e => setSearchProduct(e.target.value)} />
             </div>
           </div>
           <div className="grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-3 gap-4">
@@ -8278,7 +8278,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
                   <h4 className="font-bold text-xs truncate text-gray-900">{p.name}</h4>
                   <div className="flex justify-between items-center mt-1">
                     <div>
-                      <p className="text-xs font-black text-[#C5A184]">{formatUSD(p.priceUSD)}</p>
+                      <p className="text-xs font-black text-[violet-600]">{formatUSD(p.priceUSD)}</p>
                       <p className="text-[10px] font-bold text-gray-500">Bs. {(p.priceUSD * (rates?.USD || 36.45)).toFixed(2)}</p>
                     </div>
                     <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${p.stock && p.stock > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
@@ -8286,7 +8286,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
                     </span>
                   </div>
                 </div>
-                <button disabled={p.stock !== undefined && p.stock <= 0} onClick={() => setCheckoutProduct(p)} className="mt-2 w-full py-2 bg-[#0A1128] disabled:bg-gray-400 hover:bg-gray-800 text-white font-bold rounded-lg text-[10px] cursor-pointer disabled:cursor-not-allowed">
+                <button disabled={p.stock !== undefined && p.stock <= 0} onClick={() => setCheckoutProduct(p)} className="mt-2 w-full py-2 bg-[violet-900] disabled:bg-gray-400 hover:bg-gray-800 text-white font-bold rounded-lg text-[10px] cursor-pointer disabled:cursor-not-allowed">
                   {p.stock !== undefined && p.stock <= 0 ? "Agotado" : "Cargar Venta"}
                 </button>
               </div>
@@ -8333,20 +8333,20 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
       {showAddModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl">
-            <h3 className="text-2xl font-black mb-6 text-[#0A1128]">Nuevo Producto</h3>
+            <h3 className="text-2xl font-black mb-6 text-[violet-900]">Nuevo Producto</h3>
             <form onSubmit={submitProduct} className="space-y-4">
               <div className="flex gap-2">
-                <input type="text" placeholder="Código de Barras (Opcional)" value={newProd.barcode} onChange={e => setNewProd({ ...newProd, barcode: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-mono text-gray-900" />
-                <button type="button" onClick={() => handleBarcodeSearch(newProd.barcode)} disabled={isFetchingBarcode} className="bg-[#0A1128] text-white px-4 rounded-xl font-bold flex-shrink-0 disabled:opacity-50">
+                <input type="text" placeholder="Código de Barras (Opcional)" value={newProd.barcode} onChange={e => setNewProd({ ...newProd, barcode: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-mono text-gray-900" />
+                <button type="button" onClick={() => handleBarcodeSearch(newProd.barcode)} disabled={isFetchingBarcode} className="bg-[violet-900] text-white px-4 rounded-xl font-bold flex-shrink-0 disabled:opacity-50">
                   <Search size={18} />
                 </button>
               </div>
-              <input required type="text" placeholder="Nombre del Artículo" value={newProd.name} onChange={e => setNewProd({ ...newProd, name: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-bold text-gray-900" />
+              <input required type="text" placeholder="Nombre del Artículo" value={newProd.name} onChange={e => setNewProd({ ...newProd, name: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900" />
               <div className="grid grid-cols-2 gap-3">
-                <input required type="number" step="0.01" placeholder="Precio ($)" value={newProd.price} onChange={e => setNewProd({ ...newProd, price: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-black text-lg text-gray-900" />
-                <input required type="number" placeholder="Stock" value={newProd.stock} onChange={e => setNewProd({ ...newProd, stock: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-bold text-gray-900" />
+                <input required type="number" step="0.01" placeholder="Precio ($)" value={newProd.price} onChange={e => setNewProd({ ...newProd, price: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-black text-lg text-gray-900" />
+                <input required type="number" placeholder="Stock" value={newProd.stock} onChange={e => setNewProd({ ...newProd, stock: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900" />
               </div>
-              <select value={newProd.category} onChange={e => setNewProd({ ...newProd, category: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-bold text-gray-900">
+              <select value={newProd.category} onChange={e => setNewProd({ ...newProd, category: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900">
                 <option value="Alimentos">Alimentos y Bebidas</option>
                 <option value="Ropa y Calzado">Ropa y Calzado</option>
                 <option value="Tecnología">Tecnología y Electrónica</option>
@@ -8354,7 +8354,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
                 <option value="Hogar">Hogar y Muebles</option>
                 <option value="Servicios">Servicios Generales</option>
               </select>
-              <textarea placeholder="Descripción del producto (Opcional)" value={newProd.description} onChange={e => setNewProd({ ...newProd, description: e.target.value })} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[#C5A184] font-medium text-gray-900 text-sm h-20 resize-none" />
+              <textarea placeholder="Descripción del producto (Opcional)" value={newProd.description} onChange={e => setNewProd({ ...newProd, description: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-medium text-gray-900 text-sm h-20 resize-none" />
               <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 cursor-pointer relative transition-colors">
                 <input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                 {newProd.imgUrl ? (
@@ -8368,7 +8368,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
               </div>
               <div className="flex gap-3 pt-4">
                 <button type="button" onClick={() => setShowAddModal(false)} className="w-1/3 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 cursor-pointer">Cancelar</button>
-                <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-[#0A1128] bg-[#C5A184] shadow-lg cursor-pointer">Publicar</button>
+                <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-[violet-900] bg-[violet-600] shadow-lg cursor-pointer">Publicar</button>
               </div>
             </form>
           </div>
@@ -8377,18 +8377,18 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
 
       {/* Modal de Producto Detectado en Catálogo Global / Nacional */}
       {scannedGlobalProduct && (
-        <div className="fixed inset-0 bg-[#0A1128]/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fade-in text-left">
-          <div className="bg-[#0A1128] border border-[#C5A184]/30 rounded-[2.5rem] w-full max-w-lg p-8 shadow-2xl relative overflow-hidden">
+        <div className="fixed inset-0 bg-[violet-900]/80 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fade-in text-left">
+          <div className="bg-[violet-900] border border-[violet-600]/30 rounded-[2.5rem] w-full max-w-lg p-8 shadow-2xl relative overflow-hidden">
             {/* Efecto de brillo de fondo */}
-            <div className="absolute top-0 right-0 w-48 h-48 bg-[#C5A184]/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute top-0 right-0 w-48 h-48 bg-[violet-600]/5 rounded-full blur-3xl pointer-events-none"></div>
 
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 rounded-2xl bg-[#C5A184]/10 text-[#C5A184]">
+              <div className="p-3 rounded-2xl bg-[violet-600]/10 text-[violet-600]">
                 <Package size={28} />
               </div>
               <div>
                 <h3 className="text-2xl font-black text-[#F8F9FA]">Producto Detectado</h3>
-                <p className="text-xs text-[#C5A184] font-bold tracking-widest uppercase animate-pulse">
+                <p className="text-xs text-[violet-600] font-bold tracking-widest uppercase animate-pulse">
                   {scannedGlobalProduct.source === "local_venezuela" || scannedGlobalProduct.source === "supabase_cloud"
                     ? "Catálogo Nacional de Venezuela"
                     : "Base de Datos Global (OpenFoodFacts)"}
@@ -8397,7 +8397,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
             </div>
 
             <p className="text-gray-300 text-sm mb-6 leading-relaxed">
-              El artículo escaneado está registrado en la base de datos central, pero <span className="text-[#C5A184] font-bold">no existe aún en tu inventario local</span>. Puedes agregarlo instantáneamente.
+              El artículo escaneado está registrado en la base de datos central, pero <span className="text-[violet-600] font-bold">no existe aún en tu inventario local</span>. Puedes agregarlo instantáneamente.
             </p>
 
             <div className="bg-white/5 border border-white/10 rounded-2xl p-5 mb-8 flex gap-4 items-center">
@@ -8408,7 +8408,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
                   className="w-20 h-20 object-cover rounded-xl border border-white/10 shadow-lg flex-shrink-0 bg-white/10 animate-fade-in"
                 />
               ) : (
-                <div className="w-20 h-20 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 text-[#C5A184]">
+                <div className="w-20 h-20 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center flex-shrink-0 text-[violet-600]">
                   <Camera size={28} />
                 </div>
               )}
@@ -8419,7 +8419,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
                 <p className="text-gray-400 text-xs mt-1">
                   Marca: <span className="text-gray-300 font-semibold">{scannedGlobalProduct.brand}</span> • Categoría: <span className="text-gray-300 font-semibold">{scannedGlobalProduct.category}</span>
                 </p>
-                <p className="text-[#C5A184] font-mono text-xs mt-2 bg-[#C5A184]/10 border border-[#C5A184]/20 rounded px-2.5 py-1 inline-block">
+                <p className="text-[violet-600] font-mono text-xs mt-2 bg-[violet-600]/10 border border-[violet-600]/20 rounded px-2.5 py-1 inline-block">
                   {scannedGlobalProduct.barcode}
                 </p>
               </div>
@@ -8448,7 +8448,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
                   setScannedGlobalProduct(null);
                   setShowAddModal(true);
                 }}
-                className="w-2/3 py-3.5 rounded-xl font-black text-[#0A1128] bg-[#C5A184] hover:bg-[#b08e72] shadow-xl cursor-pointer transition-colors flex items-center justify-center gap-2"
+                className="w-2/3 py-3.5 rounded-xl font-black text-[violet-900] bg-[violet-600] hover:bg-[#b08e72] shadow-xl cursor-pointer transition-colors flex items-center justify-center gap-2"
               >
                 <CheckCircle size={18} />
                 Registrar en Inventario
@@ -8460,29 +8460,29 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
 
       {activeManual && (
         <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
-          <div className="bg-white text-[#0A1128] rounded-[2rem] w-full max-w-2xl max-h-[85vh] overflow-y-auto relative p-8 shadow-2xl border-4 border-[#0A1128]">
-            <button onClick={() => setActiveManual(null)} className="absolute top-6 right-6 text-gray-500 hover:text-[#0A1128] transition-colors cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200">
+          <div className="bg-white text-[violet-900] rounded-[2rem] w-full max-w-2xl max-h-[85vh] overflow-y-auto relative p-8 shadow-2xl border-4 border-[violet-900]">
+            <button onClick={() => setActiveManual(null)} className="absolute top-6 right-6 text-gray-500 hover:text-[violet-900] transition-colors cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200">
               <X size={20} />
             </button>
 
             {activeManual === 'operator' && (
               <div>
-                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><BookOpen className="text-[#C5A184]" size={28} /> Manual del Operador (Caja)</h2>
+                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><BookOpen className="text-[violet-600]" size={28} /> Manual del Operador (Caja)</h2>
                 <div className="space-y-5 text-gray-700 text-sm leading-relaxed">
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">1. Registro de Compras Físicas:</p>
+                    <p className="font-black text-[violet-900] mb-1">1. Registro de Compras Físicas:</p>
                     <p>Usa el botón "Escanear QR / Compra" o busca el producto manualmente. Selecciona el método de pago e ingresa el RIF o Cédula del cliente si requiere Factura Fiscal.</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">2. Validar Órdenes Online (E-Commerce):</p>
+                    <p className="font-black text-[violet-900] mb-1">2. Validar Órdenes Online (E-Commerce):</p>
                     <p>Las compras realizadas por clientes en la tienda online aparecerán en el panel "Órdenes Online". Copia el mensaje SMS del banco (Pago Móvil) y pégalo en el "Conciliador SMS" para aprobar la orden automáticamente.</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">3. Cierre de Caja (Reporte Z):</p>
+                    <p className="font-black text-[violet-900] mb-1">3. Cierre de Caja (Reporte Z):</p>
                     <p>Al final del turno, debes presionar "Cerrar Caja (Z)" en el menú superior. Esto enviará la totalización al dueño y cerrará tu sesión operativa.</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[#0A1128] mb-1">4. Impresión Fiscal:</p>
+                    <p className="font-black text-[violet-900] mb-1">4. Impresión Fiscal:</p>
                     <p>Asegúrate de que la aplicación "Sincro-Shield Proxy" esté corriendo en la PC de caja para que el sistema KFS pueda emitir los recibos por la impresora conectada.</p>
                   </div>
                 </div>
@@ -8493,11 +8493,11 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
       )}
       {activeScreenshot && (
         <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
-          <div className="bg-[#0A1128] border border-[#C5A184]/30 rounded-[2.5rem] w-full max-w-lg p-6 shadow-2xl relative flex flex-col items-center">
+          <div className="bg-[violet-900] border border-[violet-600]/30 rounded-[2.5rem] w-full max-w-lg p-6 shadow-2xl relative flex flex-col items-center">
             <button onClick={() => setActiveScreenshot(null)} className="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors cursor-pointer bg-white/10 p-2 rounded-full">
               <X size={20} />
             </button>
-            <h3 className="text-xl font-black text-[#C5A184] mb-4 text-center">Capture de Transacción</h3>
+            <h3 className="text-xl font-black text-[violet-600] mb-4 text-center">Capture de Transacción</h3>
             <div className="w-full max-h-[70vh] overflow-auto rounded-2xl border border-white/10 bg-black/40 p-2 flex justify-center items-center">
               <img src={activeScreenshot} alt="Transaction Capture" className="max-w-full h-auto rounded-xl object-contain" />
             </div>
@@ -8539,13 +8539,13 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
   const categories = ["All", "Alimentos", "Ropa y Calzado", "Tecnología", "Salud y Belleza", "Hogar", "Servicios"];
 
   const settings = activeStore?.storeSettings || {};
-  const themeColor = settings.themeColor || "#C5A184";
+  const themeColor = settings.themeColor || "violet-600";
   const typography = settings.typography || "font-sans";
   const layoutType = settings.layoutType || "grid";
   const profilePicUrl = settings.profilePicUrl || "";
 
   return (
-    <div className={`min-h-screen bg-gray-50 pb-20 ${activeStore ? typography : "font-sans"}`}>
+    <div className={`min-h-screen bg-[#EEF2F5] pb-20 ${activeStore ? typography : "font-sans"}`}>
       <Navbar title={activeStore ? `Mall: ${activeStore.company}` : "Flow Express"} showBack={true} onBack={logout} />
 
       <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
@@ -8559,7 +8559,7 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
                 <img src={profilePicUrl || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=200&auto=format&fit=crop&q=60"} alt="Store Logo" className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md bg-white" style={{ borderColor: themeColor }} />
               </div>
               <div className="mt-2 sm:mt-0 sm:ml-28">
-                <h2 className="text-3xl font-black text-[#0A1128]">{activeStore.company}</h2>
+                <h2 className="text-3xl font-black text-[violet-900]">{activeStore.company}</h2>
                 <p className="text-sm text-gray-500 mt-1 max-w-xl">{settings.bioText || "Catálogo exclusivo de este negocio."}</p>
               </div>
               <div className="relative w-full sm:w-80 shrink-0">
@@ -8569,7 +8569,7 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
                   placeholder="Buscar en esta tienda..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#C5A184] text-gray-900"
+                  className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[violet-600] text-gray-900"
                 />
               </div>
             </div>
@@ -8581,7 +8581,7 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
                 <img src={profilePicUrl} alt="Store Logo" className="w-16 h-16 rounded-full object-cover border-2 shadow-sm" style={{ borderColor: themeColor }} />
               )}
               <div>
-                <h2 className="text-2xl font-black text-[#0A1128]">{activeStore ? activeStore.company : "Centros Comerciales KFS"}</h2>
+                <h2 className="text-2xl font-black text-[violet-900]">{activeStore ? activeStore.company : "Centros Comerciales KFS"}</h2>
                 <p className="text-xs text-gray-500 mt-1">{activeStore ? (settings.bioText || "Catálogo exclusivo de este negocio.") : "Explora nuestras tiendas destacadas y descubre sus productos."}</p>
               </div>
             </div>
@@ -8593,7 +8593,7 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
                 placeholder={activeStore ? "Buscar en esta tienda..." : "Buscar comercio..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#C5A184] text-gray-900"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[violet-600] text-gray-900"
               />
             </div>
           </div>
@@ -8605,20 +8605,20 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
               {filteredClients.map((c: any) => {
                 const pCount = db.products.filter((p: any) => p.clientId === c.id).length;
                 return (
-                  <div key={c.id} onClick={() => setActiveStoreId(c.id)} className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 cursor-pointer hover:-translate-y-1 transition-transform group">
+                  <div key={c.id} onClick={() => setActiveStoreId(c.id)} className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none p-6 rounded-3xl cursor-pointer hover:-translate-y-1 transition-transform group">
                     <div className="flex items-start justify-between mb-4">
-                      <div className="w-16 h-16 bg-[#0A1128]/5 rounded-2xl flex items-center justify-center group-hover:bg-[#C5A184]/10 transition-colors">
-                        <Store size={32} className="text-[#0A1128] group-hover:text-[#C5A184] transition-colors" />
+                      <div className="w-16 h-16 bg-[violet-900]/5 rounded-2xl flex items-center justify-center group-hover:bg-[violet-600]/10 transition-colors">
+                        <Store size={32} className="text-[violet-900] group-hover:text-[violet-600] transition-colors" />
                       </div>
                       <div className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full flex items-center gap-1 text-xs font-black">
                         <Star size={12} className="fill-yellow-600" /> {c.rating || "5.0"}
                       </div>
                     </div>
-                    <h3 className="text-xl font-black text-[#0A1128]">{c.company}</h3>
+                    <h3 className="text-xl font-black text-[violet-900]">{c.company}</h3>
                     <p className="text-sm text-gray-500 line-clamp-1">{c.address || "Comercio Afiliado"}</p>
                     <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center text-xs font-bold text-gray-400">
                       <span>{pCount} Productos</span>
-                      <span className="text-[#C5A184]">Entrar a la tienda &rarr;</span>
+                      <span className="text-[violet-600]">Entrar a la tienda &rarr;</span>
                     </div>
                   </div>
                 );
@@ -8637,7 +8637,7 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
         ) : (
           <>
             <div className="flex items-center justify-between mb-4">
-              <button onClick={() => { setActiveStoreId(null); setSearchQuery(""); }} className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-[#0A1128] transition-colors">
+              <button onClick={() => { setActiveStoreId(null); setSearchQuery(""); }} className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-[violet-900] transition-colors">
                 <ChevronLeft size={16} /> Volver a Tiendas
               </button>
             </div>
@@ -8656,7 +8656,7 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
 
             {featuredProducts.length > 0 && selectedCategory === "All" && searchQuery === "" && (
               <div className="mb-8">
-                <h3 className="text-lg font-black text-[#0A1128] mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-black text-[violet-900] mb-4 flex items-center gap-2">
                   <Star className="text-yellow-500 fill-yellow-500" /> Productos Estrella
                 </h3>
                 <div className={`grid gap-6 ${layoutType === 'list' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 min-[400px]:grid-cols-2 md:grid-cols-4'}`}>
@@ -8672,7 +8672,7 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
                         </div>
                         <div className={`p-4 flex flex-col justify-between ${layoutType === 'list' ? 'w-full' : ''}`}>
                           <div>
-                            <h4 className="font-bold text-sm text-[#0A1128] truncate mb-1">{p.name}</h4>
+                            <h4 className="font-bold text-sm text-[violet-900] truncate mb-1">{p.name}</h4>
                             {p.description && <p className="text-[10px] text-gray-500 line-clamp-2 mt-0.5 leading-relaxed">{p.description}</p>}
                             <div className="flex justify-between items-center mt-2">
                               <div>
@@ -8700,13 +8700,13 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
                   <div className={layoutType === 'list' ? 'flex flex-row w-full h-full' : 'w-full'}>
                     <div className={`${layoutType === 'list' ? 'w-32 h-full' : 'h-44 w-full'} bg-gray-100 overflow-hidden relative shrink-0`}>
                       <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
-                      <span className="absolute bottom-2 left-2 text-[8px] bg-[#0A1128]/80 text-[#C5A184] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border border-[#C5A184]/20 backdrop-blur-sm">
+                      <span className="absolute bottom-2 left-2 text-[8px] bg-[violet-900]/80 text-[violet-600] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border border-[violet-600]/20 backdrop-blur-sm">
                         {p.category || "General"}
                       </span>
                     </div>
                     <div className={`p-4 flex flex-col justify-between ${layoutType === 'list' ? 'w-full' : ''}`}>
                       <div>
-                        <h4 className="font-bold text-sm text-[#0A1128] truncate mb-1">{p.name}</h4>
+                        <h4 className="font-bold text-sm text-[violet-900] truncate mb-1">{p.name}</h4>
                         {p.description && <p className="text-[10px] text-gray-500 line-clamp-2 mt-0.5 leading-relaxed">{p.description}</p>}
                         <div className="flex justify-between items-center mt-2">
                           <div>
@@ -8814,12 +8814,12 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 text-[#0A1128] font-sans pb-24 relative">
+    <div className="min-h-screen bg-[#EEF2F5] text-[violet-900] font-sans pb-24 relative">
       {/* Wavy Header */}
-      <div className="bg-gradient-to-br from-[#0A1128] to-[#1a2b5e] rounded-b-[3rem] shadow-[0_10px_30px_rgba(10,17,40,0.3)] pt-6 pb-12 px-6 text-white relative z-10">
+      <div className="bg-gradient-to-br from-[violet-900] to-[#1a2b5e] rounded-b-[3rem] shadow-[0_10px_30px_rgba(10,17,40,0.3)] pt-6 pb-12 px-6 text-white relative z-10">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
-            <span className="bg-white/20 p-2 rounded-xl text-[#C5A184]"><Truck size={20} /></span>
+            <span className="bg-white/20 p-2 rounded-xl text-[violet-600]"><Truck size={20} /></span>
             <h1 className="font-black text-xl tracking-tight">KFS Delivery</h1>
           </div>
           <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
@@ -8828,7 +8828,7 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl flex-shrink-0 border-4 shadow-lg bg-[#0A1128] ${riderInfo.status === "approved" ? "border-green-400 shadow-green-500/20" : "border-amber-400 shadow-amber-500/20"}`}>
+          <div className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl flex-shrink-0 border-4 shadow-lg bg-[violet-900] ${riderInfo.status === "approved" ? "border-green-400 shadow-green-500/20" : "border-amber-400 shadow-amber-500/20"}`}>
             🛵
           </div>
           <div>
@@ -8847,11 +8847,11 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
         {/* Check-In / Check-Out Widget */}
         <div className="bg-white rounded-[2rem] p-6 shadow-md border border-gray-100 flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="text-center md:text-left w-full md:w-auto">
-            <h3 className="font-black text-sm text-[#0A1128] uppercase tracking-wider mb-1 flex items-center justify-center md:justify-start gap-2">
+            <h3 className="font-black text-sm text-[violet-900] uppercase tracking-wider mb-1 flex items-center justify-center md:justify-start gap-2">
               <Clock size={16} className={riderInfo.isWorking ? "text-green-500" : "text-gray-400"} />
               Disponibilidad
             </h3>
-            <p className="text-xs text-gray-500 font-bold">Horas acumuladas: <span className="text-[#C5A184] font-black">{(riderInfo.totalHours || 0).toFixed(1)} h</span></p>
+            <p className="text-xs text-gray-500 font-bold">Horas acumuladas: <span className="text-[violet-600] font-black">{(riderInfo.totalHours || 0).toFixed(1)} h</span></p>
             {riderInfo.isWorking && riderInfo.sessionStart && (
               <p className="text-[10px] text-green-600 font-bold mt-1 animate-pulse bg-green-50 px-2 py-1 rounded-md inline-block">
                 En turno desde: {new Date(riderInfo.sessionStart).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -8877,36 +8877,36 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
               <div className="bg-white rounded-3xl p-5 text-center shadow-sm border border-gray-100 flex flex-col items-center justify-center">
                 <div className="w-10 h-10 rounded-full bg-orange-100 text-orange-500 flex items-center justify-center mb-2"><Truck size={20} /></div>
                 <p className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Entregas</p>
-                <p className="text-3xl font-black text-[#0A1128] mt-1">{myDeliveries.length}</p>
+                <p className="text-3xl font-black text-[violet-900] mt-1">{myDeliveries.length}</p>
               </div>
-              <div className="bg-[#0A1128] rounded-3xl p-5 text-center shadow-lg border border-[#0A1128] flex flex-col items-center justify-center">
-                <div className="w-10 h-10 rounded-full bg-[#C5A184]/20 text-[#C5A184] flex items-center justify-center mb-2"><DollarSign size={20} /></div>
+              <div className="bg-[violet-900] rounded-3xl p-5 text-center shadow-lg border border-[violet-900] flex flex-col items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-[violet-600]/20 text-[violet-600] flex items-center justify-center mb-2"><DollarSign size={20} /></div>
                 <p className="text-[10px] text-gray-300 font-bold uppercase tracking-wider">Ganado</p>
-                <p className="text-3xl font-black text-[#C5A184] mt-1">${totalEarnings}</p>
+                <p className="text-3xl font-black text-[violet-600] mt-1">${totalEarnings}</p>
               </div>
             </div>
 
             <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 space-y-4">
-              <h3 className="font-black text-sm text-[#0A1128] uppercase tracking-wider flex items-center gap-2"><Store size={16} className="text-[#C5A184]" /> Negocios Asociados ({myBusinesses.length}/2)</h3>
+              <h3 className="font-black text-sm text-[violet-900] uppercase tracking-wider flex items-center gap-2"><Store size={16} className="text-[violet-600]" /> Negocios Asociados ({myBusinesses.length}/2)</h3>
               {myBusinesses.length === 0 ? (
                 <p className="text-xs text-gray-400 italic text-center py-4">Aún no estás asociado a ningún negocio.</p>
               ) : myBusinesses.map((b: any) => (
                 <div key={b.id} className="flex items-center gap-3 bg-gray-50 rounded-2xl p-4 border border-gray-100">
-                  <div className="w-12 h-12 rounded-full bg-[#C5A184]/20 flex items-center justify-center font-black text-[#0A1128] text-sm flex-shrink-0">
+                  <div className="w-12 h-12 rounded-full bg-[violet-600]/20 flex items-center justify-center font-black text-[violet-900] text-sm flex-shrink-0">
                     {b.company?.slice(0, 2).toUpperCase()}
                   </div>
                   <div>
-                    <p className="font-black text-sm text-[#0A1128]">{b.company}</p>
+                    <p className="font-black text-sm text-[violet-900]">{b.company}</p>
                     <p className="text-[10px] text-gray-500">{b.address || b.location || "Sin dirección"}</p>
                   </div>
                 </div>
               ))}
             </div>
 
-            <div className="bg-[#C5A184] rounded-[2rem] p-6 shadow-lg relative overflow-hidden">
+            <div className="bg-[violet-600] rounded-[2rem] p-6 shadow-lg relative overflow-hidden">
               <div className="relative z-10">
-                <h3 className="font-black text-sm text-[#0A1128] flex items-center gap-2 mb-2"><CreditCard size={16} /> Cómo cobras</h3>
-                <p className="text-xs text-[#0A1128]/80 leading-relaxed font-bold">Por cada pedido que entregues, el cliente te pagará <span className="font-black text-white bg-[#0A1128] px-1.5 py-0.5 rounded-md">$2.00 USD</span> directamente a tu Pago Móvil.</p>
+                <h3 className="font-black text-sm text-[violet-900] flex items-center gap-2 mb-2"><CreditCard size={16} /> Cómo cobras</h3>
+                <p className="text-xs text-[violet-900]/80 leading-relaxed font-bold">Por cada pedido que entregues, el cliente te pagará <span className="font-black text-white bg-[violet-900] px-1.5 py-0.5 rounded-md">$2.00 USD</span> directamente a tu Pago Móvil.</p>
               </div>
               <Star size={100} className="absolute -right-6 -bottom-6 opacity-10 text-white transform -rotate-12" />
             </div>
@@ -8918,7 +8918,7 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
                 <div className="flex justify-center gap-0.5 mt-2">
                   {[1, 2, 3, 4, 5].map(s => <span key={s} className={`text-xl ${s <= Math.round(avgRating) ? 'text-yellow-400' : 'text-gray-200'}`}>★</span>)}
                 </div>
-                <p className="text-xs font-black text-[#0A1128] mt-1">{avgRating > 0 ? avgRating.toFixed(1) : "Sin calif."} <span className="text-gray-400 font-normal">({riderInfo.totalRatings || 0})</span></p>
+                <p className="text-xs font-black text-[violet-900] mt-1">{avgRating > 0 ? avgRating.toFixed(1) : "Sin calif."} <span className="text-gray-400 font-normal">({riderInfo.totalRatings || 0})</span></p>
               </div>
               <button
                 onClick={toggleGPS}
@@ -8927,7 +8927,7 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
               >
                 <p className={`text-[9px] font-bold uppercase tracking-wider ${gpsSharing ? 'text-green-100' : 'text-gray-400'}`}>GPS en Vivo</p>
                 <p className="text-3xl mt-2">{gpsSharing ? '📍' : '📍'}</p>
-                <p className={`text-[10px] font-black mt-2 ${gpsSharing ? 'text-white' : 'text-[#0A1128]'}`}>
+                <p className={`text-[10px] font-black mt-2 ${gpsSharing ? 'text-white' : 'text-[violet-900]'}`}>
                   {gpsSharing ? 'Compartiendo' : 'Activar GPS'}
                 </p>
               </button>
@@ -8938,7 +8938,7 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
         {/* TAB: Pedidos */}
         {activeTab === "deliveries" && (
           <div className="space-y-3">
-            <h3 className="font-black text-sm text-[#C5A184] uppercase tracking-wider">Mis Pedidos Asignados</h3>
+            <h3 className="font-black text-sm text-[violet-600] uppercase tracking-wider">Mis Pedidos Asignados</h3>
             {myDeliveries.length === 0 ? (
               <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-center">
                 <Truck size={40} className="mx-auto text-gray-600 mb-3" />
@@ -9055,7 +9055,7 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
         {activeTab === "pago" && (
           <div className="space-y-4">
             <div className="bg-white/5 border border-white/10 rounded-2xl p-5 space-y-4">
-              <h3 className="font-black text-sm text-[#C5A184] uppercase tracking-wider flex items-center gap-2"><CreditCard size={16} /> Datos de Pago Móvil</h3>
+              <h3 className="font-black text-sm text-[violet-600] uppercase tracking-wider flex items-center gap-2"><CreditCard size={16} /> Datos de Pago Móvil</h3>
               {!editingPM ? (
                 <>
                   <div className="space-y-2">
@@ -9070,21 +9070,21 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
                       </div>
                     ))}
                   </div>
-                  <button onClick={() => { setPmForm(riderInfo.pagoMovil || { banco: "", telefono: "", cedula: "" }); setEditingPM(true); }} className="w-full py-3 bg-[#C5A184] text-[#0A1128] font-black rounded-xl hover:scale-[1.02] active:scale-95 transition-all cursor-pointer text-sm">
+                  <button onClick={() => { setPmForm(riderInfo.pagoMovil || { banco: "", telefono: "", cedula: "" }); setEditingPM(true); }} className="w-full py-3 bg-[violet-600] text-[violet-900] font-black rounded-xl hover:scale-[1.02] active:scale-95 transition-all cursor-pointer text-sm">
                     ✏️ Editar Datos de Pago Móvil
                   </button>
                 </>
               ) : (
                 <div className="space-y-3">
-                  <select value={pmForm.banco} onChange={e => setPmForm(p => ({ ...p, banco: e.target.value }))} className="w-full bg-[#0A1128] border border-[#C5A184]/50 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184]">
+                  <select value={pmForm.banco} onChange={e => setPmForm(p => ({ ...p, banco: e.target.value }))} className="w-full bg-[violet-900] border border-[violet-600]/50 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[violet-600]">
                     <option value="">— Banco —</option>
                     {["Banesco", "Mercantil", "Banco de Venezuela", "Provincial", "BOD", "Bancaribe", "Bicentenario", "BNC", "Exterior", "Tesoro"].map(b => <option key={b} value={b}>{b}</option>)}
                   </select>
-                  <input type="tel" placeholder="Teléfono PM" value={pmForm.telefono} onChange={e => setPmForm(p => ({ ...p, telefono: e.target.value }))} className="w-full bg-[#0A1128] border border-[#C5A184]/50 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184]" />
-                  <input placeholder="Cédula Titular" value={pmForm.cedula} onChange={e => setPmForm(p => ({ ...p, cedula: e.target.value }))} className="w-full bg-[#0A1128] border border-[#C5A184]/50 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[#C5A184]" />
+                  <input type="tel" placeholder="Teléfono PM" value={pmForm.telefono} onChange={e => setPmForm(p => ({ ...p, telefono: e.target.value }))} className="w-full bg-[violet-900] border border-[violet-600]/50 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[violet-600]" />
+                  <input placeholder="Cédula Titular" value={pmForm.cedula} onChange={e => setPmForm(p => ({ ...p, cedula: e.target.value }))} className="w-full bg-[violet-900] border border-[violet-600]/50 rounded-xl px-4 py-3 text-white text-sm focus:outline-none focus:border-[violet-600]" />
                   <div className="flex gap-2">
                     <button onClick={() => setEditingPM(false)} className="w-1/3 py-3 border border-white/20 text-gray-300 font-bold rounded-xl hover:bg-white/5 cursor-pointer text-sm">Cancelar</button>
-                    <button onClick={handleSavePM} className="w-2/3 py-3 bg-[#C5A184] text-[#0A1128] font-black rounded-xl hover:scale-[1.02] cursor-pointer text-sm">Guardar</button>
+                    <button onClick={handleSavePM} className="w-2/3 py-3 bg-[violet-600] text-[violet-900] font-black rounded-xl hover:scale-[1.02] cursor-pointer text-sm">Guardar</button>
                   </div>
                 </div>
               )}
@@ -9098,7 +9098,7 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
         {/* TAB: Documentos */}
         {activeTab === "docs" && (
           <div className="space-y-4">
-            <h3 className="font-black text-sm text-[#C5A184] uppercase tracking-wider">Documentos Registrados</h3>
+            <h3 className="font-black text-sm text-[violet-600] uppercase tracking-wider">Documentos Registrados</h3>
             {[
               { label: "Cédula de Identidad", key: "cedulaImg", icon: "🪪" },
               { label: "Certificado Médico", key: "medCertImg", icon: "🏥" },
@@ -9192,10 +9192,10 @@ export default function Home() {
 
   if (isBooting || !isClient) {
     return (
-      <div className="min-h-screen bg-[#0A1128] flex flex-col items-center justify-center text-white">
+      <div className="min-h-screen bg-[violet-900] flex flex-col items-center justify-center text-white">
         <div className="relative flex flex-col items-center">
           <KreatekLogo className="h-28 sm:h-32 w-auto animate-pulse mb-8" />
-          <div className="w-12 h-12 border-4 border-[#C5A184]/20 border-t-[#C5A184] rounded-full animate-spin" />
+          <div className="w-12 h-12 border-4 border-[violet-600]/20 border-t-[violet-600] rounded-full animate-spin" />
           <p className="text-xs text-gray-500 font-mono mt-6">Loading core vectors...</p>
         </div>
       </div>
@@ -9203,7 +9203,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0A1128]">
+    <div className="min-h-screen bg-[violet-900]">
       <Toast toast={toast} />
 
       {ghostTrapLocked && (
@@ -9325,24 +9325,30 @@ export default function Home() {
           formatEUR={formatEUR}
           currentUser={currentUser}
           logout={logout}
-          approveSubscription={approveSubscription}
+      approveSubscription={approveSubscription}
         />
       )}
-      {safeView === "promotora" && (
-        <PromotoraDashboard
-          db={db}
-          setDb={setDb}
-          currentUser={currentUser}
-          registerClient={registerClient}
-          upgradeToPremium={upgradeToPremium}
-          settlePromotoraEarnings={settlePromotoraEarnings}
-          formatUSD={formatUSD}
-          formatEUR={formatEUR}
-          logout={logout}
-          requestPayout={requestPayout}
-          registerVendedor={registerVendedor}
-        />
-      )}
+      
+      {/* Mock function to prevent build failure since it's missing from KFSContext */}
+      {(() => {
+        const registerVendedor = (data: any) => showToast("Función en desarrollo.", "error");
+        return safeView === "promotora" && (
+          <PromotoraDashboard
+            db={db}
+            setDb={setDb}
+            currentUser={currentUser}
+            registerClient={registerClient}
+            upgradeToPremium={upgradeToPremium}
+            settlePromotoraEarnings={settlePromotoraEarnings}
+            formatUSD={formatUSD}
+            formatEUR={formatEUR}
+            logout={logout}
+            requestPayout={requestPayout}
+            registerVendedor={registerVendedor}
+          />
+        );
+      })()}
+      
       {safeView === "client" && (
         <ClientDashboard
           db={db}
