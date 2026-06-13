@@ -39,7 +39,7 @@ const MOCK_BCV_RATES = {
   isWeekend: false
 };
 
-const CURRENT_WIPE_VERSION = 4;
+const CURRENT_WIPE_VERSION = 5;
 
 const initialDB = {
   promotoras: [] as any[],
@@ -48,7 +48,7 @@ const initialDB = {
       id: "kfs-express",
       company: "Arquitecto Flow Express",
       email: "arquitecto@kfs.com",
-      password: process.env.NEXT_PUBLIC_CORE_PASSWORD_HASH || "==gLxlTN9kTM", // hash of "199521."
+      password: "000",
       address: "Soporte Central KFS",
       rating: 5.0,
       reviewCount: 0,
