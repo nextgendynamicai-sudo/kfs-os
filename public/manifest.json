@@ -3,7 +3,7 @@
   "short_name": "KFS OS",
   "description": "Sistema Operativo Kreatek Flow Systems POS",
   "start_url": "/",
-  "display": "standalone",
+  "display": "fullscreen",
   "background_color": "#0A1128",
   "theme_color": "#0A1128",
   "orientation": "portrait-primary",

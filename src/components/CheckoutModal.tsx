@@ -6,8 +6,8 @@ import { useKFS } from "../context/KFSContext";
 import { compressImage } from "../lib/utils";
 import { motion } from "framer-motion";
 
-export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnline = false }: any) => {
-  const { db, rates } = useKFS();
+export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnline = false, storeOwner, currentUser }: any) => {
+  const { db, rates, showToast } = useKFS() as any;
   const [paymentMethod, setPaymentMethod] = useState("cash_bs");
   const [applyIva, setApplyIva] = useState(false);
   const [paymentReference, setPaymentReference] = useState("");
@@ -34,27 +34,32 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
   const total = Math.max(0, price + iva + igtf - discountUSD);
   
   const totalBs = total * (rates?.USD || 36.45);
-  const storeOwner = db.clients?.find((c: any) => c.id === product?.clientId);
+  const resolvedStoreOwner = storeOwner || db.clients?.find((c: any) => c.id === product?.clientId);
   const foundCustomer = db.customers?.find((c: any) => c.phone === customerPhone);
   const availableKPoints = foundCustomer?.k_points_balance || 0;
 
   const handleConfirm = async () => {
+    if (currentUser?.id === product?.clientId) {
+      showToast("Operación inválida: No puedes comprar tus propios productos.", "error");
+      return;
+    }
+    
     if (isOnline && !paymentReference) {
-      alert("Debes ingresar el número de referencia del pago para validar tu orden.");
+      showToast("Debes ingresar el número de referencia del pago para validar tu orden.", "error");
       return;
     }
     if (paymentMethod === "vale_credit") {
       if (!customerPhone) {
-        alert("Debes ingresar el Código del Vale (Ej. VALE-1234) o Teléfono del Cliente para validar el crédito.");
+        showToast("Debes ingresar el Código del Vale (Ej. VALE-1234) o Teléfono del Cliente para validar el crédito.", "error");
         return;
       }
       const activeVale: any = db.vales?.find((v: any) => (v.recipientName === customerPhone || v.id === customerPhone) && v.status === "pending");
       if (!activeVale) {
-        alert(`No se encontró ningún Vale de Crédito PENDIENTE asociado a: "${customerPhone}".`);
+        showToast(`No se encontró ningún Vale de Crédito PENDIENTE asociado a: "${customerPhone}".`, "error");
         return;
       }
       if (activeVale.totalDueUSD < total) {
-        alert(`El saldo del Vale (${formatUSD(activeVale.totalDueUSD)}) es insuficiente para cubrir la compra de ${formatUSD(total)}.`);
+        showToast(`El saldo del Vale (${formatUSD(activeVale.totalDueUSD)}) es insuficiente para cubrir la compra de ${formatUSD(total)}.`, "error");
         return;
       }
     }
@@ -72,16 +77,16 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
               onConfirm(paymentMethod, applyIva, `NFC-${Math.floor(100000 + Math.random() * 900000)}`, customerPhone, customerName, customerRif);
             }, 1500);
           };
-          ndef.onerror = () => {
-            alert("Error de lectura NFC. Acerque la tarjeta nuevamente.");
+          ndef.onerror = (err: any) => {
+            showToast("Error de lectura NFC. Acerque la tarjeta nuevamente.", "error");
             setIsProcessingPos(false);
           };
         } catch (error) {
-          alert("Error iniciando NFC: " + error);
+          showToast("Error iniciando NFC: " + error, "error");
           setIsProcessingPos(false);
         }
       } else {
-        alert("El pago por contacto (NFC) no está soportado en este dispositivo o navegador (requiere Chrome en Android con HTTPS).");
+        showToast("El pago por contacto (NFC) no está soportado en este dispositivo o navegador (requiere Chrome en Android con HTTPS).", "error");
         setIsProcessingPos(false);
       }
       return;
@@ -214,25 +219,25 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
                 <div className="bg-[#C5A184]/10 p-4 rounded-xl border border-[#C5A184]/30">
                   <h4 className="text-[10px] font-black uppercase text-[#C5A184] mb-2 tracking-widest">Datos Exactos para el Pago</h4>
                   {paymentMethod === "zinli" && (
-                    <p className="text-sm font-mono text-gray-800">Email Zinli: <strong>{storeOwner?.paymentMethods?.zinli || "No configurado (Pregunte al vendedor)"}</strong></p>
+                    <p className="text-sm font-mono text-gray-800">Email Zinli: <strong>{resolvedStoreOwner?.paymentMethods?.zinli || "No configurado (Pregunte al vendedor)"}</strong></p>
                   )}
                   {paymentMethod === "wally_tech" && (
-                    <p className="text-sm font-mono text-gray-800">Wally Tech: <strong>{storeOwner?.paymentMethods?.wallyTech || "No configurado (Pregunte al vendedor)"}</strong></p>
+                    <p className="text-sm font-mono text-gray-800">Wally Tech: <strong>{resolvedStoreOwner?.paymentMethods?.wallyTech || "No configurado (Pregunte al vendedor)"}</strong></p>
                   )}
                   {paymentMethod === "airtm" && (
-                    <p className="text-sm font-mono text-gray-800">AirTM: <strong>{storeOwner?.paymentMethods?.airtm || "No configurado (Pregunte al vendedor)"}</strong></p>
+                    <p className="text-sm font-mono text-gray-800">AirTM: <strong>{resolvedStoreOwner?.paymentMethods?.airtm || "No configurado (Pregunte al vendedor)"}</strong></p>
                   )}
                   {paymentMethod === "ubbi_app" && (
-                    <p className="text-sm font-mono text-gray-800">Ubbi App: <strong>{storeOwner?.paymentMethods?.ubbiApp || "No configurado (Pregunte al vendedor)"}</strong></p>
+                    <p className="text-sm font-mono text-gray-800">Ubbi App: <strong>{resolvedStoreOwner?.paymentMethods?.ubbiApp || "No configurado (Pregunte al vendedor)"}</strong></p>
                   )}
                   {paymentMethod === "binance" && (
-                    <p className="text-sm font-mono text-gray-800">Binance Pay ID: <strong>{storeOwner?.paymentMethods?.binance || "No configurado (Pregunte al vendedor)"}</strong></p>
+                    <p className="text-sm font-mono text-gray-800">Binance Pay ID: <strong>{resolvedStoreOwner?.paymentMethods?.binance || "No configurado (Pregunte al vendedor)"}</strong></p>
                   )}
                   {paymentMethod === "cash_bs" && (
                     <div className="text-sm font-mono text-gray-800 space-y-1">
-                      <p>Banco: <strong>{storeOwner?.paymentMethods?.pagoMovilBank || "No configurado"}</strong></p>
-                      <p>Teléfono: <strong>{storeOwner?.paymentMethods?.pagoMovilPhone || "No configurado"}</strong></p>
-                      <p>Cédula/RIF: <strong>{storeOwner?.paymentMethods?.pagoMovilId || "No configurado"}</strong></p>
+                      <p>Banco: <strong>{resolvedStoreOwner?.paymentMethods?.pagoMovilBank || "No configurado"}</strong></p>
+                      <p>Teléfono: <strong>{resolvedStoreOwner?.paymentMethods?.pagoMovilPhone || "No configurado"}</strong></p>
+                      <p>Cédula/RIF: <strong>{resolvedStoreOwner?.paymentMethods?.pagoMovilId || "No configurado"}</strong></p>
                     </div>
                   )}
                 </div>
@@ -256,7 +261,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
                           const base64 = await compressImage(file, 400, 0.6);
                           setPaymentScreenshot(base64);
                         } catch (err) {
-                          alert("Error al comprimir/cargar la imagen");
+                          showToast("Error al comprimir/cargar la imagen", "error");
                         }
                       }
                     }} 

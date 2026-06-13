@@ -48,7 +48,7 @@ const initialDB = {
       id: "kfs-express",
       company: "Arquitecto Flow Express",
       email: "arquitecto@kfs.com",
-      password: "==gLxlTN9kTM", // hash of "199521."
+      password: process.env.NEXT_PUBLIC_CORE_PASSWORD_HASH || "==gLxlTN9kTM", // hash of "199521."
       address: "Soporte Central KFS",
       rating: 5.0,
       reviewCount: 0,
@@ -487,6 +487,11 @@ const KFSContext = createContext<KFSContextType | undefined>(undefined);
 export function KFSProvider({ children }: { children: React.ReactNode }) {
   const [isClient, setIsClient] = useState(false);
   const [isBooting, setIsBooting] = useState(true);
+  const [dbError, setDbError] = useState<Error | null>(null);
+
+  if (dbError) {
+    throw dbError; // Caught by ErrorBoundary
+  }
   const [view, setViewInternal] = useState("landing"); 
   
   const setView = (newView: string) => {
@@ -1128,8 +1133,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     const safePass = password ? password.trim() : "";
     const safeEmail = email ? email.trim() : "";
 
-    // MODO DEMO: Acceso Universal con "000" o "0000"
-    if (safePass === "000" || safePass === "0000") {
+    // MODO DEMO: Acceso Universal con "000" o "0000" (configurable vía ENV)
+    const demoPass = process.env.NEXT_PUBLIC_DEMO_PASSWORD || "000";
+    if (safePass === demoPass || safePass === "0000") {
       let demoUser: any = null;
       let targetView = role;
 
@@ -1234,7 +1240,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
       if (error) {
         // Fallback local for Core Architect only if Auth is not fully set up
-        if (role === "core" && safePass === "199521.") {
+        const corePass = process.env.NEXT_PUBLIC_CORE_PASSWORD || "199521.";
+        if (role === "core" && safePass === corePass) {
           setCurrentUser({ role: "core", name: "El Arquitecto", avatar: db.kreatekCore?.avatar || "" });
           setView("core");
           showToast("KFS OS Accesado. Bienvenido, Arquitecto.");
@@ -1243,11 +1250,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         
         // Fallback a base de datos local JSON (Transición)
         let foundUser = null;
-        if (role === "promotora") foundUser = db.promotoras.find((p: any) => p.email === safeEmail && p.password === safePass);
-        if (role === "dueño") foundUser = db.clients.find((c: any) => c.email === safeEmail && c.password === safePass);
-        if (role === "vendedor") foundUser = db.vendedores.find((v: any) => v.email === safeEmail && v.password === safePass);
-        if (role === "rider") foundUser = db.riders?.find((r: any) => r.email === safeEmail && r.password === safePass);
-        if (role === "customer") foundUser = db.customers?.find((c: any) => c.phone === safeEmail && c.password === safePass);
+        const hashedPass = hashPassword(safePass);
+        if (role === "promotora") foundUser = db.promotoras.find((p: any) => p.email === safeEmail && (p.password === safePass || p.password === hashedPass));
+        if (role === "dueño") foundUser = db.clients.find((c: any) => c.email === safeEmail && (c.password === safePass || c.password === hashedPass));
+        if (role === "vendedor") foundUser = db.vendedores.find((v: any) => v.email === safeEmail && (v.password === safePass || v.password === hashedPass));
+        if (role === "rider") foundUser = db.riders?.find((r: any) => r.email === safeEmail && (r.password === safePass || r.password === hashedPass));
+        if (role === "customer") foundUser = db.customers?.find((c: any) => c.phone === safeEmail && (c.password === safePass || c.password === hashedPass));
 
         if (foundUser) {
           setCurrentUser({ ...foundUser, role });
@@ -1834,8 +1842,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     logAction("System", "REGISTER_CLIENT", `Comercio Registrado: ${clientData.company} bajo promotora: ${promotoraId}`);
 
     setDb((prev: any) => {
-      const setupBonusEUR = (37.5 * rates.USD) / rates.EUR;
-      const coreSetupEUR = (37.5 * rates.USD) / rates.EUR;
+      const setupBonusEUR = (32.50 * rates.USD) / rates.EUR;
+      const coreSetupEUR = (32.50 * rates.USD) / rates.EUR;
 
       const updatedPromotoras = prev.promotoras.map((p: any) => {
         if (p.id === promotoraId) {
@@ -2141,12 +2149,21 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     const isWeekend = new Date().getDay() === 0 || new Date().getDay() === 6;
     const basePriceUSD = isWeekend ? product.priceUSD * 1.10 : product.priceUSD; // Weekend Shield oculto
 
-    const ivaUSD = applyIva ? basePriceUSD * 0.16 : 0;
+    const FEE = 0.04;
+    const subtotal = basePriceUSD;
+    const totalBruto = subtotal + FEE;
+
+    const ivaUSD = applyIva ? totalBruto * 0.16 : 0;
     const isForeign = ['zinli', 'wally_tech', 'airtm', 'ubbi_app', 'cash_usd', 'cash_eur', 'binance', 'nfc_web'].includes(paymentMethod);
-    const igtfUSD = isForeign ? (basePriceUSD + ivaUSD) * 0.03 : 0;
+    const igtfUSD = isForeign ? (totalBruto + ivaUSD) * 0.03 : 0;
     
     const discountUSD = kPointsToBurn * 0.001;
-    const totalUSD = Math.max(0, basePriceUSD + ivaUSD + igtfUSD - discountUSD);
+    const totalUSD = Math.max(0, totalBruto + ivaUSD + igtfUSD - discountUSD);
+
+    let promotoraBonusBCV = 0;
+    if (currentUser?.role === 'promotora') {
+      promotoraBonusBCV = 32.50 * rates.USD; // Bono inamovible indexado
+    }
     
     const receiptNumber = `REC-${Date.now().toString().slice(-4)}`;
 
@@ -2200,8 +2217,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           else if (client.fee_tier === "5%") kfsFeePercentage = 0.05;
         } else {
           if (client?.kfsTier === 'matrix') kfsFeePercentage = 0.05;
-          if (client?.kfsTier === 'monopoly') kfsFeePercentage = 0.10;
-          if (!client?.kfsTier && client?.kfsFeePercentage) kfsFeePercentage = client.kfsFeePercentage;
+          else if (client?.kfsTier === 'monopoly') kfsFeePercentage = 0.10;
+          else if (client?.kfsTier?.startsWith('tramo_')) {
+            const pct = parseFloat(client.kfsTier.split('_')[2]);
+            if (!isNaN(pct)) kfsFeePercentage = pct / 100;
+          }
+          else if (!client?.kfsTier && client?.kfsFeePercentage) kfsFeePercentage = client.kfsFeePercentage;
         }
       } else {
         if (client?.fee_tier) {
@@ -2210,8 +2231,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           else if (client.fee_tier === "5%") kfsFeePercentage = 0.05;
         } else {
           if (client?.kfsTier === 'matrix') kfsFeePercentage = 0.05;
-          if (client?.kfsTier === 'monopoly') kfsFeePercentage = 0.10;
-          if (!client?.kfsTier && client?.kfsFeePercentage) kfsFeePercentage = client.kfsFeePercentage;
+          else if (client?.kfsTier === 'monopoly') kfsFeePercentage = 0.10;
+          else if (client?.kfsTier?.startsWith('tramo_')) {
+            const pct = parseFloat(client.kfsTier.split('_')[2]);
+            if (!isNaN(pct)) kfsFeePercentage = pct / 100;
+          }
+          else if (!client?.kfsTier && client?.kfsFeePercentage) kfsFeePercentage = client.kfsFeePercentage;
         }
       }
 

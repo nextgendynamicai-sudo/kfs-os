@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { X, Upload, DollarSign, CreditCard, Camera } from 'lucide-react';
 import { compressImage } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useKFS } from '../context/KFSContext';
 
 export const TopUpModal = ({ isOpen, onClose, amount, setAmount, onSubmit, userType }: any) => {
+  const { showToast } = useKFS() as any;
   const [screenshot, setScreenshot] = useState("");
   const [reference, setReference] = useState("");
 
@@ -21,9 +23,9 @@ export const TopUpModal = ({ isOpen, onClose, amount, setAmount, onSubmit, userT
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!amount || amount <= 0) return alert("Ingresa un monto válido");
-    if (!reference) return alert("Ingresa el número de referencia");
-    if (!screenshot) return alert("Sube el comprobante de pago");
+    if (!amount || amount <= 0) return showToast("Ingresa un monto válido", "error");
+    if (!reference) return showToast("Ingresa el número de referencia", "error");
+    if (!screenshot) return showToast("Sube el comprobante de pago", "error");
 
     onSubmit(parseFloat(amount), reference, screenshot);
     setAmount("");

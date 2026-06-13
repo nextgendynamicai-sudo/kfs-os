@@ -3,7 +3,8 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
-const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
+const isConfigured = supabaseUrl.startsWith('http') && supabaseKey.length > 0;
+const supabase = isConfigured ? createClient(supabaseUrl, supabaseKey) : null;
 
 // Zinli Webhook (Estructura Mock para el Demo y listos para prod)
 export async function POST(req: Request) {
