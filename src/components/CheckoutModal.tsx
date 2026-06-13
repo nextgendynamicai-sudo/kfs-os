@@ -111,8 +111,8 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
 
   if (isProcessingPos) {
     return (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4 animate-fade-in">
-        <div className="bg-[#0A1128] text-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl border border-white/5 relative overflow-hidden text-center space-y-6">
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[60] flex items-center justify-center p-4 animate-fade-in">
+        <div className="bg-[#0A1128]/90 backdrop-blur-xl text-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl border border-white/10 relative overflow-hidden text-center space-y-6">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#C5A184] via-amber-200 to-[#C5A184] animate-pulse"></div>
           
           <div className="flex justify-center">
@@ -155,12 +155,12 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] flex items-center justify-center p-4 animate-fade-in">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[60] flex items-center justify-center p-4 animate-fade-in">
       <motion.div 
         initial={{ y: 50, opacity: 0, scale: 0.95 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl"
+        className="bg-white/95 backdrop-blur-2xl rounded-[2rem] w-full max-w-md p-8 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/20"
       >
         <h3 className="text-2xl font-black mb-2 text-[#0A1128]">{isOnline ? "Comprar Online" : "Caja Registradora"}</h3>
         <p className="text-sm text-gray-500 mb-6">{product.name}</p>
@@ -350,7 +350,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
             <button 
               disabled={(paymentMethod === 'split_currency' && ((parseFloat(splitAmount1) || 0) <= 0 || (parseFloat(splitAmount1) || 0) > total)) || (applyIva && !customerRif)}
               onClick={handleConfirm} 
-              className="w-full sm:w-2/3 py-3 rounded-xl font-black text-[#0A1128] bg-[#C5A184] shadow-lg hover:scale-[1.02] active:scale-95 transition-transform cursor-pointer disabled:opacity-50 disabled:bg-gray-400 disabled:cursor-not-allowed">
+              className="w-full sm:w-2/3 py-3 rounded-xl font-black text-[#0A1128] bg-[#C5A184] shadow-lg hover:shadow-[0_0_20px_rgba(197,161,132,0.6)] hover:scale-[1.02] active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:bg-gray-400 disabled:cursor-not-allowed">
               {isOnline ? "Enviar Pago a Revisión" : applyIva ? "Emitir Factura Fiscal" : "Cobrar Cliente"}
             </button>
           </div>

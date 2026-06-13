@@ -39,12 +39,12 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
   };
 
   return (
-    <div className="fixed inset-0 bg-black/75 backdrop-blur-md z-[70] flex items-center justify-center p-4 animate-fade-in">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-xl z-[70] flex items-center justify-center p-4 animate-fade-in">
       <motion.div 
         initial={{ y: 100, opacity: 0, scale: 0.9 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
         transition={{ type: "spring", stiffness: 200, damping: 20 }}
-        className="w-full max-w-sm flex flex-col items-center"
+        className="w-full max-w-sm flex flex-col items-center drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
       >
         
         {/* Physical Printer Bezel Box */}
@@ -142,7 +142,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <button 
               onClick={playCashDrawerSound} 
-              className="py-3 rounded-xl font-black text-xs text-[#C5A184] bg-white/5 border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md active:scale-95"
+              className="py-3 rounded-xl font-black text-xs text-[#C5A184] bg-white/5 border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md hover:shadow-[0_0_15px_rgba(197,161,132,0.3)] active:scale-95"
             >
               💸 Gaveta
             </button>
@@ -188,7 +188,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
             <button 
               onClick={handleTearPaper}
               disabled={isPrinting}
-              className="w-full sm:w-2/3 py-4 bg-[#C5A184] hover:bg-[#b08d70] disabled:bg-gray-700 text-[#0A1128] font-black rounded-2xl text-xs hover:scale-[1.01] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full sm:w-2/3 py-4 bg-[#C5A184] hover:bg-[#b08d70] hover:shadow-[0_0_20px_rgba(197,161,132,0.6)] disabled:bg-gray-700 text-[#0A1128] font-black rounded-2xl text-xs hover:scale-[1.01] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
             ✂️ Rasgar Recibo y Volver
             </button>

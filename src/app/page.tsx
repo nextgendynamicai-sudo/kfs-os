@@ -10,7 +10,7 @@ import {
   Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye
 } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
-import { LineChart, Line, XAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { LineChart, Line, AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { CheckoutModal } from "../components/CheckoutModal";
 import { TopUpModal } from "../components/TopUpModal";
 import { PayoutModal } from "../components/PayoutModal";
@@ -3193,11 +3193,17 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
               <h3 className="text-xl font-black mb-6 text-[#0A1128] flex items-center gap-2"><TrendingUp className="text-[#C5A184]" /> Flujo de Comisiones KFS</h3>
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={chartData}>
+                  <AreaChart data={chartData}>
+                    <defs>
+                      <linearGradient id="colorKreatekFee" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#C5A184" stopOpacity={0.4}/>
+                        <stop offset="95%" stopColor="#C5A184" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
                     <XAxis dataKey="name" fontSize={10} stroke="#cbd5e1" />
                     <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
-                    <Line type="monotone" dataKey="kreatekFee" stroke="#C5A184" strokeWidth={4} dot={{ r: 4, fill: "#0A1128" }} />
-                  </LineChart>
+                    <Area type="monotone" dataKey="kreatekFee" stroke="#C5A184" strokeWidth={4} fill="url(#colorKreatekFee)" />
+                  </AreaChart>
                 </ResponsiveContainer>
               </div>
             </div>
@@ -6497,11 +6503,17 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
               <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2"><TrendingUp className="text-[#C5A184]" /> Rendimiento de Ventas</h3>
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={clientChartData}>
+                  <AreaChart data={clientChartData}>
+                    <defs>
+                      <linearGradient id="colorClientSales" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#0A1128" stopOpacity={0.5}/>
+                        <stop offset="95%" stopColor="#0A1128" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
                     <XAxis dataKey="name" fontSize={10} stroke="#cbd5e1" />
                     <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
-                    <Line type="monotone" dataKey="amount" stroke="#0A1128" strokeWidth={4} dot={{ r: 4, fill: "#C5A184" }} />
-                  </LineChart>
+                    <Area type="monotone" dataKey="amount" stroke="#0A1128" strokeWidth={4} fill="url(#colorClientSales)" />
+                  </AreaChart>
                 </ResponsiveContainer>
               </div>
             </div>

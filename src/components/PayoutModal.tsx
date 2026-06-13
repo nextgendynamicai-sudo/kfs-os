@@ -81,7 +81,7 @@ export const PayoutModal = ({ maxAmount, currency, onConfirm, onCancel, formatMo
           <button 
             disabled={!isAmountValid || !bankDetails.trim()}
             onClick={() => onConfirm(parsedAmount, bankDetails)} 
-            className="w-full py-4 rounded-xl font-black text-[#0A1128] bg-[#C5A184] hover:bg-[#d8b59a] shadow-[0_0_20px_rgba(197,161,132,0.3)] hover:scale-[1.02] active:scale-95 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed disabled:shadow-none"
+            className="w-full py-4 rounded-xl font-black text-[#0A1128] bg-[#C5A184] hover:bg-[#d8b59a] shadow-[0_0_20px_rgba(197,161,132,0.3)] hover:shadow-[0_0_30px_rgba(197,161,132,0.6)] hover:scale-[1.02] active:scale-95 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed disabled:shadow-none"
           >
             <CheckCircle size={20} /> Solicitar {formatMoney(parsedAmount)}
           </button>
