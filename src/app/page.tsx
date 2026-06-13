@@ -6336,7 +6336,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                       disabled={true}
                       className="bg-transparent text-sm font-black text-violet-600 focus:outline-none cursor-pointer disabled:opacity-80 disabled:cursor-not-allowed"
                     >
-                      {true ? (
+                      {true && (
                         <option value={currentUser.kfsTier || 'velocity'} className="text-black">
                           {currentUser.kfsTier === 'velocity' ? 'Flow Velocity (3%)' :
                            currentUser.kfsTier === 'matrix' ? 'Flow Matrix (5%)' :
