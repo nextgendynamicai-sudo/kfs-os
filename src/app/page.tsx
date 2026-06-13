@@ -6280,7 +6280,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 pb-24 font-sans text-[#0A1128] relative">
+    <div className="min-h-screen bg-[#EEF2F5] pb-24 font-sans text-[#0A1128] relative">
       {currentUser?.isImpersonated && (
         <div className="bg-amber-500 text-[#0A1128] px-4 py-3 font-bold text-center flex items-center justify-center gap-4 text-sm shadow-md animate-pulse sticky top-[64px] z-50">
           <span>⚠️ MODO IMPERSONACIÓN ACTIVO: Estás controlando el panel de {currentUser.company}</span>
@@ -6290,11 +6290,11 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         </div>
       )}
 
-      {/* Wavy Header */}
-      <div className="bg-gradient-to-br from-[#0A1128] to-[#1a2b5e] rounded-b-[3rem] shadow-[0_10px_30px_rgba(10,17,40,0.3)] pt-6 pb-12 px-6 text-white relative z-10">
+      {/* Neumorphic / Purple Header */}
+      <div className="bg-gradient-to-br from-violet-500 to-violet-600 rounded-b-[3rem] shadow-[0_15px_30px_rgba(139,92,246,0.3)] pt-6 pb-12 px-6 text-white relative z-10">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
-            <span className="bg-white/20 p-2 rounded-xl text-[#C5A184]"><Store size={20} /></span>
+            <span className="bg-white/20 p-2 rounded-xl text-white"><Store size={20} /></span>
             <h1 className="font-black text-xl tracking-tight">KFS Negocio</h1>
           </div>
           <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
@@ -6303,7 +6303,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-[#C5A184] rounded-full flex items-center justify-center text-[#0A1128] font-black text-2xl flex-shrink-0 shadow-lg border-4 border-[#0A1128]">
+          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-violet-600 font-black text-2xl flex-shrink-0 shadow-lg border-none">
             {currentUser.company?.slice(0, 2).toUpperCase()}
           </div>
           <div>
@@ -6317,24 +6317,24 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
         {activeTab === "resumen" && (
           <div className="space-y-6">
-            <div className="bg-gradient-to-br from-[#0A1128] to-[#141E3A] text-white p-8 md:p-12 rounded-[2.5rem] shadow-2xl relative overflow-hidden">
+            <div className="bg-[#EEF2F5] p-8 md:p-12 rounded-[2.5rem] shadow-[10px_10px_30px_#d1d9e6,-10px_-10px_30px_#ffffff] relative overflow-hidden text-[#0A1128]">
               <div className="relative z-10 w-full flex flex-col md:flex-row md:justify-between md:items-end gap-6">
                 <div>
-                  <p className="text-[#C5A184] text-xs font-black uppercase tracking-widest mb-4">Ganancia Neta (USD)</p>
-                  <h2 className="text-6xl md:text-8xl font-black tracking-tighter mb-4"><AnimatedCounter value={netProfitUSD} format={formatUSD} /></h2>
-                  <div className="flex gap-4 text-sm font-bold text-gray-400">
-                    <span>Ventas Brutas: <span className="text-green-400"><AnimatedCounter value={grossSalesUSD} format={formatUSD} /></span></span>
-                    <span>Gastos: <span className="text-red-400">-<AnimatedCounter value={totalExpensesUSD} format={formatUSD} /></span></span>
+                  <p className="text-violet-500 text-xs font-black uppercase tracking-widest mb-4">Ganancia Neta (USD)</p>
+                  <h2 className="text-6xl md:text-8xl font-black tracking-tighter mb-4 text-[#0A1128]"><AnimatedCounter value={netProfitUSD} format={formatUSD} /></h2>
+                  <div className="flex gap-4 text-sm font-bold text-gray-500">
+                    <span>Ventas Brutas: <span className="text-emerald-500"><AnimatedCounter value={grossSalesUSD} format={formatUSD} /></span></span>
+                    <span>Gastos: <span className="text-rose-500">-<AnimatedCounter value={totalExpensesUSD} format={formatUSD} /></span></span>
                   </div>
                 </div>
                 <div className="flex flex-col gap-3">
-                  <div className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-xl border border-white/20">
-                    <span className="text-xs font-bold text-gray-300">Nivel KFS:</span>
+                  <div className="flex items-center gap-2 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] px-4 py-2 rounded-xl border-none">
+                    <span className="text-xs font-bold text-gray-500">Nivel KFS:</span>
                     <select
                       value={currentUser.kfsTier || 'velocity'}
                       onChange={(e) => changeTier(e.target.value)}
                       disabled={true}
-                      className="bg-transparent text-sm font-black text-white focus:outline-none cursor-pointer disabled:opacity-80 disabled:cursor-not-allowed"
+                      className="bg-transparent text-sm font-black text-violet-600 focus:outline-none cursor-pointer disabled:opacity-80 disabled:cursor-not-allowed"
                     >
                       {true ? (
                         <option value={currentUser.kfsTier || 'velocity'} className="text-black">
@@ -6349,29 +6349,29 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                       )}
                     </select>
                   </div>
-                  <button onClick={() => setShowExpenseModal(true)} className="bg-[#C5A184] text-[#0A1128] font-black px-6 py-3 rounded-xl shadow-lg hover:scale-105 transition-transform">
+                  <button onClick={() => setShowExpenseModal(true)} className="bg-violet-500 text-white font-black px-6 py-3 rounded-xl shadow-[0_10px_20px_rgba(139,92,246,0.3)] hover:scale-105 transition-transform border-none">
                     Registrar Gasto
                   </button>
                 </div>
               </div>
-              <DollarSign size={200} className="absolute -right-10 -bottom-20 text-white/5" />
+              <DollarSign size={200} className="absolute -right-10 -bottom-20 text-violet-500/5" />
             </div>
 
             {/* Peaje Gamificado Progress */}
-            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-8 flex flex-col md:flex-row items-center gap-8">
+            <div className="bg-[#EEF2F5] rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] p-8 flex flex-col md:flex-row items-center gap-8 border-none">
               <div className="flex-1 w-full">
                 <div className="flex justify-between items-end mb-2">
                   <h3 className="font-black text-[#0A1128] text-lg">Progreso de Peaje Gamificado</h3>
-                  <span className="text-sm font-bold text-[#C5A184]">{clientInfo?.onboardedUsers || 0} / 50 Usuarios</span>
+                  <span className="text-sm font-bold text-violet-500">{clientInfo?.onboardedUsers || 0} / 50 Usuarios</span>
                 </div>
-                <div className="w-full bg-gray-100 h-4 rounded-full overflow-hidden">
-                  <div className="bg-[#C5A184] h-full transition-all duration-1000" style={{ width: `${Math.min(((clientInfo?.onboardedUsers || 0) / 50) * 100, 100)}%` }}></div>
+                <div className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] h-4 rounded-full overflow-hidden">
+                  <div className="bg-violet-500 h-full transition-all duration-1000" style={{ width: `${Math.min(((clientInfo?.onboardedUsers || 0) / 50) * 100, 100)}%` }}></div>
                 </div>
                 <p className="text-xs text-gray-500 mt-3">
                   Logra que 50 clientes se afilien usando tu código o QR y tu comisión B2B se reducirá automáticamente al 3% de forma permanente.
                 </p>
               </div>
-              <div className="w-32 h-32 bg-gray-50 rounded-xl border-4 border-[#C5A184] flex items-center justify-center flex-shrink-0 text-center relative shadow-sm p-2">
+              <div className="w-32 h-32 bg-[#EEF2F5] shadow-[inset_5px_5px_10px_#d1d9e6,inset_-5px_-5px_10px_#ffffff] rounded-xl border-none flex items-center justify-center flex-shrink-0 text-center relative p-3">
                 <div className="text-center w-full h-full">
                   <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://kfs-os.vercel.app/#landing?ref=' + currentUser.id)}`} alt="Tu QR" className="w-full h-full object-contain mix-blend-multiply rounded-lg" />
                 </div>
@@ -6387,16 +6387,16 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         {activeTab === 'config' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Open / Close */}
-            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 flex flex-col gap-4">
-              <h4 className="font-black text-[#0A1128] flex items-center gap-2"><Store size={20} className="text-[#C5A184]" /> Estado del Negocio</h4>
-              <div className="flex items-center justify-between bg-gray-50 rounded-2xl p-4">
+            <div className="bg-[#EEF2F5] rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none p-6 flex flex-col gap-4">
+              <h4 className="font-black text-[#0A1128] flex items-center gap-2"><Store size={20} className="text-violet-500" /> Estado del Negocio</h4>
+              <div className="flex items-center justify-between bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-2xl p-4">
                 <div>
                   <p className="font-black text-sm text-[#0A1128]">{clientInfo.isOpen !== false ? '🟢 Abierto' : '🔴 Cerrado'}</p>
                   <p className="text-[10px] text-gray-400 mt-0.5">Tus clientes verán este estado en tu tienda</p>
                 </div>
                 <button
                   onClick={() => toggleBusinessOpen(currentUser.id)}
-                  className={`relative w-14 h-7 rounded-full transition-colors duration-300 focus:outline-none cursor-pointer ${clientInfo.isOpen !== false ? 'bg-green-500' : 'bg-gray-300'
+                  className={`relative w-14 h-7 rounded-full transition-colors duration-300 focus:outline-none cursor-pointer ${clientInfo.isOpen !== false ? 'bg-emerald-500' : 'bg-gray-300'
                     }`}
                 >
                   <span className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full shadow transition-transform duration-300 ${clientInfo.isOpen !== false ? 'translate-x-7' : 'translate-x-0'
@@ -6408,37 +6408,37 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 {['Lun-Vie', 'Sáb', 'Dom'].map(day => (
                   <div key={day} className="flex items-center gap-2">
                     <span className="text-xs font-bold text-gray-600 w-14">{day}</span>
-                    <input type="time" defaultValue="08:00" className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 text-xs flex-1" />
+                    <input type="time" defaultValue="08:00" className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-lg px-2 py-1 text-xs flex-1" />
                     <span className="text-xs text-gray-400">–</span>
-                    <input type="time" defaultValue="18:00" className="bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 text-xs flex-1" />
+                    <input type="time" defaultValue="18:00" className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-lg px-2 py-1 text-xs flex-1" />
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Delivery zone */}
-            <div className="bg-white rounded-[2rem] shadow-sm border border-gray-100 p-6 flex flex-col gap-4">
-              <h4 className="font-black text-[#0A1128] flex items-center gap-2"><Truck size={20} className="text-orange-500" /> Zona de Delivery</h4>
+            <div className="bg-[#EEF2F5] rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none p-6 flex flex-col gap-4">
+              <h4 className="font-black text-[#0A1128] flex items-center gap-2"><Truck size={20} className="text-emerald-500" /> Zona de Delivery</h4>
               <div className="flex flex-col gap-3">
                 <div>
                   <label className="text-[10px] font-bold text-gray-500 uppercase tracking-widest block mb-2">
-                    Radio máximo: <span className="text-orange-500">{deliveryRadiusKm} km</span>
+                    Radio máximo: <span className="text-emerald-500">{deliveryRadiusKm} km</span>
                   </label>
                   <input
                     type="range" min={1} max={30} value={deliveryRadiusKm}
                     onChange={e => setDeliveryRadiusKm(Number(e.target.value))}
-                    className="w-full accent-orange-500 cursor-pointer"
+                    className="w-full accent-emerald-500 cursor-pointer"
                   />
                   <div className="flex justify-between text-[9px] text-gray-400 font-bold mt-1">
                     <span>1 km</span><span>15 km</span><span>30 km</span>
                   </div>
                 </div>
-                <div className="bg-orange-50 border border-orange-100 rounded-xl p-3 text-xs text-orange-700 font-bold">
+                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 text-xs text-emerald-600 font-bold">
                   📦 Solo se aceptarán pedidos dentro de {deliveryRadiusKm} km del negocio.
                 </div>
                 <button
                   onClick={() => updateBusinessConfig(currentUser.id, { deliveryRadiusKm })}
-                  className="w-full bg-orange-500 text-white py-3 rounded-xl font-black hover:bg-orange-600 active:scale-95 transition-all text-sm cursor-pointer"
+                  className="w-full bg-emerald-500 text-white py-3 rounded-xl font-black hover:scale-105 shadow-[0_10px_20px_rgba(16,185,129,0.3)] active:scale-95 transition-all text-sm cursor-pointer border-none"
                 >
                   Guardar Configuración de Zona
                 </button>
@@ -6453,15 +6453,15 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
         {/* Manuals Section for Client (Owner) */}
         {activeTab === 'resumen' && (
-          <div className="bg-[#0A1128] text-white p-6 md:p-8 rounded-[2rem] shadow-xl relative overflow-hidden">
+          <div className="bg-violet-600 text-white p-6 md:p-8 rounded-[2rem] shadow-[0_15px_30px_rgba(139,92,246,0.3)] relative overflow-hidden border-none">
             <h3 className="text-xl font-black mb-6">Centro de Aprendizaje (Dueño de Negocio)</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <button onClick={() => setActiveManual('owner')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
-                <BookOpen size={32} className="text-[#C5A184]" />
+                <BookOpen size={32} className="text-violet-200" />
                 <span className="font-bold text-sm">Manual de Uso del Sistema</span>
               </button>
               <button onClick={() => setActiveManual('benefits')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
-                <Star size={32} className="text-[#C5A184]" />
+                <Star size={32} className="text-violet-200" />
                 <span className="font-bold text-sm">Whitepaper de Beneficios KFS</span>
               </button>
             </div>
@@ -6471,25 +6471,25 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
           {activeTab === 'inventario' && (
             <>
-              <button onClick={() => setShowAddModal(true)} className="bg-white border border-gray-100 p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-5 hover:border-[#C5A184]/50 transition-all cursor-pointer">
-                <div className="w-16 h-16 bg-[#0A1128]/5 rounded-full flex items-center justify-center">
-                  <Package size={32} className="text-[#0A1128]" />
+              <button onClick={() => setShowAddModal(true)} className="bg-[#EEF2F5] border-none p-8 rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] hover:shadow-[15px_15px_30px_#d1d9e6,-15px_-15px_30px_#ffffff] flex flex-col items-center justify-center gap-5 transition-all cursor-pointer">
+                <div className="w-16 h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-full flex items-center justify-center">
+                  <Package size={32} className="text-violet-500" />
                 </div>
                 <span className="font-black text-lg text-[#0A1128]">Subir Producto</span>
               </button>
 
-              <div className="bg-white border border-gray-100 p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-5 transition-all relative overflow-hidden">
+              <div className="bg-[#EEF2F5] border-none p-8 rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] flex flex-col items-center justify-center gap-5 transition-all relative overflow-hidden">
                 <input type="file" accept=".csv" ref={fileInputRef} onChange={handleCSVUpload} className="hidden" />
-                <div className="w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center">
-                  <DownloadCloud size={32} className="text-green-600" />
+                <div className="w-16 h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-full flex items-center justify-center">
+                  <DownloadCloud size={32} className="text-emerald-500" />
                 </div>
-                <button onClick={() => fileInputRef.current?.click()} className="font-black text-lg text-green-700 hover:text-green-800 transition-colors cursor-pointer text-center leading-tight">Importar Inventario<br /><span className="text-xs font-bold text-gray-400">Desde Excel/CSV</span></button>
+                <button onClick={() => fileInputRef.current?.click()} className="font-black text-lg text-emerald-600 hover:text-emerald-700 transition-colors cursor-pointer text-center leading-tight">Importar Inventario<br /><span className="text-xs font-bold text-gray-400">Desde Excel/CSV</span></button>
               </div>
 
-              <button onClick={() => setShowTicketModal(true)} className="bg-[#0A1128] text-white p-8 rounded-[2rem] shadow-sm flex flex-col items-center justify-center gap-5 hover:bg-gray-900 transition-all relative overflow-hidden group cursor-pointer">
-                <div className="absolute inset-0 bg-red-500/20 animate-pulse group-hover:bg-red-500/40 transition-colors"></div>
-                <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center relative z-10">
-                  <Bell size={32} className="text-red-400" />
+              <button onClick={() => setShowTicketModal(true)} className="bg-violet-600 text-white p-8 rounded-[2rem] shadow-[0_10px_20px_rgba(139,92,246,0.3)] border-none hover:shadow-[0_15px_30px_rgba(139,92,246,0.4)] flex flex-col items-center justify-center gap-5 transition-all relative overflow-hidden group cursor-pointer">
+                <div className="absolute inset-0 bg-white/5 animate-pulse group-hover:bg-white/10 transition-colors"></div>
+                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center relative z-10">
+                  <Bell size={32} className="text-white" />
                 </div>
                 <span className="font-black text-lg text-white relative z-10">Help Desk (Tickets)</span>
               </button>
@@ -6499,34 +6499,34 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
         {activeTab === 'resumen' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-            <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 h-full">
-              <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2"><TrendingUp className="text-[#C5A184]" /> Rendimiento de Ventas</h3>
+            <div className="bg-[#EEF2F5] p-6 md:p-8 rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none h-full">
+              <h3 className="font-black text-xl text-[#0A1128] mb-6 flex items-center gap-2"><TrendingUp className="text-violet-500" /> Rendimiento de Ventas</h3>
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={clientChartData}>
                     <defs>
                       <linearGradient id="colorClientSales" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#0A1128" stopOpacity={0.5}/>
-                        <stop offset="95%" stopColor="#0A1128" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#8B5CF6" stopOpacity={0.5}/>
+                        <stop offset="95%" stopColor="#8B5CF6" stopOpacity={0}/>
                       </linearGradient>
                     </defs>
                     <XAxis dataKey="name" fontSize={10} stroke="#cbd5e1" />
                     <Tooltip contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }} />
-                    <Area type="monotone" dataKey="amount" stroke="#0A1128" strokeWidth={4} fill="url(#colorClientSales)" />
+                    <Area type="monotone" dataKey="amount" stroke="#8B5CF6" strokeWidth={4} fill="url(#colorClientSales)" />
                   </AreaChart>
                 </ResponsiveContainer>
               </div>
             </div>
-            <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 h-full flex flex-col">
-              <h3 className="text-xl font-black mb-6 flex items-center gap-2"><Star className="text-indigo-500" /> Productos Estrella</h3>
+            <div className="bg-[#EEF2F5] p-6 md:p-8 rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none h-full flex flex-col">
+              <h3 className="text-xl font-black mb-6 flex items-center gap-2"><Star className="text-violet-500" /> Productos Estrella</h3>
               <div className="space-y-4">
                 {myProducts.slice(0, 4).map((p: any, i: number) => (
-                  <div key={i} className="flex justify-between items-center bg-gray-50 p-4 rounded-xl border border-gray-100">
+                  <div key={i} className="flex justify-between items-center bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] p-4 rounded-xl border-none">
                     <div className="flex items-center gap-3">
-                      <div className="bg-indigo-100 text-indigo-600 font-black h-8 w-8 rounded-full flex items-center justify-center">#{i + 1}</div>
+                      <div className="bg-violet-100 text-violet-600 font-black h-8 w-8 rounded-full flex items-center justify-center">#{i + 1}</div>
                       <span className="font-bold">{p.name}</span>
                     </div>
-                    <span className="font-black text-indigo-600">{formatUSD(p.priceUSD)}</span>
+                    <span className="font-black text-violet-600">{formatUSD(p.priceUSD)}</span>
                   </div>
                 ))}
                 {myProducts.length === 0 && <p className="text-gray-400 text-sm font-bold">Aún no hay productos.</p>}
@@ -6537,34 +6537,34 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
         {activeTab === 'resumen' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-            <div className="bg-[#0A1128] text-white p-6 md:p-8 rounded-[2rem] shadow-xl relative overflow-hidden border border-[#C5A184]/20 h-full">
-              <h3 className="font-black text-xl mb-2 flex items-center gap-2"><Activity className="text-[#C5A184]" /> Kreatek Insights (IA)</h3>
-              <p className="text-xs text-gray-400 mb-6">Motor de predicción de inventario activo.</p>
+            <div className="bg-violet-600 text-white p-6 md:p-8 rounded-[2rem] shadow-[0_10px_20px_rgba(139,92,246,0.3)] relative overflow-hidden border-none h-full">
+              <h3 className="font-black text-xl mb-2 flex items-center gap-2"><Activity className="text-violet-200" /> Kreatek Insights (IA)</h3>
+              <p className="text-xs text-violet-200 mb-6">Motor de predicción de inventario activo.</p>
               <div className="space-y-4">
-                <div className="bg-white/10 border border-[#C5A184]/30 rounded-xl p-4 flex gap-4">
+                <div className="bg-white/20 border-none rounded-xl p-4 flex gap-4">
                   <span className="text-2xl">🤖</span>
-                  <p className="text-sm text-gray-200">He analizado tus productos estrella. Te sugiero aumentar un 5% el precio del producto top 1, la rotación soporta el margen.</p>
+                  <p className="text-sm text-white">He analizado tus productos estrella. Te sugiero aumentar un 5% el precio del producto top 1, la rotación soporta el margen.</p>
                 </div>
-                <div className="bg-white/10 border border-[#C5A184]/30 rounded-xl p-4 flex gap-4">
+                <div className="bg-white/20 border-none rounded-xl p-4 flex gap-4">
                   <span className="text-2xl">⚡</span>
-                  <p className="text-sm text-gray-200">Tus ventas en horario matutino cayeron un 12%. Te sugiero lanzar un SMS Push "Oferta Mañanera" desde Flow Express.</p>
+                  <p className="text-sm text-white">Tus ventas en horario matutino cayeron un 12%. Te sugiero lanzar un SMS Push "Oferta Mañanera" desde Flow Express.</p>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col justify-between h-full">
+            <div className="bg-[#EEF2F5] p-6 md:p-8 rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none flex flex-col justify-between h-full">
               <div>
-                <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2"><DollarSign className="text-green-600" /> Billetera KFS (Billing)</h3>
+                <h3 className="font-black text-xl text-[#0A1128] flex items-center gap-2"><DollarSign className="text-emerald-500" /> Billetera KFS (Billing)</h3>
                 <p className="text-xs text-gray-500 mb-4">Suscripción SaaS Activa: $6/mes. Próximo cobro: {new Date(clientInfo.subscription?.nextBillingDate).toLocaleDateString()}</p>
-                <div className="bg-gray-50 rounded-xl p-4 flex justify-between items-center mb-4 border border-gray-200">
+                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-4 flex justify-between items-center mb-4">
                   <span className="font-bold text-gray-600">Saldo Actual:</span>
-                  <span className="text-2xl font-black text-green-700">${(clientInfo.walletBalanceUSD || 0).toFixed(2)}</span>
+                  <span className="text-2xl font-black text-emerald-600">${(clientInfo.walletBalanceUSD || 0).toFixed(2)}</span>
                 </div>
               </div>
               <div className="space-y-2">
                 <div className="flex gap-2">
-                  <input type="number" placeholder="Monto $USD" value={fundAmount} onChange={e => setFundAmount(e.target.value)} className="w-1/2 bg-gray-50 border border-gray-200 rounded-xl px-4 py-2 font-bold" />
-                  <button onClick={() => { if (fundAmount) { setIsTopUpOpen(true); } }} className="w-1/2 bg-green-600 text-white font-black rounded-xl cursor-pointer hover:bg-green-700">Recargar Saldo</button>
+                  <input type="number" placeholder="Monto $USD" value={fundAmount} onChange={e => setFundAmount(e.target.value)} className="w-1/2 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                  <button onClick={() => { if (fundAmount) { setIsTopUpOpen(true); } }} className="w-1/2 bg-emerald-500 text-white font-black rounded-xl cursor-pointer hover:scale-105 shadow-[0_5px_15px_rgba(16,185,129,0.3)] transition-transform border-none">Recargar Saldo</button>
                   <TopUpModal
                     isOpen={isTopUpOpen}
                     onClose={() => setIsTopUpOpen(false)}
