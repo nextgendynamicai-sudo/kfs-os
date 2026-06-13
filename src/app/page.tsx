@@ -10,7 +10,7 @@ import {
   Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye
 } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
-import { LineChart, Line, AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { CheckoutModal } from "../components/CheckoutModal";
 import { TopUpModal } from "../components/TopUpModal";
 import { PayoutModal } from "../components/PayoutModal";
