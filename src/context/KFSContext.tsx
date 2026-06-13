@@ -662,8 +662,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
             
             setRates((prev: any) => {
               if (prev.USD !== finalUSD || prev.EUR !== finalEUR) {
-                speakText("Tasa del Banco Central de Venezuela actualizada.");
-                showToast(`Tasa BCV actualizada: Bs. ${finalUSD.toFixed(2)} (USD) / Bs. ${finalEUR.toFixed(2)} (EUR)`, "success");
+                // speakText("Tasa del Banco Central de Venezuela actualizada.");
+                // showToast(`Tasa BCV actualizada: Bs. ${finalUSD.toFixed(2)} (USD) / Bs. ${finalEUR.toFixed(2)} (EUR)`, "success");
                 return { USD: finalUSD, EUR: finalEUR, isWeekend };
               }
               return prev;
