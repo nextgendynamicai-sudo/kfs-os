@@ -26,7 +26,13 @@ export const supabase = isSupabaseConfigured
         upsert: (data: any) => {
           console.log(`[Supabase Mock Sync] Guardando en tabla ${table}:`, data);
           return Promise.resolve({ data, error: null });
-        }
+        },
+        update: (data: any) => ({
+          eq: (field: string, val: any) => {
+            console.log(`[Supabase Mock Sync] Actualizando en tabla ${table} donde ${field}=${val}:`, data);
+            return Promise.resolve({ data, error: null });
+          }
+        })
       })
     } as any;
 

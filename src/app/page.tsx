@@ -22,6 +22,9 @@ import { useP2PTransfer } from "../hooks/useP2PTransfer";
 import { compressImage, readAsBase64, playPremiumChime, playSyncChime, playCashDrawerSound, playScannerBeep, getStoreCoords, getCustomerCoords } from "../lib/utils";
 import { AnimatedCounter } from "../components/AnimatedCounter";
 import { AppEnforcer } from "../components/AppEnforcer";
+import { PioneerOfferBanner } from '../components/PioneerOfferBanner';
+import { OracleControlSlider } from '../components/OracleControlSlider';
+import { OracleInsightCard } from '../components/OracleInsightCard';
 import { PushCommandCenter } from "../components/PushCommandCenter";
 import { supabase } from "../context/supabase";
 import { motion, AnimatePresence } from "framer-motion";
@@ -1359,87 +1362,9 @@ const LandingPageView = ({ setView }: any) => {
         </div>
       </section>
 
-      {/* Pricing / Packages Section */}
+      {/* Pioneer Banner Section */}
       <section id="pricing" className="py-20 px-6 sm:px-10 max-w-7xl mx-auto">
-        <div className="text-center mb-16 space-y-4">
-          <h2 className="text-3xl md:text-5xl font-black tracking-tight text-violet-900">Planes y Comisiones Claras</h2>
-          <p className="text-gray-500 max-w-xl mx-auto">Selecciona el nivel operativo que mejor se adapte al flujo de ventas y tamaño de tu negocio.</p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Plan 1 */}
-          <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2.5rem] p-8 flex flex-col justify-between hover:scale-105 transition-transform relative">
-            <div>
-              <span className="bg-violet-100 text-violet-600 text-[10px] font-black tracking-widest px-3 py-1.5 rounded-full uppercase block w-max mb-4">Inicial</span>
-              <h3 className="text-2xl font-black text-violet-900">Flow Velocity</h3>
-              <p className="text-sm text-gray-500 mt-2">Para tiendas y emprendedores pequeños que inician su viaje digital.</p>
-
-              <div className="my-8">
-                <span className="text-5xl font-black text-violet-900">3%</span>
-                <span className="text-sm text-gray-500 block mt-1">Por Venta Realizada en Caja / POS</span>
-              </div>
-
-              <ul className="space-y-3 pt-6 text-sm text-gray-600">
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> E-Commerce Flow Express</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Gestión de Inventario Local</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Cobros Multimoneda (USD/Bs)</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> 1 Caja Registradora</li>
-                <li className="flex items-center gap-2 text-gray-400"><CheckCircle size={16} className="text-gray-400" /> Publicidad Básica en Directorio KFS</li>
-                <li className="flex items-center gap-2 text-gray-400"><CheckCircle size={16} className="text-gray-400" /> Creación de Contenido Manual</li>
-              </ul>
-            </div>
-            <button onClick={() => setView("login")} className="w-full bg-white text-violet-600 font-bold py-4 rounded-xl mt-8 cursor-pointer transition-colors shadow-sm hover:bg-gray-50 border-none">Empezar</button>
-          </div>
-
-          {/* Plan 2 */}
-          <div className="bg-[#EEF2F5] shadow-[inset_10px_10px_20px_#d1d9e6,inset_-10px_-10px_20px_#ffffff] border-none rounded-[2.5rem] p-8 flex flex-col justify-between relative scale-105">
-            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-violet-600 text-white shadow-[0_5px_15px_rgba(139,92,246,0.3)] text-[9px] font-black tracking-widest px-4 py-1.5 rounded-full uppercase">Recomendado</div>
-            <div>
-              <h3 className="text-2xl font-black text-violet-900 mt-2">Flow Matrix AI</h3>
-              <p className="text-sm text-gray-500 mt-2">Para medianos comercios con alta rotación y necesidad de analítica.</p>
-
-              <div className="my-8">
-                <span className="text-5xl font-black text-violet-900">5%</span>
-                <span className="text-sm text-gray-500 block mt-1">Por Venta + $6 USD/mes Suscripción Nube</span>
-              </div>
-
-              <ul className="space-y-3 pt-6 text-sm text-gray-600">
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Todo lo de Flow Velocity</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Auto-Conciliación SMS Integrada</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> CRM & Vales de Crédito (3 POS)</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> **Marketing AI**: Sugerencias de descripciones</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> **Flujos cada 4 días**: Ofertas planificadas</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Generación de Posts listos para Ads</li>
-              </ul>
-            </div>
-            <button onClick={() => setView("login")} className="w-full bg-violet-600 text-white shadow-[0_10px_20px_rgba(139,92,246,0.3)] font-black py-4 rounded-xl mt-8 cursor-pointer hover:scale-[1.02] active:scale-95 transition-transform border-none">Suscribirme</button>
-          </div>
-
-          {/* Plan 3 */}
-          <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2.5rem] p-8 flex flex-col justify-between hover:scale-105 transition-transform relative">
-            <div>
-              <span className="bg-emerald-500/10 text-emerald-600 text-[10px] font-black tracking-widest px-3 py-1.5 rounded-full uppercase block w-max mb-4">Líder</span>
-              <h3 className="text-2xl font-black text-violet-900">Flow Monopoly OS</h3>
-              <p className="text-sm text-gray-500 mt-2">El ecosistema financiero corporativo total para grandes franquicias.</p>
-
-              <div className="my-8">
-                <span className="text-5xl font-black text-violet-900">10%</span>
-                <span className="text-sm text-gray-500 block mt-1">Por Venta + $6 USD/mes Suscripción Nube</span>
-              </div>
-
-              <ul className="space-y-3 pt-6 text-sm text-gray-600">
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Todo lo de Flow Matrix AI</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> POS ilimitados + SENIAT Proxy PnP</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> **Presupuesto Ads Directo**: Incluido en fee</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> **Omnicanalidad**: Ads en IG, FB y WhatsApp</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> IA para buscar clientes en redes</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Diseños y Copys de contenido automatizados</li>
-              </ul>
-            </div>
-            <button onClick={() => setView("login")} className="w-full bg-white text-violet-600 font-bold py-4 rounded-xl mt-8 cursor-pointer transition-colors shadow-sm hover:bg-gray-50 border-none">Empezar</button>
-          </div>
-
-        </div>
+        <PioneerOfferBanner />
       </section>
 
       {/* AI Deep Dive Section */}
@@ -2272,6 +2197,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
 
       {/* Main Content Area */}
       <div className="max-w-4xl mx-auto px-4 -mt-6 relative z-20 space-y-6 animate-fade-in">
+        <OracleInsightCard role="customer" data={{ walletBalance: currentUser.walletUSD || 0 }} />
 
         {subTab === "profile" ? (
           <>
@@ -3082,6 +3008,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
       <div className="p-4 md:p-8 max-w-5xl mx-auto -mt-6 relative z-20 flex flex-col gap-8 animate-fade-in">
         {activeTab === "panel" && (
           <div className="space-y-8 flex flex-col">
+            <OracleControlSlider merchantId={db.clients?.[0]?.id} merchantName={db.clients?.[0]?.company || "N/A"} currentFee={db.clients?.[0]?.oracle_fee_percentage} setDb={setDb} />
             {/* Global Metrics Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] text-violet-900 p-6 rounded-[2rem] relative overflow-hidden border-none flex flex-col">
@@ -4527,6 +4454,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
       </div>
 
       <div className="p-4 md:p-8 max-w-5xl mx-auto -mt-6 relative z-20 flex flex-col gap-8 animate-fade-in">
+        <OracleInsightCard role="promoter" data={{ inactiveNode: myClients[0]?.company || 'N/A', remainingPioneerNodes: 100 - (db.clients?.length || 0) }} />
 
         {activeTab === "panel" && (
           <div className="space-y-6">
@@ -6321,6 +6249,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
       </div>
 
       <div className="max-w-5xl mx-auto px-4 -mt-6 relative z-20 space-y-6 animate-fade-in">
+        <OracleInsightCard role="owner" data={{ topProduct: "Combo Kreatek" }} />
 
         {activeTab === "resumen" && (
           <div className="space-y-6">
@@ -6336,25 +6265,8 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 </div>
                 <div className="flex flex-col gap-3">
                   <div className="flex items-center gap-2 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] px-4 py-2 rounded-xl border-none">
-                    <span className="text-xs font-bold text-gray-500">Nivel KFS:</span>
-                    <select
-                      value={currentUser.kfsTier || 'velocity'}
-                      onChange={(e) => changeTier(e.target.value)}
-                      disabled={true}
-                      className="bg-transparent text-sm font-black text-violet-600 focus:outline-none cursor-pointer disabled:opacity-80 disabled:cursor-not-allowed"
-                    >
-                      {true && (
-                        <option value={currentUser.kfsTier || 'velocity'} className="text-black">
-                          {currentUser.kfsTier === 'velocity' ? 'Flow Velocity (3%)' :
-                           currentUser.kfsTier === 'matrix' ? 'Flow Matrix (5%)' :
-                           currentUser.kfsTier === 'monopoly' ? 'Flow Monopoly (10%)' :
-                           currentUser.kfsTier?.includes('tramo_1') ? `Tramo 1 (${currentUser.kfsTier.split('_')[2]}%)` :
-                           currentUser.kfsTier?.includes('tramo_2') ? `Tramo 2 (${currentUser.kfsTier.split('_')[2]}%)` :
-                           `${currentUser.kfsTier} (%)`
-                          }
-                        </option>
-                      )}
-                    </select>
+                    <span className="text-xs font-bold text-gray-500">Tasa KFS Activa:</span>
+                    <span className="text-sm font-black text-violet-600">{currentUser.oracle_fee_percentage !== undefined ? currentUser.oracle_fee_percentage : 2.0}%</span>
                   </div>
                   <button onClick={() => setShowExpenseModal(true)} className="bg-violet-500 text-white font-black px-6 py-3 rounded-xl shadow-[0_10px_20px_rgba(139,92,246,0.3)] hover:scale-105 transition-transform border-none">
                     Registrar Gasto
@@ -8131,6 +8043,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
         </div>
       </nav>
       <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-6 animate-fade-in">
+        <OracleInsightCard role="cashier" data={{ streak: 5, bonusEarned: currentUser.accumulated_bonus || '0.00' }} />
 
         {networkState === "offline" && (
           <div className="bg-red-500/20 border border-red-500/50 rounded-2xl p-4 flex items-center justify-between animate-pulse">
