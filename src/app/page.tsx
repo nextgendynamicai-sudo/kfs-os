@@ -17,7 +17,7 @@ import { PayoutModal } from "../components/PayoutModal";
 import { ReceiptModal } from "../components/ReceiptModal";
 import { UniversalWalletWidget } from "../components/UniversalWalletWidget";
 import { ProfileAvatarEditor } from "../components/ProfileAvatarEditor";
-import { ImageUploadWidget } from "../components/ImageUploadWidget";
+
 import { FlowExpressCatalog } from "../components/FlowExpressCatalog";
 import { B2BSelfOnboarding } from "../components/B2BSelfOnboarding";
 import { DatabaseManagerWidget } from "../components/DatabaseManagerWidget";
