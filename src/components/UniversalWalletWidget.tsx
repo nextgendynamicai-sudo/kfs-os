@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { DollarSign, Zap, Gift, CircleDollarSign, ArrowUpRight } from "lucide-react";
+import { DollarSign, Zap, Gift, CircleDollarSign } from "lucide-react";
 
 interface UniversalWalletWidgetProps {
   currentUser: any;
