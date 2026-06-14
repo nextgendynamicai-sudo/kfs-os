@@ -5,16 +5,38 @@ export function useMerchantFee() {
   // Extraemos currentUser para saber quién es el cajero
   const { db, setDb, rates, showToast, currentUser } = kfs;
 
-  // Calculate dynamic fees based on Oracle Control
+  // Calculate dynamic fees based on Oracle Control with fallback to SaaS Tier
   const getMerchantFeeTier = (merchantId: string, customerPhone?: string): number => {
     const merchant = db.clients?.find((m: any) => m.id === merchantId);
-    if (!merchant) return 0.02; // Default 2%
+    if (!merchant) return 0.05; // Default standard 5%
 
-    if (merchant.oracle_fee_percentage !== undefined) {
+    // 1. Prioridad absoluta: Oráculo
+    if (merchant.oracle_fee_percentage !== undefined && merchant.oracle_fee_percentage !== null) {
       return merchant.oracle_fee_percentage / 100;
     }
 
-    return 0.02; // Default 2%
+    // Fallback Lógica Antigua (v3.0)
+    // 1% royalty fee for Founders
+    if (merchant.is_founder) {
+      return 0.01;
+    }
+
+    // Drops to 3% if the merchant onboarded/referred this paying customer
+    if (customerPhone) {
+      const customer = db.customers?.find((c: any) => c.phone === customerPhone);
+      if (customer && customer.referred_by_merchant_id === merchantId) {
+        return 0.03;
+      }
+    }
+
+    // Default fee tier for merchants (check kfsTier or default to 5%)
+    if (merchant.kfsTier) {
+      if (merchant.kfsTier === "velocity") return 0.03;
+      if (merchant.kfsTier === "matrix") return 0.05;
+      if (merchant.kfsTier === "monopoly") return 0.10;
+    }
+
+    return 0.05; // Standard 5%
   };
 
   // Calculate the detailed fee amounts for a transaction

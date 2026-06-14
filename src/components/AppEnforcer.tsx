@@ -24,6 +24,11 @@ export function AppEnforcer({ children, currentUser, updatePwaStatus }: { childr
     };
 
     checkStatus();
+    
+    // Register Service Worker for Native Push Notifications
+    import("../lib/pushNotifications").then(({ registerServiceWorker }) => {
+      registerServiceWorker();
+    });
 
     const mql = window.matchMedia('(display-mode: standalone)');
     mql.addEventListener('change', checkStatus);

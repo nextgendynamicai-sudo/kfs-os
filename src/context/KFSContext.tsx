@@ -159,6 +159,7 @@ interface KFSContextType {
   replyTicket: (ticketId: string, author: string, message: string) => void;
   closeTicket: (ticketId: string) => void;
   fundWallet: (clientId: string, amountUSD: number) => void;
+  transferKFSPoints: (userId: string, collectionName: string, amount: number) => void;
   fundCustomerWallet: (customerId: string, amountUSD: number, gateway: string) => void;
   requestTopUp: (userId: string, userType: 'client' | 'customer', amountUSD: number, paymentReference: string, screenshotBase64: string) => void;
   validateTopUp: (topupId: string, status: 'approved' | 'rejected', approverId: string) => void;
@@ -1361,6 +1362,28 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast(`Billetera recargada con $${amountUSD}`, "success");
   };
 
+  const transferKFSPoints = (userId: string, collectionName: string, amount: number) => {
+    setDb((prev: any) => {
+      const collection = prev[collectionName];
+      if (!collection) return prev;
+      
+      const newExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(); // 30 days expiry
+
+      return {
+        ...prev,
+        [collectionName]: collection.map((u: any) => 
+          u.id === userId ? { 
+            ...u, 
+            k_points_balance: (u.k_points_balance || 0) + amount,
+            k_points_expiry: newExpiry
+          } : u
+        )
+      };
+    });
+    logAction("Arquitecto", "EMIT_KFS_POINTS", `Emisión/Transferencia de ${amount} K-Points a ${userId} en ${collectionName}`);
+    showToast(`Se han transferido ${amount} K-Points exitosamente.`, "success");
+  };
+
   const requestTopUp = async (userId: string, userType: 'client' | 'customer', amountUSD: number, paymentReference: string, screenshotBase64: string) => {
     const screenshotUrl = screenshotBase64 && screenshotBase64.startsWith("data:")
       ? await uploadAsset(`topups/${userId}_${Date.now()}.png`, screenshotBase64)
@@ -1796,6 +1819,40 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast("Vendedor activado y registrado exitosamente.", "success");
   };
 
+  const updateUserAvatar = async (userId: string, role: string, avatarBase64: string) => {
+    let finalUrl = avatarBase64;
+    if (avatarBase64 && avatarBase64.startsWith("data:")) {
+      finalUrl = await uploadAsset(`avatars/${role}_${userId}_${Date.now()}.png`, avatarBase64);
+    }
+    
+    setDb((prev: any) => {
+      const newState = { ...prev };
+      const collectionMap: Record<string, string> = {
+        core: "kreatekCore",
+        client: "clients",
+        promotora: "promotoras",
+        customer: "customers",
+        rider: "riders",
+        vendedor: "vendedores"
+      };
+      
+      const collName = collectionMap[role] || "clients";
+      
+      if (collName === "kreatekCore") {
+        newState.kreatekCore = { ...newState.kreatekCore, avatar: finalUrl };
+      } else if (newState[collName]) {
+        newState[collName] = newState[collName].map((user: any) => 
+          user.id === userId ? { ...user, avatar: finalUrl, profilePicUrl: finalUrl } : user
+        );
+      }
+      return newState;
+    });
+
+    if (currentUser?.id === userId || currentUser?.role === "core") {
+      setCurrentUser((prev: any) => ({ ...prev, avatar: finalUrl, profilePicUrl: finalUrl }));
+    }
+  };
+
   const registerClient = async (clientData: any, promotoraId: string, kfsFeePercentage: number) => {
     const avatarUrl = clientData.avatar && clientData.avatar.startsWith("data:")
       ? await uploadAsset(`avatars/client_${Date.now()}.png`, clientData.avatar)
@@ -2147,6 +2204,59 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     logAction("System", "DELETE_CLIENT", `Comercio ${clientId} eliminado de la red.`);
     showToast("Comercio y sus datos asociados eliminados.", "error");
   };
+
+  const deleteCustomer = (customerId: string) => {
+    setDb((prev: any) => {
+      const safeFilter = (arr: any, key: string, id: string) => Array.isArray(arr) ? arr.filter((item: any) => item?.[key] !== id) : [];
+      return {
+        ...prev,
+        customers: safeFilter(prev.customers, 'id', customerId),
+        orders: safeFilter(prev.orders, 'customerId', customerId),
+        transactions: safeFilter(prev.transactions, 'customerId', customerId),
+        kreatekCore: {
+          ...(prev.kreatekCore || {}),
+          deletedKeys: Array.isArray(prev.kreatekCore?.deletedKeys) ? [...new Set([...prev.kreatekCore.deletedKeys, customerId])] : [customerId]
+        }
+      };
+    });
+    logAction("System", "DELETE_CUSTOMER", `Cliente Final ${customerId} eliminado.`);
+    showToast("Cliente Final eliminado.", "error");
+  };
+
+  const deletePromotora = (promotoraId: string) => {
+    setDb((prev: any) => {
+      const safeFilter = (arr: any, key: string, id: string) => Array.isArray(arr) ? arr.filter((item: any) => item?.[key] !== id) : [];
+      return {
+        ...prev,
+        promotoras: safeFilter(prev.promotoras, 'id', promotoraId),
+        kreatekCore: {
+          ...(prev.kreatekCore || {}),
+          deletedKeys: Array.isArray(prev.kreatekCore?.deletedKeys) ? [...new Set([...prev.kreatekCore.deletedKeys, promotoraId])] : [promotoraId]
+        }
+      };
+    });
+    logAction("System", "DELETE_PROMOTORA", `Promotora ${promotoraId} eliminada.`);
+    showToast("Promotora eliminada de la red.", "error");
+  };
+
+  const deleteVendedor = (vendedorId: string) => {
+    setDb((prev: any) => {
+      const safeFilter = (arr: any, key: string, id: string) => Array.isArray(arr) ? arr.filter((item: any) => item?.[key] !== id) : [];
+      return {
+        ...prev,
+        vendedores: safeFilter(prev.vendedores, 'id', vendedorId),
+        zReports: safeFilter(prev.zReports, 'vendedorId', vendedorId),
+        vales: safeFilter(prev.vales, 'targetId', vendedorId),
+        kreatekCore: {
+          ...(prev.kreatekCore || {}),
+          deletedKeys: Array.isArray(prev.kreatekCore?.deletedKeys) ? [...new Set([...prev.kreatekCore.deletedKeys, vendedorId])] : [vendedorId]
+        }
+      };
+    });
+    logAction("System", "DELETE_VENDEDOR", `Cajero/Vendedor ${vendedorId} eliminado.`);
+    showToast("Vendedor eliminado de su nodo.", "error");
+  };
+
 
   const addProduct = (productData: any) => {
     setDb((prev: any) => ({ ...prev, products: [...prev.products, { ...productData, id: `prod${Date.now()}` }] }));
@@ -3649,7 +3759,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <KFSContext.Provider value={{
-      isClient, isBooting, view, setView, currentUser, setCurrentUser,
+      isClient, isBooting, view, setView, currentUser, setCurrentUser, updateUserAvatar,
       toast, showToast, rates, updateBcvRates, db, setDb, formatUSD, formatEUR,
       handleLogin, logout, registerClient, registerFreeUser, upgradeToPremium, registerPromotora, registerVendedor, approvePromotora, rejectPromotora, settlePromotoraEarnings,
       addProduct, addExpense, processPurchase, submitOnlineOrder, approveOrder, rejectOrder, dispatchOrder, generateZReport,
@@ -3657,7 +3767,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       networkState, setNetworkState, smsConciliator, registerCrmExpress,
       ghostTrapLocked, setGhostTrapLocked, createVale, payVale, processPayroll, registerPosTerminal, deletePosTerminal,
       queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings, updatePaymentMethods, toggleProductFeatured,
-      sendNotification, requestNotificationPermission, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, fundCustomerWallet, requestTopUp, requestPayout, validateTopUp, processMonthlyBilling, registerCustomer, blockClient, releaseClient, deleteClient,
+      sendNotification, requestNotificationPermission, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, transferKFSPoints, fundCustomerWallet, requestTopUp, requestPayout, validateTopUp, processMonthlyBilling, registerCustomer, blockClient, releaseClient, deleteClient, deleteCustomer, deletePromotora, deleteVendedor, deleteRider,
       registerCandidate, unlockCandidateContact, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, hireCandidate, releaseCandidate, toggleCandidateBacking, markNotificationsAsRead, updateCvBuilderOption,
       registerRider, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, updateRiderPagoMovil, confirmDelivery, markAsPickedUp, rateRider, updateRiderGPS, riderCheckIn, riderCheckOut,
       toggleBusinessOpen, updateBusinessConfig

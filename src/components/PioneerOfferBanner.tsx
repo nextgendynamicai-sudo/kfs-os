@@ -11,7 +11,7 @@ export const PioneerOfferBanner = () => {
         .from('kfs_clients') 
         .select('*', { count: 'exact', head: true })
         .eq('status', 'active');
-      if (!error && count !== null) setRemainingNodes(100 - count);
+      if (!error && typeof count === 'number') setRemainingNodes(100 - count);
     };
     fetchActiveNodes();
   }, []);
@@ -22,9 +22,9 @@ export const PioneerOfferBanner = () => {
       <p className="text-gray-300 text-lg mb-6 max-w-2xl mx-auto">
         Gobernanza Total (Software POS, PWA, Marketing IA y Red de Clientes) por un Setup único de $30 USD y solo el 2% de tu facturación. Sin mensualidades.
       </p>
-      <div className="inline-block bg-black border-2 border-red-500 rounded-lg px-6 py-3 animate-pulse">
-        <p className="text-red-500 font-mono text-xl font-bold">
-          CUPOS RESTANTES TASA FUNDADOR (2%): <span className="text-4xl">{remainingNodes > 0 ? remainingNodes : 0}</span>
+      <div className="inline-block bg-black border-2 border-red-500/80 rounded-lg px-6 py-3 shadow-[0_0_20px_rgba(239,68,68,0.3)]">
+        <p className="text-red-400 font-mono text-xl font-bold">
+          CUPOS RESTANTES TASA FUNDADOR (2%): <span className="text-4xl text-white ml-2 drop-shadow-md">{remainingNodes > 0 ? remainingNodes : 0}</span>
         </p>
       </div>
     </div>

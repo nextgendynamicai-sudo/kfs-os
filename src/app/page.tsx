@@ -7,7 +7,7 @@ import {
   ChevronRight, CheckCircle, CreditCard, Bell, X, Info,
   Store, Star, ChevronLeft, Clock, UserCheck, Palette,
   Zap, BookOpen, Printer, Smartphone, Settings, DownloadCloud, Terminal, Truck,
-  Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye
+  Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database
 } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from "recharts";
@@ -15,9 +15,14 @@ import { CheckoutModal } from "../components/CheckoutModal";
 import { TopUpModal } from "../components/TopUpModal";
 import { PayoutModal } from "../components/PayoutModal";
 import { ReceiptModal } from "../components/ReceiptModal";
-import { DualWalletCard } from "../components/DualWalletCard";
+import { UniversalWalletWidget } from "../components/UniversalWalletWidget";
+import { ProfileAvatarEditor } from "../components/ProfileAvatarEditor";
+import { ImageUploadWidget } from "../components/ImageUploadWidget";
 import { FlowExpressCatalog } from "../components/FlowExpressCatalog";
 import { B2BSelfOnboarding } from "../components/B2BSelfOnboarding";
+import { DatabaseManagerWidget } from "../components/DatabaseManagerWidget";
+import { ReferralLinksWidget } from "../components/ReferralLinksWidget";
+import { KPointsIssuerWidget } from "../components/KPointsIssuerWidget";
 import { useP2PTransfer } from "../hooks/useP2PTransfer";
 import { compressImage, readAsBase64, playPremiumChime, playSyncChime, playCashDrawerSound, playScannerBeep, getStoreCoords, getCustomerCoords } from "../lib/utils";
 import { AnimatedCounter } from "../components/AnimatedCounter";
@@ -1365,6 +1370,84 @@ const LandingPageView = ({ setView }: any) => {
       {/* Pioneer Banner Section */}
       <section id="pricing" className="py-20 px-6 sm:px-10 max-w-7xl mx-auto">
         <PioneerOfferBanner />
+
+        <div className="text-center mt-16 mb-16">
+          <h2 className="text-4xl md:text-6xl font-black text-violet-900 tracking-tighter mb-6">Planes Escalamiento</h2>
+          <p className="text-xl text-gray-500 max-w-2xl mx-auto font-medium">Elige el ecosistema KFS que se adapte al flujo de tu negocio o aprovecha la tasa Pionero arriba.</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
+          {/* Plan 1 */}
+          <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2.5rem] p-8 flex flex-col justify-between hover:scale-105 transition-transform relative">
+            <div>
+              <h3 className="text-2xl font-black text-violet-900">Flow Velocity</h3>
+              <p className="text-sm text-gray-500 mt-2">Perfecto para negocios pequeños empezando a digitalizarse.</p>
+
+              <div className="my-8">
+                <span className="text-5xl font-black text-violet-900">3%</span>
+                <span className="text-sm text-gray-500 block mt-1">Por Venta</span>
+              </div>
+
+              <ul className="space-y-3 pt-6 text-sm text-gray-600">
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> POS Offline/Online</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Tienda PWA Personalizada</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Control de 1 Caja Múltiple</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Cierre Z Básico</li>
+              </ul>
+            </div>
+            <button onClick={() => setView("login")} className="w-full bg-white text-violet-600 font-bold py-4 rounded-xl mt-8 cursor-pointer transition-colors shadow-sm hover:bg-gray-50 border-none">Empezar</button>
+          </div>
+
+          {/* Plan 2 (Popular) */}
+          <div className="bg-gradient-to-br from-[#EEF2F5] to-violet-50 shadow-[10px_10px_30px_#d1d9e6,-10px_-10px_30px_#ffffff] border-2 border-violet-500/20 rounded-[2.5rem] p-8 flex flex-col justify-between hover:scale-105 transition-transform relative transform md:-translate-y-4">
+            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+              <span className="bg-violet-600 text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg">Más Popular</span>
+            </div>
+            <div>
+              <h3 className="text-2xl font-black text-violet-900">Flow Matrix AI</h3>
+              <p className="text-sm text-gray-500 mt-2">El motor completo para escalar y fidelizar clientes en piloto automático.</p>
+
+              <div className="my-8">
+                <span className="text-5xl font-black text-violet-900">5%</span>
+                <span className="text-sm text-gray-500 block mt-1">Por Venta + $3 USD/mes Suscripción Nube</span>
+              </div>
+
+              <ul className="space-y-3 pt-6 text-sm text-gray-600 font-medium">
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Todo lo de Flow Velocity</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Auto-Conciliación SMS Integrada</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> CRM & Vales de Crédito (3 POS)</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> **Marketing AI**: Sugerencias de descripciones</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> **Flujos cada 4 días**: Ofertas planificadas</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Generación de Posts listos para Ads</li>
+              </ul>
+            </div>
+            <button onClick={() => setView("login")} className="w-full bg-violet-600 text-white shadow-[0_10px_20px_rgba(139,92,246,0.3)] font-black py-4 rounded-xl mt-8 cursor-pointer hover:scale-[1.02] active:scale-95 transition-transform border-none">Suscribirme</button>
+          </div>
+
+          {/* Plan 3 */}
+          <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2.5rem] p-8 flex flex-col justify-between hover:scale-105 transition-transform relative">
+            <div>
+              <span className="bg-emerald-500/10 text-emerald-600 text-[10px] font-black tracking-widest px-3 py-1.5 rounded-full uppercase block w-max mb-4">Líder</span>
+              <h3 className="text-2xl font-black text-violet-900">Flow Monopoly OS</h3>
+              <p className="text-sm text-gray-500 mt-2">El ecosistema financiero corporativo total para grandes franquicias.</p>
+
+              <div className="my-8">
+                <span className="text-5xl font-black text-violet-900">10%</span>
+                <span className="text-sm text-gray-500 block mt-1">Por Venta + $6 USD/mes Suscripción Nube</span>
+              </div>
+
+              <ul className="space-y-3 pt-6 text-sm text-gray-600">
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Todo lo de Flow Matrix AI</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> POS ilimitados + SENIAT Proxy PnP</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> **Presupuesto Ads Directo**: Incluido en fee</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> **Omnicanalidad**: Ads en IG, FB y WhatsApp</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> IA para buscar clientes en redes</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Diseños y Copys de contenido automatizados</li>
+              </ul>
+            </div>
+            <button onClick={() => setView("login")} className="w-full bg-white text-violet-600 font-bold py-4 rounded-xl mt-8 cursor-pointer transition-colors shadow-sm hover:bg-gray-50 border-none">Empezar</button>
+          </div>
+        </div>
       </section>
 
       {/* AI Deep Dive Section */}
@@ -2185,8 +2268,8 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-[violet-600] rounded-full flex items-center justify-center text-[violet-900] font-black text-2xl flex-shrink-0 shadow-lg border-4 border-[violet-900]">
-            {currentUser.name?.slice(0, 2).toUpperCase()}
+          <div className="w-16 h-16 bg-[violet-600] rounded-full flex items-center justify-center text-[violet-900] font-black text-2xl flex-shrink-0 shadow-lg border-4 border-[violet-900] relative z-20">
+            <ProfileAvatarEditor currentUser={currentUser} />
           </div>
           <div>
             <h2 className="text-xl md:text-2xl font-black tracking-tight truncate">{currentUser.name}</h2>
@@ -2201,12 +2284,21 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
 
         {subTab === "profile" ? (
           <>
-            {/* Overdrive Dual Wallet Card */}
-            <DualWalletCard
-              currentUser={currentUser}
-              formatUSD={formatUSD}
-              onRequestTopUp={(amount) => { setTopUpAmount(amount.toString()); setIsTopUpOpen(true); }}
-            />
+            {/* Universal Wallet Widget */}
+            <UniversalWalletWidget currentUser={currentUser} formatUSD={formatUSD}>
+              <div className="flex justify-between items-center bg-white/5 border border-white/5 rounded-2xl p-4 mt-2">
+                <div>
+                  <h4 className="text-sm font-black text-gray-200">Recarga Express</h4>
+                  <p className="text-[10px] text-gray-400 mt-0.5">Acredita saldo Fiat al instante.</p>
+                </div>
+                <button
+                  onClick={() => { setTopUpAmount("5"); setIsTopUpOpen(true); }}
+                  className="bg-emerald-500 hover:bg-emerald-400 text-white font-black px-6 py-2 rounded-xl text-xs transition-colors cursor-pointer border-none shadow-[0_5px_15px_rgba(16,185,129,0.3)]"
+                >
+                  Recargar Ahora
+                </button>
+              </div>
+            </UniversalWalletWidget>
 
             <TopUpModal
               isOpen={isTopUpOpen}
@@ -2855,7 +2947,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
 
 // CoreDashboard
 const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePromotoraEarnings, showToast, formatUSD, formatEUR, currentUser, logout, approveSubscription }: any) => {
-  const { impersonateClient, registerClient, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, toggleCandidateBacking, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, validateTopUp, rates, updateBcvRates } = useKFS() as any;
+  const { impersonateClient, registerClient, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, toggleCandidateBacking, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, validateTopUp, rates, updateBcvRates, transferKFSPoints } = useKFS() as any;
   const [searchPromotora, setSearchPromotora] = useState("");
   const [searchClient, setSearchClient] = useState("");
   const [searchVendedor, setSearchVendedor] = useState("");
@@ -2994,8 +3086,8 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-full flex items-center justify-center text-violet-600 font-black text-2xl flex-shrink-0 border-none">
-              AQ
+            <div className="w-16 h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-full flex items-center justify-center text-violet-600 font-black text-2xl flex-shrink-0 border-none relative z-20">
+              <ProfileAvatarEditor currentUser={currentUser} />
             </div>
             <div>
               <h2 className="text-xl md:text-2xl font-black tracking-tight truncate text-violet-900">Control Matriz KFS</h2>
@@ -3008,6 +3100,8 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
       <div className="p-4 md:p-8 max-w-5xl mx-auto -mt-6 relative z-20 flex flex-col gap-8 animate-fade-in">
         {activeTab === "panel" && (
           <div className="space-y-8 flex flex-col">
+            <ReferralLinksWidget userId={currentUser.id} showToast={showToast} />
+            <KPointsIssuerWidget db={db} transferKFSPoints={transferKFSPoints} />
             <OracleControlSlider merchantId={db.clients?.[0]?.id} merchantName={db.clients?.[0]?.company || "N/A"} currentFee={db.clients?.[0]?.oracle_fee_percentage} setDb={setDb} />
             {/* Global Metrics Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -3253,6 +3347,11 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                             <span className={`inline-block text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full mt-1 ${isBlocked ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-green-100 text-green-700 border border-green-200'}`}>
                               {isBlocked ? '🔴 Bloqueado' : '🟢 Activo'}
                             </span>
+                            {c.promotoraId && (
+                              <span className="block mt-2 text-[10px] text-gray-500 font-bold bg-gray-50 border border-gray-100 px-2 py-1 rounded-md inline-block">
+                                Ref: {db.promotoras?.find((p: any) => p.id === c.promotoraId)?.name || c.promotoraId}
+                              </span>
+                            )}
                           </td>
                           <td className="py-4 px-4 text-gray-500 font-mono">{c.phone}</td>
                           <td className="py-4 px-4 font-black text-green-600">{formatUSD(c.salesUSD || 0)}</td>
@@ -4365,7 +4464,51 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             candidate={viewingCandidateCv}
           />
         )}
+
+
+        {activeTab === "db_manager" && (
+          <DatabaseManagerWidget 
+            db={db}
+            deleteClient={deleteClient}
+            deleteCustomer={deleteCustomer}
+            deletePromotora={deletePromotora}
+            deleteVendedor={deleteVendedor}
+            rejectRider={rejectRider}
+            showToast={showToast}
+            setActiveTab={setActiveTab}
+          />
+        )}
+
+        {activeTab === "tienda_oficial" && (
+          <div className="space-y-8 flex flex-col animate-fade-in relative">
+            <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8 text-center flex flex-col items-center">
+              <div className="w-24 h-24 bg-gradient-to-tr from-violet-600 to-fuchsia-600 rounded-[2rem] shadow-lg flex items-center justify-center mb-6">
+                <Store className="w-12 h-12 text-white" />
+              </div>
+              <h2 className="text-3xl font-black text-[violet-900] mb-2">Tienda Oficial KFS</h2>
+              <p className="text-gray-500 font-bold mb-8 max-w-md">
+                Administra el inventario del Marketplace Global (Flow Express). Los productos aquí subidos forzarán el consumo de K-Points.
+              </p>
+              
+              <button 
+                onClick={() => {
+                  const oficialStore = db.clients?.find((c: any) => c.id === "kfs-express");
+                  if (oficialStore) {
+                    impersonateClient(oficialStore);
+                  } else {
+                    showToast("Error: No se encontró la tienda matriz en la DB.", "error");
+                  }
+                }}
+                className="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black text-lg flex items-center gap-3 hover:bg-slate-800 transition-all cursor-pointer shadow-xl hover:-translate-y-1 border-none"
+              >
+                <Database className="w-6 h-6 text-fuchsia-400" />
+                Acceder como Dueño de Tienda
+              </button>
+            </div>
+          </div>
+        )}
       </div>
+
 
       {/* FIXED BOTTOM NAVIGATION */}
       <div className="fixed bottom-0 inset-x-0 z-50 bg-white/90 backdrop-blur-xl border-t border-gray-200 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pb-safe">
@@ -4377,7 +4520,9 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             { id: "auditoria", icon: Shield, label: "Auditoría" },
             { id: "kyc", icon: FileText, label: "Bóveda KYC" },
             { id: "nodos", icon: QrCode, label: "Nodos KFS" },
-            { id: "vista_dios", icon: Eye, label: "Vista Dios" }
+            { id: "vista_dios", icon: Eye, label: "Vista Dios" },
+            { id: "db_manager", icon: Database, label: "Gestión DB" },
+            { id: "tienda_oficial", icon: Store, label: "Tienda KFS" }
           ].map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -4416,7 +4561,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
   const { updateStoreSettings, replyTicket, validateTopUp } = useKFS() as any;
   const myClients = db.clients.filter((c: any) => c.promotoraId === currentUser.id);
   const myPromotoraData = db.promotoras.find((p: any) => p.id === currentUser.id);
-  const filteredClients = myClients.filter((c: any) => c.company.toLowerCase().includes(searchClient.toLowerCase()) || c.name.toLowerCase().includes(searchClient.toLowerCase()));
+  const filteredClients = myClients.filter((c: any) => c.company?.toLowerCase().includes(searchClient.toLowerCase()) || c.name?.toLowerCase().includes(searchClient.toLowerCase()));
   const myCustomers = db.customers?.filter((c: any) => c.referred_by_promoter_id === currentUser.id) || [];
 
   const pendingTopUps = db.topups?.filter((t: any) => t.status === 'pending' && (
@@ -4443,8 +4588,8 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-[violet-600] rounded-full flex items-center justify-center text-[violet-900] font-black text-2xl flex-shrink-0 shadow-lg border-4 border-[violet-900]">
-            {currentUser.name?.slice(0, 2).toUpperCase()}
+          <div className="w-16 h-16 bg-[violet-600] rounded-full flex items-center justify-center text-[violet-900] font-black text-2xl flex-shrink-0 shadow-lg border-4 border-[violet-900] relative z-20">
+            <ProfileAvatarEditor currentUser={currentUser} />
           </div>
           <div>
             <h2 className="text-xl md:text-2xl font-black tracking-tight truncate">{currentUser.name}</h2>
@@ -4458,6 +4603,22 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
 
         {activeTab === "panel" && (
           <div className="space-y-6">
+            <div className="flex justify-between items-center bg-violet-900 rounded-3xl p-6 text-white shadow-lg animate-fade-in">
+              <div>
+                <h3 className="font-black text-xl">¿Tienes tu propio negocio?</h3>
+                <p className="text-violet-200 text-sm mt-1">Crea tu tienda oficial anclada a ti misma. Su validación será automática.</p>
+              </div>
+              <button 
+                onClick={() => {
+                  window.location.href = `/?role=register&ref=${currentUser.id}#login`;
+                }}
+                className="bg-white text-violet-900 px-6 py-3 rounded-2xl font-black text-sm hover:scale-105 transition-transform cursor-pointer shadow-xl border-none"
+              >
+                Abrir Mi Propia Tienda
+              </button>
+            </div>
+            <ReferralLinksWidget userId={currentUser.id} showToast={showToast} />
+            <UniversalWalletWidget currentUser={myPromotoraData} formatUSD={formatUSD} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-gradient-to-br from-[violet-900] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
                 <div className="relative z-10">
@@ -6238,8 +6399,8 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-violet-600 font-black text-2xl flex-shrink-0 shadow-lg border-none">
-            {currentUser.company?.slice(0, 2).toUpperCase()}
+          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-violet-600 font-black text-2xl flex-shrink-0 shadow-lg border-none relative z-20">
+            <ProfileAvatarEditor currentUser={currentUser} />
           </div>
           <div>
             <h2 className="text-xl md:text-2xl font-black tracking-tight truncate">{currentUser.company}</h2>
@@ -6249,7 +6410,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
       </div>
 
       <div className="max-w-5xl mx-auto px-4 -mt-6 relative z-20 space-y-6 animate-fade-in">
-        <OracleInsightCard role="owner" data={{ topProduct: "Combo Kreatek" }} />
+
 
         {activeTab === "resumen" && (
           <div className="space-y-6">
@@ -6264,9 +6425,27 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   </div>
                 </div>
                 <div className="flex flex-col gap-3">
-                  <div className="flex items-center gap-2 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] px-4 py-2 rounded-xl border-none">
-                    <span className="text-xs font-bold text-gray-500">Tasa KFS Activa:</span>
-                    <span className="text-sm font-black text-violet-600">{currentUser.oracle_fee_percentage !== undefined ? currentUser.oracle_fee_percentage : 2.0}%</span>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] px-4 py-2 rounded-xl border-none">
+                      <span className="text-xs font-bold text-gray-500">Plan Base:</span>
+                      <select
+                        value={currentUser.kfsTier || 'matrix'}
+                        onChange={(e) => changeTier(e.target.value)}
+                        className="bg-transparent text-sm font-black text-violet-600 focus:outline-none cursor-pointer"
+                      >
+                        <option value="velocity" className="text-black bg-white">Flow Velocity (3%)</option>
+                        <option value="matrix" className="text-black bg-white">Flow Matrix (5%)</option>
+                        <option value="monopoly" className="text-black bg-white">Flow Monopoly (10%)</option>
+                      </select>
+                    </div>
+                    <div className="flex items-center gap-2 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] px-4 py-2 rounded-xl border-none">
+                      <span className="text-xs font-bold text-gray-500">Tasa KFS Activa (Oráculo):</span>
+                      <span className="text-sm font-black text-violet-600">
+                        {currentUser.oracle_fee_percentage !== undefined && currentUser.oracle_fee_percentage !== null
+                          ? currentUser.oracle_fee_percentage
+                          : (currentUser.kfsTier === 'velocity' ? 3 : currentUser.kfsTier === 'monopoly' ? 10 : 5)}%
+                      </span>
+                    </div>
                   </div>
                   <button onClick={() => setShowExpenseModal(true)} className="bg-violet-500 text-white font-black px-6 py-3 rounded-xl shadow-[0_10px_20px_rgba(139,92,246,0.3)] hover:scale-105 transition-transform border-none">
                     Registrar Gasto
@@ -6296,7 +6475,9 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 </div>
               </div>
             </div>
-
+            </div>
+            
+            <OracleInsightCard role="owner" data={{ topProduct: "Combo Kreatek" }} />
           </div>
         )}
 
@@ -6453,9 +6634,6 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             </div>
           </div>
         )}
-
-        {activeTab === 'resumen' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
             <div className="bg-violet-600 text-white p-6 md:p-8 rounded-[2rem] shadow-[0_10px_20px_rgba(139,92,246,0.3)] relative overflow-hidden border-none h-full">
               <h3 className="font-black text-xl mb-2 flex items-center gap-2"><Activity className="text-violet-200" /> Kreatek Insights (IA)</h3>
               <p className="text-xs text-violet-200 mb-6">Motor de predicción de inventario activo.</p>
@@ -6471,19 +6649,13 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
               </div>
             </div>
 
-            <div className="bg-[#EEF2F5] p-6 md:p-8 rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none flex flex-col justify-between h-full">
-              <div>
-                <h3 className="font-black text-xl text-[violet-900] flex items-center gap-2"><DollarSign className="text-emerald-500" /> Billetera KFS (Billing)</h3>
-                <p className="text-xs text-gray-500 mb-4">Suscripción SaaS Activa: $6/mes. Próximo cobro: {new Date(clientInfo.subscription?.nextBillingDate).toLocaleDateString()}</p>
-                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-4 flex justify-between items-center mb-4">
-                  <span className="font-bold text-gray-600">Saldo Actual:</span>
-                  <span className="text-2xl font-black text-emerald-600">${(clientInfo.walletBalanceUSD || 0).toFixed(2)}</span>
-                </div>
-              </div>
-              <div className="space-y-2">
+            {/* Universal Wallet Widget para ClientDashboard */}
+            <UniversalWalletWidget currentUser={clientInfo} formatUSD={formatUSD}>
+              <div className="flex flex-col gap-4 mt-2">
+                <p className="text-xs text-gray-400 mb-2">Suscripción SaaS Activa: $6/mes. Próximo cobro: {new Date(clientInfo.subscription?.nextBillingDate).toLocaleDateString()}</p>
                 <div className="flex gap-2">
-                  <input type="number" placeholder="Monto $USD" value={fundAmount} onChange={e => setFundAmount(e.target.value)} className="w-1/2 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500" />
-                  <button onClick={() => { if (fundAmount) { setIsTopUpOpen(true); } }} className="w-1/2 bg-emerald-500 text-white font-black rounded-xl cursor-pointer hover:scale-105 shadow-[0_5px_15px_rgba(16,185,129,0.3)] transition-transform border-none">Recargar Saldo</button>
+                  <input type="number" placeholder="Monto $USD" value={fundAmount} onChange={e => setFundAmount(e.target.value)} className="w-1/2 bg-white/5 border border-white/10 rounded-xl px-4 py-2 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white placeholder:text-gray-500" />
+                  <button onClick={() => { if (fundAmount) { setIsTopUpOpen(true); } }} className="w-1/2 bg-emerald-500 text-white font-black rounded-xl cursor-pointer hover:scale-105 shadow-[0_5px_15px_rgba(16,185,129,0.3)] transition-transform border-none text-xs">Recargar Saldo</button>
                   <TopUpModal
                     isOpen={isTopUpOpen}
                     onClose={() => setIsTopUpOpen(false)}
@@ -6495,9 +6667,12 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                     userType="client"
                   />
                 </div>
-                <button onClick={() => processMonthlyBilling(currentUser.id)} className="w-full bg-red-100 text-red-600 font-bold py-2 rounded-xl border border-red-200 text-xs cursor-pointer hover:bg-red-200">Simular Cobro Mensual (Dev)</button>
+                <div className="flex gap-2">
+                  <button onClick={() => setShowPayoutModal(true)} className="w-1/2 bg-white/10 text-white font-black py-2 rounded-xl cursor-pointer hover:bg-white/20 transition-colors border border-white/10 text-xs">Retirar Fondos</button>
+                  <button onClick={() => processMonthlyBilling(currentUser.id)} className="w-1/2 bg-red-500/20 text-red-400 font-bold py-2 rounded-xl border border-red-500/30 text-[10px] cursor-pointer hover:bg-red-500/30">Simular Cobro</button>
+                </div>
               </div>
-            </div>
+            </UniversalWalletWidget>
           </div>
         )}
 
@@ -6514,7 +6689,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
               </div>
             </div>
             <div className="space-y-3">
-              {myVendedores.filter((v: any) => v.name.toLowerCase().includes(searchVendedor.toLowerCase()) || v.email.toLowerCase().includes(searchVendedor.toLowerCase())).map((v: any) => (
+              {myVendedores.filter((v: any) => v.name?.toLowerCase().includes(searchVendedor.toLowerCase()) || v.email?.toLowerCase().includes(searchVendedor.toLowerCase())).map((v: any) => (
                 <div key={v.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border border-gray-100">
                   <div className="flex items-center gap-3">
                     {v.avatar ? (
@@ -8021,9 +8196,14 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
       <nav className="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-white/5 bg-[violet-900] sticky top-0 z-40 backdrop-blur-md gap-3 w-full">
         <div className="flex items-center gap-3 justify-between w-full sm:w-auto">
           <KreatekLogo className="h-8 w-auto" />
-          <span className="font-bold text-sm tracking-widest uppercase text-[violet-600] sm:text-lg">
-            Terminal: {currentUser.company}
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="font-bold text-sm tracking-widest uppercase text-[violet-600] sm:text-lg">
+              Terminal: {currentUser.company}
+            </span>
+            <div className="w-10 h-10 ml-2 rounded-full border-2 border-[violet-600] relative z-20">
+              <ProfileAvatarEditor currentUser={currentUser} />
+            </div>
+          </div>
         </div>
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
           <div className="flex items-center gap-2">
@@ -8074,6 +8254,8 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
 
           <Activity size={150} className="absolute -right-10 -bottom-10 text-white/5" />
         </div>
+
+        <UniversalWalletWidget currentUser={currentUser} formatUSD={formatUSD} />
 
         <KFSIoTEdgeConsole showToast={showToast} />
 
@@ -8189,7 +8371,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
             </div>
           </div>
           <div className="grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-3 gap-4">
-            {myProducts.filter((p: any) => p.name.toLowerCase().includes(searchProduct.toLowerCase()) || (p.barcode && p.barcode.includes(searchProduct))).map((p: any) => (
+            {myProducts.filter((p: any) => p.name?.toLowerCase().includes(searchProduct.toLowerCase()) || (p.barcode && p.barcode.includes(searchProduct))).map((p: any) => (
               <div key={p.id} className="border border-gray-100 rounded-2xl p-3 flex flex-col justify-between bg-gray-50/50">
                 <div className="h-28 bg-gray-200 rounded-lg overflow-hidden mb-2">
                   <img src={p.image} className="w-full h-full object-cover" alt={p.name} />
@@ -8211,7 +8393,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
                 </button>
               </div>
             ))}
-            {myProducts.filter((p: any) => p.name.toLowerCase().includes(searchProduct.toLowerCase()) || (p.barcode && p.barcode.includes(searchProduct))).length === 0 && <p className="col-span-full text-center text-xs text-gray-400 py-6 font-bold">Sin resultados o sin productos cargados.</p>}
+            {myProducts.filter((p: any) => p.name?.toLowerCase().includes(searchProduct.toLowerCase()) || (p.barcode && p.barcode.includes(searchProduct))).length === 0 && <p className="col-span-full text-center text-xs text-gray-400 py-6 font-bold">Sin resultados o sin productos cargados.</p>}
           </div>
         </div>
       </div>
@@ -8748,8 +8930,8 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl flex-shrink-0 border-4 shadow-lg bg-[violet-900] ${riderInfo.status === "approved" ? "border-green-400 shadow-green-500/20" : "border-amber-400 shadow-amber-500/20"}`}>
-            🛵
+          <div className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl flex-shrink-0 border-4 shadow-lg bg-[violet-900] relative z-20 ${riderInfo.status === "approved" ? "border-green-400 shadow-green-500/20" : "border-amber-400 shadow-amber-500/20"}`}>
+            <ProfileAvatarEditor currentUser={riderInfo} />
           </div>
           <div>
             <h2 className="font-black text-2xl truncate">{riderInfo.name}</h2>
@@ -8763,6 +8945,7 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
 
       {/* Main Content Area */}
       <div className="max-w-2xl mx-auto px-4 -mt-6 relative z-20 space-y-4 animate-fade-in">
+        <UniversalWalletWidget currentUser={riderInfo} formatUSD={formatUSD} />
 
         {/* Check-In / Check-Out Widget */}
         <div className="bg-white rounded-[2rem] p-6 shadow-md border border-gray-100 flex flex-col md:flex-row items-center justify-between gap-4">

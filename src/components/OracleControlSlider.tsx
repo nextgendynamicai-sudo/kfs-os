@@ -31,7 +31,7 @@ export const OracleControlSlider = ({ merchantId, merchantName, currentFee, setD
   };
 
   return (
-    <div className="p-5 bg-gray-900 border-l-4 border-yellow-500 rounded-r-lg shadow-lg mb-4">
+    <div className="p-5 bg-gray-900 border-l-4 border-yellow-500 rounded-r-lg shadow-lg mb-4 mt-8 relative z-30">
       <h3 className="text-yellow-500 font-bold mb-1">👁️ ORÁCULO: Control de Tasa Interno</h3>
       <p className="text-xs text-gray-400 mb-3">Nodo: {merchantName}</p>
       <div className="flex items-center gap-4">
