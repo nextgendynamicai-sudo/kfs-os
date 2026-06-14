@@ -33,6 +33,7 @@ export const metadata: Metadata = {
   },
 };
 
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -47,9 +48,9 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{
           __html: `
             try {
-              if (typeof window !== 'undefined' && localStorage.getItem("kfs_hard_reset_v2") !== "done") {
+              if (typeof window !== 'undefined' && localStorage.getItem("kfs_hard_reset_v3") !== "done") {
                 localStorage.removeItem("kfs_os_current_user");
-                localStorage.setItem("kfs_hard_reset_v2", "done");
+                localStorage.setItem("kfs_hard_reset_v3", "done");
                 if ('caches' in window) {
                   caches.keys().then(names => {
                     for (let name of names) caches.delete(name);
@@ -65,7 +66,9 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col">
         <ErrorBoundary>
-          <KFSProvider>{children}</KFSProvider>
+          <KFSProvider>
+              {children}
+          </KFSProvider>
         </ErrorBoundary>
       </body>
     </html>

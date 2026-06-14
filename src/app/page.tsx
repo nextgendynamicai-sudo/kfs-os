@@ -21,6 +21,9 @@ import { B2BSelfOnboarding } from "../components/B2BSelfOnboarding";
 import { useP2PTransfer } from "../hooks/useP2PTransfer";
 import { compressImage, readAsBase64, playPremiumChime, playSyncChime, playCashDrawerSound, playScannerBeep, getStoreCoords, getCustomerCoords } from "../lib/utils";
 import { AnimatedCounter } from "../components/AnimatedCounter";
+import { AppEnforcer } from "../components/AppEnforcer";
+import { PushCommandCenter } from "../components/PushCommandCenter";
+import { supabase } from "../context/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from 'next/dynamic';
 
@@ -1287,7 +1290,7 @@ const LandingPageView = ({ setView }: any) => {
 
         <div className="flex-1 w-full relative z-10">
           <div className="bg-[#EEF2F5] rounded-[2rem] p-4 shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none transition-transform duration-700 ease-out">
-            <img src="/hero_neumorphic.png" alt="Dashboard Preview" className="w-full h-auto rounded-xl object-cover" />
+            <img src="/hero_cards.png" alt="Dashboard Preview" className="w-full h-auto rounded-xl object-cover" />
           </div>
         </div>
       </section>
@@ -3122,6 +3125,9 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
               </div>
             </div>
 
+            {/* Push Notifications Command Center */}
+            <PushCommandCenter currentUser={currentUser} />
+
             {/* BCV Rate Manual Update */}
             <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-6 flex flex-col md:flex-row items-center justify-between gap-4">
               <div>
@@ -4114,10 +4120,10 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
               <p className="text-sm text-gray-500 mb-6">Genera enlaces QR oficiales para registrar nuevos actores en la economía KFS como tus referidos.</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
-                  { role: 'registerCustomer', title: 'Invitar Cliente' },
-                  { role: 'registerPromo', title: 'Invitar Promotora' },
-                  { role: 'register', title: 'Invitar Comercio' },
-                  { role: 'registerRider', title: 'Invitar Delivery' }
+                  { role: 'registerCustomer', title: 'Invitar Cliente', imgUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=400&q=80' },
+                  { role: 'registerPromo', title: 'Invitar Promotora', imgUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80' },
+                  { role: 'register', title: 'Invitar Comercio', imgUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=400&q=80' },
+                  { role: 'registerRider', title: 'Invitar Delivery', imgUrl: 'https://images.unsplash.com/photo-1552872673-9b7b99711ebb?auto=format&fit=crop&w=400&q=80' }
                 ].map((invite, idx) => {
                   let host = '';
                   if (typeof window !== 'undefined') {
@@ -4128,6 +4134,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                   return (
                     <div key={idx} className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-6 rounded-2xl flex flex-col items-center text-center shadow-sm">
                       <h4 className="font-black text-[violet-900] mb-4">{invite.title}</h4>
+                      <img src={invite.imgUrl} alt={invite.title} className="w-full h-32 object-cover rounded-xl mb-4 shadow-sm border-2 border-white" />
                       <div className="bg-white p-2 rounded-xl border border-gray-100 shadow-sm mb-4">
                         <img src={qrUrl} alt={`QR ${invite.title}`} className="w-32 h-32 rounded-lg" />
                       </div>
@@ -9174,6 +9181,21 @@ export default function Home() {
     if (currentUser.role === "vendedor" && db.vendedores?.length > 0 && !db.vendedores.some((v: any) => v.id === currentUser.id)) isUserValid = false;
   }
 
+  const updatePwaStatus = async (status: boolean) => {
+    if (!currentUser || currentUser.pwaInstalled === status) return;
+    setCurrentUser({ ...currentUser, pwaInstalled: status });
+    let table = "";
+    if (currentUser.role === "dueño") table = "clients";
+    else if (currentUser.role === "promotora") table = "promotoras";
+    else if (currentUser.role === "customer") table = "customers";
+    else if (currentUser.role === "rider") table = "riders";
+    else if (currentUser.role === "vendedor") table = "vendedores";
+    
+    if (table && supabase) {
+      await supabase.from(table).update({ pwaInstalled: status }).eq('id', currentUser.id);
+    }
+  };
+
   useEffect(() => {
     if (currentUser && !isUserValid) {
       if (currentUser.isImpersonated) {
@@ -9306,90 +9328,102 @@ export default function Home() {
         />
       )}
       {safeView === "customer" && (
-        <CustomerDashboard
-          db={db}
-          currentUser={currentUser}
-          logout={logout}
-          setView={setView}
-        />
+        <AppEnforcer currentUser={currentUser} updatePwaStatus={updatePwaStatus}>
+          <CustomerDashboard
+            db={db}
+            currentUser={currentUser}
+            logout={logout}
+            setView={setView}
+          />
+        </AppEnforcer>
       )}
       {safeView === "core" && (
-        <CoreDashboard
-          db={db}
-          setDb={setDb}
-          approvePromotora={approvePromotora}
-          rejectPromotora={rejectPromotora}
-          settlePromotoraEarnings={settlePromotoraEarnings}
-          showToast={showToast}
-          formatUSD={formatUSD}
-          formatEUR={formatEUR}
-          currentUser={currentUser}
-          logout={logout}
-      approveSubscription={approveSubscription}
-        />
+        <AppEnforcer currentUser={currentUser} updatePwaStatus={updatePwaStatus}>
+          <CoreDashboard
+            db={db}
+            setDb={setDb}
+            approvePromotora={approvePromotora}
+            rejectPromotora={rejectPromotora}
+            settlePromotoraEarnings={settlePromotoraEarnings}
+            showToast={showToast}
+            formatUSD={formatUSD}
+            formatEUR={formatEUR}
+            currentUser={currentUser}
+            logout={logout}
+            approveSubscription={approveSubscription}
+          />
+        </AppEnforcer>
       )}
       
       {/* Mock function to prevent build failure since it's missing from KFSContext */}
       {(() => {
         const registerVendedor = (data: any) => showToast("Función en desarrollo.", "error");
         return safeView === "promotora" && (
-          <PromotoraDashboard
-            db={db}
-            setDb={setDb}
-            currentUser={currentUser}
-            registerClient={registerClient}
-            upgradeToPremium={upgradeToPremium}
-            settlePromotoraEarnings={settlePromotoraEarnings}
-            formatUSD={formatUSD}
-            formatEUR={formatEUR}
-            logout={logout}
-            requestPayout={requestPayout}
-            registerVendedor={registerVendedor}
-          />
+          <AppEnforcer currentUser={currentUser} updatePwaStatus={updatePwaStatus}>
+            <PromotoraDashboard
+              db={db}
+              setDb={setDb}
+              currentUser={currentUser}
+              registerClient={registerClient}
+              upgradeToPremium={upgradeToPremium}
+              settlePromotoraEarnings={settlePromotoraEarnings}
+              formatUSD={formatUSD}
+              formatEUR={formatEUR}
+              logout={logout}
+              requestPayout={requestPayout}
+              registerVendedor={registerVendedor}
+            />
+          </AppEnforcer>
         );
       })()}
       
       {safeView === "client" && (
-        <ClientDashboard
-          db={db}
-          setDb={setDb}
-          currentUser={currentUser}
-          addProduct={addProduct}
-          addExpense={addExpense}
-          showToast={showToast}
-          formatUSD={formatUSD}
-          formatEUR={formatEUR}
-          logout={logout}
-          approveOrder={approveOrder}
-          rejectOrder={rejectOrder}
-          dispatchOrder={dispatchOrder}
-          paySubscription={paySubscription}
-          requestPayout={requestPayout}
-          requestTopUp={requestTopUp}
-        />
+        <AppEnforcer currentUser={currentUser} updatePwaStatus={updatePwaStatus}>
+          <ClientDashboard
+            db={db}
+            setDb={setDb}
+            currentUser={currentUser}
+            addProduct={addProduct}
+            addExpense={addExpense}
+            showToast={showToast}
+            formatUSD={formatUSD}
+            formatEUR={formatEUR}
+            logout={logout}
+            approveOrder={approveOrder}
+            rejectOrder={rejectOrder}
+            dispatchOrder={dispatchOrder}
+            paySubscription={paySubscription}
+            requestPayout={requestPayout}
+            requestTopUp={requestTopUp}
+          />
+        </AppEnforcer>
       )}
       {safeView === "vendedor" && (
-        <VendedorDashboard
-          db={db}
-          setDb={setDb}
-          currentUser={currentUser}
-          addProduct={addProduct}
-          processPurchase={processPurchase}
-          showToast={showToast}
-          formatUSD={formatUSD}
-          logout={logout}
-          approveOrder={approveOrder}
-          rejectOrder={rejectOrder}
-          generateZReport={generateZReport}
-          registerCrmExpress={registerCrmExpress}
-        />
+        <AppEnforcer currentUser={currentUser} updatePwaStatus={updatePwaStatus}>
+          <VendedorDashboard
+            db={db}
+            setDb={setDb}
+            currentUser={currentUser}
+            addProduct={addProduct}
+            processPurchase={processPurchase}
+            showToast={showToast}
+            formatUSD={formatUSD}
+            logout={logout}
+            approveOrder={approveOrder}
+            rejectOrder={rejectOrder}
+            generateZReport={generateZReport}
+            registerCrmExpress={registerCrmExpress}
+          />
+        </AppEnforcer>
       )}
       {safeView === "rider" && (
-        <RiderDashboard
-          db={db}
-          currentUser={currentUser}
-          logout={logout}
-        />
+        <AppEnforcer currentUser={currentUser} updatePwaStatus={updatePwaStatus}>
+          <RiderDashboard
+            db={db}
+            currentUser={currentUser}
+            logout={logout}
+          />
+        </AppEnforcer>
       )}
       {null}
     </div>

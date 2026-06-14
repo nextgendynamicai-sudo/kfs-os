@@ -39,7 +39,7 @@ const MOCK_BCV_RATES = {
   isWeekend: false
 };
 
-const CURRENT_WIPE_VERSION = 5;
+const CURRENT_WIPE_VERSION = 6;
 
 const initialDB = {
   promotoras: [] as any[],
