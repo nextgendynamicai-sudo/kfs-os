@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Database, Trash2, Plus, Store, Users, Briefcase, Car, Shield, X, Save } from 'lucide-react';
+import { Database, Trash2, Plus, Store, Users, Briefcase, Car, Shield } from 'lucide-react';
 
 export const DatabaseManagerWidget = ({ db, deleteClient, deleteCustomer, deletePromotora, deleteVendedor, rejectRider, showToast, setActiveTab }: any) => {
   const [activeCollection, setActiveCollection] = useState("clients");
