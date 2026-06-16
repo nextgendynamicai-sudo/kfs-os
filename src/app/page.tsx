@@ -2262,9 +2262,15 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
             <span className="bg-white/20 p-2 rounded-xl text-[violet-600]"><UserCheck size={20} /></span>
             <h1 className="font-black text-xl tracking-tight">KFS Customer</h1>
           </div>
-          <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
-            <LogOut size={16} />
-          </button>
+          <div className="flex items-center gap-2">
+              <div className="bg-gradient-to-r from-amber-400 to-orange-500 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-sm border border-orange-300/50" title="Billetera KFS Points">
+                <span className="text-[10px] font-black uppercase tracking-wider text-orange-900">K-Pts</span>
+                <span className="font-black text-white text-sm">{currentUser?.kfsPoints || 0}</span>
+              </div>
+              <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
+                <LogOut size={16} />
+              </button>
+            </div>
         </div>
 
         <div className="flex items-center gap-4">
@@ -2322,16 +2328,33 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                 </p>
               </div>
 
-              {/* Banner P2P Viral */}
-              <div className="bg-[#1A1108]/80 border border-[violet-600]/40 p-4 rounded-2xl flex items-center gap-4">
-                <div className="w-12 h-12 bg-[violet-600]/20 rounded-full flex items-center justify-center flex-shrink-0">
-                  <Gift size={24} className="text-[violet-600]" />
+              {/* Bono Viral Embajador — QR Real Escaneable */}
+              <div className="bg-gradient-to-r from-emerald-900/80 to-teal-900/80 border border-emerald-500/40 p-5 rounded-[1.5rem] flex flex-col sm:flex-row items-center gap-5">
+                <div className="w-28 h-28 bg-white rounded-xl p-1.5 border-2 border-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.35)] flex-shrink-0">
+                  <img
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent('https://kfs-os.vercel.app?role=customer&ref=' + currentUser.id)}`}
+                    alt="QR Referido"
+                    className="w-full h-full object-contain rounded-lg"
+                    loading="lazy"
+                  />
                 </div>
-                <div>
-                  <h4 className="font-black text-[violet-600] text-sm">Bono Viral Embajador</h4>
-                  <p className="text-xs text-gray-300 leading-tight mt-1">
-                    Comparte tu código de afiliado <span className="font-mono bg-black/50 px-1.5 py-0.5 rounded text-white">{currentUser.id}</span> con tus amigos. ¡Cuando se registren y hagan su primera recarga, recibirás <strong>500 K-Points</strong> automáticos!
+                <div className="flex-1 text-center sm:text-left">
+                  <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
+                    <Gift size={18} className="text-emerald-400" />
+                    <h4 className="font-black text-white text-base">Bono Viral Embajador</h4>
+                  </div>
+                  <p className="text-xs text-gray-300 leading-relaxed mb-3">
+                    Escanea o comparte tu QR. Cuando tu referido haga su primera recarga de <strong className="text-emerald-400">$5.00+</strong>, recibirás <strong className="text-emerald-400">+500 K-Points ($0.50)</strong> automáticos.
                   </p>
+                  <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
+                    <span className="font-mono bg-black/60 border border-emerald-500/30 px-2 py-1 rounded-lg text-emerald-300 text-xs">ID: {currentUser.id}</span>
+                    <button
+                      onClick={() => { navigator.clipboard.writeText('https://kfs-os.vercel.app?role=customer&ref=' + currentUser.id); showToast('📋 Enlace copiado.', 'success'); }}
+                      className="text-[10px] font-black text-white bg-emerald-600 hover:bg-emerald-500 px-3 py-1.5 rounded-lg cursor-pointer transition-colors"
+                    >
+                      📋 Copiar Enlace
+                    </button>
+                  </div>
                 </div>
               </div>
 
@@ -2947,7 +2970,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
 
 // CoreDashboard
 const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePromotoraEarnings, showToast, formatUSD, formatEUR, currentUser, logout, approveSubscription }: any) => {
-  const { impersonateClient, registerClient, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, toggleCandidateBacking, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, validateTopUp, rates, updateBcvRates, transferKFSPoints } = useKFS() as any;
+  const { impersonateClient, registerClient, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, toggleCandidateBacking, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, validateTopUp, rates, updateBcvRates, transferKFSPoints, updateStoreSettings } = useKFS() as any;
   const [searchPromotora, setSearchPromotora] = useState("");
   const [searchClient, setSearchClient] = useState("");
   const [searchVendedor, setSearchVendedor] = useState("");
@@ -3010,6 +3033,37 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
         showToast("Base de datos local borrada a 0.", "success");
       }
     }
+  };
+
+  // ── Customizing state for Arquitecto ──────────────────────────────────────
+  const [customizingClient, setCustomizingClient] = useState<any>(null);
+
+  // Feature 1: Clear all demo records
+  const handleClearDemos = () => {
+    if (confirm('¿Eliminar todos los registros de demo del sistema?')) {
+      setDb((prev: any) => ({
+        ...prev,
+        clients:    prev.clients.filter((c: any)    => !String(c.id).includes('demo')),
+        promotoras: prev.promotoras.filter((p: any) => !String(p.id).includes('demo')),
+        vendedores: prev.vendedores.filter((v: any) => !String(v.id).includes('demo')),
+        customers:  prev.customers.filter((c: any)  => !String(c.id).includes('demo')),
+      }));
+      showToast('✅ Demos eliminados correctamente.', 'success');
+    }
+  };
+
+  // Feature 5: Inject KFS Points to any user
+  const handleInjectPoints = (collection: string, userId: string) => {
+    const raw = prompt('Cantidad de KFS Points a inyectar (ej: 500 = $0.50 USD):', '500');
+    if (!raw || isNaN(Number(raw))) return;
+    const amount = parseInt(raw, 10);
+    setDb((prev: any) => ({
+      ...prev,
+      [collection]: prev[collection].map((u: any) =>
+        u.id === userId ? { ...u, kfsPoints: (u.kfsPoints || 0) + amount } : u
+      ),
+    }));
+    showToast(`🎁 ${amount} K-Points inyectados.`, 'success');
   };
 
   const [activeModal, setActiveModal] = useState<string | null>(null);
@@ -3390,6 +3444,14 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                                 window.open(`https://wa.me/${targetPhone}?text=Hola ${c.name}, te escribimos de *Kreatek*. Te recordamos realizar el pago de tu mantenimiento BOS diario por un monto de *${formatUSD(c.kfsFeesOwedUSD || 0)}*. Puedes usar el botón en tu panel de control para reportar la transferencia. ¡Gracias!`, '_blank');
                               }} className="bg-green-100 text-green-700 px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-green-200 transition-colors cursor-pointer inline-flex items-center gap-1">
                                 💬 Cobro WA
+                              </button>
+
+                              <button onClick={() => handleInjectPoints('clients', c.id)} className="bg-amber-100 text-amber-700 border border-amber-200 px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-amber-200 transition-colors cursor-pointer inline-flex items-center gap-1 shadow-sm">
+                                🎁 K-Pts
+                              </button>
+
+                              <button onClick={() => setCustomizingClient(c)} className="bg-violet-100 text-violet-700 border border-violet-200 px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-violet-200 transition-colors cursor-pointer inline-flex items-center gap-1 shadow-sm">
+                                🎨 Diseño
                               </button>
                             </div>
                           </td>
@@ -3883,6 +3945,10 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                 <div className="bg-red-600 text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Shield size={24} /></div>
                 <span className="font-black text-red-700 text-sm text-center font-bold">Puesta a Cero (Wipe DB)</span>
               </button>
+              <button onClick={handleClearDemos} className="bg-orange-50 border border-orange-200 hover:bg-orange-100 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group cursor-pointer">
+                <div className="bg-orange-500 text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Trash2 size={24} /></div>
+                <span className="font-black text-orange-700 text-sm text-center font-bold">🗑️ Limpiar Demos</span>
+              </button>
             </div>
 
             {/* Validaciones Financieras */}
@@ -4213,7 +4279,26 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
           </div>
         )}
 
-        {activeModal === 'product' && (
+        {/* ── Storefront Customizer Modal (Arquitecto) ───────────────────── */}
+      {customizingClient && (
+        <div className="fixed inset-0 bg-black/60 z-[200] flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setCustomizingClient(null)}>
+          <div className="bg-white rounded-[2rem] w-full max-w-lg relative p-2 shadow-2xl" onClick={e => e.stopPropagation()}>
+            <button onClick={() => setCustomizingClient(null)} className="absolute top-4 right-4 text-gray-400 hover:text-violet-900 transition-colors cursor-pointer z-10 border-none bg-transparent">
+              <X size={24} />
+            </button>
+            <StorefrontCustomizer
+              client={customizingClient}
+              updateStoreSettings={(id: string, settings: any) => {
+                updateStoreSettings(id, settings);
+                setCustomizingClient(null);
+                showToast('✅ Diseño de tienda actualizado.', 'success');
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {activeModal === 'product' && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
             <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6">
               <div className="flex justify-between items-center border-b border-gray-100 pb-4">
@@ -4582,9 +4667,15 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
             <span className="bg-white/20 p-2 rounded-xl text-[violet-600]"><CheckCircle size={20} /></span>
             <h1 className="font-black text-xl tracking-tight">KFS Promotora</h1>
           </div>
-          <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
-            <LogOut size={16} />
-          </button>
+          <div className="flex items-center gap-2">
+              <div className="bg-gradient-to-r from-amber-400 to-orange-500 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-sm border border-orange-300/50" title="Billetera KFS Points">
+                <span className="text-[10px] font-black uppercase tracking-wider text-orange-900">K-Pts</span>
+                <span className="font-black text-white text-sm">{currentUser?.kfsPoints || 0}</span>
+              </div>
+              <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
+                <LogOut size={16} />
+              </button>
+            </div>
         </div>
 
         <div className="flex items-center gap-4">
@@ -4902,10 +4993,6 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
                     <p>En el dashboard del Cliente o Vendedor, se debe descargar "Sincro-Shield Fiscal Proxy" y tener Node.js instalado en el sistema operativo del cliente.</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[violet-900] mb-1">3. Ejecución y Servicio:</p>
-                    <p>Abrir una terminal en la PC de la caja y ejecutar <code>node fiscal-proxy.js</code>. Opcionalmente configurar PM2 para arranque automático. Se mantendrá corriendo en el puerto 8080.</p>
-                  </div>
-                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
                     <p className="font-black text-[violet-900] mb-1">4. Pruebas de Transmisión:</p>
                     <p>En KFS OS (Caja), abrir el Setup Sincro-Shield y presionar "Probar Conexión Proxy". Si responde, marcar la casilla "Imprimir Copias Fiscales por Defecto".</p>
                   </div>
@@ -4917,35 +5004,41 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
       )}
       {activeTab === "afiliados" && (
         <div className="space-y-6">
-          {/* Captación de Clientes Panel */}
-          <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8 relative overflow-hidden text-[violet-900]">
-            <h3 className="text-xl font-black mb-4">Captación de Clientes</h3>
-            <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
-              <div className="w-40 h-40 bg-gray-100 rounded-xl flex items-center justify-center border-4 border-[violet-600] flex-shrink-0">
-                {/* Mock QR */}
-                <div className="text-center w-full h-full flex flex-col items-center justify-center p-2">
-                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://kfs-os.vercel.app/#landing?ref=' + currentUser.id)}`} alt="QR Afiliado" className="w-full h-auto object-contain rounded-lg" />
+          {/* ── Captación Universal KFS — 3 QR Codes ─────────────────── */}
+          <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8 text-[violet-900]">
+            <h3 className="text-xl font-black mb-6 flex items-center gap-2"><span>📡</span> Captación Universal KFS</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="bg-white shadow-sm border border-gray-100 rounded-2xl p-5 flex flex-col items-center gap-3 text-center">
+                <h4 className="font-black text-lg mb-1">🏪 Dueños / Comercios</h4>
+                <div className="w-36 h-36 bg-white rounded-xl border-2 border-violet-400 p-1.5 shadow-md">
+                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://kfs-os.vercel.app?role=due%C3%B1o&ref=' + currentUser.id)}`} alt="QR Dueños" className="w-full h-full object-contain rounded-lg" loading="lazy" />
                 </div>
+                <p className="text-xs text-gray-500 leading-tight">Ganas <strong className="text-violet-700">50% de la cuota</strong> + 20% regalías de por vida.</p>
+                <button onClick={() => { navigator.clipboard.writeText('https://kfs-os.vercel.app?role=due%C3%B1o&ref=' + currentUser.id); }} className="text-[10px] font-black text-violet-700 bg-violet-100 hover:bg-violet-200 px-3 py-1.5 rounded-lg cursor-pointer w-full">📋 Copiar Enlace Comercios</button>
               </div>
-              <div className="flex-1">
-                <p className="text-sm text-gray-600 mb-2">Pide a tus clientes que escaneen este código o ingresen tu ID al registrarse para quedar enlazados a tu perfil.</p>
-                <p className="bg-gray-100 px-4 py-2 rounded-lg font-mono font-black inline-block text-lg border border-gray-300 text-indigo-900 tracking-wider mb-4">{currentUser.id}</p>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="bg-green-50 border border-green-100 p-4 rounded-xl">
-                    <p className="text-xs text-green-700 font-bold uppercase tracking-wider mb-1">Bono por Adquisición</p>
-                    <p className="text-2xl font-black text-green-600">${(currentUser.customerAcquisitionBonusUSD || 0).toFixed(2)}</p>
-                    <p className="text-[10px] text-green-600/80 mt-1">Ganas $1.00 USD cuando tu referido recarga sus primeros $5.00 USD en la billetera.</p>
-                  </div>
-                  <div className="flex items-center">
-                    <button onClick={() => setShowCustomerRegister(true)} className="w-full bg-[violet-900] text-white py-4 rounded-xl font-black shadow-lg hover:bg-gray-800 transition-colors flex justify-center items-center gap-2 cursor-pointer">
-                      <UserPlus size={20} /> Registrar Cliente en Vivo
-                    </button>
-                  </div>
+              <div className="bg-white shadow-sm border border-gray-100 rounded-2xl p-5 flex flex-col items-center gap-3 text-center">
+                <h4 className="font-black text-lg mb-1">👨‍💼 Fuerza de Ventas</h4>
+                <div className="w-36 h-36 bg-white rounded-xl border-2 border-blue-400 p-1.5 shadow-md">
+                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://kfs-os.vercel.app?role=vendedor&ref=' + currentUser.id)}`} alt="QR Vendedores" className="w-full h-full object-contain rounded-lg" loading="lazy" />
                 </div>
+                <p className="text-xs text-gray-500 leading-tight">Recluta vendedores para tus comercios y expande tu red de ventas físicas.</p>
+                <button onClick={() => { navigator.clipboard.writeText('https://kfs-os.vercel.app?role=vendedor&ref=' + currentUser.id); }} className="text-[10px] font-black text-blue-700 bg-blue-100 hover:bg-blue-200 px-3 py-1.5 rounded-lg cursor-pointer w-full">📋 Copiar Enlace Vendedores</button>
+              </div>
+              <div className="bg-white shadow-sm border border-gray-100 rounded-2xl p-5 flex flex-col items-center gap-3 text-center">
+                <h4 className="font-black text-lg mb-1">🛒 Clientes / Flow Express</h4>
+                <div className="w-36 h-36 bg-white rounded-xl border-2 border-emerald-400 p-1.5 shadow-md">
+                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://kfs-os.vercel.app?role=customer&ref=' + currentUser.id)}`} alt="QR Clientes" className="w-full h-full object-contain rounded-lg" loading="lazy" />
+                </div>
+                <p className="text-xs text-gray-500 leading-tight">Ganas <strong className="text-emerald-700">$1.00 USD</strong> cuando tu referido recarga sus primeros $5.00 USD.</p>
+                <button onClick={() => { navigator.clipboard.writeText('https://kfs-os.vercel.app?role=customer&ref=' + currentUser.id); }} className="text-[10px] font-black text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-3 py-1.5 rounded-lg cursor-pointer w-full">📋 Copiar Enlace Clientes</button>
               </div>
             </div>
+            <div className="mt-6 pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <p className="text-xs text-gray-500">Tu ID de Promotora: <span className="font-mono font-black text-violet-700">{currentUser.id}</span></p>
+              <button onClick={() => setShowCustomerRegister(true)} className="bg-violet-700 text-white px-6 py-3 rounded-xl font-black shadow-md hover:bg-violet-900 transition-colors flex items-center gap-2 cursor-pointer text-sm"><UserPlus size={18} /> Registrar Cliente en Vivo</button>
+            </div>
           </div>
+
 
           <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8">
             <h3 className="text-lg font-black mb-4">Mis Clientes Afiliados ({myCustomers.length})</h3>
@@ -6363,7 +6456,11 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             </div>
           )}
 
-          <button onClick={logout} className="text-gray-400 font-bold hover:text-red-500 transition relative z-10 cursor-pointer">
+          <div className="bg-gradient-to-r from-amber-400 to-orange-500 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-sm border border-orange-300/50">
+              <span className="text-[10px] font-black uppercase tracking-wider text-orange-900">K-Pts</span>
+              <span className="font-black text-white text-sm">{currentUser?.kfsPoints || 0}</span>
+            </div>
+            <button onClick={logout} className="text-gray-400 font-bold hover:text-red-500 transition relative z-10 cursor-pointer">
             Cerrar Sesión
           </button>
         </div>
@@ -6474,7 +6571,6 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://kfs-os.vercel.app/#landing?ref=' + currentUser.id)}`} alt="Tu QR" className="w-full h-full object-contain mix-blend-multiply rounded-lg" />
                 </div>
               </div>
-            </div>
             </div>
             
             <OracleInsightCard role="owner" data={{ topProduct: "Combo Kreatek" }} />
@@ -6634,6 +6730,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             </div>
           </div>
         )}
+        {activeTab === 'resumen' && (
             <div className="bg-violet-600 text-white p-6 md:p-8 rounded-[2rem] shadow-[0_10px_20px_rgba(139,92,246,0.3)] relative overflow-hidden border-none h-full">
               <h3 className="font-black text-xl mb-2 flex items-center gap-2"><Activity className="text-violet-200" /> Kreatek Insights (IA)</h3>
               <p className="text-xs text-violet-200 mb-6">Motor de predicción de inventario activo.</p>
@@ -6648,8 +6745,9 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 </div>
               </div>
             </div>
+        )}
 
-            {/* Universal Wallet Widget para ClientDashboard */}
+        {activeTab === 'resumen' && (
             <UniversalWalletWidget currentUser={clientInfo} formatUSD={formatUSD}>
               <div className="flex flex-col gap-4 mt-2">
                 <p className="text-xs text-gray-400 mb-2">Suscripción SaaS Activa: $6/mes. Próximo cobro: {new Date(clientInfo.subscription?.nextBillingDate).toLocaleDateString()}</p>
@@ -6673,7 +6771,6 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 </div>
               </div>
             </UniversalWalletWidget>
-          </div>
         )}
 
         {activeTab === 'personal' && (
@@ -8217,9 +8314,15 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
               Cerrar Caja (Z)
             </button>
           </div>
-          <button onClick={logout} className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-xl transition-colors text-white cursor-pointer text-xs font-bold">
-            Salir
-          </button>
+<div className="flex items-center gap-2">
+            <div className="bg-gradient-to-r from-amber-400 to-orange-500 px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm" title="K-Pts">
+              <span className="text-[9px] font-black text-orange-900 uppercase">K-Pts</span>
+              <span className="font-black text-white text-xs">{currentUser?.kfsPoints || 0}</span>
+            </div>
+            <button onClick={logout} className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-xl transition-colors text-white cursor-pointer text-xs font-bold">
+              Salir
+            </button>
+          </div>
         </div>
       </nav>
       <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-6 animate-fade-in">
@@ -9312,7 +9415,7 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-[violet-900] flex flex-col items-center justify-center text-white">
         <div className="relative flex flex-col items-center">
-          <KreatekLogo className="h-28 sm:h-32 w-auto animate-pulse mb-8" />
+          <img src="/kfs-loading.png" className="h-28 sm:h-32 w-auto animate-pulse mb-8 object-contain" alt="KFS OS" />
           <div className="w-12 h-12 border-4 border-[violet-600]/20 border-t-[violet-600] rounded-full animate-spin" />
           <p className="text-xs text-gray-500 font-mono mt-6">Loading core vectors...</p>
         </div>

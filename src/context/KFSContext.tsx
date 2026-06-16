@@ -1580,6 +1580,15 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       else if (isCustomer) referred_by_customer_id = isCustomer.id;
     }
 
+    // ── KYC: Upload images to Supabase Storage (avoids heavy base64 in DB) ──
+    let photoUrl  = kycPhoto  || '';
+    let cedulaUrl = kycCedula || '';
+    try {
+      const { uploadAsset } = await import('./supabase');
+      if (kycPhoto  && kycPhoto.startsWith('data:'))  photoUrl  = await uploadAsset(`customers/${phone}-photo.jpg`,  kycPhoto);
+      if (kycCedula && kycCedula.startsWith('data:')) cedulaUrl = await uploadAsset(`customers/${phone}-cedula.jpg`, kycCedula);
+    } catch (_e) { /* Network issue — keep base64 as fallback */ }
+
     const newCustomer = {
       id: `cust_${Date.now()}`,
       phone,
@@ -1591,8 +1600,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       referred_by_promoter_id,
       referred_by_merchant_id,
       referred_by_customer_id,
-      kyc_photo: kycPhoto || "",
-      kyc_id_card_img: kycCedula || "",
+      kyc_photo: photoUrl,
+      kyc_id_card_img: cedulaUrl,
       kyc_address: kycAddress || "",
       kyc_status: "verified",
       createdAt: new Date().toISOString()
@@ -2255,6 +2264,15 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     });
     logAction("System", "DELETE_VENDEDOR", `Cajero/Vendedor ${vendedorId} eliminado.`);
     showToast("Vendedor eliminado de su nodo.", "error");
+  };
+
+  const deleteRider = (riderId: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      riders: Array.isArray(prev.riders) ? prev.riders.filter((r: any) => r.id !== riderId) : [],
+    }));
+    logAction("System", "DELETE_RIDER", `Motorizado ${riderId} eliminado.`);
+    showToast("Motorizado eliminado del sistema.", "error");
   };
 
 
