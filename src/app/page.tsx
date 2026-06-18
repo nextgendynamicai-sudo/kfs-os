@@ -2113,7 +2113,7 @@ const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCancel: (
 };
 
 const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
-  const { formatUSD, registerCandidate, showToast, markNotificationsAsRead, requestTopUp } = useKFS() as any;
+  const { formatUSD, registerCandidate, showToast, markNotificationsAsRead, requestTopUp, claimFlowMaster } = useKFS() as any;
   const [subTab, setSubTab] = useState("profile"); // profile | jobs
   const [isTopUpOpen, setIsTopUpOpen] = useState(false);
   const [topUpAmount, setTopUpAmount] = useState("");
@@ -2161,6 +2161,14 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
 
   const activeOrders = db.orders?.filter((o: any) => o.customerPhone === currentUser.phone && o.status === 'pending') || [];
   const logisticsTxs = db.transactions?.filter((tx: any) => tx.customerPhone === currentUser.phone && (tx.shippingStatus === 'pending' || tx.shippingStatus === 'dispatched')) || [];
+
+  // FlowMaster Gamification Logic
+  const txCount = userTransactions.length;
+  const uniqueMerchants = historyEntries.length;
+  const volumeUSD = userTransactions.reduce((acc: number, tx: any) => acc + (tx.amountUSD || 0), 0);
+  const volumeKPoints = volumeUSD * 1000;
+  
+  const meetsFlowMaster = txCount >= 10 && uniqueMerchants >= 4 && volumeKPoints >= 50000;
 
   // Candidate Form States
   const currentCandidate = db.candidates?.find((c: any) => c.phone === currentUser.phone);
@@ -2305,6 +2313,46 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                 </button>
               </div>
             </UniversalWalletWidget>
+
+            {/* FlowMaster Gamification Tracker */}
+            <div className="bg-gradient-to-tr from-[#1E293B] to-[#0F172A] border border-slate-700/50 rounded-2xl p-5 shadow-xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl"></div>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center border border-slate-600 shadow-inner">
+                  <Star className={currentUser.isFlowMaster ? "text-yellow-400" : "text-slate-400"} size={20} />
+                </div>
+                <div>
+                  <h4 className="text-white font-black text-sm">Rango FlowMaster</h4>
+                  <p className="text-slate-400 text-[10px] mt-0.5">{currentUser.isFlowMaster ? "¡Eres FlowMaster! AOF exento." : "Completa los hitos para exentar el AOF y subir de rango."}</p>
+                </div>
+              </div>
+
+              {!currentUser.isFlowMaster && (
+                <div className="space-y-3 mb-4">
+                  <div className="bg-slate-800/50 rounded-lg p-2.5 flex justify-between items-center border border-slate-700">
+                    <span className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">10 Transacciones</span>
+                    <span className={`text-xs font-black ${txCount >= 10 ? 'text-emerald-400' : 'text-slate-500'}`}>{txCount}/10</span>
+                  </div>
+                  <div className="bg-slate-800/50 rounded-lg p-2.5 flex justify-between items-center border border-slate-700">
+                    <span className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">4 Comercios Distintos</span>
+                    <span className={`text-xs font-black ${uniqueMerchants >= 4 ? 'text-emerald-400' : 'text-slate-500'}`}>{uniqueMerchants}/4</span>
+                  </div>
+                  <div className="bg-slate-800/50 rounded-lg p-2.5 flex justify-between items-center border border-slate-700">
+                    <span className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">50K Puntos ($50) Movidos</span>
+                    <span className={`text-xs font-black ${volumeKPoints >= 50000 ? 'text-emerald-400' : 'text-slate-500'}`}>{volumeKPoints.toLocaleString()}/50,000 KP</span>
+                  </div>
+                </div>
+              )}
+
+              {!currentUser.isFlowMaster && meetsFlowMaster && (
+                <button
+                  onClick={() => claimFlowMaster(currentUser.id)}
+                  className="w-full bg-yellow-500 hover:bg-yellow-400 text-yellow-900 font-black py-3 rounded-xl transition-all shadow-[0_5px_15px_rgba(234,179,8,0.3)] animate-bounce"
+                >
+                  ¡Reclamar Rango FlowMaster!
+                </button>
+              )}
+            </div>
 
             <TopUpModal
               isOpen={isTopUpOpen}

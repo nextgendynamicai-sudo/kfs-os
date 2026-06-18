@@ -42,8 +42,8 @@ export async function POST(req: Request) {
     let updatedCustomers = [...db.customers];
     updatedCustomers[customerIdx] = {
       ...customer,
-      walletUSD: (customer.walletUSD || 0) + amountUSD,
-      kPoints: (customer.kPoints || 0) + kPointsBonus,
+      real_balance: (customer.real_balance || 0) + amountUSD,
+      k_point_bonus_balance: (customer.k_point_bonus_balance || 0) + kPointsBonus,
       hasRecharged: true
     };
 
@@ -72,7 +72,7 @@ export async function POST(req: Request) {
           if (custIdx !== -1) {
             updatedCustomers[custIdx] = {
               ...updatedCustomers[custIdx],
-              kPoints: (updatedCustomers[custIdx].kPoints || 0) + 500
+              k_point_bonus_balance: (updatedCustomers[custIdx].k_point_bonus_balance || 0) + 500
             };
           }
         }

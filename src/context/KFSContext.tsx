@@ -164,6 +164,8 @@ interface KFSContextType {
   requestTopUp: (userId: string, userType: 'client' | 'customer', amountUSD: number, paymentReference: string, screenshotBase64: string) => void;
   validateTopUp: (topupId: string, status: 'approved' | 'rejected', approverId: string) => void;
   processMonthlyBilling: (clientId: string) => void;
+  convertAsset: (customerId: string, fromType: 'real_balance' | 'k_point_cash_balance', amount: number) => void;
+  claimFlowMaster: (customerId: string) => void;
   registerCustomer: (phone: string, password: string, name: string, referralCode?: string) => void;
   blockClient: (clientId: string) => void;
   releaseClient: (clientId: string) => void;
@@ -988,18 +990,31 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         const now = Date.now();
         let updated = false;
         const newCustomers = (prev.customers || []).map((c: any) => {
-          if (c.k_points_expiry && c.k_points_balance > 0) {
-            const expiryTime = new Date(c.k_points_expiry).getTime();
+          let hasChanges = false;
+          let newC = { ...c };
+
+          // 1. K-Point Bonus Expiry (7 days irreversible)
+          if (newC.k_point_bonus_expiry && newC.k_point_bonus_balance > 0) {
+            const expiryTime = new Date(newC.k_point_bonus_expiry).getTime();
             if (now > expiryTime) {
-              updated = true;
-              return {
-                ...c,
-                k_points_balance: 0,
-                k_points_expiry: null
-              };
+              hasChanges = true;
+              newC.k_point_bonus_balance = 0;
+              newC.k_point_bonus_expiry = null;
             }
           }
-          return c;
+
+          // 2. K-Points Normal AOF (0.5% degradation every 5 days)
+          if (!newC.isFlowMaster && newC.k_points_expiry && newC.k_points_balance > 0) {
+            const aofTime = new Date(newC.k_points_expiry).getTime();
+            if (now > aofTime) {
+              hasChanges = true;
+              newC.k_points_balance = Math.max(0, newC.k_points_balance * 0.995); // 0.5% degrade
+              newC.k_points_expiry = new Date(now + 5 * 24 * 60 * 60 * 1000).toISOString();
+            }
+          }
+
+          if (hasChanges) updated = true;
+          return newC;
         });
         if (updated) {
           return {
@@ -1543,6 +1558,55 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
 
 
+  const convertAsset = (customerId: string, fromType: 'real_balance' | 'k_point_cash_balance', amount: number) => {
+    setDb((prev: any) => {
+      let updatedCustomers = prev.customers || [];
+      const customer = updatedCustomers.find((c: any) => c.id === customerId);
+      if (!customer) return prev;
+
+      if (fromType === 'real_balance') {
+        const currentReal = customer.real_balance || 0;
+        if (currentReal < amount) {
+          showToast("Reserva Central (USD) insuficiente.", "error");
+          return prev;
+        }
+        const netAmount = amount * 0.99; // 1% fee
+        customer.real_balance = currentReal - amount;
+        customer.k_point_cash_balance = (customer.k_point_cash_balance || 0) + netAmount;
+        showToast(`Convertiste $${amount} a ${netAmount} K$ (Cash) con 1% fee.`, "success");
+      } else if (fromType === 'k_point_cash_balance') {
+        const currentCash = customer.k_point_cash_balance || 0;
+        if (currentCash < amount) {
+          showToast("K-Point Cash insuficiente.", "error");
+          return prev;
+        }
+        const netAmount = amount * 0.99; // 1% fee
+        const kPointsMinted = netAmount * 1000;
+        customer.k_point_cash_balance = currentCash - amount;
+        customer.k_points_balance = (customer.k_points_balance || 0) + kPointsMinted;
+        showToast(`Convertiste ${amount} K$ a ${kPointsMinted} KP con 1% fee.`, "success");
+      }
+
+      return { ...prev, customers: [...updatedCustomers] };
+    });
+  };
+
+  const claimFlowMaster = (customerId: string) => {
+    setDb((prev: any) => {
+      let updatedCustomers = prev.customers || [];
+      const customerIndex = updatedCustomers.findIndex((c: any) => c.id === customerId);
+      if (customerIndex === -1) return prev;
+
+      updatedCustomers[customerIndex] = {
+        ...updatedCustomers[customerIndex],
+        isFlowMaster: true
+      };
+
+      showToast("¡Felicidades! Eres oficialmente un FlowMaster. Exento de AOF y fees preferenciales activados.", "success");
+      return { ...prev, customers: [...updatedCustomers] };
+    });
+  };
+
   const registerCustomer = async (phone: string, password: string, name: string, referralCode?: string, kycPhoto?: string, kycCedula?: string, kycAddress?: string) => {
     const existing = db.customers?.find((c: any) => c.phone === phone);
     if (existing) {
@@ -1595,8 +1659,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       password: hashPassword(password),
       name,
       real_balance: 0,
-      k_points_balance: 0,
+      k_point_cash_balance: 0, // [NEW] White Paper: Dinero Pro
+      k_points_balance: 0, // (Normal)
+      k_point_bonus_balance: 0, // [NEW] White Paper: Bonos intransferibles
       k_points_expiry: null,
+      k_point_bonus_expiry: null, // [NEW] Expira en 7 días
       referred_by_promoter_id,
       referred_by_merchant_id,
       referred_by_customer_id,
@@ -2325,14 +2392,30 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       }
       const userReal = customer.real_balance || 0;
       const userKP = customer.k_points_balance || 0;
+      
       if (paymentMethod === "real_balance" && userReal < totalUSD) {
         showToast("Saldo real insuficiente.", "error");
         return null;
       }
-      if (paymentMethod === "k_points" && userKP < totalUSD * 1000) {
-        showToast("Puntos K-Points insuficientes.", "error");
-        return null;
+      
+      if (paymentMethod === "k_points") {
+        const requiredKP = totalUSD * 1000;
+        if (userKP < requiredKP) {
+          // Auto-Fill Module
+          const deficitKP = requiredKP - userKP;
+          const equivalentUSD = deficitKP / 1000;
+          const usdRequiredWithFee = equivalentUSD * 1.01; // 1% Conversion Fee
+          
+          if (userReal >= usdRequiredWithFee) {
+            showToast("Auto-Fill Activado: Liquidación USD (1% fee) aplicada.", "success");
+            // The actual deduction happens below in the setDb mapping
+          } else {
+            showToast("Puntos K-Points insuficientes y Auto-Fill fallido.", "error");
+            return null;
+          }
+        }
       }
+      
       if (paymentMethod === "hybrid") {
         const pointsUsed = Math.min(userKP, totalUSD * 1000);
         const realNeeded = totalUSD - (pointsUsed / 1000);
@@ -2408,7 +2491,16 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
             realUSDSpent = totalUSD;
             realNeeded = totalUSD;
           } else if (paymentMethod === "k_points") {
-            pointsUsed = totalUSD * 1000;
+            const requiredKP = totalUSD * 1000;
+            const userKP = customer.k_points_balance || 0;
+            if (userKP >= requiredKP) {
+              pointsUsed = requiredKP;
+            } else {
+              // Auto-Fill
+              pointsUsed = userKP; // burn all points
+              const deficitKP = requiredKP - userKP;
+              realNeeded = (deficitKP / 1000) * 1.01; // auto-liquidate with 1% fee
+            }
           } else if (paymentMethod === "hybrid") {
             pointsUsed = Math.min(customer.k_points_balance || 0, totalUSD * 1000);
             realNeeded = totalUSD - (pointsUsed / 1000);
@@ -3785,7 +3877,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       networkState, setNetworkState, smsConciliator, registerCrmExpress,
       ghostTrapLocked, setGhostTrapLocked, createVale, payVale, processPayroll, registerPosTerminal, deletePosTerminal,
       queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings, updatePaymentMethods, toggleProductFeatured,
-      sendNotification, requestNotificationPermission, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, transferKFSPoints, fundCustomerWallet, requestTopUp, requestPayout, validateTopUp, processMonthlyBilling, registerCustomer, blockClient, releaseClient, deleteClient, deleteCustomer, deletePromotora, deleteVendedor, deleteRider,
+      sendNotification, requestNotificationPermission, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, transferKFSPoints, fundCustomerWallet, requestTopUp, requestPayout, validateTopUp, processMonthlyBilling, convertAsset, claimFlowMaster, registerCustomer, blockClient, releaseClient, deleteClient, deleteCustomer, deletePromotora, deleteVendedor, deleteRider,
       registerCandidate, unlockCandidateContact, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, hireCandidate, releaseCandidate, toggleCandidateBacking, markNotificationsAsRead, updateCvBuilderOption,
       registerRider, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, updateRiderPagoMovil, confirmDelivery, markAsPickedUp, rateRider, updateRiderGPS, riderCheckIn, riderCheckOut,
       toggleBusinessOpen, updateBusinessConfig

@@ -12,9 +12,13 @@ export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualW
   const [isExpired, setIsExpired] = useState<boolean>(false);
   const [selectedPromoter, setSelectedPromoter] = useState<string>("");
 
-  const realBalance = currentUser.real_balance || 0;
-  const kPointsBalance = currentUser.k_points_balance || 0;
+  const realBalance = currentUser.real_balance || currentUser.walletBalanceUSD || 0;
+  const kPointCashBalance = currentUser.k_point_cash_balance || 0;
+  const kPointsBalance = currentUser.k_points_balance || currentUser.kPoints || 0;
+  const kPointBonusBalance = currentUser.k_point_bonus_balance || 0;
+  
   const expiry = currentUser.k_points_expiry;
+  const bonusExpiry = currentUser.k_point_bonus_expiry;
 
   useEffect(() => {
     if (!expiry || kPointsBalance <= 0) {
@@ -61,16 +65,16 @@ export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualW
           <span className="text-[10px] font-black uppercase tracking-widest text-[#C5A184]/80 flex items-center gap-1.5 mb-2">
             <Zap size={10} className="text-[#C5A184] animate-pulse" /> KFS Wallet Engine v4
           </span>
-          <h2 className="text-2xl font-black tracking-tight text-gray-100">Billetera Dual Integrada</h2>
-          <p className="text-xs text-gray-400 mt-1">Tu balance real y cupones de compra digital en tiempo real.</p>
+          <h2 className="text-2xl font-black tracking-tight text-gray-100">Billetera Multicapa (Double Ledger)</h2>
+          <p className="text-xs text-gray-400 mt-1">Tu balance Fiat, Dinero Pro y Puntos segregados.</p>
         </div>
 
-        {/* Expiry Countdown Widget */}
-        {kPointsBalance > 0 && (
+        {/* Expiry Countdown Widget for Bonus */}
+        {kPointBonusBalance > 0 && (
           <div className="bg-red-500/10 border border-red-500/30 rounded-2xl px-4 py-3 flex items-center gap-3 self-start animate-pulse">
             <Clock size={16} className="text-red-400" />
             <div>
-              <p className="text-[9px] font-black uppercase tracking-widest text-red-300">Caducidad de Bono (120h)</p>
+              <p className="text-[9px] font-black uppercase tracking-widest text-red-300">Caducidad de Bono (168h)</p>
               <p className="text-sm font-mono font-black text-red-400">
                 {isExpired ? "¡Bono Caducado!" : timeLeftStr || "Calculando..."}
               </p>
@@ -80,51 +84,41 @@ export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualW
       </div>
 
       {/* Balances Display */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Real Balance (USD) */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-center justify-between hover:border-[#C5A184]/20 transition-all">
-          <div>
-            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 flex items-center gap-1">
-              <DollarSign size={10} /> Saldo Real (USD)
-            </p>
-            <p className="text-3xl font-black tracking-tight text-white mt-1">
-              {formatUSD(realBalance)}
-            </p>
-            <p className="text-[9px] text-gray-400 mt-1">Disponible en cualquier comercio aliado.</p>
-          </div>
-          <div className="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center text-green-400 text-lg font-bold">
-            $
-          </div>
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-[#C5A184]/20 transition-all">
+          <DollarSign size={20} className="text-green-500 mb-2" />
+          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Reserva Central</p>
+          <p className="text-2xl font-black tracking-tight text-white mt-1">
+            {formatUSD(realBalance)}
+          </p>
         </div>
 
-        {/* K-Points / Flow Express Bonus */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-5 flex items-center justify-between hover:border-[#C5A184]/20 transition-all relative overflow-hidden">
-          {currentUser.is_k_points_locked && (
-            <div className="absolute inset-0 bg-[#0A1128]/70 backdrop-blur-sm z-10 flex flex-col items-center justify-center text-center p-2">
-              <Lock size={16} className="text-[#C5A184] mb-1 drop-shadow-lg" />
-              <p className="text-[9px] font-black uppercase tracking-widest text-white mb-2 drop-shadow-md">Bono Bloqueado</p>
-              <button 
-                onClick={() => handleSimulatedRecharge(5)}
-                className="bg-[#C5A184] hover:bg-[#C5A184]/90 text-[#0A1128] px-3 py-1.5 rounded-lg text-[9px] font-black transition-colors shadow-lg"
-              >
-                Recarga $5 para desbloquear
-              </button>
-            </div>
-          )}
-          <div className={currentUser.is_k_points_locked ? "opacity-20 blur-[2px]" : ""}>
-            <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 flex items-center gap-1">
-              <Gift size={10} /> Bono Flow Express
-            </p>
-            <p className="text-3xl font-black tracking-tight text-[#C5A184] mt-1">
-              {kPointsBalance.toLocaleString()} <span className="text-xs text-[#C5A184]/80">KP</span>
-            </p>
-            <p className="text-[9px] text-gray-400 mt-1">
-              Equivale a {formatUSD(kPointsBalance / 1000)} USD. Expira en 5 días.
-            </p>
-          </div>
-          <div className={`w-12 h-12 rounded-xl bg-[#C5A184]/15 flex items-center justify-center text-[#C5A184] text-lg font-bold ${currentUser.is_k_points_locked ? "opacity-20 blur-[2px]" : ""}`}>
-            KP
-          </div>
+        {/* K-Point Cash */}
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-[#C5A184]/20 transition-all">
+          <Zap size={20} className="text-[#3B82F6] mb-2" />
+          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">K-Point Cash</p>
+          <p className="text-2xl font-black tracking-tight text-white mt-1">
+            {kPointCashBalance.toLocaleString()} <span className="text-xs">K$</span>
+          </p>
+        </div>
+
+        {/* K-Points (Normal) */}
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-[#C5A184]/20 transition-all">
+          <Gift size={20} className="text-[#8B5CF6] mb-2" />
+          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">K-Points Normal</p>
+          <p className="text-2xl font-black tracking-tight text-[#8B5CF6] mt-1">
+            {kPointsBalance.toLocaleString()} <span className="text-xs">KP</span>
+          </p>
+        </div>
+
+        {/* K-Point Bonus */}
+        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-[#C5A184]/20 transition-all">
+          <Clock size={20} className="text-[#F59E0B] mb-2" />
+          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">K-Point Bonus</p>
+          <p className="text-2xl font-black tracking-tight text-[#F59E0B] mt-1">
+            {kPointBonusBalance.toLocaleString()} <span className="text-xs">KB</span>
+          </p>
         </div>
       </div>
 

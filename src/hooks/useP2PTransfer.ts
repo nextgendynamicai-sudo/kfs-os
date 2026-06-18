@@ -8,10 +8,15 @@ export function useP2PTransfer() {
     senderPhone: string,
     recipientQuery: string, // phone or name
     amount: number,
-    type: "real_balance" | "k_points"
+    type: "real_balance" | "k_point_cash_balance" | "k_points_balance" | "k_point_bonus_balance"
   ) => {
     if (amount <= 0) {
       showToast("Monto inválido para transferencia.", "error");
+      return false;
+    }
+
+    if (type === "k_point_bonus_balance") {
+      showToast("Los K-Point Bonus son intransferibles.", "error");
       return false;
     }
 
@@ -53,36 +58,60 @@ export function useP2PTransfer() {
           if (type === "real_balance") {
             const currentReal = c.real_balance || 0;
             if (currentReal < amount) {
-              setTimeout(() => showToast("Saldo Real insuficiente.", "error"), 10);
+              setTimeout(() => showToast("Reserva Central (USD) insuficiente.", "error"), 10);
               return c;
             }
             success = true;
-            return {
-              ...c,
-              real_balance: currentReal - amount
-            };
-          } else {
+            return { ...c, real_balance: currentReal - amount };
+          } 
+          
+          else if (type === "k_point_cash_balance") {
+            const currentCash = c.k_point_cash_balance || 0;
+            if (currentCash < amount) {
+              setTimeout(() => showToast("K-Point Cash insuficiente.", "error"), 10);
+              return c;
+            }
+            success = true;
+            return { ...c, k_point_cash_balance: currentCash - amount };
+          }
+          
+          else if (type === "k_points_balance") {
             const currentKP = c.k_points_balance || 0;
-            if (currentKP < amount) {
-              setTimeout(() => showToast("Bono Flow Express (K-Points) insuficiente.", "error"), 10);
+            const requiredKP = amount * 1.30; // 30% Transfer Fee
+            
+            if (currentKP >= requiredKP) {
+              success = true;
+              return { ...c, k_points_balance: currentKP - requiredKP };
+            } 
+            
+            // Auto-Fill Módulo
+            const deficitKP = requiredKP - currentKP;
+            const equivalentUSD = deficitKP / 1000;
+            const usdRequiredWithFee = equivalentUSD * 1.01; // 1% Conversion Fee
+            
+            const currentReal = c.real_balance || 0;
+            if (currentReal >= usdRequiredWithFee) {
+              success = true;
+              setTimeout(() => showToast("Auto-Fill Activado: Liquidación USD (1% fee) aplicada.", "success"), 10);
+              return { 
+                ...c, 
+                k_points_balance: 0, 
+                real_balance: currentReal - usdRequiredWithFee 
+              };
+            } else {
+              setTimeout(() => showToast("K-Points Insuficientes y Auto-Fill fallido por falta de Reserva USD.", "error"), 10);
               return c;
             }
-            success = true;
-            return {
-              ...c,
-              k_points_balance: currentKP - amount
-            };
           }
         }
 
         if (c.phone === recipient.phone) {
           if (type === "real_balance") {
-            return {
-              ...c,
-              real_balance: (c.real_balance || 0) + amount
-            };
-          } else {
-            // Transfer of K-Points resets/extends the expiry for the recipient to 5 days
+            return { ...c, real_balance: (c.real_balance || 0) + amount };
+          } else if (type === "k_point_cash_balance") {
+            return { ...c, k_point_cash_balance: (c.k_point_cash_balance || 0) + amount };
+          } else if (type === "k_points_balance") {
+            // El destinatario recibe el amount base. El 30% se quemó / se cobró como comisión.
             const newExpiry = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString();
             return {
               ...c,
