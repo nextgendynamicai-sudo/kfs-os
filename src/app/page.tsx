@@ -478,7 +478,7 @@ const SMSConciliatorSimulator = () => {
                 </div>
                 <div>
                   <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Monto (Bs o $)</label>
-                  <input type="text" value={amount} onChange={e => setAmount(e.target.value)} className="w-full bg-[violet-900] border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-[violet-600] text-white font-mono" />
+                  <input type="text" placeholder="Ej: 150,00" value={amount} onChange={e => setAmount(e.target.value)} className="w-full bg-[violet-900] border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-[violet-600] text-white font-mono placeholder:text-gray-400" />
                 </div>
               </div>
 
@@ -489,7 +489,7 @@ const SMSConciliatorSimulator = () => {
                 </div>
                 <div>
                   <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Teléfono Emisor</label>
-                  <input type="text" value={phone} onChange={e => setPhone(e.target.value)} className="w-full bg-[violet-900] border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-[violet-600] text-white font-mono" />
+                  <input type="text" placeholder="Ej: 04121234567" value={phone} onChange={e => setPhone(e.target.value)} className="w-full bg-[violet-900] border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-[violet-600] text-white font-mono placeholder:text-gray-400" />
                 </div>
               </div>
 
@@ -717,7 +717,7 @@ const FiscalPrinterSetupWidget = () => {
                 type="text"
                 value={proxyUrl}
                 onChange={(e) => setProxyUrl(e.target.value)}
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-xs text-gray-900 focus:outline-none font-mono"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-xs text-gray-900 focus:outline-none font-mono placeholder:text-gray-400"
               />
               <button
                 type="button"
@@ -1135,24 +1135,24 @@ const RegisterClientForm = ({ onRegister, onCancel, standalone = true, defaultRe
         </label>
       </div>
 
-      <input required placeholder="Nombre Completo" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, name: e.target.value })} />
-      <input required placeholder="Cédula / RIF" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, idCard: e.target.value })} />
-      <input required placeholder="Nombre de la Empresa" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, company: e.target.value })} />
-      <textarea required placeholder="Dirección Comercial" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, address: e.target.value })} />
-      <input required type="number" placeholder="Facturación Promedio Diaria ($)" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, avgBilling: e.target.value })} />
+      <input required placeholder="Nombre Completo" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white placeholder:text-gray-300" : "bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400"}`} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+      <input required placeholder="Cédula / RIF" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white placeholder:text-gray-300" : "bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400"}`} onChange={e => setFormData({ ...formData, idCard: e.target.value })} />
+      <input required placeholder="Nombre de la Empresa" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white placeholder:text-gray-300" : "bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400"}`} onChange={e => setFormData({ ...formData, company: e.target.value })} />
+      <textarea required placeholder="Dirección Comercial" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white placeholder:text-gray-300" : "bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400"}`} onChange={e => setFormData({ ...formData, address: e.target.value })} />
+      <input required type="number" placeholder="Facturación Promedio Diaria ($)" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white placeholder:text-gray-300" : "bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400"}`} onChange={e => setFormData({ ...formData, avgBilling: e.target.value })} />
 
       <div className="flex flex-col mb-2">
         <label className={`text-xs font-bold mb-2 uppercase tracking-widest ${standalone ? "text-gray-400" : "text-gray-500"}`}>Tarifa BOS (Comisión Kreatek)</label>
-        <select required value={formData.kfsFeePercentage} onChange={e => setFormData({ ...formData, kfsFeePercentage: parseFloat(e.target.value) })} className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all font-bold ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`}>
+        <select required value={formData.kfsFeePercentage} onChange={e => setFormData({ ...formData, kfsFeePercentage: parseFloat(e.target.value) })} className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all font-bold ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white placeholder:text-gray-300" : "bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400"}`}>
           <option value={0.03}>Plan Base (3%)</option>
           <option value={0.05}>Plan Estándar (5%)</option>
           <option value={0.10}>Plan Premium (10%)</option>
         </select>
       </div>
 
-      <input required placeholder="Teléfono Personal" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
-      <input required type="email" placeholder="Correo Electrónico" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, email: e.target.value })} />
-      <input required type="password" placeholder="Crear Clave de Acceso" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, password: e.target.value })} />
+      <input required placeholder="Teléfono Personal" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white placeholder:text-gray-300" : "bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400"}`} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
+      <input required type="email" placeholder="Correo Electrónico" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white placeholder:text-gray-300" : "bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400"}`} onChange={e => setFormData({ ...formData, email: e.target.value })} />
+      <input required type="password" placeholder="Crear Clave de Acceso" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white placeholder:text-gray-300" : "bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400"}`} onChange={e => setFormData({ ...formData, password: e.target.value })} />
 
       <div className="flex items-start gap-2 pt-2 mb-2">
         <input type="checkbox" required checked={acceptedToS} onChange={(e) => setAcceptedToS(e.target.checked)} className="mt-1 cursor-pointer" />
@@ -1226,12 +1226,12 @@ const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCode = "" 
         </label>
       </div>
 
-      <input required placeholder="Nombre Completo" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all" onChange={e => setFormData({ ...formData, name: e.target.value })} />
-      <textarea required placeholder="Dirección Completa (KYC)" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all" onChange={e => setFormData({ ...formData, kycAddress: e.target.value })} />
-      <input required type="email" placeholder="Correo Electrónico" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all" onChange={e => setFormData({ ...formData, email: e.target.value })} />
-      <input required type="password" placeholder="Crear Clave de Acceso" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all" onChange={e => setFormData({ ...formData, password: e.target.value })} />
-      <input required placeholder="Binance ID (Ej: 184592...)" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all" onChange={e => setFormData({ ...formData, binanceId: e.target.value })} />
-      <input required placeholder="Pago Móvil (Ej: 0412...)" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all" onChange={e => setFormData({ ...formData, pagoMovil: e.target.value })} />
+      <input required placeholder="Nombre Completo" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all placeholder:text-gray-400" onChange={e => setFormData({ ...formData, name: e.target.value })} />
+      <textarea required placeholder="Dirección Completa (KYC)" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all placeholder:text-gray-400" onChange={e => setFormData({ ...formData, kycAddress: e.target.value })} />
+      <input required type="email" placeholder="Correo Electrónico" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all placeholder:text-gray-400" onChange={e => setFormData({ ...formData, email: e.target.value })} />
+      <input required type="password" placeholder="Crear Clave de Acceso" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all placeholder:text-gray-400" onChange={e => setFormData({ ...formData, password: e.target.value })} />
+      <input required placeholder="Binance ID (Ej: 184592...)" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all placeholder:text-gray-400" onChange={e => setFormData({ ...formData, binanceId: e.target.value })} />
+      <input required placeholder="Pago Móvil (Ej: 0412...)" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all placeholder:text-gray-400" onChange={e => setFormData({ ...formData, pagoMovil: e.target.value })} />
       <div className="flex gap-3 pt-4">
         <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl bg-gray-200/20 hover:bg-gray-200/30 text-white font-bold transition-all text-sm cursor-pointer">Cancelar</button>
         <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-[violet-900] text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-lg cursor-pointer" style={{ backgroundColor: KREATEK_COLORS.bronze }}>Registrar Perfil</button>
@@ -3140,7 +3140,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-full flex items-center justify-center text-violet-600 font-black text-2xl flex-shrink-0 border-none relative z-20">
+            <div className="w-16 h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-full flex items-center justify-center text-violet-600 font-black text-2xl flex-shrink-0 border-none relative z-20 placeholder:text-gray-400">
               <ProfileAvatarEditor currentUser={currentUser} />
             </div>
             <div>
@@ -3212,11 +3212,11 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
               <div className="flex items-center gap-4 w-full md:w-auto">
                 <div className="flex-1 md:w-32">
                   <label className="text-[10px] font-bold text-gray-500 uppercase">Tasa USD (Bs)</label>
-                  <input type="number" id="manualUsdRate" defaultValue={rates.USD} step="0.01" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-2 font-bold text-violet-900 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all" />
+                  <input type="number" id="manualUsdRate" placeholder="Tasa USD" defaultValue={rates.USD} step="0.01" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-2 font-bold text-violet-900 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all placeholder:text-gray-400" />
                 </div>
                 <div className="flex-1 md:w-32">
                   <label className="text-[10px] font-bold text-gray-500 uppercase">Tasa EUR (Bs)</label>
-                  <input type="number" id="manualEurRate" defaultValue={rates.EUR} step="0.01" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-2 font-bold text-violet-900 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all" />
+                  <input type="number" id="manualEurRate" placeholder="Tasa EUR" defaultValue={rates.EUR} step="0.01" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-2 font-bold text-violet-900 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all placeholder:text-gray-400" />
                 </div>
                 <button onClick={() => {
                   const usd = parseFloat((document.getElementById('manualUsdRate') as HTMLInputElement).value);
@@ -3315,7 +3315,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                 <h3 className="text-xl font-black text-violet-900 flex items-center gap-2"><Shield className="text-violet-600" /> Control y Gobernanza de Promotoras</h3>
                 <div className="relative w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                  <input type="text" placeholder="Buscar promotora..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all text-violet-900" value={searchPromotora} onChange={e => setSearchPromotora(e.target.value)} />
+                  <input type="text" placeholder="Buscar promotora..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all text-violet-900 placeholder:text-gray-400" value={searchPromotora} onChange={e => setSearchPromotora(e.target.value)} />
                 </div>
               </div>
 
@@ -3377,7 +3377,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                 <h3 className="text-xl font-black text-violet-900 flex items-center gap-2"><DollarSign className="text-red-500" /> Estado de Cobranza Diaria (BOS)</h3>
                 <div className="relative w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                  <input type="text" placeholder="Buscar comercio..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all text-violet-900" value={searchClient} onChange={e => setSearchClient(e.target.value)} />
+                  <input type="text" placeholder="Buscar comercio..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all text-violet-900 placeholder:text-gray-400" value={searchClient} onChange={e => setSearchClient(e.target.value)} />
                 </div>
               </div>
               <div className="overflow-x-auto rounded-xl">
@@ -3470,7 +3470,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                 <h3 className="text-xl font-black text-violet-900 flex items-center gap-2"><UserCheck className="text-violet-600" /> Fuerza Laboral (Vendedores)</h3>
                 <div className="relative w-48">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                  <input type="text" placeholder="Buscar vendedor..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 text-violet-900 transition-all" value={searchVendedor} onChange={e => setSearchVendedor(e.target.value)} />
+                  <input type="text" placeholder="Buscar vendedor..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 text-violet-900 transition-all placeholder:text-gray-400" value={searchVendedor} onChange={e => setSearchVendedor(e.target.value)} />
                 </div>
               </div>
               <div className="overflow-x-auto max-h-96 rounded-xl">
@@ -3525,7 +3525,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 
               {/* Metrics Banner */}
               <div className="bg-violet-100/50 border-b border-violet-100 p-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-4 rounded-xl flex items-center justify-between">
+                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-4 rounded-xl flex items-center justify-between placeholder:text-gray-400">
                   <div>
                     <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Total Entregas</p>
                     <p className="text-xl font-black text-violet-900">
@@ -3534,7 +3534,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                   </div>
                   <div className="bg-orange-100 text-orange-600 p-2 rounded-lg"><Truck size={20} /></div>
                 </div>
-                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-4 rounded-xl flex items-center justify-between">
+                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-4 rounded-xl flex items-center justify-between placeholder:text-gray-400">
                   <div>
                     <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Ganancias Generadas</p>
                     <p className="text-xl font-black text-emerald-500">
@@ -3543,7 +3543,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                   </div>
                   <div className="bg-emerald-100 text-emerald-600 p-2 rounded-lg"><DollarSign size={20} /></div>
                 </div>
-                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-4 rounded-xl flex items-center justify-between">
+                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-4 rounded-xl flex items-center justify-between placeholder:text-gray-400">
                   <div>
                     <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Riders Activos</p>
                     <p className="text-xl font-black text-violet-900">
@@ -4224,7 +4224,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                   const url = `${host}?role=${invite.role}&ref=arquitecto`;
                   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}`;
                   return (
-                    <div key={idx} className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-6 rounded-2xl flex flex-col items-center text-center shadow-sm">
+                    <div key={idx} className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-6 rounded-2xl flex flex-col items-center text-center shadow-sm placeholder:text-gray-400">
                       <h4 className="font-black text-[violet-900] mb-4">{invite.title}</h4>
                       <img src={invite.imgUrl} alt={invite.title} className="w-full h-32 object-cover rounded-xl mb-4 shadow-sm border-2 border-white" />
                       <div className="bg-white p-2 rounded-xl border border-gray-100 shadow-sm mb-4">
@@ -4260,14 +4260,14 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
               <div className="space-y-4">
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 block">Comercio (Target)</label>
-                  <select value={targetClientId} onChange={e => setTargetClientId(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold">
+                  <select value={targetClientId} onChange={e => setTargetClientId(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold placeholder:text-gray-400">
                     <option value="">Seleccione Comercio...</option>
                     {db.clients.map((c: any) => <option key={c.id} value={c.id}>{c.company}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 block">Nueva Promotora</label>
-                  <select value={targetPromotoraId} onChange={e => setTargetPromotoraId(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold">
+                  <select value={targetPromotoraId} onChange={e => setTargetPromotoraId(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold placeholder:text-gray-400">
                     <option value="">Seleccione Promotora...</option>
                     <option value="none">Sin Promotora (100% KFS)</option>
                     {db.promotoras.filter((p: any) => p.status !== 'pending').map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -4306,9 +4306,9 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                 <button onClick={() => setActiveModal(null)}><X size={24} className="text-gray-400" /></button>
               </div>
               <div className="space-y-4">
-                <input type="text" placeholder="Nombre del Producto" value={globalProdName} onChange={e => setGlobalProdName(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold" />
-                <input type="number" placeholder="Precio ($ USD)" value={globalProdPrice} onChange={e => setGlobalProdPrice(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold" />
-                <input type="text" placeholder="Categoría" value={globalProdCategory} onChange={e => setGlobalProdCategory(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold" />
+                <input type="text" placeholder="Nombre del Producto" value={globalProdName} onChange={e => setGlobalProdName(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold placeholder:text-gray-400" />
+                <input type="number" placeholder="Precio ($ USD)" value={globalProdPrice} onChange={e => setGlobalProdPrice(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold placeholder:text-gray-400" />
+                <input type="text" placeholder="Categoría" value={globalProdCategory} onChange={e => setGlobalProdCategory(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold placeholder:text-gray-400" />
                 <label className="flex items-center gap-2 text-sm font-bold text-gray-700 cursor-pointer p-3 border border-gray-200 rounded-xl bg-gray-50">
                   <input type="checkbox" id="globalKPoints" className="w-5 h-5 accent-indigo-600 rounded" defaultChecked={true} />
                   Permitir pago mixto con K-Points (Lealtad)
@@ -4337,15 +4337,15 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
               <div className="space-y-4">
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 block">Audiencia Destino</label>
-                  <select value={notifTarget} onChange={e => setNotifTarget(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold">
+                  <select value={notifTarget} onChange={e => setNotifTarget(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold placeholder:text-gray-400">
                     <option value="all">Toda la Red KFS</option>
                     <option value="dueño">Comercios Afiliados</option>
                     <option value="promotora">Fuerza de Promotoras</option>
                     <option value="vendedor">Terminales (Vendedores)</option>
                   </select>
                 </div>
-                <input type="text" placeholder="Título Breve" value={notifTitle} onChange={e => setNotifTitle(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold text-red-600" />
-                <textarea placeholder="Mensaje de impacto..." value={notifMsg} onChange={e => setNotifMsg(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold h-24 resize-none" />
+                <input type="text" placeholder="Título Breve" value={notifTitle} onChange={e => setNotifTitle(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold text-red-600 placeholder:text-gray-400" />
+                <textarea placeholder="Mensaje de impacto..." value={notifMsg} onChange={e => setNotifMsg(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold h-24 resize-none placeholder:text-gray-400" />
                 <button onClick={() => { if (notifTitle && notifMsg) { sendNotification(notifTarget, notifTitle, notifMsg); setActiveModal(null); } }} className="w-full bg-red-600 text-white py-4 rounded-xl font-black shadow-lg flex justify-center gap-2 items-center"><Bell size={20} /> Broadcast Instantáneo</button>
               </div>
             </div>
@@ -4387,7 +4387,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                       const r = db.riders?.find((r: any) => r.id === e.target.value);
                       setAssignRiderModal({ riderId: e.target.value, riderName: r?.name || "" });
                     }}
-                    className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold text-[violet-900] focus:outline-none focus:ring-2 focus:ring-orange-300"
+                    className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold text-[violet-900] focus:outline-none focus:ring-2 focus:ring-orange-300 placeholder:text-gray-400"
                   >
                     <option value="">Seleccione un Rider...</option>
                     {(db.riders || []).filter((r: any) => r.status === "approved").map((r: any) => (
@@ -4405,7 +4405,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                   <select
                     value={assignRiderBusinessId}
                     onChange={e => setAssignRiderBusinessId(e.target.value)}
-                    className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold text-[violet-900] focus:outline-none focus:ring-2 focus:ring-orange-300"
+                    className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold text-[violet-900] focus:outline-none focus:ring-2 focus:ring-orange-300 placeholder:text-gray-400"
                   >
                     <option value="">Seleccione un Comercio...</option>
                     {db.clients.map((c: any) => {
@@ -4848,7 +4848,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
                   <div className="flex flex-wrap gap-4 w-full md:w-auto">
                     <div className="relative flex-1 md:w-48">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                      <input type="text" placeholder="Buscar comercio..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]" value={searchClient} onChange={e => setSearchClient(e.target.value)} />
+                      <input type="text" placeholder="Buscar comercio..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] placeholder:text-gray-400" value={searchClient} onChange={e => setSearchClient(e.target.value)} />
                     </div>
                     <button onClick={() => setShowRegister(true)} className="bg-[violet-900] text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors shadow-md cursor-pointer">+ Nuevo Setup</button>
                   </div>
@@ -5108,19 +5108,19 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
               }} className="space-y-4">
                 <div>
                   <label className="text-xs font-bold text-gray-400 block mb-1">Nombre Completo</label>
-                  <input name="vName" required className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:border-[violet-600]" placeholder="Ej: Vendedor Alpha" />
+                  <input name="vName" required className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:border-[violet-600] placeholder:text-gray-400" placeholder="Ej: Vendedor Alpha" />
                 </div>
                 <div>
                   <label className="text-xs font-bold text-gray-400 block mb-1">Correo Electrónico (Login)</label>
-                  <input type="email" name="vEmail" required className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:border-[violet-600]" placeholder="vendedor@kfs.com" />
+                  <input type="email" name="vEmail" required className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:border-[violet-600] placeholder:text-gray-400" placeholder="vendedor@kfs.com" />
                 </div>
                 <div>
                   <label className="text-xs font-bold text-gray-400 block mb-1">Contraseña</label>
-                  <input type="password" name="vPassword" required className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:border-[violet-600]" placeholder="*****" />
+                  <input type="password" name="vPassword" required className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:border-[violet-600] placeholder:text-gray-400" placeholder="*****" />
                 </div>
                 <div>
                   <label className="text-xs font-bold text-gray-400 block mb-1">Asignar a Comercio (Opcional)</label>
-                  <select name="vClient" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:border-[violet-600] text-gray-700">
+                  <select name="vClient" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:border-[violet-600] text-gray-700 placeholder:text-gray-400">
                     <option value="">Independiente (Sin Comercio Fijo)</option>
                     {myClients.map((c: any) => <option key={c.id} value={c.id}>{c.company}</option>)}
                   </select>
@@ -5282,7 +5282,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
 
         <div className="flex flex-col gap-1">
           <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Biografía o Eslogan (Max 150 char)</label>
-          <textarea maxLength={150} value={settings.bioText} onChange={e => setSettings({ ...settings, bioText: e.target.value })} placeholder="Los mejores productos..." className="w-full h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[violet-600] resize-none" />
+          <textarea maxLength={150} value={settings.bioText} onChange={e => setSettings({ ...settings, bioText: e.target.value })} placeholder="Los mejores productos..." className="w-full h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[violet-600] resize-none placeholder:text-gray-400" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -5299,7 +5299,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
           </div>
           <div>
             <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Tipografía</label>
-            <select value={settings.typography} onChange={e => setSettings({ ...settings, typography: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none">
+            <select value={settings.typography} onChange={e => setSettings({ ...settings, typography: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none placeholder:text-gray-400">
               <option value="font-sans">Moderna (Sans)</option>
               <option value="font-serif">Clásica (Serif)</option>
               <option value="font-mono">Técnica (Mono)</option>
@@ -5309,7 +5309,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
 
         <div>
           <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Disposición (Layout)</label>
-          <select value={settings.layoutType} onChange={e => setSettings({ ...settings, layoutType: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none">
+          <select value={settings.layoutType} onChange={e => setSettings({ ...settings, layoutType: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none placeholder:text-gray-400">
             <option value="grid">Grilla de Tarjetas (Recomendado)</option>
             <option value="list">Lista Compacta</option>
           </select>
@@ -5334,7 +5334,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
                 value={settings.deliveryAddress || ""}
                 onChange={e => setSettings({ ...settings, deliveryAddress: e.target.value })}
                 placeholder="Ej: Av. Principal, Edificio Torre Norte, Local 4"
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300 placeholder:text-gray-400"
               />
             </div>
             <div>
@@ -5344,7 +5344,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
                 value={settings.deliveryCity || ""}
                 onChange={e => setSettings({ ...settings, deliveryCity: e.target.value })}
                 placeholder="Ej: Caracas, Miranda"
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300 placeholder:text-gray-400"
               />
             </div>
             <div>
@@ -5354,7 +5354,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
                 value={settings.deliveryReference || ""}
                 onChange={e => setSettings({ ...settings, deliveryReference: e.target.value })}
                 placeholder="Ej: Frente al banco, puerta azul"
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300 placeholder:text-gray-400"
               />
             </div>
             {settings.deliveryAddress && (
@@ -5661,7 +5661,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
               <select
                 value={role}
                 onChange={e => setRole(e.target.value)}
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] placeholder:text-gray-400"
               >
                 <option value="Cajero">Cajero / Cajera</option>
                 <option value="Vendedor">Vendedor de Tienda</option>
@@ -5676,7 +5676,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
               <select
                 value={location}
                 onChange={e => setLocation(e.target.value)}
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] placeholder:text-gray-400"
               >
                 <option value="Caracas - Este">Caracas - Este</option>
                 <option value="Caracas - Oeste">Caracas - Oeste</option>
@@ -5692,7 +5692,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
               <select
                 value={experienceYears}
                 onChange={e => setExperienceYears(e.target.value)}
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] placeholder:text-gray-400"
               >
                 <option value="0-1">Menos de 1 año</option>
                 <option value="1-3">1 a 3 años</option>
@@ -5705,7 +5705,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
               <select
                 value={availability}
                 onChange={e => setAvailability(e.target.value)}
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] placeholder:text-gray-400"
               >
                 <option value="full-time">Tiempo Completo (Full-time)</option>
                 <option value="part-time">Medio Tiempo (Part-time)</option>
@@ -5805,7 +5805,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
 
                     <div className="flex flex-wrap gap-1">
                       {cand.skills?.map((s: string) => (
-                        <span key={s} className="text-[9px] font-bold text-gray-500 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none px-2 py-0.5 rounded-md">
+                        <span key={s} className="text-[9px] font-bold text-gray-500 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none px-2 py-0.5 rounded-md placeholder:text-gray-400">
                           {s}
                         </span>
                       ))}
@@ -6126,7 +6126,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                 placeholder="Ej: Excelente actitud, muy rápido en el POS y puntual. Altamente recomendado."
                 value={ratingComment}
                 onChange={(e) => setRatingComment(e.target.value)}
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[violet-600] text-[violet-900] font-bold"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[violet-600] text-[violet-900] font-bold placeholder:text-gray-400"
               />
             </div>
 
@@ -6433,7 +6433,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           </p>
 
           {!isPendingVerification && (
-            <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-6 rounded-2xl mb-8 relative z-10">
+            <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-6 rounded-2xl mb-8 relative z-10 placeholder:text-gray-400">
               <h3 className="font-bold text-[violet-900] mb-4">¿Cómo reactivar tu Tienda?</h3>
               <p className="text-sm text-gray-500 mb-4">Transfiere $6 USD vía Zinli, AirTM, Wally, Ubbi, Binance Pay o Pago Móvil y escribe la referencia bancaria a continuación:</p>
 
@@ -6523,7 +6523,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 </div>
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] px-4 py-2 rounded-xl border-none">
+                    <div className="flex items-center gap-2 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] px-4 py-2 rounded-xl border-none placeholder:text-gray-400">
                       <span className="text-xs font-bold text-gray-500">Plan Base:</span>
                       <select
                         value={currentUser.kfsTier || 'matrix'}
@@ -6535,7 +6535,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                         <option value="monopoly" className="text-black bg-white">Flow Monopoly (10%)</option>
                       </select>
                     </div>
-                    <div className="flex items-center gap-2 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] px-4 py-2 rounded-xl border-none">
+                    <div className="flex items-center gap-2 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] px-4 py-2 rounded-xl border-none placeholder:text-gray-400">
                       <span className="text-xs font-bold text-gray-500">Tasa KFS Activa (Oráculo):</span>
                       <span className="text-sm font-black text-violet-600">
                         {currentUser.oracle_fee_percentage !== undefined && currentUser.oracle_fee_percentage !== null
@@ -6559,7 +6559,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   <h3 className="font-black text-[violet-900] text-lg">Progreso de Peaje Gamificado</h3>
                   <span className="text-sm font-bold text-violet-500">{clientInfo?.onboardedUsers || 0} / 50 Usuarios</span>
                 </div>
-                <div className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] h-4 rounded-full overflow-hidden">
+                <div className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] h-4 rounded-full overflow-hidden placeholder:text-gray-400">
                   <div className="bg-violet-500 h-full transition-all duration-1000" style={{ width: `${Math.min(((clientInfo?.onboardedUsers || 0) / 50) * 100, 100)}%` }}></div>
                 </div>
                 <p className="text-xs text-gray-500 mt-3">
@@ -6585,7 +6585,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             {/* Open / Close */}
             <div className="bg-[#EEF2F5] rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none p-6 flex flex-col gap-4">
               <h4 className="font-black text-[violet-900] flex items-center gap-2"><Store size={20} className="text-violet-500" /> Estado del Negocio</h4>
-              <div className="flex items-center justify-between bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-2xl p-4">
+              <div className="flex items-center justify-between bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-2xl p-4 placeholder:text-gray-400">
                 <div>
                   <p className="font-black text-sm text-[violet-900]">{clientInfo.isOpen !== false ? '🟢 Abierto' : '🔴 Cerrado'}</p>
                   <p className="text-[10px] text-gray-400 mt-0.5">Tus clientes verán este estado en tu tienda</p>
@@ -6604,9 +6604,9 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 {['Lun-Vie', 'Sáb', 'Dom'].map(day => (
                   <div key={day} className="flex items-center gap-2">
                     <span className="text-xs font-bold text-gray-600 w-14">{day}</span>
-                    <input type="time" defaultValue="08:00" className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-lg px-2 py-1 text-xs flex-1" />
+                    <input type="time" defaultValue="08:00" className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-lg px-2 py-1 text-xs flex-1 placeholder:text-gray-400" />
                     <span className="text-xs text-gray-400">–</span>
-                    <input type="time" defaultValue="18:00" className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-lg px-2 py-1 text-xs flex-1" />
+                    <input type="time" defaultValue="18:00" className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-lg px-2 py-1 text-xs flex-1 placeholder:text-gray-400" />
                   </div>
                 ))}
               </div>
@@ -6629,7 +6629,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                     <span>1 km</span><span>15 km</span><span>30 km</span>
                   </div>
                 </div>
-                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 text-xs text-emerald-600 font-bold">
+                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 text-xs text-emerald-600 font-bold placeholder:text-gray-400">
                   📦 Solo se aceptarán pedidos dentro de {deliveryRadiusKm} km del negocio.
                 </div>
                 <button
@@ -6668,7 +6668,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           {activeTab === 'inventario' && (
             <>
               <button onClick={() => setShowAddModal(true)} className="bg-[#EEF2F5] border-none p-8 rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] hover:shadow-[15px_15px_30px_#d1d9e6,-15px_-15px_30px_#ffffff] flex flex-col items-center justify-center gap-5 transition-all cursor-pointer">
-                <div className="w-16 h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-full flex items-center justify-center">
+                <div className="w-16 h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-full flex items-center justify-center placeholder:text-gray-400">
                   <Package size={32} className="text-violet-500" />
                 </div>
                 <span className="font-black text-lg text-[violet-900]">Subir Producto</span>
@@ -6676,7 +6676,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
               <div className="bg-[#EEF2F5] border-none p-8 rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] flex flex-col items-center justify-center gap-5 transition-all relative overflow-hidden">
                 <input type="file" accept=".csv" ref={fileInputRef} onChange={handleCSVUpload} className="hidden" />
-                <div className="w-16 h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-full flex items-center justify-center">
+                <div className="w-16 h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-full flex items-center justify-center placeholder:text-gray-400">
                   <DownloadCloud size={32} className="text-emerald-500" />
                 </div>
                 <button onClick={() => fileInputRef.current?.click()} className="font-black text-lg text-emerald-600 hover:text-emerald-700 transition-colors cursor-pointer text-center leading-tight">Importar Inventario<br /><span className="text-xs font-bold text-gray-400">Desde Excel/CSV</span></button>
@@ -6717,7 +6717,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
               <h3 className="text-xl font-black mb-6 flex items-center gap-2"><Star className="text-violet-500" /> Productos Estrella</h3>
               <div className="space-y-4">
                 {myProducts.slice(0, 4).map((p: any, i: number) => (
-                  <div key={i} className="flex justify-between items-center bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] p-4 rounded-xl border-none">
+                  <div key={i} className="flex justify-between items-center bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] p-4 rounded-xl border-none placeholder:text-gray-400">
                     <div className="flex items-center gap-3">
                       <div className="bg-violet-100 text-violet-600 font-black h-8 w-8 rounded-full flex items-center justify-center">#{i + 1}</div>
                       <span className="font-bold">{p.name}</span>
@@ -6780,7 +6780,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
               <div className="flex gap-4">
                 <div className="relative w-48">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                  <input type="text" placeholder="Buscar vendedor..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]" value={searchVendedor} onChange={e => setSearchVendedor(e.target.value)} />
+                  <input type="text" placeholder="Buscar vendedor..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] placeholder:text-gray-400" value={searchVendedor} onChange={e => setSearchVendedor(e.target.value)} />
                 </div>
                 <button onClick={() => setShowAddVendedor(true)} className="text-sm font-bold text-white bg-[violet-900] px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors cursor-pointer">+ Añadir Vendedor</button>
               </div>
@@ -7080,29 +7080,29 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             }} className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Zinli (Email)</label>
-                <input name="zinli" defaultValue={currentUser.paymentMethods?.zinli || ""} placeholder="correo@zinli.com" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600]" />
+                <input name="zinli" defaultValue={currentUser.paymentMethods?.zinli || ""} placeholder="correo@zinli.com" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600] placeholder:text-gray-400" />
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Wally Tech</label>
-                <input name="wallyTech" defaultValue={currentUser.paymentMethods?.wallyTech || ""} placeholder="Usuario o Teléfono" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600]" />
+                <input name="wallyTech" defaultValue={currentUser.paymentMethods?.wallyTech || ""} placeholder="Usuario o Teléfono" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600] placeholder:text-gray-400" />
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">AirTM</label>
-                <input name="airtm" defaultValue={currentUser.paymentMethods?.airtm || ""} placeholder="correo@airtm.com" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600]" />
+                <input name="airtm" defaultValue={currentUser.paymentMethods?.airtm || ""} placeholder="correo@airtm.com" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600] placeholder:text-gray-400" />
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Ubbi App</label>
-                <input name="ubbiApp" defaultValue={currentUser.paymentMethods?.ubbiApp || ""} placeholder="Usuario Ubbi" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600]" />
+                <input name="ubbiApp" defaultValue={currentUser.paymentMethods?.ubbiApp || ""} placeholder="Usuario Ubbi" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600] placeholder:text-gray-400" />
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Binance Pay (Pay ID)</label>
-                <input name="binance" defaultValue={currentUser.paymentMethods?.binance || ""} placeholder="ID de Binance" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600]" />
+                <input name="binance" defaultValue={currentUser.paymentMethods?.binance || ""} placeholder="ID de Binance" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600] placeholder:text-gray-400" />
               </div>
               <div className="space-y-2 border border-gray-200 p-4 rounded-xl">
                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono mb-2 block">Pago Móvil</label>
-                <input name="pMovilBank" defaultValue={currentUser.paymentMethods?.pagoMovilBank || ""} placeholder="Banco (Ej. Banesco 0134)" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[violet-600] mb-2" />
-                <input name="pMovilPhone" defaultValue={currentUser.paymentMethods?.pagoMovilPhone || ""} placeholder="Teléfono" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[violet-600] mb-2" />
-                <input name="pMovilId" defaultValue={currentUser.paymentMethods?.pagoMovilId || ""} placeholder="Cédula/RIF" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[violet-600]" />
+                <input name="pMovilBank" defaultValue={currentUser.paymentMethods?.pagoMovilBank || ""} placeholder="Banco (Ej. Banesco 0134)" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[violet-600] mb-2 placeholder:text-gray-400" />
+                <input name="pMovilPhone" defaultValue={currentUser.paymentMethods?.pagoMovilPhone || ""} placeholder="Teléfono" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[violet-600] mb-2 placeholder:text-gray-400" />
+                <input name="pMovilId" defaultValue={currentUser.paymentMethods?.pagoMovilId || ""} placeholder="Cédula/RIF" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[violet-600] placeholder:text-gray-400" />
               </div>
               <div className="md:col-span-3 flex justify-end">
                 <button type="submit" className="bg-[violet-900] text-white font-bold py-3 px-8 rounded-xl hover:bg-black transition-colors cursor-pointer active:scale-95">Guardar en Bóveda Criptográfica</button>
@@ -7354,7 +7354,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                                 <p className="text-[10px] font-black text-gray-500 uppercase tracking-wider mb-2">Riders disponibles para asignar:</p>
                                 <div className="space-y-1">
                                   {availableRiders.slice(0, 5).map((r: any) => (
-                                    <button key={r.id} onClick={() => assignRiderToBusiness(r.id, currentUser.id)} className="w-full text-left px-3 py-2 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl hover:bg-blue-50 hover:border-blue-200 transition-colors cursor-pointer">
+                                    <button key={r.id} onClick={() => assignRiderToBusiness(r.id, currentUser.id)} className="w-full text-left px-3 py-2 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl hover:bg-blue-50 hover:border-blue-200 transition-colors cursor-pointer placeholder:text-gray-400">
                                       <span className="font-bold text-sm text-[violet-900]">{r.name}</span>
                                       <span className="text-[10px] text-gray-400 ml-2">{r.email}</span>
                                       <span className="float-right text-[10px] text-blue-500 font-black">+ Añadir</span>
@@ -7603,27 +7603,27 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
               <h3 className="text-2xl font-black mb-6 text-[violet-900]">Nuevo Producto</h3>
               <form onSubmit={submitProduct} className="space-y-4">
                 <div className="flex gap-2">
-                  <input type="text" placeholder="Código de Barras (Opcional)" value={newProd.barcode} onChange={e => setNewProd({ ...newProd, barcode: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-mono text-gray-900" />
+                  <input type="text" placeholder="Código de Barras (Opcional)" value={newProd.barcode} onChange={e => setNewProd({ ...newProd, barcode: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-mono text-gray-900 placeholder:text-gray-400" />
                   <button type="button" onClick={() => handleBarcodeSearch(newProd.barcode)} disabled={isFetchingBarcode} className="bg-[violet-900] text-white px-4 rounded-xl font-bold flex-shrink-0 disabled:opacity-50">
                     <Search size={18} />
                   </button>
                 </div>
-                <input required type="text" placeholder="Nombre del Artículo" value={newProd.name} onChange={e => setNewProd({ ...newProd, name: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900" />
+                <input required type="text" placeholder="Nombre del Artículo" value={newProd.name} onChange={e => setNewProd({ ...newProd, name: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900 placeholder:text-gray-400" />
                 <div className="grid grid-cols-3 gap-2">
                   <div>
                     <label className="text-[9px] font-black uppercase text-gray-400 block mb-1">Costo Insumo</label>
-                    <input required type="number" step="0.01" placeholder="Costo ($)" value={newProd.cost} onChange={e => setNewProd({ ...newProd, cost: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900" />
+                    <input required type="number" step="0.01" placeholder="Costo ($)" value={newProd.cost} onChange={e => setNewProd({ ...newProd, cost: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900 placeholder:text-gray-400" />
                   </div>
                   <div>
                     <label className="text-[9px] font-black uppercase text-gray-400 block mb-1">Precio Venta</label>
-                    <input required type="number" step="0.01" placeholder="Precio ($)" value={newProd.price} onChange={e => setNewProd({ ...newProd, price: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-black text-gray-900 text-center" />
+                    <input required type="number" step="0.01" placeholder="Precio ($)" value={newProd.price} onChange={e => setNewProd({ ...newProd, price: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-black text-gray-900 text-center placeholder:text-gray-400" />
                   </div>
                   <div>
                     <label className="text-[9px] font-black uppercase text-gray-400 block mb-1">Stock</label>
-                    <input required type="number" placeholder="Cant" value={newProd.stock} onChange={e => setNewProd({ ...newProd, stock: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900 text-center" />
+                    <input required type="number" placeholder="Cant" value={newProd.stock} onChange={e => setNewProd({ ...newProd, stock: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900 text-center placeholder:text-gray-400" />
                   </div>
                 </div>
-                <select value={newProd.category} onChange={e => setNewProd({ ...newProd, category: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900">
+                <select value={newProd.category} onChange={e => setNewProd({ ...newProd, category: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900 placeholder:text-gray-400">
                   <option value="Alimentos">Alimentos y Bebidas</option>
                   <option value="Ropa y Calzado">Ropa y Calzado</option>
                   <option value="Tecnología">Tecnología y Electrónica</option>
@@ -7631,7 +7631,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   <option value="Hogar">Hogar y Muebles</option>
                   <option value="Servicios">Servicios Generales</option>
                 </select>
-                <textarea placeholder="Descripción del producto (Opcional)" value={newProd.description} onChange={e => setNewProd({ ...newProd, description: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-medium text-gray-900 text-sm h-20 resize-none" />
+                <textarea placeholder="Descripción del producto (Opcional)" value={newProd.description} onChange={e => setNewProd({ ...newProd, description: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-medium text-gray-900 text-sm h-20 resize-none placeholder:text-gray-400" />
                 <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 cursor-pointer relative transition-colors">
                   <input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                   {newProd.imgUrl ? (
@@ -7683,9 +7683,9 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Foto del Empleado</span>
                 </div>
 
-                <input required type="text" placeholder="Nombre del Vendedor" value={newVendedor.name} onChange={e => setNewVendedor({ ...newVendedor, name: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900" />
-                <input required type="email" placeholder="Correo (Usuario de Acceso)" value={newVendedor.email} onChange={e => setNewVendedor({ ...newVendedor, email: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900" />
-                <input required type="password" placeholder="Clave de Acceso" value={newVendedor.password} onChange={e => setNewVendedor({ ...newVendedor, password: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900" />
+                <input required type="text" placeholder="Nombre del Vendedor" value={newVendedor.name} onChange={e => setNewVendedor({ ...newVendedor, name: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900 placeholder:text-gray-400" />
+                <input required type="email" placeholder="Correo (Usuario de Acceso)" value={newVendedor.email} onChange={e => setNewVendedor({ ...newVendedor, email: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900 placeholder:text-gray-400" />
+                <input required type="password" placeholder="Clave de Acceso" value={newVendedor.password} onChange={e => setNewVendedor({ ...newVendedor, password: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900 placeholder:text-gray-400" />
                 <div className="flex gap-3 pt-4">
                   <button type="button" onClick={() => setShowAddVendedor(false)} className="w-1/3 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 cursor-pointer">Cancelar</button>
                   <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-white bg-[violet-900] shadow-lg cursor-pointer">Crear Acceso</button>
@@ -7710,8 +7710,8 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 setNewExpense({ description: "", amountUSD: "" });
                 setShowExpenseModal(false);
               }} className="space-y-4">
-                <input required type="text" placeholder="Concepto (Ej. Alquiler, Proveedor)" value={newExpense.description} onChange={e => setNewExpense({ ...newExpense, description: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900" />
-                <input required type="number" step="0.01" placeholder="Monto Total (USD)" value={newExpense.amountUSD} onChange={e => setNewExpense({ ...newExpense, amountUSD: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900" />
+                <input required type="text" placeholder="Concepto (Ej. Alquiler, Proveedor)" value={newExpense.description} onChange={e => setNewExpense({ ...newExpense, description: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900 placeholder:text-gray-400" />
+                <input required type="number" step="0.01" placeholder="Monto Total (USD)" value={newExpense.amountUSD} onChange={e => setNewExpense({ ...newExpense, amountUSD: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900 placeholder:text-gray-400" />
                 <div className="flex gap-3 pt-4">
                   <button type="button" onClick={() => setShowExpenseModal(false)} className="w-1/3 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 cursor-pointer">Cancelar</button>
                   <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-white bg-red-600 hover:bg-red-700 shadow-lg cursor-pointer">Descontar Saldo</button>
@@ -7785,8 +7785,8 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 <button onClick={() => setShowTicketModal(false)} className="hover:bg-gray-100 p-2 rounded-full cursor-pointer transition-colors"><X size={20} className="text-gray-400" /></button>
               </div>
               <p className="text-xs text-gray-500 mb-2">Nuestro equipo técnico y tu promotora asignada recibirán este reporte inmediatamente.</p>
-              <input type="text" placeholder="Asunto (Ej: Lector no lee)" value={ticketSubject} onChange={e => setTicketSubject(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-[violet-600]" />
-              <textarea placeholder="Describe el problema..." value={ticketMsg} onChange={e => setTicketMsg(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 h-32 resize-none focus:outline-none focus:border-[violet-600]" />
+              <input type="text" placeholder="Asunto (Ej: Lector no lee)" value={ticketSubject} onChange={e => setTicketSubject(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-[violet-600] placeholder:text-gray-400" />
+              <textarea placeholder="Describe el problema..." value={ticketMsg} onChange={e => setTicketMsg(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 h-32 resize-none focus:outline-none focus:border-[violet-600] placeholder:text-gray-400" />
               <button onClick={() => { if (ticketSubject && ticketMsg) { createTicket(currentUser.id, ticketSubject, ticketMsg); setShowTicketModal(false); } }} className="w-full bg-red-600 text-white font-black py-4 rounded-xl shadow-lg hover:bg-red-700 transition-colors cursor-pointer disabled:opacity-50" disabled={!ticketSubject || !ticketMsg}>
                 Enviar a Soporte Técnico
               </button>
@@ -7848,7 +7848,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Salario / Comisión Base ($)</label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
-                  <input type="number" step="0.01" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-8 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]" placeholder="0.00" value={payrollBaseSalary} onChange={(e) => setPayrollBaseSalary(e.target.value)} />
+                  <input type="number" step="0.01" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-8 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] placeholder:text-gray-400" placeholder="0.00" value={payrollBaseSalary} onChange={(e) => setPayrollBaseSalary(e.target.value)} />
                 </div>
               </div>
 
@@ -8470,7 +8470,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
             <h3 className="font-black text-[violet-900] text-lg flex items-center gap-2"><Package size={20} className="text-[violet-600]" /> Catálogo de {currentUser.company}</h3>
             <div className="relative w-full md:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-              <input type="text" placeholder="Buscar producto o barcode..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]" value={searchProduct} onChange={e => setSearchProduct(e.target.value)} />
+              <input type="text" placeholder="Buscar producto o barcode..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] placeholder:text-gray-400" value={searchProduct} onChange={e => setSearchProduct(e.target.value)} />
             </div>
           </div>
           <div className="grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-3 gap-4">
@@ -8541,17 +8541,17 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
             <h3 className="text-2xl font-black mb-6 text-[violet-900]">Nuevo Producto</h3>
             <form onSubmit={submitProduct} className="space-y-4">
               <div className="flex gap-2">
-                <input type="text" placeholder="Código de Barras (Opcional)" value={newProd.barcode} onChange={e => setNewProd({ ...newProd, barcode: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-mono text-gray-900" />
+                <input type="text" placeholder="Código de Barras (Opcional)" value={newProd.barcode} onChange={e => setNewProd({ ...newProd, barcode: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-mono text-gray-900 placeholder:text-gray-400" />
                 <button type="button" onClick={() => handleBarcodeSearch(newProd.barcode)} disabled={isFetchingBarcode} className="bg-[violet-900] text-white px-4 rounded-xl font-bold flex-shrink-0 disabled:opacity-50">
                   <Search size={18} />
                 </button>
               </div>
-              <input required type="text" placeholder="Nombre del Artículo" value={newProd.name} onChange={e => setNewProd({ ...newProd, name: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900" />
+              <input required type="text" placeholder="Nombre del Artículo" value={newProd.name} onChange={e => setNewProd({ ...newProd, name: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900 placeholder:text-gray-400" />
               <div className="grid grid-cols-2 gap-3">
-                <input required type="number" step="0.01" placeholder="Precio ($)" value={newProd.price} onChange={e => setNewProd({ ...newProd, price: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-black text-lg text-gray-900" />
-                <input required type="number" placeholder="Stock" value={newProd.stock} onChange={e => setNewProd({ ...newProd, stock: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900" />
+                <input required type="number" step="0.01" placeholder="Precio ($)" value={newProd.price} onChange={e => setNewProd({ ...newProd, price: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-black text-lg text-gray-900 placeholder:text-gray-400" />
+                <input required type="number" placeholder="Stock" value={newProd.stock} onChange={e => setNewProd({ ...newProd, stock: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900 placeholder:text-gray-400" />
               </div>
-              <select value={newProd.category} onChange={e => setNewProd({ ...newProd, category: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900">
+              <select value={newProd.category} onChange={e => setNewProd({ ...newProd, category: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900 placeholder:text-gray-400">
                 <option value="Alimentos">Alimentos y Bebidas</option>
                 <option value="Ropa y Calzado">Ropa y Calzado</option>
                 <option value="Tecnología">Tecnología y Electrónica</option>
@@ -8559,7 +8559,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
                 <option value="Hogar">Hogar y Muebles</option>
                 <option value="Servicios">Servicios Generales</option>
               </select>
-              <textarea placeholder="Descripción del producto (Opcional)" value={newProd.description} onChange={e => setNewProd({ ...newProd, description: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-medium text-gray-900 text-sm h-20 resize-none" />
+              <textarea placeholder="Descripción del producto (Opcional)" value={newProd.description} onChange={e => setNewProd({ ...newProd, description: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-medium text-gray-900 text-sm h-20 resize-none placeholder:text-gray-400" />
               <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 cursor-pointer relative transition-colors">
                 <input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                 {newProd.imgUrl ? (
@@ -8774,7 +8774,7 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
                   placeholder="Buscar en esta tienda..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[violet-600] text-gray-900"
+                  className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[violet-600] text-gray-900 placeholder:text-gray-400"
                 />
               </div>
             </div>
@@ -8798,7 +8798,7 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
                 placeholder={activeStore ? "Buscar en esta tienda..." : "Buscar comercio..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[violet-600] text-gray-900"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[violet-600] text-gray-900 placeholder:text-gray-400"
               />
             </div>
           </div>
