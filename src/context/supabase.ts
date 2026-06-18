@@ -10,24 +10,47 @@ export const isSupabaseConfigured = !!(
   supabaseAnonKey && 
   supabaseUrl.startsWith("http") &&
   !supabaseUrl.includes("your-project-id") && 
-  !supabaseAnonKey.includes("your-anon-public-key")
+  !supabaseUrl.includes("dummy-project") && 
+  !supabaseAnonKey.includes("your-anon-public-key") &&
+  !supabaseAnonKey.includes("YOUR_SUPABASE_KEY_HERE")
 );
 
 export const supabase = isSupabaseConfigured
   ? createClient(supabaseUrl as string, supabaseAnonKey as string)
   : {
       from: (table: string) => ({
-        select: () => ({
-          eq: () => ({
-            single: () => Promise.resolve({ data: null, error: null })
-          }),
-          single: () => Promise.resolve({ data: null, error: null })
-        }),
+        select: () => {
+          const chain = {
+            eq: () => chain,
+            single: () => Promise.resolve({ data: null, error: null }),
+            then: (resolve: any) => resolve({ data: [], count: 0, error: null })
+          };
+          return chain;
+        },
         upsert: (data: any) => {
           console.log(`[Supabase Mock Sync] Guardando en tabla ${table}:`, data);
           return Promise.resolve({ data, error: null });
+        },
+        update: (data: any) => ({
+          eq: (field: string, val: any) => {
+            console.log(`[Supabase Mock Sync] Actualizando en tabla ${table} donde ${field}=${val}:`, data);
+            return Promise.resolve({ data, error: null });
+          }
+        })
+      }),
+      auth: {
+        signInWithPassword: ({ email, password }: any) => {
+          console.log(`[Supabase Mock Auth] Login simulado para ${email}`);
+          return Promise.resolve({ data: { user: { id: "mock-user-123", email } }, error: null });
+        },
+        signUp: ({ email, password }: any) => {
+          console.log(`[Supabase Mock Auth] Registro simulado para ${email}`);
+          return Promise.resolve({ data: { user: { id: "mock-user-123", email } }, error: null });
+        },
+        onAuthStateChange: (callback: any) => {
+          return { data: { subscription: { unsubscribe: () => {} } } };
         }
-      })
+      }
     } as any;
 
 function base64ToBlob(base64: string): { blob: Blob; mimeType: string } | null {

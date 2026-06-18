@@ -24,6 +24,11 @@ export function AppEnforcer({ children, currentUser, updatePwaStatus }: { childr
     };
 
     checkStatus();
+    
+    // Register Service Worker for Native Push Notifications
+    import("../lib/pushNotifications").then(({ registerServiceWorker }) => {
+      registerServiceWorker();
+    });
 
     const mql = window.matchMedia('(display-mode: standalone)');
     mql.addEventListener('change', checkStatus);
@@ -46,14 +51,17 @@ export function AppEnforcer({ children, currentUser, updatePwaStatus }: { childr
     }
   };
 
-  if (isChecking) return null;
-
   // Cloud Bypass Logic
   // Si está en PWA, dejamos pasar e informamos a la nube que la instaló (si no estaba marcada).
-  if (isStandalone && hasPermissions) {
-    if (currentUser && !currentUser.pwaInstalled && updatePwaStatus) {
+  useEffect(() => {
+    if (!isChecking && isStandalone && hasPermissions && currentUser && !currentUser.pwaInstalled && updatePwaStatus) {
       updatePwaStatus(true);
     }
+  }, [isChecking, isStandalone, hasPermissions, currentUser, updatePwaStatus]);
+
+  if (isChecking) return null;
+
+  if (isStandalone && hasPermissions) {
     return <>{children}</>;
   }
 

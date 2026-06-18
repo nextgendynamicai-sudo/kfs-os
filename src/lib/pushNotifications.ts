@@ -43,8 +43,8 @@ export const triggerLocalPush = async (title: string, body: string, icon?: strin
       body,
       icon: icon || '/favicon.ico',
       badge: '/favicon.ico',
-      vibrate: [200, 100, 200] as any,
+      vibrate: [200, 100, 200],
       requireInteraction: true
-    } as any);
+    });
   }
 };

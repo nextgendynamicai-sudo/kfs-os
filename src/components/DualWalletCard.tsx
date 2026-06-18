@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { DollarSign, Clock, Zap, ArrowUpRight, Gift, Lock } from "lucide-react";
+import { DollarSign, Clock, Zap, Gift, Lock } from "lucide-react";
 
 interface DualWalletCardProps {
   currentUser: any;
