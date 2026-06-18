@@ -6,31 +6,31 @@ import { playScannerBeep, speakText, getStoreCoords, getCustomerCoords, playSync
 import { getIndexedDBValue, setIndexedDBValue } from "../lib/indexedDB";
 
 const VENEZUELAN_PRODUCTS_CATALOG: Record<string, { name: string; imgUrl: string; category: string; brand: string }> = {
-  "7591006000016": { name: "Harina PAN Blanca (1kg)", imgUrl: "https://images.unsplash.com/photo-1608686207856-001b95cf60ca?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
-  "7591005000574": { name: "Margarina Mavesa Común (500g)", imgUrl: "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
-  "7591005001151": { name: "Mayonesa Mavesa Tradicional (445g)", imgUrl: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
-  "7591001000219": { name: "Malta Polar Botella (250ml)", imgUrl: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500&auto=format&fit=crop&q=60", category: "Bebidas", brand: "Cervecería Polar" },
-  "7591001000110": { name: "Cerveza Polar Pilsen (Tercio 295ml)", imgUrl: "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=500&auto=format&fit=crop&q=60", category: "Bebidas", brand: "Cervecería Polar" },
-  "7591395000147": { name: "Pirulin Original (Lata 190g)", imgUrl: "https://images.unsplash.com/photo-1599599810769-bcde5a160d32?w=500&auto=format&fit=crop&q=60", category: "Dulces", brand: "Nucita Venezolana" },
-  "7591016205722": { name: "Galleta Savoy Cocosette (50g)", imgUrl: "https://images.unsplash.com/photo-1559622214-f8a98509ef74?w=500&auto=format&fit=crop&q=60", category: "Dulces", brand: "Nestlé Savoy" },
-  "7591016205708": { name: "Galleta Savoy Susy (50g)", imgUrl: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&auto=format&fit=crop&q=60", category: "Dulces", brand: "Nestlé Savoy" },
-  "7591016035251": { name: "Chocolate Savoy de Leche (130g)", imgUrl: "https://images.unsplash.com/photo-1548907040-4d42b521e5e4?w=500&auto=format&fit=crop&q=60", category: "Dulces", brand: "Nestlé Savoy" },
-  "7591016035404": { name: "Bombón Savoy Toronto (Bolsa 36u)", imgUrl: "https://images.unsplash.com/photo-1581798459219-318e76c1fd75?w=500&auto=format&fit=crop&q=60", category: "Dulces", brand: "Nestlé Savoy" },
-  "7591005001229": { name: "Queso Fundido Rikesa Cheddar (300g)", imgUrl: "https://images.unsplash.com/photo-1589415082482-f6cbb779cc47?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
-  "7591041000675": { name: "Queso Fundido Cheez Whiz (300g)", imgUrl: "https://images.unsplash.com/photo-1589415082482-f6cbb779cc47?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Kraft" },
-  "7591005002042": { name: "Toddy Chocolate en Polvo (400g)", imgUrl: "https://images.unsplash.com/photo-1541658016709-82535e94bc69?w=500&auto=format&fit=crop&q=60", category: "Bebidas", brand: "Alimentos Polar" },
-  "7591018000547": { name: "Salsa de Tomate Pampero (397g)", imgUrl: "https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Pampero" },
-  "7591642000678": { name: "Arroz Mary Dorado Extra (1kg)", imgUrl: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Mary" },
-  "7591024001019": { name: "Café Molido Fama de América (250g)", imgUrl: "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Fama de América" },
-  "7591006001044": { name: "Pasta Primor Spaghetti (1kg)", imgUrl: "https://images.unsplash.com/photo-1621961404018-8199342e7bc9?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
-  "7591060000120": { name: "Diablitos Underwood Jamón (115g)", imgUrl: "https://images.unsplash.com/photo-1534482421-64566f976cfa?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Diablitos Underwood" },
-  "7591021000107": { name: "Atún Margarita en Aceite (140g)", imgUrl: "https://images.unsplash.com/photo-1544860707-c352cc5a92e3?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
-  "759104101405": { name: "Salsa Inglesa Kraft (150ml)", imgUrl: "https://images.unsplash.com/photo-1589415082482-f6cbb779cc47?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Kraft" },
-  "7591005000758": { name: "Vinagre Blanco Mavesa (1L)", imgUrl: "https://images.unsplash.com/photo-1589415082482-f6cbb779cc47?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
-  "7591005002905": { name: "Detergente Polvo Las Llaves (1kg)", imgUrl: "https://images.unsplash.com/photo-1583947215259-38e31be8751f?w=500&auto=format&fit=crop&q=60", category: "Limpieza", brand: "Alimentos Polar" },
-  "7591005001601": { name: "Jabón Azul Las Llaves Bebé (250g)", imgUrl: "https://images.unsplash.com/photo-1607006342411-92fc0a41f845?w=500&auto=format&fit=crop&q=60", category: "Limpieza", brand: "Alimentos Polar" },
-  "7591142100014": { name: "Harina de Trigo Robin Hood (1kg)", imgUrl: "https://images.unsplash.com/photo-1608686207856-001b95cf60ca?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Monaca" },
-  "7591736000454": { name: "Suavizante Ensueño Floral (1L)", imgUrl: "https://images.unsplash.com/photo-1583947215259-38e31be8751f?w=500&auto=format&fit=crop&q=60", category: "Limpieza", brand: "Corimon" }
+  "7591006000016": { name: "Harina PAN Blanca (1kg)", imgUrl: "", category: "Alimentos", brand: "Alimentos Polar" },
+  "7591005000574": { name: "Margarina Mavesa Común (500g)", imgUrl: "", category: "Alimentos", brand: "Alimentos Polar" },
+  "7591005001151": { name: "Mayonesa Mavesa Tradicional (445g)", imgUrl: "", category: "Alimentos", brand: "Alimentos Polar" },
+  "7591001000219": { name: "Malta Polar Botella (250ml)", imgUrl: "", category: "Bebidas", brand: "Cervecería Polar" },
+  "7591001000110": { name: "Cerveza Polar Pilsen (Tercio 295ml)", imgUrl: "", category: "Bebidas", brand: "Cervecería Polar" },
+  "7591395000147": { name: "Pirulin Original (Lata 190g)", imgUrl: "", category: "Dulces", brand: "Nucita Venezolana" },
+  "7591016205722": { name: "Galleta Savoy Cocosette (50g)", imgUrl: "", category: "Dulces", brand: "Nestlé Savoy" },
+  "7591016205708": { name: "Galleta Savoy Susy (50g)", imgUrl: "", category: "Dulces", brand: "Nestlé Savoy" },
+  "7591016035251": { name: "Chocolate Savoy de Leche (130g)", imgUrl: "", category: "Dulces", brand: "Nestlé Savoy" },
+  "7591016035404": { name: "Bombón Savoy Toronto (Bolsa 36u)", imgUrl: "", category: "Dulces", brand: "Nestlé Savoy" },
+  "7591005001229": { name: "Queso Fundido Rikesa Cheddar (300g)", imgUrl: "", category: "Alimentos", brand: "Alimentos Polar" },
+  "7591041000675": { name: "Queso Fundido Cheez Whiz (300g)", imgUrl: "", category: "Alimentos", brand: "Kraft" },
+  "7591005002042": { name: "Toddy Chocolate en Polvo (400g)", imgUrl: "", category: "Bebidas", brand: "Alimentos Polar" },
+  "7591018000547": { name: "Salsa de Tomate Pampero (397g)", imgUrl: "", category: "Alimentos", brand: "Pampero" },
+  "7591642000678": { name: "Arroz Mary Dorado Extra (1kg)", imgUrl: "", category: "Alimentos", brand: "Alimentos Mary" },
+  "7591024001019": { name: "Café Molido Fama de América (250g)", imgUrl: "", category: "Alimentos", brand: "Fama de América" },
+  "7591006001044": { name: "Pasta Primor Spaghetti (1kg)", imgUrl: "", category: "Alimentos", brand: "Alimentos Polar" },
+  "7591060000120": { name: "Diablitos Underwood Jamón (115g)", imgUrl: "", category: "Alimentos", brand: "Diablitos Underwood" },
+  "7591021000107": { name: "Atún Margarita en Aceite (140g)", imgUrl: "", category: "Alimentos", brand: "Alimentos Polar" },
+  "759104101405": { name: "Salsa Inglesa Kraft (150ml)", imgUrl: "", category: "Alimentos", brand: "Kraft" },
+  "7591005000758": { name: "Vinagre Blanco Mavesa (1L)", imgUrl: "", category: "Alimentos", brand: "Alimentos Polar" },
+  "7591005002905": { name: "Detergente Polvo Las Llaves (1kg)", imgUrl: "", category: "Limpieza", brand: "Alimentos Polar" },
+  "7591005001601": { name: "Jabón Azul Las Llaves Bebé (250g)", imgUrl: "", category: "Limpieza", brand: "Alimentos Polar" },
+  "7591142100014": { name: "Harina de Trigo Robin Hood (1kg)", imgUrl: "", category: "Alimentos", brand: "Monaca" },
+  "7591736000454": { name: "Suavizante Ensueño Floral (1L)", imgUrl: "", category: "Limpieza", brand: "Corimon" }
 };
 
 const MOCK_BCV_RATES = {
@@ -3333,7 +3333,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     logAction("Dueño", "UPDATE_PAYMENT_METHODS", "Se actualizaron los métodos de pago.");
   };
 
-  const registerCandidate = async (candidateData: any) => {
+  const registerCandidate = async (candidateData: any, customerId: string) => {
     const cvUrl = candidateData.cvFile && candidateData.cvFile.startsWith("data:")
       ? await uploadAsset(`cvs/${candidateData.phone || "anon"}_cv.pdf`, candidateData.cvFile)
       : candidateData.cvFile;
@@ -3342,9 +3342,31 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       ? await uploadAsset(`screenshots/${candidateData.phone || "anon"}_payment.png`, candidateData.registrationPaymentScreenshot)
       : candidateData.registrationPaymentScreenshot;
 
+    let deductionSuccessful = false;
+
     setDb((prev: any) => {
       const existingCandidates = prev.candidates || [];
       const filtered = existingCandidates.filter((c: any) => c.phone !== candidateData.phone);
+      
+      const customerIdx = prev.customers?.findIndex((c: any) => c.id === customerId);
+      let updatedCustomers = [...(prev.customers || [])];
+
+      // Si no ha sido aprobado/pagado antes, intentamos cobrar 1 USD
+      if (candidateData.registrationPaymentStatus !== "approved") {
+        if (customerIdx !== -1 && updatedCustomers[customerIdx].walletUSD >= 1) {
+          updatedCustomers[customerIdx] = {
+            ...updatedCustomers[customerIdx],
+            walletUSD: updatedCustomers[customerIdx].walletUSD - 1
+          };
+          deductionSuccessful = true;
+          candidateData.registrationPaymentStatus = "pending_approval"; // Pasa a revisión del core
+        } else {
+          return prev; // Falla silenciosamente, el componente maneja el Toast antes
+        }
+      } else {
+        deductionSuccessful = true; // Ya estaba pagado
+      }
+
       const newCandidate = {
         ...candidateData,
         cvFile: cvUrl,
@@ -3353,25 +3375,36 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         status: candidateData.status || "pending",
         createdAt: new Date().toISOString()
       };
+
       return {
         ...prev,
+        customers: updatedCustomers,
         candidates: [...filtered, newCandidate]
       };
     });
-    showToast("Perfil profesional publicado/actualizado en la Bolsa de Empleo KFS.");
+
+    if (deductionSuccessful) {
+      showToast("Perfil enviado. Se debitó $1.00 USD de tu Reserva Central. En espera de revisión por el KFS Core.", "success");
+    }
   };
 
-  const unlockCandidateContact = async (candidateId: string, clientId: string, reference: string, screenshot?: string) => {
-    const screenshotUrl = screenshot && screenshot.startsWith("data:")
-      ? await uploadAsset(`screenshots/unlock_${Date.now()}.png`, screenshot)
-      : screenshot;
+  const unlockCandidateContact = async (candidateId: string, clientId: string) => {
+    let deductionSuccessful = false;
 
     setDb((prev: any) => {
-      const client = prev.clients.find((c: any) => c.id === clientId);
-      if (!client) return prev;
+      const clientIdx = prev.clients?.findIndex((c: any) => c.id === clientId);
+      if (clientIdx === -1) return prev;
 
-      if (!reference) {
-        setTimeout(() => showToast("Debe ingresar la referencia de pago.", "error"), 50);
+      let updatedClients = [...(prev.clients || [])];
+      
+      if (updatedClients[clientIdx].walletBalanceUSD >= 10) {
+        updatedClients[clientIdx] = {
+          ...updatedClients[clientIdx],
+          walletBalanceUSD: updatedClients[clientIdx].walletBalanceUSD - 10
+        };
+        deductionSuccessful = true;
+      } else {
+        setTimeout(() => showToast("Saldo insuficiente. Necesitas al menos $10 USD en tu Reserva Central para desbloquear.", "error"), 50);
         return prev;
       }
 
@@ -3379,21 +3412,39 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         id: `unl_${Date.now()}`,
         clientId,
         candidateId,
-        status: "pending_approval",
-        paymentMethod: "transfer",
-        reference,
-        screenshot: screenshotUrl || "",
+        status: "approved", // Inmediatamente aprobado por deducción automática
+        paymentMethod: "internal_balance",
         amountUSD: 10,
         timestamp: new Date().toISOString()
       };
 
-      setTimeout(() => showToast("Solicitud de desbloqueo enviada. Esperando validación KFS."), 50);
+      // Distribute KFS Core earnings
+      const feeEUR = (10 * prev.kreatekCore.wipeVersion || 1) > 0 ? (10 * rates.USD) / rates.EUR : 10;
+      const promoCut = feeEUR * 0.20;
+      const finalNetEUR = feeEUR - promoCut;
+
+      const updatedPromotoras = prev.promotoras.map((p: any) =>
+        p.id === updatedClients[clientIdx].promotoraId
+          ? { ...p, passiveEarningsEUR: (p.passiveEarningsEUR || 0) + promoCut }
+          : p
+      );
 
       return {
         ...prev,
+        clients: updatedClients,
+        promotoras: updatedPromotoras,
+        kreatekCore: {
+          ...prev.kreatekCore,
+          earningsEUR: (prev.kreatekCore?.earningsEUR || 0) + feeEUR,
+          netEarningsEUR: (prev.kreatekCore?.netEarningsEUR || 0) + finalNetEUR
+        },
         unlockedContacts: [...(prev.unlockedContacts || []), newUnlock]
       };
     });
+
+    if (deductionSuccessful) {
+      setTimeout(() => showToast("¡Contacto desbloqueado! Se debitaron $10 USD de tu Reserva Central.", "success"), 50);
+    }
   };
 
   const addCandidateNotification = (candidate: any, title: string, message: string) => {
@@ -3910,7 +3961,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       networkState, setNetworkState, smsConciliator, registerCrmExpress,
       ghostTrapLocked, setGhostTrapLocked, createVale, payVale, processPayroll, registerPosTerminal, deletePosTerminal,
       queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings, updatePaymentMethods, toggleProductFeatured,
-      sendNotification, sendWhatsAppWebhook, requestNotificationPermission, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, transferKFSPoints, fundCustomerWallet, requestTopUp, requestPayout, validateTopUp, processMonthlyBilling, convertAsset, claimFlowMaster, trimLocalDatabase, registerCustomer, blockClient, releaseClient, deleteClient, deleteCustomer, deletePromotora, deleteVendedor, deleteRider,
+      sendNotification, requestNotificationPermission, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, transferKFSPoints, fundCustomerWallet, requestTopUp, requestPayout, validateTopUp, processMonthlyBilling, convertAsset, claimFlowMaster, trimLocalDatabase, registerCustomer, blockClient, releaseClient, deleteClient, deleteCustomer, deletePromotora, deleteVendedor, deleteRider,
       registerCandidate, unlockCandidateContact, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, hireCandidate, releaseCandidate, toggleCandidateBacking, markNotificationsAsRead, updateCvBuilderOption,
       registerRider, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, updateRiderPagoMovil, confirmDelivery, markAsPickedUp, rateRider, updateRiderGPS, riderCheckIn, riderCheckOut,
       toggleBusinessOpen, updateBusinessConfig

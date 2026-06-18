@@ -2225,17 +2225,14 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
 
     const isPaid = currentCandidate?.registrationPaymentStatus === "approved";
     let nextStatus = currentCandidate?.registrationPaymentStatus || "unpaid";
-    let paymentRef = currentCandidate?.registrationPaymentRef || "";
-    let paymentProof = currentCandidate?.registrationPaymentProof || "";
-
+    
+    // Check for $1 USD if not paid
     if (!isPaid) {
-      if (!regRefNum.trim()) {
-        showToast("Por favor ingrese la referencia del pago de $1 USD.", "error");
+      if ((currentUser.walletUSD || 0) < 1) {
+        showToast("Saldo insuficiente. Debes recargar al menos $1.00 USD en tu Reserva Central para postularte.", "error");
         return;
       }
       nextStatus = "pending_approval";
-      paymentRef = regRefNum;
-      paymentProof = regScreenshot;
     }
 
     registerCandidate({
@@ -2254,11 +2251,11 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
       cvFileName: useKfsCvBuilder ? "" : cvFileName,
       useKfsCvBuilder,
       registrationPaymentStatus: nextStatus,
-      registrationPaymentRef: paymentRef,
-      registrationPaymentProof: paymentProof,
+      registrationPaymentRef: "Auto-KFS-Deduction",
+      registrationPaymentProof: "Internal Ledger",
       hiringState: currentCandidate?.hiringState || "available",
       interviewingClientId: currentCandidate?.interviewingClientId || null
-    });
+    }, currentUser.id);
   };
 
   return (
@@ -2901,53 +2898,19 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                         Pago de Activación de Perfil ($1.00 USD)
                       </h4>
                       <p className="text-xs text-gray-300 leading-relaxed">
-                        Para activar tu perfil en la Bolsa de Trabajo de KFS OS y ser visible ante dueños de locales, debes realizar un pago único de **$1.00 USD** para cubrir la validación técnica de tu CV.
+                        Para activar tu perfil en la Bolsa de Trabajo de KFS OS y ser visible ante dueños de locales, debes realizar un pago único de <strong className="text-white">$1.00 USD</strong>.
                       </p>
 
                       <div className="bg-amber-500/10 border border-amber-500/20 p-4 rounded-xl text-[10px] text-amber-200 space-y-1 font-mono leading-tight">
-                        <p className="font-black border-b border-amber-500/20 pb-1">DATOS DE TRANSFERENCIA DIRECTA ($1 USD):</p>
-                        <p>Zinli/Wally/AirTM: <strong>master@kreatek.com</strong></p>
-                        <p>Pago Móvil: <strong>Banesco (0414-1234567) RIF: J-4019283-2</strong></p>
+                        <p className="font-black border-b border-amber-500/20 pb-1">COBRO AUTOMÁTICO:</p>
+                        <p>El monto de $1.00 USD será debitado directamente de tu <strong className="text-white">Reserva Central</strong> al hacer clic en "Publicar Perfil Profesional".</p>
                       </div>
 
                       {currentCandidate?.registrationPaymentStatus === "rejected" && (
                         <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-xl text-xs font-bold animate-pulse">
-                          ⚠️ Tu reporte de pago anterior fue RECHAZADO por el administrador. Por favor, realiza una transferencia correcta y reenvía los datos.
+                          ⚠️ Tu perfil fue RECHAZADO por el administrador. Modifica tus datos y vuelve a intentarlo.
                         </div>
                       )}
-
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                          <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1">Referencia del Pago</label>
-                          <input
-                            type="text"
-                            placeholder="Número de referencia de $1 USD"
-                            value={regRefNum}
-                            onChange={e => setRegRefNum(e.target.value)}
-                            className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[violet-600]"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-[10px] font-bold text-gray-400 uppercase block mb-1 font-sans">Capture de Transferencia ($1 USD)</label>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                try {
-                                  const base64 = await compressImage(file, 400);
-                                  setRegScreenshot(base64);
-                                  showToast("Capture cargado.", "success");
-                                } catch (err) {
-                                  showToast("Error al comprimir el capture.", "error");
-                                }
-                              }
-                            }}
-                            className="text-xs text-gray-400 block mt-1"
-                          />
-                        </div>
-                      </div>
                     </div>
                   )}
 
@@ -3027,6 +2990,8 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
   const [activeTab, setActiveTab] = useState("panel"); // panel | red | soporte | auditoria
   const { isSupabaseConfigured } = useKFS() as any;
   const pendingTopUps = db.topups?.filter((t: any) => t.status === 'pending') || [];
+  const pendingCandidates = db.candidates?.filter((c: any) => c.status === 'pending') || [];
+  const pendingRiders = db.riders?.filter((r: any) => r.status === 'pending') || [];
 
   const handleWipeDatabase = async () => {
     if (confirm("🚨 ¿ESTÁS SEGURO? Esta acción borrará permanentemente todos los comercios, promotoras, transacciones, y restablecerá todo a $0.00 en Supabase y localmente.")) {
@@ -3250,6 +3215,78 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 
             {/* Push Notifications Command Center */}
             <PushCommandCenter currentUser={currentUser} />
+
+            {/* Core Approvals Panel */}
+            <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-6 space-y-6">
+              <h3 className="font-black text-violet-900 text-xl flex items-center gap-2 border-b border-violet-100 pb-4">
+                <CheckCircle size={24} className="text-violet-600" /> Aprobaciones Pendientes del KFS Core
+              </h3>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Candidates */}
+                <div className="space-y-4">
+                  <h4 className="font-bold text-sm text-gray-500 uppercase tracking-widest flex justify-between">
+                    Candidatos RRHH 
+                    <span className="bg-violet-100 text-violet-600 px-2 py-0.5 rounded-full">{pendingCandidates.length}</span>
+                  </h4>
+                  {pendingCandidates.length === 0 ? (
+                    <p className="text-xs text-gray-400 italic">No hay candidatos pendientes.</p>
+                  ) : (
+                    pendingCandidates.map((cand: any) => (
+                      <div key={cand.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col gap-3">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="font-black text-sm text-violet-900">{cand.name}</p>
+                            <p className="text-xs text-gray-500 font-mono">{cand.phone}</p>
+                            <p className="text-[10px] text-gray-400 uppercase mt-1">Ref: {cand.registrationPaymentRef}</p>
+                          </div>
+                          <span className="bg-amber-100 text-amber-700 text-[10px] px-2 py-1 rounded-md font-bold uppercase">PAGADO $1 USD</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <button onClick={() => approveCandidateRegistration(cand.id)} className="flex-1 bg-green-500 text-white text-xs font-black py-2 rounded-lg hover:bg-green-600 cursor-pointer transition-colors shadow-md">
+                            Aprobar Perfil
+                          </button>
+                          <button onClick={() => rejectCandidateRegistration(cand.id)} className="flex-1 bg-red-50 text-red-500 text-xs font-bold py-2 rounded-lg hover:bg-red-100 cursor-pointer transition-colors border border-red-200">
+                            Rechazar
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Riders */}
+                <div className="space-y-4">
+                  <h4 className="font-bold text-sm text-gray-500 uppercase tracking-widest flex justify-between">
+                    Riders (Logística)
+                    <span className="bg-sky-100 text-sky-600 px-2 py-0.5 rounded-full">{pendingRiders.length}</span>
+                  </h4>
+                  {pendingRiders.length === 0 ? (
+                    <p className="text-xs text-gray-400 italic">No hay riders pendientes.</p>
+                  ) : (
+                    pendingRiders.map((rider: any) => (
+                      <div key={rider.id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col gap-3">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <p className="font-black text-sm text-sky-900">{rider.name}</p>
+                            <p className="text-xs text-gray-500 font-mono">{rider.phone}</p>
+                            <p className="text-[10px] text-gray-400 uppercase mt-1">Vehículo: {rider.vehicleType}</p>
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button onClick={() => approveRider(rider.id)} className="flex-1 bg-green-500 text-white text-xs font-black py-2 rounded-lg hover:bg-green-600 cursor-pointer transition-colors shadow-md">
+                            Aprobar Rider
+                          </button>
+                          <button onClick={() => rejectRider(rider.id)} className="flex-1 bg-red-50 text-red-500 text-xs font-bold py-2 rounded-lg hover:bg-red-100 cursor-pointer transition-colors border border-red-200">
+                            Rechazar
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
 
             {/* BCV Rate Manual Update */}
             <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-6 flex flex-col md:flex-row items-center justify-between gap-4">
@@ -4260,10 +4297,10 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
               <p className="text-sm text-gray-500 mb-6">Genera enlaces QR oficiales para registrar nuevos actores en la economía KFS como tus referidos.</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
-                  { role: 'registerCustomer', title: 'Invitar Cliente', imgUrl: 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=400&q=80' },
-                  { role: 'registerPromo', title: 'Invitar Promotora', imgUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80' },
-                  { role: 'register', title: 'Invitar Comercio', imgUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=400&q=80' },
-                  { role: 'registerRider', title: 'Invitar Delivery', imgUrl: 'https://images.unsplash.com/photo-1552872673-9b7b99711ebb?auto=format&fit=crop&w=400&q=80' }
+                  { role: 'registerCustomer', title: 'Invitar Cliente' },
+                  { role: 'registerPromo', title: 'Invitar Promotora' },
+                  { role: 'register', title: 'Invitar Comercio' },
+                  { role: 'registerRider', title: 'Invitar Delivery' }
                 ].map((invite, idx) => {
                   let host = '';
                   if (typeof window !== 'undefined') {
@@ -4274,7 +4311,9 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                   return (
                     <div key={idx} className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-6 rounded-2xl flex flex-col items-center text-center shadow-sm placeholder:text-gray-400">
                       <h4 className="font-black text-[violet-900] mb-4">{invite.title}</h4>
-                      <img src={invite.imgUrl} alt={invite.title} className="w-full h-32 object-cover rounded-xl mb-4 shadow-sm border-2 border-white" />
+                      <div className="w-full h-16 bg-violet-100 flex items-center justify-center rounded-xl mb-4 text-violet-500 shadow-sm">
+                        <Users size={32} />
+                      </div>
                       <div className="bg-white p-2 rounded-xl border border-gray-100 shadow-sm mb-4">
                         <img src={qrUrl} alt={`QR ${invite.title}`} className="w-32 h-32 rounded-lg" />
                       </div>
@@ -5455,7 +5494,7 @@ const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
         name: productName || "Mi Primer Producto",
         priceUSD: 10.00,
         stock: 50,
-        image: productImage || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&q=80&w=500",
+        image: productImage || "",
         clientId: currentUser.id,
         clientName: currentUser.company,
         category: "General"
@@ -5871,66 +5910,29 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                     {unlockStatus === "pending_approval" ? (
                       <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-center text-xs font-bold text-yellow-700 flex items-center justify-center gap-2">
                         <Clock size={14} className="animate-pulse" />
-                        <span>Espera Aprobación (Pago manual enviado)</span>
+                        <span>Espera Aprobación del Core</span>
                       </div>
                     ) : isPaying ? (
                       <div className="space-y-4 bg-gray-50 p-4 rounded-2xl border border-gray-200 animate-slide-up">
-                        <div className="flex justify-between items-center text-xs border-b border-gray-200 pb-2">
-                          <span className="font-bold text-gray-500">Forma de Pago</span>
-                          <span className="font-black text-[violet-900]">Monto: $10.00 USD</span>
+                        <div className="bg-amber-50 p-3 rounded-lg border border-amber-200 text-xs text-amber-900 leading-tight">
+                          <p className="font-black border-b border-amber-200/50 pb-1 mb-2">COBRO AUTOMÁTICO ($10.00 USD)</p>
+                          <p>Al hacer clic en confirmar, se debitarán <strong>$10.00 USD</strong> de tu Reserva Central. Si no posees saldo suficiente, deberás recargar primero.</p>
                         </div>
-
-                        {unlockStatus === "rejected" && (
-                          <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-[10px] font-bold text-red-700 leading-tight">
-                            ⚠️ Su reporte de pago anterior fue RECHAZADO por el administrador. Por favor, verifique la referencia y capture y reenvíe el reporte.
-                          </div>
-                        )}
-
-                        <div className="bg-amber-50 p-3 rounded-lg border border-amber-200 text-[10px] text-amber-900 space-y-1 font-mono leading-tight">
-                          <p className="font-black border-b border-amber-200/50 pb-1">DATOS DE TRANSFERENCIA DIRECTA ($10 USD):</p>
-                          <p>Zinli/Wally/AirTM: <strong>master@kreatek.com</strong></p>
-                          <p>Pago Móvil: <strong>Banesco (0414-1234567) RIF: J-4019283-2</strong></p>
-                        </div>
-
-                        <div className="space-y-3">
-                          <input
-                            type="text"
-                            placeholder="Número de Referencia"
-                            value={refNum}
-                            onChange={e => setRefNum(e.target.value)}
-                            className="w-full bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs font-bold focus:outline-none"
-                          />
-
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={async (e) => {
-                              const file = e.target.files?.[0];
-                              if (file) {
-                                try {
-                                  const base64 = await compressImage(file, 400);
-                                  setScreenshot(base64);
-                                } catch (err) {
-                                  alert("Error al comprimir la imagen");
-                                }
-                              }
-                            }}
-                            className="w-full text-[10px]"
-                          />
-                        </div>
-
                         <div className="flex gap-2">
                           <button
                             onClick={() => setPayingCandidateId(null)}
-                            className="w-1/3 bg-gray-200 text-gray-600 font-bold rounded-xl text-xs py-2 cursor-pointer"
+                            className="w-1/3 bg-gray-200 text-gray-600 font-bold rounded-xl text-xs py-2 cursor-pointer transition-colors hover:bg-gray-300"
                           >
-                            Atrás
+                            Cancelar
                           </button>
                           <button
-                            onClick={handleProcessUnlock}
-                            className="w-2/3 bg-green-600 hover:bg-green-700 text-white font-black rounded-xl text-xs py-2 cursor-pointer"
+                            onClick={() => {
+                              unlockCandidateContact(payingCandidateId, currentUser.id);
+                              setPayingCandidateId(null);
+                            }}
+                            className="w-2/3 bg-green-600 hover:bg-green-700 text-white font-black rounded-xl text-xs py-2 cursor-pointer shadow-md transition-all"
                           >
-                            Enviar Reporte Pago
+                            Confirmar y Desbloquear
                           </button>
                         </div>
                       </div>
@@ -5938,7 +5940,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                       <div className="space-y-2">
                         {unlockStatus === "rejected" && (
                           <div className="text-[10px] font-bold text-red-600 bg-red-50 border border-red-100 rounded-lg p-2 text-center">
-                            ❌ Pago de desbloqueo anterior rechazado
+                            ❌ Desbloqueo anterior fallido/rechazado
                           </div>
                         )}
                         <button
@@ -6274,7 +6276,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 stock,
                 category,
                 barcode,
-                image: "https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&q=80&w=500",
+                image: "",
                 clientId: currentUser.id,
                 clientName: currentUser.company,
                 timestamp: new Date().toISOString()
@@ -6432,7 +6434,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
       priceUSD: parsedPrice,
       costUSD: parsedCost,
       stock: parseInt(newProd.stock) || 0,
-      image: newProd.imgUrl || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60",
+      image: newProd.imgUrl || "",
       clientId: currentUser.id,
       clientName: currentUser.company,
       category: newProd.category,
@@ -8243,7 +8245,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
       name: newProd.name,
       priceUSD: parseFloat(newProd.price),
       stock: parseInt(newProd.stock) || 0,
-      image: newProd.imgUrl || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&auto=format&fit=crop&q=60",
+      image: newProd.imgUrl || "",
       clientId: currentUser.clientId,
       clientName: currentUser.company,
       category: newProd.category,
@@ -8834,8 +8836,12 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
               <img src={settings.coverPhotoUrl} alt="Cover" className="w-full h-full object-cover" />
             </div>
             <div className="bg-white p-6 pt-12 relative flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-              <div className="absolute -top-12 left-6">
-                <img src={profilePicUrl || "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=200&auto=format&fit=crop&q=60"} alt="Store Logo" className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-md bg-white" style={{ borderColor: themeColor }} />
+              <div className="absolute -top-12 left-6 relative z-10 w-24 h-24 rounded-full border-4 border-white shadow-md bg-white flex items-center justify-center overflow-hidden" style={{ borderColor: themeColor }}>
+                {profilePicUrl ? (
+                  <img src={profilePicUrl} alt="Store Logo" className="w-full h-full object-cover" />
+                ) : (
+                  <Store size={40} className="text-gray-300" />
+                )}
               </div>
               <div className="mt-2 sm:mt-0 sm:ml-28">
                 <h2 className="text-3xl font-black text-[violet-900]">{activeStore.company}</h2>
