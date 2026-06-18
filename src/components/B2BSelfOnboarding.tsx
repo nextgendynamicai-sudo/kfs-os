@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Store, ShieldCheck, CreditCard, ArrowRight, Download, Printer, CheckCircle } from "lucide-react";
+import { Store, ShieldCheck, CreditCard, QrCode, ArrowRight, Download, Printer, CheckCircle, HelpCircle } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 
 interface B2BSelfOnboardingProps {

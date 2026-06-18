@@ -2,20 +2,13 @@ import { useKFS } from "../context/KFSContext";
 
 export function useMerchantFee() {
   const kfs = useKFS() as any;
-  // Extraemos currentUser para saber quién es el cajero
-  const { db, setDb, rates, showToast, currentUser } = kfs;
+  const { db, setDb, rates, showToast } = kfs;
 
-  // Calculate dynamic fees based on Oracle Control with fallback to SaaS Tier
+  // Calculate dynamic fees based on merchant founder status and customer referrals
   const getMerchantFeeTier = (merchantId: string, customerPhone?: string): number => {
     const merchant = db.clients?.find((m: any) => m.id === merchantId);
     if (!merchant) return 0.05; // Default standard 5%
 
-    // 1. Prioridad absoluta: Oráculo
-    if (merchant.oracle_fee_percentage !== undefined && merchant.oracle_fee_percentage !== null) {
-      return merchant.oracle_fee_percentage / 100;
-    }
-
-    // Fallback Lógica Antigua (v3.0)
     // 1% royalty fee for Founders
     if (merchant.is_founder) {
       return 0.01;
@@ -29,11 +22,11 @@ export function useMerchantFee() {
       }
     }
 
-    // Default fee tier for merchants (check kfsTier or default to 5%)
-    if (merchant.kfsTier) {
-      if (merchant.kfsTier === "velocity") return 0.03;
-      if (merchant.kfsTier === "matrix") return 0.05;
-      if (merchant.kfsTier === "monopoly") return 0.10;
+    // Default fee tier for merchants (check fee_tier or default to 5%)
+    if (merchant.fee_tier) {
+      if (merchant.fee_tier === "1%") return 0.01;
+      if (merchant.fee_tier === "3%") return 0.03;
+      if (merchant.fee_tier === "5%") return 0.05;
     }
 
     return 0.05; // Standard 5%
@@ -109,16 +102,12 @@ export function useMerchantFee() {
       const rateEUR = rates.EUR || 39.20;
       const feeEUR = (feeUSD * rateUSD) / rateEUR;
 
-      // Distribuir según el modelo del Oráculo
-      const promoCutEUR = feeEUR * 0.20; // 20% Promotora
-      const localAdsCutUSD = feeUSD * 0.20; // 20% Ads Local
-      const kfsAdsCutEUR = feeEUR * 0.10; // 10% KFS Ads
-      const cashierBonusUSD = feeUSD * 0.05; // 5% Cajero
-      const kfsNetEUR = feeEUR * 0.45; // 45% KFS Holding
-
       let updatedPromotoras = prev.promotoras;
+      // If customer has a referred promoter, they get 20% commission on merchant royalty
       const customerObj = prev.customers.find((c: any) => c.phone === customerPhone);
-      const targetPromoterId = merchant?.referred_by_promoter_id || customerObj?.referred_by_promoter_id;
+      const targetPromoterId = customerObj?.referred_by_promoter_id;
+      const promoCutEUR = feeEUR * 0.20;
+      const coreCutEUR = feeEUR - promoCutEUR;
 
       if (targetPromoterId) {
         updatedPromotoras = prev.promotoras.map((p: any) => {
@@ -132,28 +121,14 @@ export function useMerchantFee() {
         });
       }
 
-      // Vendedor Bonus
-      let updatedVendedores = prev.vendedores;
-      if (currentUser?.role === "vendedor") {
-        updatedVendedores = (prev.vendedores || []).map((v: any) => {
-          if (v.id === currentUser.id) {
-            return {
-              ...v,
-              accumulated_bonus: (v.accumulated_bonus || 0) + cashierBonusUSD
-            };
-          }
-          return v;
-        });
-      }
-
-      // 3. Update merchant sales volume and local ads budget. 
+      // 3. Update merchant sales volume. The merchant gets the real USD portion instantly in their drawer,
+      // and owes the KFS system fees.
       const updatedClients = prev.clients.map((c: any) => {
         if (c.id === merchantId) {
           return {
             ...c,
-            salesUSD: (c.salesUSD || 0) + realUSDNeeded, 
-            kfsFeesOwedUSD: (c.kfsFeesOwedUSD || 0) + feeUSD,
-            localAdsBudgetUSD: (c.localAdsBudgetUSD || 0) + localAdsCutUSD
+            salesUSD: (c.salesUSD || 0) + realUSDNeeded, // local receives real portion instantly
+            kfsFeesOwedUSD: (c.kfsFeesOwedUSD || 0) + feeUSD
           };
         }
         return c;
@@ -188,14 +163,12 @@ export function useMerchantFee() {
         customers: updatedCustomers,
         clients: updatedClients,
         promotoras: updatedPromotoras,
-        vendedores: updatedVendedores || prev.vendedores,
         transactions: [...(prev.transactions || []), transactionObj],
         kreatekCore: {
           ...prev.kreatekCore,
           totalTransactions: (prev.kreatekCore.totalTransactions || 0) + 1,
           earningsEUR: (prev.kreatekCore.earningsEUR || 0) + feeEUR,
-          netEarningsEUR: (prev.kreatekCore.netEarningsEUR || 0) + kfsNetEUR,
-          adsBudgetEUR: (prev.kreatekCore.adsBudgetEUR || 0) + kfsAdsCutEUR
+          netEarningsEUR: (prev.kreatekCore.netEarningsEUR || 0) + coreCutEUR
         },
         auditLogs: [...(prev.auditLogs || []), auditLog]
       };

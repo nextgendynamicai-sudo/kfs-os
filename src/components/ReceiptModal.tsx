@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-
+import { X } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { playCashDrawerSound } from "../lib/utils";
 import { motion } from "framer-motion";

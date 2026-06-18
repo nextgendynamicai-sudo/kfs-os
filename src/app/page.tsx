@@ -7,7 +7,7 @@ import {
   ChevronRight, CheckCircle, CreditCard, Bell, X, Info,
   Store, Star, ChevronLeft, Clock, UserCheck, Palette,
   Zap, BookOpen, Printer, Smartphone, Settings, DownloadCloud, Terminal, Truck,
-  Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database
+  Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye
 } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from "recharts";
@@ -15,21 +15,13 @@ import { CheckoutModal } from "../components/CheckoutModal";
 import { TopUpModal } from "../components/TopUpModal";
 import { PayoutModal } from "../components/PayoutModal";
 import { ReceiptModal } from "../components/ReceiptModal";
-import { UniversalWalletWidget } from "../components/UniversalWalletWidget";
-import { ProfileAvatarEditor } from "../components/ProfileAvatarEditor";
-
+import { DualWalletCard } from "../components/DualWalletCard";
 import { FlowExpressCatalog } from "../components/FlowExpressCatalog";
 import { B2BSelfOnboarding } from "../components/B2BSelfOnboarding";
-import { DatabaseManagerWidget } from "../components/DatabaseManagerWidget";
-import { ReferralLinksWidget } from "../components/ReferralLinksWidget";
-import { KPointsIssuerWidget } from "../components/KPointsIssuerWidget";
 import { useP2PTransfer } from "../hooks/useP2PTransfer";
 import { compressImage, readAsBase64, playPremiumChime, playSyncChime, playCashDrawerSound, playScannerBeep, getStoreCoords, getCustomerCoords } from "../lib/utils";
 import { AnimatedCounter } from "../components/AnimatedCounter";
 import { AppEnforcer } from "../components/AppEnforcer";
-import { PioneerOfferBanner } from '../components/PioneerOfferBanner';
-import { OracleControlSlider } from '../components/OracleControlSlider';
-import { OracleInsightCard } from '../components/OracleInsightCard';
 import { PushCommandCenter } from "../components/PushCommandCenter";
 import { supabase } from "../context/supabase";
 import { motion, AnimatePresence } from "framer-motion";
@@ -478,7 +470,7 @@ const SMSConciliatorSimulator = () => {
                 </div>
                 <div>
                   <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Monto (Bs o $)</label>
-                  <input type="text" placeholder="Ej: 150,00" value={amount} onChange={e => setAmount(e.target.value)} className="w-full bg-[violet-900] border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-[violet-600] text-white font-mono placeholder:text-gray-400" />
+                  <input type="text" value={amount} onChange={e => setAmount(e.target.value)} className="w-full bg-[violet-900] border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-[violet-600] text-white font-mono" />
                 </div>
               </div>
 
@@ -489,7 +481,7 @@ const SMSConciliatorSimulator = () => {
                 </div>
                 <div>
                   <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Teléfono Emisor</label>
-                  <input type="text" placeholder="Ej: 04121234567" value={phone} onChange={e => setPhone(e.target.value)} className="w-full bg-[violet-900] border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-[violet-600] text-white font-mono placeholder:text-gray-400" />
+                  <input type="text" value={phone} onChange={e => setPhone(e.target.value)} className="w-full bg-[violet-900] border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-[violet-600] text-white font-mono" />
                 </div>
               </div>
 
@@ -717,7 +709,7 @@ const FiscalPrinterSetupWidget = () => {
                 type="text"
                 value={proxyUrl}
                 onChange={(e) => setProxyUrl(e.target.value)}
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-xs text-gray-900 focus:outline-none font-mono placeholder:text-gray-400"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-xs text-gray-900 focus:outline-none font-mono"
               />
               <button
                 type="button"
@@ -1135,24 +1127,24 @@ const RegisterClientForm = ({ onRegister, onCancel, standalone = true, defaultRe
         </label>
       </div>
 
-      <input required placeholder="Nombre Completo" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white placeholder:text-gray-300" : "bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400"}`} onChange={e => setFormData({ ...formData, name: e.target.value })} />
-      <input required placeholder="Cédula / RIF" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white placeholder:text-gray-300" : "bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400"}`} onChange={e => setFormData({ ...formData, idCard: e.target.value })} />
-      <input required placeholder="Nombre de la Empresa" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white placeholder:text-gray-300" : "bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400"}`} onChange={e => setFormData({ ...formData, company: e.target.value })} />
-      <textarea required placeholder="Dirección Comercial" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white placeholder:text-gray-300" : "bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400"}`} onChange={e => setFormData({ ...formData, address: e.target.value })} />
-      <input required type="number" placeholder="Facturación Promedio Diaria ($)" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white placeholder:text-gray-300" : "bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400"}`} onChange={e => setFormData({ ...formData, avgBilling: e.target.value })} />
+      <input required placeholder="Nombre Completo" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+      <input required placeholder="Cédula / RIF" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, idCard: e.target.value })} />
+      <input required placeholder="Nombre de la Empresa" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, company: e.target.value })} />
+      <textarea required placeholder="Dirección Comercial" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, address: e.target.value })} />
+      <input required type="number" placeholder="Facturación Promedio Diaria ($)" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, avgBilling: e.target.value })} />
 
       <div className="flex flex-col mb-2">
         <label className={`text-xs font-bold mb-2 uppercase tracking-widest ${standalone ? "text-gray-400" : "text-gray-500"}`}>Tarifa BOS (Comisión Kreatek)</label>
-        <select required value={formData.kfsFeePercentage} onChange={e => setFormData({ ...formData, kfsFeePercentage: parseFloat(e.target.value) })} className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all font-bold ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white placeholder:text-gray-300" : "bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400"}`}>
+        <select required value={formData.kfsFeePercentage} onChange={e => setFormData({ ...formData, kfsFeePercentage: parseFloat(e.target.value) })} className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all font-bold ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`}>
           <option value={0.03}>Plan Base (3%)</option>
           <option value={0.05}>Plan Estándar (5%)</option>
           <option value={0.10}>Plan Premium (10%)</option>
         </select>
       </div>
 
-      <input required placeholder="Teléfono Personal" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white placeholder:text-gray-300" : "bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400"}`} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
-      <input required type="email" placeholder="Correo Electrónico" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white placeholder:text-gray-300" : "bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400"}`} onChange={e => setFormData({ ...formData, email: e.target.value })} />
-      <input required type="password" placeholder="Crear Clave de Acceso" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white placeholder:text-gray-300" : "bg-gray-50 border-gray-200 text-gray-900 placeholder:text-gray-400"}`} onChange={e => setFormData({ ...formData, password: e.target.value })} />
+      <input required placeholder="Teléfono Personal" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
+      <input required type="email" placeholder="Correo Electrónico" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, email: e.target.value })} />
+      <input required type="password" placeholder="Crear Clave de Acceso" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all ${standalone ? "bg-[violet-900]/80 border-[violet-600]/50 text-white" : "bg-gray-50 border-gray-200 text-gray-900"}`} onChange={e => setFormData({ ...formData, password: e.target.value })} />
 
       <div className="flex items-start gap-2 pt-2 mb-2">
         <input type="checkbox" required checked={acceptedToS} onChange={(e) => setAcceptedToS(e.target.checked)} className="mt-1 cursor-pointer" />
@@ -1226,12 +1218,12 @@ const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCode = "" 
         </label>
       </div>
 
-      <input required placeholder="Nombre Completo" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all placeholder:text-gray-400" onChange={e => setFormData({ ...formData, name: e.target.value })} />
-      <textarea required placeholder="Dirección Completa (KYC)" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all placeholder:text-gray-400" onChange={e => setFormData({ ...formData, kycAddress: e.target.value })} />
-      <input required type="email" placeholder="Correo Electrónico" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all placeholder:text-gray-400" onChange={e => setFormData({ ...formData, email: e.target.value })} />
-      <input required type="password" placeholder="Crear Clave de Acceso" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all placeholder:text-gray-400" onChange={e => setFormData({ ...formData, password: e.target.value })} />
-      <input required placeholder="Binance ID (Ej: 184592...)" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all placeholder:text-gray-400" onChange={e => setFormData({ ...formData, binanceId: e.target.value })} />
-      <input required placeholder="Pago Móvil (Ej: 0412...)" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all placeholder:text-gray-400" onChange={e => setFormData({ ...formData, pagoMovil: e.target.value })} />
+      <input required placeholder="Nombre Completo" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all" onChange={e => setFormData({ ...formData, name: e.target.value })} />
+      <textarea required placeholder="Dirección Completa (KYC)" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all" onChange={e => setFormData({ ...formData, kycAddress: e.target.value })} />
+      <input required type="email" placeholder="Correo Electrónico" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all" onChange={e => setFormData({ ...formData, email: e.target.value })} />
+      <input required type="password" placeholder="Crear Clave de Acceso" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all" onChange={e => setFormData({ ...formData, password: e.target.value })} />
+      <input required placeholder="Binance ID (Ej: 184592...)" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all" onChange={e => setFormData({ ...formData, binanceId: e.target.value })} />
+      <input required placeholder="Pago Móvil (Ej: 0412...)" className="w-full bg-[violet-900]/80 border border-[violet-600]/50 rounded-lg px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-[violet-600] transition-all" onChange={e => setFormData({ ...formData, pagoMovil: e.target.value })} />
       <div className="flex gap-3 pt-4">
         <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl bg-gray-200/20 hover:bg-gray-200/30 text-white font-bold transition-all text-sm cursor-pointer">Cancelar</button>
         <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-[violet-900] text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-lg cursor-pointer" style={{ backgroundColor: KREATEK_COLORS.bronze }}>Registrar Perfil</button>
@@ -1367,52 +1359,51 @@ const LandingPageView = ({ setView }: any) => {
         </div>
       </section>
 
-      {/* Pioneer Banner Section */}
+      {/* Pricing / Packages Section */}
       <section id="pricing" className="py-20 px-6 sm:px-10 max-w-7xl mx-auto">
-        <PioneerOfferBanner />
-
-        <div className="text-center mt-16 mb-16">
-          <h2 className="text-4xl md:text-6xl font-black text-violet-900 tracking-tighter mb-6">Planes Escalamiento</h2>
-          <p className="text-xl text-gray-500 max-w-2xl mx-auto font-medium">Elige el ecosistema KFS que se adapte al flujo de tu negocio o aprovecha la tasa Pionero arriba.</p>
+        <div className="text-center mb-16 space-y-4">
+          <h2 className="text-3xl md:text-5xl font-black tracking-tight text-violet-900">Planes y Comisiones Claras</h2>
+          <p className="text-gray-500 max-w-xl mx-auto">Selecciona el nivel operativo que mejor se adapte al flujo de ventas y tamaño de tu negocio.</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Plan 1 */}
           <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2.5rem] p-8 flex flex-col justify-between hover:scale-105 transition-transform relative">
             <div>
+              <span className="bg-violet-100 text-violet-600 text-[10px] font-black tracking-widest px-3 py-1.5 rounded-full uppercase block w-max mb-4">Inicial</span>
               <h3 className="text-2xl font-black text-violet-900">Flow Velocity</h3>
-              <p className="text-sm text-gray-500 mt-2">Perfecto para negocios pequeños empezando a digitalizarse.</p>
+              <p className="text-sm text-gray-500 mt-2">Para tiendas y emprendedores pequeños que inician su viaje digital.</p>
 
               <div className="my-8">
                 <span className="text-5xl font-black text-violet-900">3%</span>
-                <span className="text-sm text-gray-500 block mt-1">Por Venta</span>
+                <span className="text-sm text-gray-500 block mt-1">Por Venta Realizada en Caja / POS</span>
               </div>
 
               <ul className="space-y-3 pt-6 text-sm text-gray-600">
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> POS Offline/Online</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Tienda PWA Personalizada</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Control de 1 Caja Múltiple</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Cierre Z Básico</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> E-Commerce Flow Express</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Gestión de Inventario Local</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Cobros Multimoneda (USD/Bs)</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> 1 Caja Registradora</li>
+                <li className="flex items-center gap-2 text-gray-400"><CheckCircle size={16} className="text-gray-400" /> Publicidad Básica en Directorio KFS</li>
+                <li className="flex items-center gap-2 text-gray-400"><CheckCircle size={16} className="text-gray-400" /> Creación de Contenido Manual</li>
               </ul>
             </div>
             <button onClick={() => setView("login")} className="w-full bg-white text-violet-600 font-bold py-4 rounded-xl mt-8 cursor-pointer transition-colors shadow-sm hover:bg-gray-50 border-none">Empezar</button>
           </div>
 
-          {/* Plan 2 (Popular) */}
-          <div className="bg-gradient-to-br from-[#EEF2F5] to-violet-50 shadow-[10px_10px_30px_#d1d9e6,-10px_-10px_30px_#ffffff] border-2 border-violet-500/20 rounded-[2.5rem] p-8 flex flex-col justify-between hover:scale-105 transition-transform relative transform md:-translate-y-4">
-            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-              <span className="bg-violet-600 text-white text-xs font-bold px-4 py-1 rounded-full shadow-lg">Más Popular</span>
-            </div>
+          {/* Plan 2 */}
+          <div className="bg-[#EEF2F5] shadow-[inset_10px_10px_20px_#d1d9e6,inset_-10px_-10px_20px_#ffffff] border-none rounded-[2.5rem] p-8 flex flex-col justify-between relative scale-105">
+            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-violet-600 text-white shadow-[0_5px_15px_rgba(139,92,246,0.3)] text-[9px] font-black tracking-widest px-4 py-1.5 rounded-full uppercase">Recomendado</div>
             <div>
-              <h3 className="text-2xl font-black text-violet-900">Flow Matrix AI</h3>
-              <p className="text-sm text-gray-500 mt-2">El motor completo para escalar y fidelizar clientes en piloto automático.</p>
+              <h3 className="text-2xl font-black text-violet-900 mt-2">Flow Matrix AI</h3>
+              <p className="text-sm text-gray-500 mt-2">Para medianos comercios con alta rotación y necesidad de analítica.</p>
 
               <div className="my-8">
                 <span className="text-5xl font-black text-violet-900">5%</span>
-                <span className="text-sm text-gray-500 block mt-1">Por Venta + $3 USD/mes Suscripción Nube</span>
+                <span className="text-sm text-gray-500 block mt-1">Por Venta + $6 USD/mes Suscripción Nube</span>
               </div>
 
-              <ul className="space-y-3 pt-6 text-sm text-gray-600 font-medium">
+              <ul className="space-y-3 pt-6 text-sm text-gray-600">
                 <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Todo lo de Flow Velocity</li>
                 <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> Auto-Conciliación SMS Integrada</li>
                 <li className="flex items-center gap-2"><CheckCircle size={16} className="text-violet-600" /> CRM & Vales de Crédito (3 POS)</li>
@@ -1447,6 +1438,7 @@ const LandingPageView = ({ setView }: any) => {
             </div>
             <button onClick={() => setView("login")} className="w-full bg-white text-violet-600 font-bold py-4 rounded-xl mt-8 cursor-pointer transition-colors shadow-sm hover:bg-gray-50 border-none">Empezar</button>
           </div>
+
         </div>
       </section>
 
@@ -2262,20 +2254,14 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
             <span className="bg-white/20 p-2 rounded-xl text-[violet-600]"><UserCheck size={20} /></span>
             <h1 className="font-black text-xl tracking-tight">KFS Customer</h1>
           </div>
-          <div className="flex items-center gap-2">
-              <div className="bg-gradient-to-r from-amber-400 to-orange-500 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-sm border border-orange-300/50" title="Billetera KFS Points">
-                <span className="text-[10px] font-black uppercase tracking-wider text-orange-900">K-Pts</span>
-                <span className="font-black text-white text-sm">{currentUser?.kfsPoints || 0}</span>
-              </div>
-              <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
-                <LogOut size={16} />
-              </button>
-            </div>
+          <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
+            <LogOut size={16} />
+          </button>
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-[violet-600] rounded-full flex items-center justify-center text-[violet-900] font-black text-2xl flex-shrink-0 shadow-lg border-4 border-[violet-900] relative z-20">
-            <ProfileAvatarEditor currentUser={currentUser} />
+          <div className="w-16 h-16 bg-[violet-600] rounded-full flex items-center justify-center text-[violet-900] font-black text-2xl flex-shrink-0 shadow-lg border-4 border-[violet-900]">
+            {currentUser.name?.slice(0, 2).toUpperCase()}
           </div>
           <div>
             <h2 className="text-xl md:text-2xl font-black tracking-tight truncate">{currentUser.name}</h2>
@@ -2286,25 +2272,15 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
 
       {/* Main Content Area */}
       <div className="max-w-4xl mx-auto px-4 -mt-6 relative z-20 space-y-6 animate-fade-in">
-        <OracleInsightCard role="customer" data={{ walletBalance: currentUser.walletUSD || 0 }} />
 
         {subTab === "profile" ? (
           <>
-            {/* Universal Wallet Widget */}
-            <UniversalWalletWidget currentUser={currentUser} formatUSD={formatUSD}>
-              <div className="flex justify-between items-center bg-white/5 border border-white/5 rounded-2xl p-4 mt-2">
-                <div>
-                  <h4 className="text-sm font-black text-gray-200">Recarga Express</h4>
-                  <p className="text-[10px] text-gray-400 mt-0.5">Acredita saldo Fiat al instante.</p>
-                </div>
-                <button
-                  onClick={() => { setTopUpAmount("5"); setIsTopUpOpen(true); }}
-                  className="bg-emerald-500 hover:bg-emerald-400 text-white font-black px-6 py-2 rounded-xl text-xs transition-colors cursor-pointer border-none shadow-[0_5px_15px_rgba(16,185,129,0.3)]"
-                >
-                  Recargar Ahora
-                </button>
-              </div>
-            </UniversalWalletWidget>
+            {/* Overdrive Dual Wallet Card */}
+            <DualWalletCard
+              currentUser={currentUser}
+              formatUSD={formatUSD}
+              onRequestTopUp={(amount) => { setTopUpAmount(amount.toString()); setIsTopUpOpen(true); }}
+            />
 
             <TopUpModal
               isOpen={isTopUpOpen}
@@ -2328,33 +2304,16 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
                 </p>
               </div>
 
-              {/* Bono Viral Embajador — QR Real Escaneable */}
-              <div className="bg-gradient-to-r from-emerald-900/80 to-teal-900/80 border border-emerald-500/40 p-5 rounded-[1.5rem] flex flex-col sm:flex-row items-center gap-5">
-                <div className="w-28 h-28 bg-white rounded-xl p-1.5 border-2 border-emerald-400 shadow-[0_0_20px_rgba(16,185,129,0.35)] flex-shrink-0">
-                  <img
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent('https://kfs-os.vercel.app?role=customer&ref=' + currentUser.id)}`}
-                    alt="QR Referido"
-                    className="w-full h-full object-contain rounded-lg"
-                    loading="lazy"
-                  />
+              {/* Banner P2P Viral */}
+              <div className="bg-[#1A1108]/80 border border-[violet-600]/40 p-4 rounded-2xl flex items-center gap-4">
+                <div className="w-12 h-12 bg-[violet-600]/20 rounded-full flex items-center justify-center flex-shrink-0">
+                  <Gift size={24} className="text-[violet-600]" />
                 </div>
-                <div className="flex-1 text-center sm:text-left">
-                  <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
-                    <Gift size={18} className="text-emerald-400" />
-                    <h4 className="font-black text-white text-base">Bono Viral Embajador</h4>
-                  </div>
-                  <p className="text-xs text-gray-300 leading-relaxed mb-3">
-                    Escanea o comparte tu QR. Cuando tu referido haga su primera recarga de <strong className="text-emerald-400">$5.00+</strong>, recibirás <strong className="text-emerald-400">+500 K-Points ($0.50)</strong> automáticos.
+                <div>
+                  <h4 className="font-black text-[violet-600] text-sm">Bono Viral Embajador</h4>
+                  <p className="text-xs text-gray-300 leading-tight mt-1">
+                    Comparte tu código de afiliado <span className="font-mono bg-black/50 px-1.5 py-0.5 rounded text-white">{currentUser.id}</span> con tus amigos. ¡Cuando se registren y hagan su primera recarga, recibirás <strong>500 K-Points</strong> automáticos!
                   </p>
-                  <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
-                    <span className="font-mono bg-black/60 border border-emerald-500/30 px-2 py-1 rounded-lg text-emerald-300 text-xs">ID: {currentUser.id}</span>
-                    <button
-                      onClick={() => { navigator.clipboard.writeText('https://kfs-os.vercel.app?role=customer&ref=' + currentUser.id); showToast('📋 Enlace copiado.', 'success'); }}
-                      className="text-[10px] font-black text-white bg-emerald-600 hover:bg-emerald-500 px-3 py-1.5 rounded-lg cursor-pointer transition-colors"
-                    >
-                      📋 Copiar Enlace
-                    </button>
-                  </div>
                 </div>
               </div>
 
@@ -2970,7 +2929,7 @@ const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
 
 // CoreDashboard
 const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePromotoraEarnings, showToast, formatUSD, formatEUR, currentUser, logout, approveSubscription }: any) => {
-  const { impersonateClient, registerClient, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, deleteCustomer, deletePromotora, deleteVendedor, deleteRider, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, toggleCandidateBacking, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, validateTopUp, rates, updateBcvRates, transferKFSPoints, updateStoreSettings } = useKFS() as any;
+  const { impersonateClient, registerClient, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, toggleCandidateBacking, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, validateTopUp, rates, updateBcvRates } = useKFS() as any;
   const [searchPromotora, setSearchPromotora] = useState("");
   const [searchClient, setSearchClient] = useState("");
   const [searchVendedor, setSearchVendedor] = useState("");
@@ -3033,37 +2992,6 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
         showToast("Base de datos local borrada a 0.", "success");
       }
     }
-  };
-
-  // ── Customizing state for Arquitecto ──────────────────────────────────────
-  const [customizingClient, setCustomizingClient] = useState<any>(null);
-
-  // Feature 1: Clear all demo records
-  const handleClearDemos = () => {
-    if (confirm('¿Eliminar todos los registros de demo del sistema?')) {
-      setDb((prev: any) => ({
-        ...prev,
-        clients:    prev.clients.filter((c: any)    => !String(c.id).includes('demo')),
-        promotoras: prev.promotoras.filter((p: any) => !String(p.id).includes('demo')),
-        vendedores: prev.vendedores.filter((v: any) => !String(v.id).includes('demo')),
-        customers:  prev.customers.filter((c: any)  => !String(c.id).includes('demo')),
-      }));
-      showToast('✅ Demos eliminados correctamente.', 'success');
-    }
-  };
-
-  // Feature 5: Inject KFS Points to any user
-  const handleInjectPoints = (collection: string, userId: string) => {
-    const raw = prompt('Cantidad de KFS Points a inyectar (ej: 500 = $0.50 USD):', '500');
-    if (!raw || isNaN(Number(raw))) return;
-    const amount = parseInt(raw, 10);
-    setDb((prev: any) => ({
-      ...prev,
-      [collection]: prev[collection].map((u: any) =>
-        u.id === userId ? { ...u, kfsPoints: (u.kfsPoints || 0) + amount } : u
-      ),
-    }));
-    showToast(`🎁 ${amount} K-Points inyectados.`, 'success');
   };
 
   const [activeModal, setActiveModal] = useState<string | null>(null);
@@ -3140,8 +3068,8 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-full flex items-center justify-center text-violet-600 font-black text-2xl flex-shrink-0 border-none relative z-20 placeholder:text-gray-400">
-              <ProfileAvatarEditor currentUser={currentUser} />
+            <div className="w-16 h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-full flex items-center justify-center text-violet-600 font-black text-2xl flex-shrink-0 border-none">
+              AQ
             </div>
             <div>
               <h2 className="text-xl md:text-2xl font-black tracking-tight truncate text-violet-900">Control Matriz KFS</h2>
@@ -3154,9 +3082,6 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
       <div className="p-4 md:p-8 max-w-5xl mx-auto -mt-6 relative z-20 flex flex-col gap-8 animate-fade-in">
         {activeTab === "panel" && (
           <div className="space-y-8 flex flex-col">
-            <ReferralLinksWidget userId={currentUser.id} showToast={showToast} />
-            <KPointsIssuerWidget db={db} transferKFSPoints={transferKFSPoints} />
-            <OracleControlSlider merchantId={db.clients?.[0]?.id} merchantName={db.clients?.[0]?.company || "N/A"} currentFee={db.clients?.[0]?.oracle_fee_percentage} setDb={setDb} />
             {/* Global Metrics Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] text-violet-900 p-6 rounded-[2rem] relative overflow-hidden border-none flex flex-col">
@@ -3212,11 +3137,11 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
               <div className="flex items-center gap-4 w-full md:w-auto">
                 <div className="flex-1 md:w-32">
                   <label className="text-[10px] font-bold text-gray-500 uppercase">Tasa USD (Bs)</label>
-                  <input type="number" id="manualUsdRate" placeholder="Tasa USD" defaultValue={rates.USD} step="0.01" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-2 font-bold text-violet-900 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all placeholder:text-gray-400" />
+                  <input type="number" id="manualUsdRate" defaultValue={rates.USD} step="0.01" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-2 font-bold text-violet-900 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all" />
                 </div>
                 <div className="flex-1 md:w-32">
                   <label className="text-[10px] font-bold text-gray-500 uppercase">Tasa EUR (Bs)</label>
-                  <input type="number" id="manualEurRate" placeholder="Tasa EUR" defaultValue={rates.EUR} step="0.01" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-2 font-bold text-violet-900 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all placeholder:text-gray-400" />
+                  <input type="number" id="manualEurRate" defaultValue={rates.EUR} step="0.01" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-2 font-bold text-violet-900 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all" />
                 </div>
                 <button onClick={() => {
                   const usd = parseFloat((document.getElementById('manualUsdRate') as HTMLInputElement).value);
@@ -3315,7 +3240,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                 <h3 className="text-xl font-black text-violet-900 flex items-center gap-2"><Shield className="text-violet-600" /> Control y Gobernanza de Promotoras</h3>
                 <div className="relative w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                  <input type="text" placeholder="Buscar promotora..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all text-violet-900 placeholder:text-gray-400" value={searchPromotora} onChange={e => setSearchPromotora(e.target.value)} />
+                  <input type="text" placeholder="Buscar promotora..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all text-violet-900" value={searchPromotora} onChange={e => setSearchPromotora(e.target.value)} />
                 </div>
               </div>
 
@@ -3377,7 +3302,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                 <h3 className="text-xl font-black text-violet-900 flex items-center gap-2"><DollarSign className="text-red-500" /> Estado de Cobranza Diaria (BOS)</h3>
                 <div className="relative w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                  <input type="text" placeholder="Buscar comercio..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all text-violet-900 placeholder:text-gray-400" value={searchClient} onChange={e => setSearchClient(e.target.value)} />
+                  <input type="text" placeholder="Buscar comercio..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all text-violet-900" value={searchClient} onChange={e => setSearchClient(e.target.value)} />
                 </div>
               </div>
               <div className="overflow-x-auto rounded-xl">
@@ -3401,11 +3326,6 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                             <span className={`inline-block text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full mt-1 ${isBlocked ? 'bg-red-100 text-red-700 border border-red-200' : 'bg-green-100 text-green-700 border border-green-200'}`}>
                               {isBlocked ? '🔴 Bloqueado' : '🟢 Activo'}
                             </span>
-                            {c.promotoraId && (
-                              <span className="block mt-2 text-[10px] text-gray-500 font-bold bg-gray-50 border border-gray-100 px-2 py-1 rounded-md inline-block">
-                                Ref: {db.promotoras?.find((p: any) => p.id === c.promotoraId)?.name || c.promotoraId}
-                              </span>
-                            )}
                           </td>
                           <td className="py-4 px-4 text-gray-500 font-mono">{c.phone}</td>
                           <td className="py-4 px-4 font-black text-green-600">{formatUSD(c.salesUSD || 0)}</td>
@@ -3445,14 +3365,6 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                               }} className="bg-green-100 text-green-700 px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-green-200 transition-colors cursor-pointer inline-flex items-center gap-1">
                                 💬 Cobro WA
                               </button>
-
-                              <button onClick={() => handleInjectPoints('clients', c.id)} className="bg-amber-100 text-amber-700 border border-amber-200 px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-amber-200 transition-colors cursor-pointer inline-flex items-center gap-1 shadow-sm">
-                                🎁 K-Pts
-                              </button>
-
-                              <button onClick={() => setCustomizingClient(c)} className="bg-violet-100 text-violet-700 border border-violet-200 px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-violet-200 transition-colors cursor-pointer inline-flex items-center gap-1 shadow-sm">
-                                🎨 Diseño
-                              </button>
                             </div>
                           </td>
                         </tr>
@@ -3470,7 +3382,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                 <h3 className="text-xl font-black text-violet-900 flex items-center gap-2"><UserCheck className="text-violet-600" /> Fuerza Laboral (Vendedores)</h3>
                 <div className="relative w-48">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                  <input type="text" placeholder="Buscar vendedor..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 text-violet-900 transition-all placeholder:text-gray-400" value={searchVendedor} onChange={e => setSearchVendedor(e.target.value)} />
+                  <input type="text" placeholder="Buscar vendedor..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 text-violet-900 transition-all" value={searchVendedor} onChange={e => setSearchVendedor(e.target.value)} />
                 </div>
               </div>
               <div className="overflow-x-auto max-h-96 rounded-xl">
@@ -3525,7 +3437,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 
               {/* Metrics Banner */}
               <div className="bg-violet-100/50 border-b border-violet-100 p-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-4 rounded-xl flex items-center justify-between placeholder:text-gray-400">
+                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-4 rounded-xl flex items-center justify-between">
                   <div>
                     <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Total Entregas</p>
                     <p className="text-xl font-black text-violet-900">
@@ -3534,7 +3446,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                   </div>
                   <div className="bg-orange-100 text-orange-600 p-2 rounded-lg"><Truck size={20} /></div>
                 </div>
-                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-4 rounded-xl flex items-center justify-between placeholder:text-gray-400">
+                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-4 rounded-xl flex items-center justify-between">
                   <div>
                     <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Ganancias Generadas</p>
                     <p className="text-xl font-black text-emerald-500">
@@ -3543,7 +3455,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                   </div>
                   <div className="bg-emerald-100 text-emerald-600 p-2 rounded-lg"><DollarSign size={20} /></div>
                 </div>
-                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-4 rounded-xl flex items-center justify-between placeholder:text-gray-400">
+                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-4 rounded-xl flex items-center justify-between">
                   <div>
                     <p className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">Riders Activos</p>
                     <p className="text-xl font-black text-violet-900">
@@ -3945,10 +3857,6 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                 <div className="bg-red-600 text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Shield size={24} /></div>
                 <span className="font-black text-red-700 text-sm text-center font-bold">Puesta a Cero (Wipe DB)</span>
               </button>
-              <button onClick={handleClearDemos} className="bg-orange-50 border border-orange-200 hover:bg-orange-100 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group cursor-pointer">
-                <div className="bg-orange-500 text-white p-3 rounded-xl group-hover:scale-110 transition-transform"><Trash2 size={24} /></div>
-                <span className="font-black text-orange-700 text-sm text-center font-bold">🗑️ Limpiar Demos</span>
-              </button>
             </div>
 
             {/* Validaciones Financieras */}
@@ -4224,7 +4132,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                   const url = `${host}?role=${invite.role}&ref=arquitecto`;
                   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}`;
                   return (
-                    <div key={idx} className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-6 rounded-2xl flex flex-col items-center text-center shadow-sm placeholder:text-gray-400">
+                    <div key={idx} className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-6 rounded-2xl flex flex-col items-center text-center shadow-sm">
                       <h4 className="font-black text-[violet-900] mb-4">{invite.title}</h4>
                       <img src={invite.imgUrl} alt={invite.title} className="w-full h-32 object-cover rounded-xl mb-4 shadow-sm border-2 border-white" />
                       <div className="bg-white p-2 rounded-xl border border-gray-100 shadow-sm mb-4">
@@ -4260,14 +4168,14 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
               <div className="space-y-4">
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 block">Comercio (Target)</label>
-                  <select value={targetClientId} onChange={e => setTargetClientId(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold placeholder:text-gray-400">
+                  <select value={targetClientId} onChange={e => setTargetClientId(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold">
                     <option value="">Seleccione Comercio...</option>
                     {db.clients.map((c: any) => <option key={c.id} value={c.id}>{c.company}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 block">Nueva Promotora</label>
-                  <select value={targetPromotoraId} onChange={e => setTargetPromotoraId(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold placeholder:text-gray-400">
+                  <select value={targetPromotoraId} onChange={e => setTargetPromotoraId(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold">
                     <option value="">Seleccione Promotora...</option>
                     <option value="none">Sin Promotora (100% KFS)</option>
                     {db.promotoras.filter((p: any) => p.status !== 'pending').map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
@@ -4279,26 +4187,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
           </div>
         )}
 
-        {/* ── Storefront Customizer Modal (Arquitecto) ───────────────────── */}
-      {customizingClient && (
-        <div className="fixed inset-0 bg-black/60 z-[200] flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setCustomizingClient(null)}>
-          <div className="bg-white rounded-[2rem] w-full max-w-lg relative p-2 shadow-2xl" onClick={e => e.stopPropagation()}>
-            <button onClick={() => setCustomizingClient(null)} className="absolute top-4 right-4 text-gray-400 hover:text-violet-900 transition-colors cursor-pointer z-10 border-none bg-transparent">
-              <X size={24} />
-            </button>
-            <StorefrontCustomizer
-              client={customizingClient}
-              updateStoreSettings={(id: string, settings: any) => {
-                updateStoreSettings(id, settings);
-                setCustomizingClient(null);
-                showToast('✅ Diseño de tienda actualizado.', 'success');
-              }}
-            />
-          </div>
-        </div>
-      )}
-
-      {activeModal === 'product' && (
+        {activeModal === 'product' && (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
             <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6">
               <div className="flex justify-between items-center border-b border-gray-100 pb-4">
@@ -4306,9 +4195,9 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                 <button onClick={() => setActiveModal(null)}><X size={24} className="text-gray-400" /></button>
               </div>
               <div className="space-y-4">
-                <input type="text" placeholder="Nombre del Producto" value={globalProdName} onChange={e => setGlobalProdName(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold placeholder:text-gray-400" />
-                <input type="number" placeholder="Precio ($ USD)" value={globalProdPrice} onChange={e => setGlobalProdPrice(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold placeholder:text-gray-400" />
-                <input type="text" placeholder="Categoría" value={globalProdCategory} onChange={e => setGlobalProdCategory(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold placeholder:text-gray-400" />
+                <input type="text" placeholder="Nombre del Producto" value={globalProdName} onChange={e => setGlobalProdName(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold" />
+                <input type="number" placeholder="Precio ($ USD)" value={globalProdPrice} onChange={e => setGlobalProdPrice(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold" />
+                <input type="text" placeholder="Categoría" value={globalProdCategory} onChange={e => setGlobalProdCategory(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold" />
                 <label className="flex items-center gap-2 text-sm font-bold text-gray-700 cursor-pointer p-3 border border-gray-200 rounded-xl bg-gray-50">
                   <input type="checkbox" id="globalKPoints" className="w-5 h-5 accent-indigo-600 rounded" defaultChecked={true} />
                   Permitir pago mixto con K-Points (Lealtad)
@@ -4337,15 +4226,15 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
               <div className="space-y-4">
                 <div>
                   <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 block">Audiencia Destino</label>
-                  <select value={notifTarget} onChange={e => setNotifTarget(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold placeholder:text-gray-400">
+                  <select value={notifTarget} onChange={e => setNotifTarget(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold">
                     <option value="all">Toda la Red KFS</option>
                     <option value="dueño">Comercios Afiliados</option>
                     <option value="promotora">Fuerza de Promotoras</option>
                     <option value="vendedor">Terminales (Vendedores)</option>
                   </select>
                 </div>
-                <input type="text" placeholder="Título Breve" value={notifTitle} onChange={e => setNotifTitle(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold text-red-600 placeholder:text-gray-400" />
-                <textarea placeholder="Mensaje de impacto..." value={notifMsg} onChange={e => setNotifMsg(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold h-24 resize-none placeholder:text-gray-400" />
+                <input type="text" placeholder="Título Breve" value={notifTitle} onChange={e => setNotifTitle(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold text-red-600" />
+                <textarea placeholder="Mensaje de impacto..." value={notifMsg} onChange={e => setNotifMsg(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold h-24 resize-none" />
                 <button onClick={() => { if (notifTitle && notifMsg) { sendNotification(notifTarget, notifTitle, notifMsg); setActiveModal(null); } }} className="w-full bg-red-600 text-white py-4 rounded-xl font-black shadow-lg flex justify-center gap-2 items-center"><Bell size={20} /> Broadcast Instantáneo</button>
               </div>
             </div>
@@ -4387,7 +4276,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                       const r = db.riders?.find((r: any) => r.id === e.target.value);
                       setAssignRiderModal({ riderId: e.target.value, riderName: r?.name || "" });
                     }}
-                    className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold text-[violet-900] focus:outline-none focus:ring-2 focus:ring-orange-300 placeholder:text-gray-400"
+                    className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold text-[violet-900] focus:outline-none focus:ring-2 focus:ring-orange-300"
                   >
                     <option value="">Seleccione un Rider...</option>
                     {(db.riders || []).filter((r: any) => r.status === "approved").map((r: any) => (
@@ -4405,7 +4294,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
                   <select
                     value={assignRiderBusinessId}
                     onChange={e => setAssignRiderBusinessId(e.target.value)}
-                    className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold text-[violet-900] focus:outline-none focus:ring-2 focus:ring-orange-300 placeholder:text-gray-400"
+                    className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 font-bold text-[violet-900] focus:outline-none focus:ring-2 focus:ring-orange-300"
                   >
                     <option value="">Seleccione un Comercio...</option>
                     {db.clients.map((c: any) => {
@@ -4549,51 +4438,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             candidate={viewingCandidateCv}
           />
         )}
-
-
-        {activeTab === "db_manager" && (
-          <DatabaseManagerWidget 
-            db={db}
-            deleteClient={deleteClient}
-            deleteCustomer={deleteCustomer}
-            deletePromotora={deletePromotora}
-            deleteVendedor={deleteVendedor}
-            rejectRider={rejectRider}
-            showToast={showToast}
-            setActiveTab={setActiveTab}
-          />
-        )}
-
-        {activeTab === "tienda_oficial" && (
-          <div className="space-y-8 flex flex-col animate-fade-in relative">
-            <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8 text-center flex flex-col items-center">
-              <div className="w-24 h-24 bg-gradient-to-tr from-violet-600 to-fuchsia-600 rounded-[2rem] shadow-lg flex items-center justify-center mb-6">
-                <Store className="w-12 h-12 text-white" />
-              </div>
-              <h2 className="text-3xl font-black text-[violet-900] mb-2">Tienda Oficial KFS</h2>
-              <p className="text-gray-500 font-bold mb-8 max-w-md">
-                Administra el inventario del Marketplace Global (Flow Express). Los productos aquí subidos forzarán el consumo de K-Points.
-              </p>
-              
-              <button 
-                onClick={() => {
-                  const oficialStore = db.clients?.find((c: any) => c.id === "kfs-express");
-                  if (oficialStore) {
-                    impersonateClient(oficialStore);
-                  } else {
-                    showToast("Error: No se encontró la tienda matriz en la DB.", "error");
-                  }
-                }}
-                className="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black text-lg flex items-center gap-3 hover:bg-slate-800 transition-all cursor-pointer shadow-xl hover:-translate-y-1 border-none"
-              >
-                <Database className="w-6 h-6 text-fuchsia-400" />
-                Acceder como Dueño de Tienda
-              </button>
-            </div>
-          </div>
-        )}
       </div>
-
 
       {/* FIXED BOTTOM NAVIGATION */}
       <div className="fixed bottom-0 inset-x-0 z-50 bg-white/90 backdrop-blur-xl border-t border-gray-200 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pb-safe">
@@ -4605,9 +4450,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
             { id: "auditoria", icon: Shield, label: "Auditoría" },
             { id: "kyc", icon: FileText, label: "Bóveda KYC" },
             { id: "nodos", icon: QrCode, label: "Nodos KFS" },
-            { id: "vista_dios", icon: Eye, label: "Vista Dios" },
-            { id: "db_manager", icon: Database, label: "Gestión DB" },
-            { id: "tienda_oficial", icon: Store, label: "Tienda KFS" }
+            { id: "vista_dios", icon: Eye, label: "Vista Dios" }
           ].map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -4646,7 +4489,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
   const { updateStoreSettings, replyTicket, validateTopUp } = useKFS() as any;
   const myClients = db.clients.filter((c: any) => c.promotoraId === currentUser.id);
   const myPromotoraData = db.promotoras.find((p: any) => p.id === currentUser.id);
-  const filteredClients = myClients.filter((c: any) => c.company?.toLowerCase().includes(searchClient.toLowerCase()) || c.name?.toLowerCase().includes(searchClient.toLowerCase()));
+  const filteredClients = myClients.filter((c: any) => c.company.toLowerCase().includes(searchClient.toLowerCase()) || c.name.toLowerCase().includes(searchClient.toLowerCase()));
   const myCustomers = db.customers?.filter((c: any) => c.referred_by_promoter_id === currentUser.id) || [];
 
   const pendingTopUps = db.topups?.filter((t: any) => t.status === 'pending' && (
@@ -4667,20 +4510,14 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
             <span className="bg-white/20 p-2 rounded-xl text-[violet-600]"><CheckCircle size={20} /></span>
             <h1 className="font-black text-xl tracking-tight">KFS Promotora</h1>
           </div>
-          <div className="flex items-center gap-2">
-              <div className="bg-gradient-to-r from-amber-400 to-orange-500 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-sm border border-orange-300/50" title="Billetera KFS Points">
-                <span className="text-[10px] font-black uppercase tracking-wider text-orange-900">K-Pts</span>
-                <span className="font-black text-white text-sm">{currentUser?.kfsPoints || 0}</span>
-              </div>
-              <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
-                <LogOut size={16} />
-              </button>
-            </div>
+          <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
+            <LogOut size={16} />
+          </button>
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-[violet-600] rounded-full flex items-center justify-center text-[violet-900] font-black text-2xl flex-shrink-0 shadow-lg border-4 border-[violet-900] relative z-20">
-            <ProfileAvatarEditor currentUser={currentUser} />
+          <div className="w-16 h-16 bg-[violet-600] rounded-full flex items-center justify-center text-[violet-900] font-black text-2xl flex-shrink-0 shadow-lg border-4 border-[violet-900]">
+            {currentUser.name?.slice(0, 2).toUpperCase()}
           </div>
           <div>
             <h2 className="text-xl md:text-2xl font-black tracking-tight truncate">{currentUser.name}</h2>
@@ -4690,26 +4527,9 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
       </div>
 
       <div className="p-4 md:p-8 max-w-5xl mx-auto -mt-6 relative z-20 flex flex-col gap-8 animate-fade-in">
-        <OracleInsightCard role="promoter" data={{ inactiveNode: myClients[0]?.company || 'N/A', remainingPioneerNodes: 100 - (db.clients?.length || 0) }} />
 
         {activeTab === "panel" && (
           <div className="space-y-6">
-            <div className="flex justify-between items-center bg-violet-900 rounded-3xl p-6 text-white shadow-lg animate-fade-in">
-              <div>
-                <h3 className="font-black text-xl">¿Tienes tu propio negocio?</h3>
-                <p className="text-violet-200 text-sm mt-1">Crea tu tienda oficial anclada a ti misma. Su validación será automática.</p>
-              </div>
-              <button 
-                onClick={() => {
-                  window.location.href = `/?role=register&ref=${currentUser.id}#login`;
-                }}
-                className="bg-white text-violet-900 px-6 py-3 rounded-2xl font-black text-sm hover:scale-105 transition-transform cursor-pointer shadow-xl border-none"
-              >
-                Abrir Mi Propia Tienda
-              </button>
-            </div>
-            <ReferralLinksWidget userId={currentUser.id} showToast={showToast} />
-            <UniversalWalletWidget currentUser={myPromotoraData} formatUSD={formatUSD} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-gradient-to-br from-[violet-900] to-[#141E3A] text-white p-8 rounded-[2rem] shadow-2xl relative overflow-hidden border border-white/10 flex flex-col">
                 <div className="relative z-10">
@@ -4848,7 +4668,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
                   <div className="flex flex-wrap gap-4 w-full md:w-auto">
                     <div className="relative flex-1 md:w-48">
                       <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                      <input type="text" placeholder="Buscar comercio..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] placeholder:text-gray-400" value={searchClient} onChange={e => setSearchClient(e.target.value)} />
+                      <input type="text" placeholder="Buscar comercio..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]" value={searchClient} onChange={e => setSearchClient(e.target.value)} />
                     </div>
                     <button onClick={() => setShowRegister(true)} className="bg-[violet-900] text-white px-6 py-2 rounded-xl font-bold text-sm hover:bg-gray-800 transition-colors shadow-md cursor-pointer">+ Nuevo Setup</button>
                   </div>
@@ -4993,6 +4813,10 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
                     <p>En el dashboard del Cliente o Vendedor, se debe descargar "Sincro-Shield Fiscal Proxy" y tener Node.js instalado en el sistema operativo del cliente.</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
+                    <p className="font-black text-[violet-900] mb-1">3. Ejecución y Servicio:</p>
+                    <p>Abrir una terminal en la PC de la caja y ejecutar <code>node fiscal-proxy.js</code>. Opcionalmente configurar PM2 para arranque automático. Se mantendrá corriendo en el puerto 8080.</p>
+                  </div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
                     <p className="font-black text-[violet-900] mb-1">4. Pruebas de Transmisión:</p>
                     <p>En KFS OS (Caja), abrir el Setup Sincro-Shield y presionar "Probar Conexión Proxy". Si responde, marcar la casilla "Imprimir Copias Fiscales por Defecto".</p>
                   </div>
@@ -5004,41 +4828,35 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
       )}
       {activeTab === "afiliados" && (
         <div className="space-y-6">
-          {/* ── Captación Universal KFS — 3 QR Codes ─────────────────── */}
-          <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8 text-[violet-900]">
-            <h3 className="text-xl font-black mb-6 flex items-center gap-2"><span>📡</span> Captación Universal KFS</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white shadow-sm border border-gray-100 rounded-2xl p-5 flex flex-col items-center gap-3 text-center">
-                <h4 className="font-black text-lg mb-1">🏪 Dueños / Comercios</h4>
-                <div className="w-36 h-36 bg-white rounded-xl border-2 border-violet-400 p-1.5 shadow-md">
-                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://kfs-os.vercel.app?role=due%C3%B1o&ref=' + currentUser.id)}`} alt="QR Dueños" className="w-full h-full object-contain rounded-lg" loading="lazy" />
+          {/* Captación de Clientes Panel */}
+          <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8 relative overflow-hidden text-[violet-900]">
+            <h3 className="text-xl font-black mb-4">Captación de Clientes</h3>
+            <div className="flex flex-col md:flex-row gap-8 items-start md:items-center">
+              <div className="w-40 h-40 bg-gray-100 rounded-xl flex items-center justify-center border-4 border-[violet-600] flex-shrink-0">
+                {/* Mock QR */}
+                <div className="text-center w-full h-full flex flex-col items-center justify-center p-2">
+                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://kfs-os.vercel.app/#landing?ref=' + currentUser.id)}`} alt="QR Afiliado" className="w-full h-auto object-contain rounded-lg" />
                 </div>
-                <p className="text-xs text-gray-500 leading-tight">Ganas <strong className="text-violet-700">50% de la cuota</strong> + 20% regalías de por vida.</p>
-                <button onClick={() => { navigator.clipboard.writeText('https://kfs-os.vercel.app?role=due%C3%B1o&ref=' + currentUser.id); }} className="text-[10px] font-black text-violet-700 bg-violet-100 hover:bg-violet-200 px-3 py-1.5 rounded-lg cursor-pointer w-full">📋 Copiar Enlace Comercios</button>
               </div>
-              <div className="bg-white shadow-sm border border-gray-100 rounded-2xl p-5 flex flex-col items-center gap-3 text-center">
-                <h4 className="font-black text-lg mb-1">👨‍💼 Fuerza de Ventas</h4>
-                <div className="w-36 h-36 bg-white rounded-xl border-2 border-blue-400 p-1.5 shadow-md">
-                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://kfs-os.vercel.app?role=vendedor&ref=' + currentUser.id)}`} alt="QR Vendedores" className="w-full h-full object-contain rounded-lg" loading="lazy" />
+              <div className="flex-1">
+                <p className="text-sm text-gray-600 mb-2">Pide a tus clientes que escaneen este código o ingresen tu ID al registrarse para quedar enlazados a tu perfil.</p>
+                <p className="bg-gray-100 px-4 py-2 rounded-lg font-mono font-black inline-block text-lg border border-gray-300 text-indigo-900 tracking-wider mb-4">{currentUser.id}</p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-green-50 border border-green-100 p-4 rounded-xl">
+                    <p className="text-xs text-green-700 font-bold uppercase tracking-wider mb-1">Bono por Adquisición</p>
+                    <p className="text-2xl font-black text-green-600">${(currentUser.customerAcquisitionBonusUSD || 0).toFixed(2)}</p>
+                    <p className="text-[10px] text-green-600/80 mt-1">Ganas $1.00 USD cuando tu referido recarga sus primeros $5.00 USD en la billetera.</p>
+                  </div>
+                  <div className="flex items-center">
+                    <button onClick={() => setShowCustomerRegister(true)} className="w-full bg-[violet-900] text-white py-4 rounded-xl font-black shadow-lg hover:bg-gray-800 transition-colors flex justify-center items-center gap-2 cursor-pointer">
+                      <UserPlus size={20} /> Registrar Cliente en Vivo
+                    </button>
+                  </div>
                 </div>
-                <p className="text-xs text-gray-500 leading-tight">Recluta vendedores para tus comercios y expande tu red de ventas físicas.</p>
-                <button onClick={() => { navigator.clipboard.writeText('https://kfs-os.vercel.app?role=vendedor&ref=' + currentUser.id); }} className="text-[10px] font-black text-blue-700 bg-blue-100 hover:bg-blue-200 px-3 py-1.5 rounded-lg cursor-pointer w-full">📋 Copiar Enlace Vendedores</button>
               </div>
-              <div className="bg-white shadow-sm border border-gray-100 rounded-2xl p-5 flex flex-col items-center gap-3 text-center">
-                <h4 className="font-black text-lg mb-1">🛒 Clientes / Flow Express</h4>
-                <div className="w-36 h-36 bg-white rounded-xl border-2 border-emerald-400 p-1.5 shadow-md">
-                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://kfs-os.vercel.app?role=customer&ref=' + currentUser.id)}`} alt="QR Clientes" className="w-full h-full object-contain rounded-lg" loading="lazy" />
-                </div>
-                <p className="text-xs text-gray-500 leading-tight">Ganas <strong className="text-emerald-700">$1.00 USD</strong> cuando tu referido recarga sus primeros $5.00 USD.</p>
-                <button onClick={() => { navigator.clipboard.writeText('https://kfs-os.vercel.app?role=customer&ref=' + currentUser.id); }} className="text-[10px] font-black text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-3 py-1.5 rounded-lg cursor-pointer w-full">📋 Copiar Enlace Clientes</button>
-              </div>
-            </div>
-            <div className="mt-6 pt-6 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <p className="text-xs text-gray-500">Tu ID de Promotora: <span className="font-mono font-black text-violet-700">{currentUser.id}</span></p>
-              <button onClick={() => setShowCustomerRegister(true)} className="bg-violet-700 text-white px-6 py-3 rounded-xl font-black shadow-md hover:bg-violet-900 transition-colors flex items-center gap-2 cursor-pointer text-sm"><UserPlus size={18} /> Registrar Cliente en Vivo</button>
             </div>
           </div>
-
 
           <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8">
             <h3 className="text-lg font-black mb-4">Mis Clientes Afiliados ({myCustomers.length})</h3>
@@ -5108,19 +4926,19 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
               }} className="space-y-4">
                 <div>
                   <label className="text-xs font-bold text-gray-400 block mb-1">Nombre Completo</label>
-                  <input name="vName" required className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:border-[violet-600] placeholder:text-gray-400" placeholder="Ej: Vendedor Alpha" />
+                  <input name="vName" required className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:border-[violet-600]" placeholder="Ej: Vendedor Alpha" />
                 </div>
                 <div>
                   <label className="text-xs font-bold text-gray-400 block mb-1">Correo Electrónico (Login)</label>
-                  <input type="email" name="vEmail" required className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:border-[violet-600] placeholder:text-gray-400" placeholder="vendedor@kfs.com" />
+                  <input type="email" name="vEmail" required className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:border-[violet-600]" placeholder="vendedor@kfs.com" />
                 </div>
                 <div>
                   <label className="text-xs font-bold text-gray-400 block mb-1">Contraseña</label>
-                  <input type="password" name="vPassword" required className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:border-[violet-600] placeholder:text-gray-400" placeholder="*****" />
+                  <input type="password" name="vPassword" required className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:border-[violet-600]" placeholder="*****" />
                 </div>
                 <div>
                   <label className="text-xs font-bold text-gray-400 block mb-1">Asignar a Comercio (Opcional)</label>
-                  <select name="vClient" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:border-[violet-600] text-gray-700 placeholder:text-gray-400">
+                  <select name="vClient" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:border-[violet-600] text-gray-700">
                     <option value="">Independiente (Sin Comercio Fijo)</option>
                     {myClients.map((c: any) => <option key={c.id} value={c.id}>{c.company}</option>)}
                   </select>
@@ -5282,7 +5100,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
 
         <div className="flex flex-col gap-1">
           <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Biografía o Eslogan (Max 150 char)</label>
-          <textarea maxLength={150} value={settings.bioText} onChange={e => setSettings({ ...settings, bioText: e.target.value })} placeholder="Los mejores productos..." className="w-full h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[violet-600] resize-none placeholder:text-gray-400" />
+          <textarea maxLength={150} value={settings.bioText} onChange={e => setSettings({ ...settings, bioText: e.target.value })} placeholder="Los mejores productos..." className="w-full h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[violet-600] resize-none" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -5299,7 +5117,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
           </div>
           <div>
             <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Tipografía</label>
-            <select value={settings.typography} onChange={e => setSettings({ ...settings, typography: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none placeholder:text-gray-400">
+            <select value={settings.typography} onChange={e => setSettings({ ...settings, typography: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none">
               <option value="font-sans">Moderna (Sans)</option>
               <option value="font-serif">Clásica (Serif)</option>
               <option value="font-mono">Técnica (Mono)</option>
@@ -5309,7 +5127,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
 
         <div>
           <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Disposición (Layout)</label>
-          <select value={settings.layoutType} onChange={e => setSettings({ ...settings, layoutType: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none placeholder:text-gray-400">
+          <select value={settings.layoutType} onChange={e => setSettings({ ...settings, layoutType: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none">
             <option value="grid">Grilla de Tarjetas (Recomendado)</option>
             <option value="list">Lista Compacta</option>
           </select>
@@ -5334,7 +5152,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
                 value={settings.deliveryAddress || ""}
                 onChange={e => setSettings({ ...settings, deliveryAddress: e.target.value })}
                 placeholder="Ej: Av. Principal, Edificio Torre Norte, Local 4"
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300 placeholder:text-gray-400"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
               />
             </div>
             <div>
@@ -5344,7 +5162,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
                 value={settings.deliveryCity || ""}
                 onChange={e => setSettings({ ...settings, deliveryCity: e.target.value })}
                 placeholder="Ej: Caracas, Miranda"
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300 placeholder:text-gray-400"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
               />
             </div>
             <div>
@@ -5354,7 +5172,7 @@ const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, up
                 value={settings.deliveryReference || ""}
                 onChange={e => setSettings({ ...settings, deliveryReference: e.target.value })}
                 placeholder="Ej: Frente al banco, puerta azul"
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300 placeholder:text-gray-400"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-orange-300"
               />
             </div>
             {settings.deliveryAddress && (
@@ -5661,7 +5479,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
               <select
                 value={role}
                 onChange={e => setRole(e.target.value)}
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] placeholder:text-gray-400"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]"
               >
                 <option value="Cajero">Cajero / Cajera</option>
                 <option value="Vendedor">Vendedor de Tienda</option>
@@ -5676,7 +5494,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
               <select
                 value={location}
                 onChange={e => setLocation(e.target.value)}
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] placeholder:text-gray-400"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]"
               >
                 <option value="Caracas - Este">Caracas - Este</option>
                 <option value="Caracas - Oeste">Caracas - Oeste</option>
@@ -5692,7 +5510,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
               <select
                 value={experienceYears}
                 onChange={e => setExperienceYears(e.target.value)}
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] placeholder:text-gray-400"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]"
               >
                 <option value="0-1">Menos de 1 año</option>
                 <option value="1-3">1 a 3 años</option>
@@ -5705,7 +5523,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
               <select
                 value={availability}
                 onChange={e => setAvailability(e.target.value)}
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] placeholder:text-gray-400"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]"
               >
                 <option value="full-time">Tiempo Completo (Full-time)</option>
                 <option value="part-time">Medio Tiempo (Part-time)</option>
@@ -5805,7 +5623,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
 
                     <div className="flex flex-wrap gap-1">
                       {cand.skills?.map((s: string) => (
-                        <span key={s} className="text-[9px] font-bold text-gray-500 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none px-2 py-0.5 rounded-md placeholder:text-gray-400">
+                        <span key={s} className="text-[9px] font-bold text-gray-500 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none px-2 py-0.5 rounded-md">
                           {s}
                         </span>
                       ))}
@@ -6126,7 +5944,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                 placeholder="Ej: Excelente actitud, muy rápido en el POS y puntual. Altamente recomendado."
                 value={ratingComment}
                 onChange={(e) => setRatingComment(e.target.value)}
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[violet-600] text-[violet-900] font-bold placeholder:text-gray-400"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[violet-600] text-[violet-900] font-bold"
               />
             </div>
 
@@ -6433,7 +6251,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           </p>
 
           {!isPendingVerification && (
-            <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-6 rounded-2xl mb-8 relative z-10 placeholder:text-gray-400">
+            <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-6 rounded-2xl mb-8 relative z-10">
               <h3 className="font-bold text-[violet-900] mb-4">¿Cómo reactivar tu Tienda?</h3>
               <p className="text-sm text-gray-500 mb-4">Transfiere $6 USD vía Zinli, AirTM, Wally, Ubbi, Binance Pay o Pago Móvil y escribe la referencia bancaria a continuación:</p>
 
@@ -6456,11 +6274,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             </div>
           )}
 
-          <div className="bg-gradient-to-r from-amber-400 to-orange-500 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-sm border border-orange-300/50">
-              <span className="text-[10px] font-black uppercase tracking-wider text-orange-900">K-Pts</span>
-              <span className="font-black text-white text-sm">{currentUser?.kfsPoints || 0}</span>
-            </div>
-            <button onClick={logout} className="text-gray-400 font-bold hover:text-red-500 transition relative z-10 cursor-pointer">
+          <button onClick={logout} className="text-gray-400 font-bold hover:text-red-500 transition relative z-10 cursor-pointer">
             Cerrar Sesión
           </button>
         </div>
@@ -6496,8 +6310,8 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-violet-600 font-black text-2xl flex-shrink-0 shadow-lg border-none relative z-20">
-            <ProfileAvatarEditor currentUser={currentUser} />
+          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-violet-600 font-black text-2xl flex-shrink-0 shadow-lg border-none">
+            {currentUser.company?.slice(0, 2).toUpperCase()}
           </div>
           <div>
             <h2 className="text-xl md:text-2xl font-black tracking-tight truncate">{currentUser.company}</h2>
@@ -6507,7 +6321,6 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
       </div>
 
       <div className="max-w-5xl mx-auto px-4 -mt-6 relative z-20 space-y-6 animate-fade-in">
-
 
         {activeTab === "resumen" && (
           <div className="space-y-6">
@@ -6522,27 +6335,26 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   </div>
                 </div>
                 <div className="flex flex-col gap-3">
-                  <div className="flex flex-col gap-2">
-                    <div className="flex items-center gap-2 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] px-4 py-2 rounded-xl border-none placeholder:text-gray-400">
-                      <span className="text-xs font-bold text-gray-500">Plan Base:</span>
-                      <select
-                        value={currentUser.kfsTier || 'matrix'}
-                        onChange={(e) => changeTier(e.target.value)}
-                        className="bg-transparent text-sm font-black text-violet-600 focus:outline-none cursor-pointer"
-                      >
-                        <option value="velocity" className="text-black bg-white">Flow Velocity (3%)</option>
-                        <option value="matrix" className="text-black bg-white">Flow Matrix (5%)</option>
-                        <option value="monopoly" className="text-black bg-white">Flow Monopoly (10%)</option>
-                      </select>
-                    </div>
-                    <div className="flex items-center gap-2 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] px-4 py-2 rounded-xl border-none placeholder:text-gray-400">
-                      <span className="text-xs font-bold text-gray-500">Tasa KFS Activa (Oráculo):</span>
-                      <span className="text-sm font-black text-violet-600">
-                        {currentUser.oracle_fee_percentage !== undefined && currentUser.oracle_fee_percentage !== null
-                          ? currentUser.oracle_fee_percentage
-                          : (currentUser.kfsTier === 'velocity' ? 3 : currentUser.kfsTier === 'monopoly' ? 10 : 5)}%
-                      </span>
-                    </div>
+                  <div className="flex items-center gap-2 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] px-4 py-2 rounded-xl border-none">
+                    <span className="text-xs font-bold text-gray-500">Nivel KFS:</span>
+                    <select
+                      value={currentUser.kfsTier || 'velocity'}
+                      onChange={(e) => changeTier(e.target.value)}
+                      disabled={true}
+                      className="bg-transparent text-sm font-black text-violet-600 focus:outline-none cursor-pointer disabled:opacity-80 disabled:cursor-not-allowed"
+                    >
+                      {true && (
+                        <option value={currentUser.kfsTier || 'velocity'} className="text-black">
+                          {currentUser.kfsTier === 'velocity' ? 'Flow Velocity (3%)' :
+                           currentUser.kfsTier === 'matrix' ? 'Flow Matrix (5%)' :
+                           currentUser.kfsTier === 'monopoly' ? 'Flow Monopoly (10%)' :
+                           currentUser.kfsTier?.includes('tramo_1') ? `Tramo 1 (${currentUser.kfsTier.split('_')[2]}%)` :
+                           currentUser.kfsTier?.includes('tramo_2') ? `Tramo 2 (${currentUser.kfsTier.split('_')[2]}%)` :
+                           `${currentUser.kfsTier} (%)`
+                          }
+                        </option>
+                      )}
+                    </select>
                   </div>
                   <button onClick={() => setShowExpenseModal(true)} className="bg-violet-500 text-white font-black px-6 py-3 rounded-xl shadow-[0_10px_20px_rgba(139,92,246,0.3)] hover:scale-105 transition-transform border-none">
                     Registrar Gasto
@@ -6559,7 +6371,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   <h3 className="font-black text-[violet-900] text-lg">Progreso de Peaje Gamificado</h3>
                   <span className="text-sm font-bold text-violet-500">{clientInfo?.onboardedUsers || 0} / 50 Usuarios</span>
                 </div>
-                <div className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] h-4 rounded-full overflow-hidden placeholder:text-gray-400">
+                <div className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] h-4 rounded-full overflow-hidden">
                   <div className="bg-violet-500 h-full transition-all duration-1000" style={{ width: `${Math.min(((clientInfo?.onboardedUsers || 0) / 50) * 100, 100)}%` }}></div>
                 </div>
                 <p className="text-xs text-gray-500 mt-3">
@@ -6572,8 +6384,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 </div>
               </div>
             </div>
-            
-            <OracleInsightCard role="owner" data={{ topProduct: "Combo Kreatek" }} />
+
           </div>
         )}
 
@@ -6585,7 +6396,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             {/* Open / Close */}
             <div className="bg-[#EEF2F5] rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none p-6 flex flex-col gap-4">
               <h4 className="font-black text-[violet-900] flex items-center gap-2"><Store size={20} className="text-violet-500" /> Estado del Negocio</h4>
-              <div className="flex items-center justify-between bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-2xl p-4 placeholder:text-gray-400">
+              <div className="flex items-center justify-between bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-2xl p-4">
                 <div>
                   <p className="font-black text-sm text-[violet-900]">{clientInfo.isOpen !== false ? '🟢 Abierto' : '🔴 Cerrado'}</p>
                   <p className="text-[10px] text-gray-400 mt-0.5">Tus clientes verán este estado en tu tienda</p>
@@ -6604,9 +6415,9 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 {['Lun-Vie', 'Sáb', 'Dom'].map(day => (
                   <div key={day} className="flex items-center gap-2">
                     <span className="text-xs font-bold text-gray-600 w-14">{day}</span>
-                    <input type="time" defaultValue="08:00" className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-lg px-2 py-1 text-xs flex-1 placeholder:text-gray-400" />
+                    <input type="time" defaultValue="08:00" className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-lg px-2 py-1 text-xs flex-1" />
                     <span className="text-xs text-gray-400">–</span>
-                    <input type="time" defaultValue="18:00" className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-lg px-2 py-1 text-xs flex-1 placeholder:text-gray-400" />
+                    <input type="time" defaultValue="18:00" className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-lg px-2 py-1 text-xs flex-1" />
                   </div>
                 ))}
               </div>
@@ -6629,7 +6440,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                     <span>1 km</span><span>15 km</span><span>30 km</span>
                   </div>
                 </div>
-                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 text-xs text-emerald-600 font-bold placeholder:text-gray-400">
+                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-3 text-xs text-emerald-600 font-bold">
                   📦 Solo se aceptarán pedidos dentro de {deliveryRadiusKm} km del negocio.
                 </div>
                 <button
@@ -6668,7 +6479,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           {activeTab === 'inventario' && (
             <>
               <button onClick={() => setShowAddModal(true)} className="bg-[#EEF2F5] border-none p-8 rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] hover:shadow-[15px_15px_30px_#d1d9e6,-15px_-15px_30px_#ffffff] flex flex-col items-center justify-center gap-5 transition-all cursor-pointer">
-                <div className="w-16 h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-full flex items-center justify-center placeholder:text-gray-400">
+                <div className="w-16 h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-full flex items-center justify-center">
                   <Package size={32} className="text-violet-500" />
                 </div>
                 <span className="font-black text-lg text-[violet-900]">Subir Producto</span>
@@ -6676,7 +6487,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
               <div className="bg-[#EEF2F5] border-none p-8 rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] flex flex-col items-center justify-center gap-5 transition-all relative overflow-hidden">
                 <input type="file" accept=".csv" ref={fileInputRef} onChange={handleCSVUpload} className="hidden" />
-                <div className="w-16 h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-full flex items-center justify-center placeholder:text-gray-400">
+                <div className="w-16 h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] rounded-full flex items-center justify-center">
                   <DownloadCloud size={32} className="text-emerald-500" />
                 </div>
                 <button onClick={() => fileInputRef.current?.click()} className="font-black text-lg text-emerald-600 hover:text-emerald-700 transition-colors cursor-pointer text-center leading-tight">Importar Inventario<br /><span className="text-xs font-bold text-gray-400">Desde Excel/CSV</span></button>
@@ -6717,7 +6528,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
               <h3 className="text-xl font-black mb-6 flex items-center gap-2"><Star className="text-violet-500" /> Productos Estrella</h3>
               <div className="space-y-4">
                 {myProducts.slice(0, 4).map((p: any, i: number) => (
-                  <div key={i} className="flex justify-between items-center bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] p-4 rounded-xl border-none placeholder:text-gray-400">
+                  <div key={i} className="flex justify-between items-center bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] p-4 rounded-xl border-none">
                     <div className="flex items-center gap-3">
                       <div className="bg-violet-100 text-violet-600 font-black h-8 w-8 rounded-full flex items-center justify-center">#{i + 1}</div>
                       <span className="font-bold">{p.name}</span>
@@ -6730,7 +6541,9 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             </div>
           </div>
         )}
+
         {activeTab === 'resumen' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
             <div className="bg-violet-600 text-white p-6 md:p-8 rounded-[2rem] shadow-[0_10px_20px_rgba(139,92,246,0.3)] relative overflow-hidden border-none h-full">
               <h3 className="font-black text-xl mb-2 flex items-center gap-2"><Activity className="text-violet-200" /> Kreatek Insights (IA)</h3>
               <p className="text-xs text-violet-200 mb-6">Motor de predicción de inventario activo.</p>
@@ -6745,15 +6558,20 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 </div>
               </div>
             </div>
-        )}
 
-        {activeTab === 'resumen' && (
-            <UniversalWalletWidget currentUser={clientInfo} formatUSD={formatUSD}>
-              <div className="flex flex-col gap-4 mt-2">
-                <p className="text-xs text-gray-400 mb-2">Suscripción SaaS Activa: $6/mes. Próximo cobro: {new Date(clientInfo.subscription?.nextBillingDate).toLocaleDateString()}</p>
+            <div className="bg-[#EEF2F5] p-6 md:p-8 rounded-[2rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none flex flex-col justify-between h-full">
+              <div>
+                <h3 className="font-black text-xl text-[violet-900] flex items-center gap-2"><DollarSign className="text-emerald-500" /> Billetera KFS (Billing)</h3>
+                <p className="text-xs text-gray-500 mb-4">Suscripción SaaS Activa: $6/mes. Próximo cobro: {new Date(clientInfo.subscription?.nextBillingDate).toLocaleDateString()}</p>
+                <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl p-4 flex justify-between items-center mb-4">
+                  <span className="font-bold text-gray-600">Saldo Actual:</span>
+                  <span className="text-2xl font-black text-emerald-600">${(clientInfo.walletBalanceUSD || 0).toFixed(2)}</span>
+                </div>
+              </div>
+              <div className="space-y-2">
                 <div className="flex gap-2">
-                  <input type="number" placeholder="Monto $USD" value={fundAmount} onChange={e => setFundAmount(e.target.value)} className="w-1/2 bg-white/5 border border-white/10 rounded-xl px-4 py-2 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white placeholder:text-gray-500" />
-                  <button onClick={() => { if (fundAmount) { setIsTopUpOpen(true); } }} className="w-1/2 bg-emerald-500 text-white font-black rounded-xl cursor-pointer hover:scale-105 shadow-[0_5px_15px_rgba(16,185,129,0.3)] transition-transform border-none text-xs">Recargar Saldo</button>
+                  <input type="number" placeholder="Monto $USD" value={fundAmount} onChange={e => setFundAmount(e.target.value)} className="w-1/2 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+                  <button onClick={() => { if (fundAmount) { setIsTopUpOpen(true); } }} className="w-1/2 bg-emerald-500 text-white font-black rounded-xl cursor-pointer hover:scale-105 shadow-[0_5px_15px_rgba(16,185,129,0.3)] transition-transform border-none">Recargar Saldo</button>
                   <TopUpModal
                     isOpen={isTopUpOpen}
                     onClose={() => setIsTopUpOpen(false)}
@@ -6765,12 +6583,10 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                     userType="client"
                   />
                 </div>
-                <div className="flex gap-2">
-                  <button onClick={() => setShowPayoutModal(true)} className="w-1/2 bg-white/10 text-white font-black py-2 rounded-xl cursor-pointer hover:bg-white/20 transition-colors border border-white/10 text-xs">Retirar Fondos</button>
-                  <button onClick={() => processMonthlyBilling(currentUser.id)} className="w-1/2 bg-red-500/20 text-red-400 font-bold py-2 rounded-xl border border-red-500/30 text-[10px] cursor-pointer hover:bg-red-500/30">Simular Cobro</button>
-                </div>
+                <button onClick={() => processMonthlyBilling(currentUser.id)} className="w-full bg-red-100 text-red-600 font-bold py-2 rounded-xl border border-red-200 text-xs cursor-pointer hover:bg-red-200">Simular Cobro Mensual (Dev)</button>
               </div>
-            </UniversalWalletWidget>
+            </div>
+          </div>
         )}
 
         {activeTab === 'personal' && (
@@ -6780,13 +6596,13 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
               <div className="flex gap-4">
                 <div className="relative w-48">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-                  <input type="text" placeholder="Buscar vendedor..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] placeholder:text-gray-400" value={searchVendedor} onChange={e => setSearchVendedor(e.target.value)} />
+                  <input type="text" placeholder="Buscar vendedor..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]" value={searchVendedor} onChange={e => setSearchVendedor(e.target.value)} />
                 </div>
                 <button onClick={() => setShowAddVendedor(true)} className="text-sm font-bold text-white bg-[violet-900] px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors cursor-pointer">+ Añadir Vendedor</button>
               </div>
             </div>
             <div className="space-y-3">
-              {myVendedores.filter((v: any) => v.name?.toLowerCase().includes(searchVendedor.toLowerCase()) || v.email?.toLowerCase().includes(searchVendedor.toLowerCase())).map((v: any) => (
+              {myVendedores.filter((v: any) => v.name.toLowerCase().includes(searchVendedor.toLowerCase()) || v.email.toLowerCase().includes(searchVendedor.toLowerCase())).map((v: any) => (
                 <div key={v.id} className="flex justify-between items-center p-4 bg-gray-50 rounded-2xl border border-gray-100">
                   <div className="flex items-center gap-3">
                     {v.avatar ? (
@@ -7080,29 +6896,29 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
             }} className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Zinli (Email)</label>
-                <input name="zinli" defaultValue={currentUser.paymentMethods?.zinli || ""} placeholder="correo@zinli.com" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600] placeholder:text-gray-400" />
+                <input name="zinli" defaultValue={currentUser.paymentMethods?.zinli || ""} placeholder="correo@zinli.com" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600]" />
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Wally Tech</label>
-                <input name="wallyTech" defaultValue={currentUser.paymentMethods?.wallyTech || ""} placeholder="Usuario o Teléfono" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600] placeholder:text-gray-400" />
+                <input name="wallyTech" defaultValue={currentUser.paymentMethods?.wallyTech || ""} placeholder="Usuario o Teléfono" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600]" />
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">AirTM</label>
-                <input name="airtm" defaultValue={currentUser.paymentMethods?.airtm || ""} placeholder="correo@airtm.com" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600] placeholder:text-gray-400" />
+                <input name="airtm" defaultValue={currentUser.paymentMethods?.airtm || ""} placeholder="correo@airtm.com" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600]" />
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Ubbi App</label>
-                <input name="ubbiApp" defaultValue={currentUser.paymentMethods?.ubbiApp || ""} placeholder="Usuario Ubbi" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600] placeholder:text-gray-400" />
+                <input name="ubbiApp" defaultValue={currentUser.paymentMethods?.ubbiApp || ""} placeholder="Usuario Ubbi" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600]" />
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono block">Binance Pay (Pay ID)</label>
-                <input name="binance" defaultValue={currentUser.paymentMethods?.binance || ""} placeholder="ID de Binance" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600] placeholder:text-gray-400" />
+                <input name="binance" defaultValue={currentUser.paymentMethods?.binance || ""} placeholder="ID de Binance" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm text-gray-900 focus:outline-none focus:border-[violet-600]" />
               </div>
               <div className="space-y-2 border border-gray-200 p-4 rounded-xl">
                 <label className="text-[10px] font-black text-gray-500 uppercase tracking-widest font-mono mb-2 block">Pago Móvil</label>
-                <input name="pMovilBank" defaultValue={currentUser.paymentMethods?.pagoMovilBank || ""} placeholder="Banco (Ej. Banesco 0134)" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[violet-600] mb-2 placeholder:text-gray-400" />
-                <input name="pMovilPhone" defaultValue={currentUser.paymentMethods?.pagoMovilPhone || ""} placeholder="Teléfono" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[violet-600] mb-2 placeholder:text-gray-400" />
-                <input name="pMovilId" defaultValue={currentUser.paymentMethods?.pagoMovilId || ""} placeholder="Cédula/RIF" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[violet-600] placeholder:text-gray-400" />
+                <input name="pMovilBank" defaultValue={currentUser.paymentMethods?.pagoMovilBank || ""} placeholder="Banco (Ej. Banesco 0134)" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[violet-600] mb-2" />
+                <input name="pMovilPhone" defaultValue={currentUser.paymentMethods?.pagoMovilPhone || ""} placeholder="Teléfono" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[violet-600] mb-2" />
+                <input name="pMovilId" defaultValue={currentUser.paymentMethods?.pagoMovilId || ""} placeholder="Cédula/RIF" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-[violet-600]" />
               </div>
               <div className="md:col-span-3 flex justify-end">
                 <button type="submit" className="bg-[violet-900] text-white font-bold py-3 px-8 rounded-xl hover:bg-black transition-colors cursor-pointer active:scale-95">Guardar en Bóveda Criptográfica</button>
@@ -7354,7 +7170,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                                 <p className="text-[10px] font-black text-gray-500 uppercase tracking-wider mb-2">Riders disponibles para asignar:</p>
                                 <div className="space-y-1">
                                   {availableRiders.slice(0, 5).map((r: any) => (
-                                    <button key={r.id} onClick={() => assignRiderToBusiness(r.id, currentUser.id)} className="w-full text-left px-3 py-2 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl hover:bg-blue-50 hover:border-blue-200 transition-colors cursor-pointer placeholder:text-gray-400">
+                                    <button key={r.id} onClick={() => assignRiderToBusiness(r.id, currentUser.id)} className="w-full text-left px-3 py-2 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl hover:bg-blue-50 hover:border-blue-200 transition-colors cursor-pointer">
                                       <span className="font-bold text-sm text-[violet-900]">{r.name}</span>
                                       <span className="text-[10px] text-gray-400 ml-2">{r.email}</span>
                                       <span className="float-right text-[10px] text-blue-500 font-black">+ Añadir</span>
@@ -7603,27 +7419,27 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
               <h3 className="text-2xl font-black mb-6 text-[violet-900]">Nuevo Producto</h3>
               <form onSubmit={submitProduct} className="space-y-4">
                 <div className="flex gap-2">
-                  <input type="text" placeholder="Código de Barras (Opcional)" value={newProd.barcode} onChange={e => setNewProd({ ...newProd, barcode: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-mono text-gray-900 placeholder:text-gray-400" />
+                  <input type="text" placeholder="Código de Barras (Opcional)" value={newProd.barcode} onChange={e => setNewProd({ ...newProd, barcode: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-mono text-gray-900" />
                   <button type="button" onClick={() => handleBarcodeSearch(newProd.barcode)} disabled={isFetchingBarcode} className="bg-[violet-900] text-white px-4 rounded-xl font-bold flex-shrink-0 disabled:opacity-50">
                     <Search size={18} />
                   </button>
                 </div>
-                <input required type="text" placeholder="Nombre del Artículo" value={newProd.name} onChange={e => setNewProd({ ...newProd, name: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900 placeholder:text-gray-400" />
+                <input required type="text" placeholder="Nombre del Artículo" value={newProd.name} onChange={e => setNewProd({ ...newProd, name: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900" />
                 <div className="grid grid-cols-3 gap-2">
                   <div>
                     <label className="text-[9px] font-black uppercase text-gray-400 block mb-1">Costo Insumo</label>
-                    <input required type="number" step="0.01" placeholder="Costo ($)" value={newProd.cost} onChange={e => setNewProd({ ...newProd, cost: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900 placeholder:text-gray-400" />
+                    <input required type="number" step="0.01" placeholder="Costo ($)" value={newProd.cost} onChange={e => setNewProd({ ...newProd, cost: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900" />
                   </div>
                   <div>
                     <label className="text-[9px] font-black uppercase text-gray-400 block mb-1">Precio Venta</label>
-                    <input required type="number" step="0.01" placeholder="Precio ($)" value={newProd.price} onChange={e => setNewProd({ ...newProd, price: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-black text-gray-900 text-center placeholder:text-gray-400" />
+                    <input required type="number" step="0.01" placeholder="Precio ($)" value={newProd.price} onChange={e => setNewProd({ ...newProd, price: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-black text-gray-900 text-center" />
                   </div>
                   <div>
                     <label className="text-[9px] font-black uppercase text-gray-400 block mb-1">Stock</label>
-                    <input required type="number" placeholder="Cant" value={newProd.stock} onChange={e => setNewProd({ ...newProd, stock: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900 text-center placeholder:text-gray-400" />
+                    <input required type="number" placeholder="Cant" value={newProd.stock} onChange={e => setNewProd({ ...newProd, stock: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-3 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900 text-center" />
                   </div>
                 </div>
-                <select value={newProd.category} onChange={e => setNewProd({ ...newProd, category: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900 placeholder:text-gray-400">
+                <select value={newProd.category} onChange={e => setNewProd({ ...newProd, category: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900">
                   <option value="Alimentos">Alimentos y Bebidas</option>
                   <option value="Ropa y Calzado">Ropa y Calzado</option>
                   <option value="Tecnología">Tecnología y Electrónica</option>
@@ -7631,7 +7447,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   <option value="Hogar">Hogar y Muebles</option>
                   <option value="Servicios">Servicios Generales</option>
                 </select>
-                <textarea placeholder="Descripción del producto (Opcional)" value={newProd.description} onChange={e => setNewProd({ ...newProd, description: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-medium text-gray-900 text-sm h-20 resize-none placeholder:text-gray-400" />
+                <textarea placeholder="Descripción del producto (Opcional)" value={newProd.description} onChange={e => setNewProd({ ...newProd, description: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-medium text-gray-900 text-sm h-20 resize-none" />
                 <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 cursor-pointer relative transition-colors">
                   <input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                   {newProd.imgUrl ? (
@@ -7683,9 +7499,9 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                   <span className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Foto del Empleado</span>
                 </div>
 
-                <input required type="text" placeholder="Nombre del Vendedor" value={newVendedor.name} onChange={e => setNewVendedor({ ...newVendedor, name: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900 placeholder:text-gray-400" />
-                <input required type="email" placeholder="Correo (Usuario de Acceso)" value={newVendedor.email} onChange={e => setNewVendedor({ ...newVendedor, email: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900 placeholder:text-gray-400" />
-                <input required type="password" placeholder="Clave de Acceso" value={newVendedor.password} onChange={e => setNewVendedor({ ...newVendedor, password: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900 placeholder:text-gray-400" />
+                <input required type="text" placeholder="Nombre del Vendedor" value={newVendedor.name} onChange={e => setNewVendedor({ ...newVendedor, name: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900" />
+                <input required type="email" placeholder="Correo (Usuario de Acceso)" value={newVendedor.email} onChange={e => setNewVendedor({ ...newVendedor, email: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900" />
+                <input required type="password" placeholder="Clave de Acceso" value={newVendedor.password} onChange={e => setNewVendedor({ ...newVendedor, password: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900" />
                 <div className="flex gap-3 pt-4">
                   <button type="button" onClick={() => setShowAddVendedor(false)} className="w-1/3 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 cursor-pointer">Cancelar</button>
                   <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-white bg-[violet-900] shadow-lg cursor-pointer">Crear Acceso</button>
@@ -7710,8 +7526,8 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 setNewExpense({ description: "", amountUSD: "" });
                 setShowExpenseModal(false);
               }} className="space-y-4">
-                <input required type="text" placeholder="Concepto (Ej. Alquiler, Proveedor)" value={newExpense.description} onChange={e => setNewExpense({ ...newExpense, description: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900 placeholder:text-gray-400" />
-                <input required type="number" step="0.01" placeholder="Monto Total (USD)" value={newExpense.amountUSD} onChange={e => setNewExpense({ ...newExpense, amountUSD: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900 placeholder:text-gray-400" />
+                <input required type="text" placeholder="Concepto (Ej. Alquiler, Proveedor)" value={newExpense.description} onChange={e => setNewExpense({ ...newExpense, description: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900" />
+                <input required type="number" step="0.01" placeholder="Monto Total (USD)" value={newExpense.amountUSD} onChange={e => setNewExpense({ ...newExpense, amountUSD: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] text-gray-900" />
                 <div className="flex gap-3 pt-4">
                   <button type="button" onClick={() => setShowExpenseModal(false)} className="w-1/3 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 cursor-pointer">Cancelar</button>
                   <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-white bg-red-600 hover:bg-red-700 shadow-lg cursor-pointer">Descontar Saldo</button>
@@ -7785,8 +7601,8 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 <button onClick={() => setShowTicketModal(false)} className="hover:bg-gray-100 p-2 rounded-full cursor-pointer transition-colors"><X size={20} className="text-gray-400" /></button>
               </div>
               <p className="text-xs text-gray-500 mb-2">Nuestro equipo técnico y tu promotora asignada recibirán este reporte inmediatamente.</p>
-              <input type="text" placeholder="Asunto (Ej: Lector no lee)" value={ticketSubject} onChange={e => setTicketSubject(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-[violet-600] placeholder:text-gray-400" />
-              <textarea placeholder="Describe el problema..." value={ticketMsg} onChange={e => setTicketMsg(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 h-32 resize-none focus:outline-none focus:border-[violet-600] placeholder:text-gray-400" />
+              <input type="text" placeholder="Asunto (Ej: Lector no lee)" value={ticketSubject} onChange={e => setTicketSubject(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 font-bold focus:outline-none focus:border-[violet-600]" />
+              <textarea placeholder="Describe el problema..." value={ticketMsg} onChange={e => setTicketMsg(e.target.value)} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 h-32 resize-none focus:outline-none focus:border-[violet-600]" />
               <button onClick={() => { if (ticketSubject && ticketMsg) { createTicket(currentUser.id, ticketSubject, ticketMsg); setShowTicketModal(false); } }} className="w-full bg-red-600 text-white font-black py-4 rounded-xl shadow-lg hover:bg-red-700 transition-colors cursor-pointer disabled:opacity-50" disabled={!ticketSubject || !ticketMsg}>
                 Enviar a Soporte Técnico
               </button>
@@ -7848,7 +7664,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
                 <label className="block text-xs font-bold text-gray-600 uppercase tracking-wider mb-2">Salario / Comisión Base ($)</label>
                 <div className="relative">
                   <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold">$</span>
-                  <input type="number" step="0.01" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-8 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] placeholder:text-gray-400" placeholder="0.00" value={payrollBaseSalary} onChange={(e) => setPayrollBaseSalary(e.target.value)} />
+                  <input type="number" step="0.01" className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-8 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]" placeholder="0.00" value={payrollBaseSalary} onChange={(e) => setPayrollBaseSalary(e.target.value)} />
                 </div>
               </div>
 
@@ -8293,14 +8109,9 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
       <nav className="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-white/5 bg-[violet-900] sticky top-0 z-40 backdrop-blur-md gap-3 w-full">
         <div className="flex items-center gap-3 justify-between w-full sm:w-auto">
           <KreatekLogo className="h-8 w-auto" />
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-sm tracking-widest uppercase text-[violet-600] sm:text-lg">
-              Terminal: {currentUser.company}
-            </span>
-            <div className="w-10 h-10 ml-2 rounded-full border-2 border-[violet-600] relative z-20">
-              <ProfileAvatarEditor currentUser={currentUser} />
-            </div>
-          </div>
+          <span className="font-bold text-sm tracking-widest uppercase text-[violet-600] sm:text-lg">
+            Terminal: {currentUser.company}
+          </span>
         </div>
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
           <div className="flex items-center gap-2">
@@ -8314,19 +8125,12 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
               Cerrar Caja (Z)
             </button>
           </div>
-<div className="flex items-center gap-2">
-            <div className="bg-gradient-to-r from-amber-400 to-orange-500 px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm" title="K-Pts">
-              <span className="text-[9px] font-black text-orange-900 uppercase">K-Pts</span>
-              <span className="font-black text-white text-xs">{currentUser?.kfsPoints || 0}</span>
-            </div>
-            <button onClick={logout} className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-xl transition-colors text-white cursor-pointer text-xs font-bold">
-              Salir
-            </button>
-          </div>
+          <button onClick={logout} className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-xl transition-colors text-white cursor-pointer text-xs font-bold">
+            Salir
+          </button>
         </div>
       </nav>
       <div className="p-4 md:p-8 max-w-4xl mx-auto space-y-6 animate-fade-in">
-        <OracleInsightCard role="cashier" data={{ streak: 5, bonusEarned: currentUser.accumulated_bonus || '0.00' }} />
 
         {networkState === "offline" && (
           <div className="bg-red-500/20 border border-red-500/50 rounded-2xl p-4 flex items-center justify-between animate-pulse">
@@ -8357,8 +8161,6 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
 
           <Activity size={150} className="absolute -right-10 -bottom-10 text-white/5" />
         </div>
-
-        <UniversalWalletWidget currentUser={currentUser} formatUSD={formatUSD} />
 
         <KFSIoTEdgeConsole showToast={showToast} />
 
@@ -8470,11 +8272,11 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
             <h3 className="font-black text-[violet-900] text-lg flex items-center gap-2"><Package size={20} className="text-[violet-600]" /> Catálogo de {currentUser.company}</h3>
             <div className="relative w-full md:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-              <input type="text" placeholder="Buscar producto o barcode..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] placeholder:text-gray-400" value={searchProduct} onChange={e => setSearchProduct(e.target.value)} />
+              <input type="text" placeholder="Buscar producto o barcode..." className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600]" value={searchProduct} onChange={e => setSearchProduct(e.target.value)} />
             </div>
           </div>
           <div className="grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-3 gap-4">
-            {myProducts.filter((p: any) => p.name?.toLowerCase().includes(searchProduct.toLowerCase()) || (p.barcode && p.barcode.includes(searchProduct))).map((p: any) => (
+            {myProducts.filter((p: any) => p.name.toLowerCase().includes(searchProduct.toLowerCase()) || (p.barcode && p.barcode.includes(searchProduct))).map((p: any) => (
               <div key={p.id} className="border border-gray-100 rounded-2xl p-3 flex flex-col justify-between bg-gray-50/50">
                 <div className="h-28 bg-gray-200 rounded-lg overflow-hidden mb-2">
                   <img src={p.image} className="w-full h-full object-cover" alt={p.name} />
@@ -8496,7 +8298,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
                 </button>
               </div>
             ))}
-            {myProducts.filter((p: any) => p.name?.toLowerCase().includes(searchProduct.toLowerCase()) || (p.barcode && p.barcode.includes(searchProduct))).length === 0 && <p className="col-span-full text-center text-xs text-gray-400 py-6 font-bold">Sin resultados o sin productos cargados.</p>}
+            {myProducts.filter((p: any) => p.name.toLowerCase().includes(searchProduct.toLowerCase()) || (p.barcode && p.barcode.includes(searchProduct))).length === 0 && <p className="col-span-full text-center text-xs text-gray-400 py-6 font-bold">Sin resultados o sin productos cargados.</p>}
           </div>
         </div>
       </div>
@@ -8541,17 +8343,17 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
             <h3 className="text-2xl font-black mb-6 text-[violet-900]">Nuevo Producto</h3>
             <form onSubmit={submitProduct} className="space-y-4">
               <div className="flex gap-2">
-                <input type="text" placeholder="Código de Barras (Opcional)" value={newProd.barcode} onChange={e => setNewProd({ ...newProd, barcode: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-mono text-gray-900 placeholder:text-gray-400" />
+                <input type="text" placeholder="Código de Barras (Opcional)" value={newProd.barcode} onChange={e => setNewProd({ ...newProd, barcode: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-mono text-gray-900" />
                 <button type="button" onClick={() => handleBarcodeSearch(newProd.barcode)} disabled={isFetchingBarcode} className="bg-[violet-900] text-white px-4 rounded-xl font-bold flex-shrink-0 disabled:opacity-50">
                   <Search size={18} />
                 </button>
               </div>
-              <input required type="text" placeholder="Nombre del Artículo" value={newProd.name} onChange={e => setNewProd({ ...newProd, name: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900 placeholder:text-gray-400" />
+              <input required type="text" placeholder="Nombre del Artículo" value={newProd.name} onChange={e => setNewProd({ ...newProd, name: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900" />
               <div className="grid grid-cols-2 gap-3">
-                <input required type="number" step="0.01" placeholder="Precio ($)" value={newProd.price} onChange={e => setNewProd({ ...newProd, price: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-black text-lg text-gray-900 placeholder:text-gray-400" />
-                <input required type="number" placeholder="Stock" value={newProd.stock} onChange={e => setNewProd({ ...newProd, stock: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900 placeholder:text-gray-400" />
+                <input required type="number" step="0.01" placeholder="Precio ($)" value={newProd.price} onChange={e => setNewProd({ ...newProd, price: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-black text-lg text-gray-900" />
+                <input required type="number" placeholder="Stock" value={newProd.stock} onChange={e => setNewProd({ ...newProd, stock: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900" />
               </div>
-              <select value={newProd.category} onChange={e => setNewProd({ ...newProd, category: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900 placeholder:text-gray-400">
+              <select value={newProd.category} onChange={e => setNewProd({ ...newProd, category: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-bold text-gray-900">
                 <option value="Alimentos">Alimentos y Bebidas</option>
                 <option value="Ropa y Calzado">Ropa y Calzado</option>
                 <option value="Tecnología">Tecnología y Electrónica</option>
@@ -8559,7 +8361,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
                 <option value="Hogar">Hogar y Muebles</option>
                 <option value="Servicios">Servicios Generales</option>
               </select>
-              <textarea placeholder="Descripción del producto (Opcional)" value={newProd.description} onChange={e => setNewProd({ ...newProd, description: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-medium text-gray-900 text-sm h-20 resize-none placeholder:text-gray-400" />
+              <textarea placeholder="Descripción del producto (Opcional)" value={newProd.description} onChange={e => setNewProd({ ...newProd, description: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-[violet-600] font-medium text-gray-900 text-sm h-20 resize-none" />
               <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 cursor-pointer relative transition-colors">
                 <input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                 {newProd.imgUrl ? (
@@ -8774,7 +8576,7 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
                   placeholder="Buscar en esta tienda..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[violet-600] text-gray-900 placeholder:text-gray-400"
+                  className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[violet-600] text-gray-900"
                 />
               </div>
             </div>
@@ -8798,7 +8600,7 @@ const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser
                 placeholder={activeStore ? "Buscar en esta tienda..." : "Buscar comercio..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[violet-600] text-gray-900 placeholder:text-gray-400"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[violet-600] text-gray-900"
               />
             </div>
           </div>
@@ -9033,8 +8835,8 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
         </div>
 
         <div className="flex items-center gap-4">
-          <div className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl flex-shrink-0 border-4 shadow-lg bg-[violet-900] relative z-20 ${riderInfo.status === "approved" ? "border-green-400 shadow-green-500/20" : "border-amber-400 shadow-amber-500/20"}`}>
-            <ProfileAvatarEditor currentUser={riderInfo} />
+          <div className={`w-16 h-16 rounded-full flex items-center justify-center text-3xl flex-shrink-0 border-4 shadow-lg bg-[violet-900] ${riderInfo.status === "approved" ? "border-green-400 shadow-green-500/20" : "border-amber-400 shadow-amber-500/20"}`}>
+            🛵
           </div>
           <div>
             <h2 className="font-black text-2xl truncate">{riderInfo.name}</h2>
@@ -9048,7 +8850,6 @@ const RiderDashboard = ({ db, currentUser, logout }: any) => {
 
       {/* Main Content Area */}
       <div className="max-w-2xl mx-auto px-4 -mt-6 relative z-20 space-y-4 animate-fade-in">
-        <UniversalWalletWidget currentUser={riderInfo} formatUSD={formatUSD} />
 
         {/* Check-In / Check-Out Widget */}
         <div className="bg-white rounded-[2rem] p-6 shadow-md border border-gray-100 flex flex-col md:flex-row items-center justify-between gap-4">
@@ -9415,7 +9216,7 @@ export default function Home() {
     return (
       <div className="min-h-screen bg-[violet-900] flex flex-col items-center justify-center text-white">
         <div className="relative flex flex-col items-center">
-          <img src="/kfs-loading.png" className="h-28 sm:h-32 w-auto animate-pulse mb-8 object-contain" alt="KFS OS" />
+          <KreatekLogo className="h-28 sm:h-32 w-auto animate-pulse mb-8" />
           <div className="w-12 h-12 border-4 border-[violet-600]/20 border-t-[violet-600] rounded-full animate-spin" />
           <p className="text-xs text-gray-500 font-mono mt-6">Loading core vectors...</p>
         </div>
