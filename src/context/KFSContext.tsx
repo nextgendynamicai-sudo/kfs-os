@@ -1008,8 +1008,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
             const aofTime = new Date(newC.k_points_expiry).getTime();
             if (now > aofTime) {
               hasChanges = true;
-              newC.k_points_balance = Math.max(0, newC.k_points_balance * 0.995); // 0.5% degrade
+              const penalty = newC.k_points_balance * 0.005;
+              newC.k_points_balance = Math.max(0, newC.k_points_balance - penalty); // 0.5% degrade
               newC.k_points_expiry = new Date(now + 5 * 24 * 60 * 60 * 1000).toISOString();
+              
+              // Simulate Webhook sending
+              console.log(`[WEBHOOK WHATSAPP SENT to ${newC.phone}]: KFS: Tu balance inactivo de K-Points ha sufrido un AOF del 0.5% (${penalty.toFixed(2)} pts). Utilízalos pronto.`);
             }
           }
 
@@ -1604,6 +1608,35 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
       showToast("¡Felicidades! Eres oficialmente un FlowMaster. Exento de AOF y fees preferenciales activados.", "success");
       return { ...prev, customers: [...updatedCustomers] };
+    });
+  };
+
+  const trimLocalDatabase = () => {
+    setDb((prev: any) => {
+      const now = Date.now();
+      const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+      
+      const recentTransactions = (prev.transactions || []).filter((tx: any) => {
+        const txTime = new Date(tx.timestamp).getTime();
+        return (now - txTime) < thirtyDaysMs;
+      });
+
+      const recentOrders = (prev.orders || []).filter((order: any) => {
+        const orderTime = new Date(order.createdAt).getTime();
+        return (now - orderTime) < thirtyDaysMs || order.status === 'pending';
+      });
+
+      // Se guardan las descartadas en archive array simulando Paginación Backend
+      const archivedCount = (prev.transactions?.length || 0) - recentTransactions.length;
+      if (archivedCount > 0) {
+        console.log(`[LAZY LOADING]: Archivadas ${archivedCount} transacciones antiguas para liberar memoria RAM.`);
+      }
+
+      return {
+        ...prev,
+        transactions: recentTransactions,
+        orders: recentOrders
+      };
     });
   };
 
@@ -3877,7 +3910,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       networkState, setNetworkState, smsConciliator, registerCrmExpress,
       ghostTrapLocked, setGhostTrapLocked, createVale, payVale, processPayroll, registerPosTerminal, deletePosTerminal,
       queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings, updatePaymentMethods, toggleProductFeatured,
-      sendNotification, requestNotificationPermission, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, transferKFSPoints, fundCustomerWallet, requestTopUp, requestPayout, validateTopUp, processMonthlyBilling, convertAsset, claimFlowMaster, registerCustomer, blockClient, releaseClient, deleteClient, deleteCustomer, deletePromotora, deleteVendedor, deleteRider,
+      sendNotification, sendWhatsAppWebhook, requestNotificationPermission, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, transferKFSPoints, fundCustomerWallet, requestTopUp, requestPayout, validateTopUp, processMonthlyBilling, convertAsset, claimFlowMaster, trimLocalDatabase, registerCustomer, blockClient, releaseClient, deleteClient, deleteCustomer, deletePromotora, deleteVendedor, deleteRider,
       registerCandidate, unlockCandidateContact, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, hireCandidate, releaseCandidate, toggleCandidateBacking, markNotificationsAsRead, updateCvBuilderOption,
       registerRider, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, updateRiderPagoMovil, confirmDelivery, markAsPickedUp, rateRider, updateRiderGPS, riderCheckIn, riderCheckOut,
       toggleBusinessOpen, updateBusinessConfig

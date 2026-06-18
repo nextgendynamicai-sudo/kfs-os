@@ -6,10 +6,14 @@ import { motion } from "framer-motion";
 
 export const PayoutModal = ({ maxAmount, currency, onConfirm, onCancel, formatMoney }: any) => {
   const [amount, setAmount] = useState<string>("");
-  const [bankDetails, setBankDetails] = useState<string>("");
+  const [banco, setBanco] = useState("");
+  const [telefono, setTelefono] = useState("");
+  const [cedula, setCedula] = useState("");
 
   const parsedAmount = parseFloat(amount) || 0;
-  const isAmountValid = parsedAmount > 0 && parsedAmount <= maxAmount;
+  const withdrawalFee = parsedAmount * 0.02;
+  const totalToDeduct = parsedAmount + withdrawalFee;
+  const isAmountValid = parsedAmount > 0 && totalToDeduct <= maxAmount;
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[80] flex items-center justify-center p-4 animate-fade-in">
@@ -51,39 +55,57 @@ export const PayoutModal = ({ maxAmount, currency, onConfirm, onCancel, formatMo
             </label>
             <input 
               type="number" 
-              placeholder={`Máximo ${maxAmount}`} 
+              placeholder={`Monto a recibir`} 
               value={amount} 
               onChange={e => setAmount(e.target.value)} 
               className="w-full bg-black/40 border border-[#C5A184]/30 rounded-xl px-5 py-4 font-black text-white text-2xl focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all"
             />
+            {parsedAmount > 0 && (
+              <div className="flex justify-between items-center text-[10px] text-gray-400 mt-1 px-1 font-mono">
+                <span>Comisión KFS (2%): <strong className="text-red-400">{formatMoney(withdrawalFee)}</strong></span>
+                <span>Total a Debitar: <strong className="text-white">{formatMoney(totalToDeduct)}</strong></span>
+              </div>
+            )}
             {!isAmountValid && amount !== "" && (
-              <p className="text-xs font-bold text-red-400">Monto inválido o superior al disponible.</p>
+              <p className="text-xs font-bold text-red-400 mt-1">El total a debitar supera tu saldo disponible.</p>
             )}
           </div>
 
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block">Datos Bancarios (Destino)</label>
-            <textarea 
-              placeholder="Ej: Banco Mercantil, Cuenta: 0105..., CI: V-1234..." 
-              value={bankDetails} 
-              onChange={e => setBankDetails(e.target.value)} 
-              className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#C5A184] resize-none h-24"
-            ></textarea>
+          <div className="space-y-3">
+            <label className="text-xs font-bold text-gray-400 uppercase tracking-widest block">Datos de Pago Móvil (Destino)</label>
+            <select 
+              value={banco} 
+              onChange={e => setBanco(e.target.value)} 
+              className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#C5A184]"
+            >
+              <option value="">— Selecciona Banco —</option>
+              {["Banesco", "Mercantil", "Banco de Venezuela", "Provincial", "BOD", "Bancaribe", "Bicentenario", "BNC", "Exterior", "Tesoro"].map(b => <option key={b} value={b}>{b}</option>)}
+            </select>
+            <div className="grid grid-cols-2 gap-3">
+              <input 
+                type="tel" placeholder="Teléfono (Ej: 0414...)" value={telefono} onChange={e => setTelefono(e.target.value)} 
+                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#C5A184]" 
+              />
+              <input 
+                type="text" placeholder="Cédula Titular" value={cedula} onChange={e => setCedula(e.target.value)} 
+                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm text-gray-300 focus:outline-none focus:ring-2 focus:ring-[#C5A184]" 
+              />
+            </div>
           </div>
 
           <div className="bg-blue-900/20 p-4 rounded-xl border border-blue-500/20 flex gap-3">
             <Shield className="text-blue-400 shrink-0 mt-0.5" size={16} />
             <p className="text-[10px] text-blue-300 font-medium leading-relaxed">
-              Las liquidaciones son procesadas por el equipo de KFS Core en un lapso de 24 a 48 horas hábiles tras la validación de los fondos.
+              Las liquidaciones son procesadas por el equipo de KFS Core en un lapso de 24 a 48 horas hábiles.
             </p>
           </div>
 
           <button 
-            disabled={!isAmountValid || !bankDetails.trim()}
-            onClick={() => onConfirm(parsedAmount, bankDetails)} 
+            disabled={!isAmountValid || !banco || !telefono || !cedula}
+            onClick={() => onConfirm(parsedAmount, JSON.stringify({ banco, telefono, cedula }))} 
             className="w-full py-4 rounded-xl font-black text-[#0A1128] bg-[#C5A184] hover:bg-[#d8b59a] shadow-[0_0_20px_rgba(197,161,132,0.3)] hover:shadow-[0_0_30px_rgba(197,161,132,0.6)] hover:scale-[1.02] active:scale-95 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:bg-gray-600 disabled:text-gray-400 disabled:cursor-not-allowed disabled:shadow-none"
           >
-            <CheckCircle size={20} /> Solicitar {formatMoney(parsedAmount)}
+            <CheckCircle size={20} /> Solicitar Retiro
           </button>
         </div>
       </motion.div>

@@ -8337,7 +8337,33 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
   };
 
   return (
-    <div className="min-h-screen bg-[#EEF2F5] pb-20 font-sans">
+    <div className="min-h-screen bg-[#EEF2F5] pb-20 font-sans relative">
+      {clientInfo?.subscription?.status === 'past_due' && (
+        <div className="fixed inset-0 bg-red-900/95 backdrop-blur-xl z-[9999] flex flex-col items-center justify-center p-6 animate-fade-in text-center">
+          <div className="w-24 h-24 bg-red-500/20 rounded-full flex items-center justify-center mb-6 animate-pulse">
+            <Lock size={48} className="text-red-400" />
+          </div>
+          <h1 className="text-3xl font-black text-white mb-2">SISTEMA BLOQUEADO</h1>
+          <p className="text-red-200 text-sm max-w-md mb-8">
+            Tu suscripción KFS-OS se encuentra vencida. Por políticas de seguridad comercial, tu acceso operativo ha sido suspendido. Paga tu saldo pendiente de <strong className="text-white">${clientInfo.subscription.costUSD || 6} USD</strong> usando tu Reserva Central para reactivar tu negocio inmediatamente.
+          </p>
+          <div className="flex gap-4">
+            <button
+              onClick={() => paySubscription(clientInfo.id)}
+              className="bg-red-500 hover:bg-red-400 text-white font-black px-8 py-4 rounded-xl shadow-[0_10px_30px_rgba(239,68,68,0.4)] transition-all cursor-pointer"
+            >
+              Pagar Suscripción Ahora
+            </button>
+            <button
+              onClick={logout}
+              className="bg-transparent border border-red-500/30 text-red-300 font-bold px-8 py-4 rounded-xl hover:bg-red-500/10 transition-all cursor-pointer"
+            >
+              Cerrar Sesión
+            </button>
+          </div>
+        </div>
+      )}
+
       <nav className="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-white/5 bg-[violet-900] sticky top-0 z-40 backdrop-blur-md gap-3 w-full">
         <div className="flex items-center gap-3 justify-between w-full sm:w-auto">
           <KreatekLogo className="h-8 w-auto" />
