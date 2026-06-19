@@ -56,7 +56,7 @@ export function ProfileAvatarEditor({ currentUser }: ProfileAvatarEditorProps) {
       </div>
 
       {isEditing && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
           <div className="bg-white border border-sky-100 p-6 rounded-3xl w-full max-w-sm shadow-2xl relative">
             <button 
               onClick={() => setIsEditing(false)}
