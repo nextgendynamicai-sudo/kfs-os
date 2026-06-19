@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const viewport: Viewport = {
-  themeColor: "#0A1128",
+  themeColor: "#0ea5e9",
 };
 
 export const metadata: Metadata = {
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "black-translucent",
+    statusBarStyle: "default",
     title: "KFS OS",
   },
   icons: {
@@ -48,9 +48,9 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{
           __html: `
             try {
-              if (typeof window !== 'undefined' && localStorage.getItem("kfs_hard_reset_v3") !== "done") {
+              if (typeof window !== 'undefined' && localStorage.getItem("kfs_hard_reset_v3.1") !== "done") {
                 localStorage.removeItem("kfs_os_current_user");
-                localStorage.setItem("kfs_hard_reset_v3", "done");
+                localStorage.setItem("kfs_hard_reset_v3.1", "done");
                 if ('caches' in window) {
                   caches.keys().then(names => {
                     for (let name of names) caches.delete(name);

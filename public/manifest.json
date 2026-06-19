@@ -4,8 +4,8 @@
   "description": "Sistema Operativo Kreatek Flow Systems POS",
   "start_url": "/",
   "display": "fullscreen",
-  "background_color": "#0A1128",
-  "theme_color": "#0A1128",
+  "background_color": "#ffffff",
+  "theme_color": "#0ea5e9",
   "orientation": "portrait-primary",
   "icons": [
     {

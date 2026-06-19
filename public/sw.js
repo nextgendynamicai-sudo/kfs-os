@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kfs-os-v3.0';
+const CACHE_NAME = 'kfs-os-v3.1';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
