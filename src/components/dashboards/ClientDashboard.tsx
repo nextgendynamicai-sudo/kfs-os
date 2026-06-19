@@ -1,4 +1,20 @@
 "use client";
+import { Toast } from "../Toast";
+import { CvViewerModal } from "../CvViewerModal";
+import { SMSConciliatorSimulator } from "../SMSConciliatorSimulator";
+import { KFSFinancialSplitCalculator } from "../KFSFinancialSplitCalculator";
+import { FiscalPrinterSetupWidget } from "../FiscalPrinterSetupWidget";
+import { KFSIoTEdgeConsole } from "../KFSIoTEdgeConsole";
+import { KreatekLogo } from "../KreatekLogo";
+import { Navbar } from "../Navbar";
+import { RegisterClientForm } from "../RegisterClientForm";
+import { RegisterPromotoraForm } from "../RegisterPromotoraForm";
+import { RegisterCustomerForm } from "../RegisterCustomerForm";
+import { RegisterRiderForm } from "../RegisterRiderForm";
+import { StorefrontCustomizer } from "../StorefrontCustomizer";
+import { OnboardingWizard } from "../OnboardingWizard";
+import { RecruitmentWidget } from "../RecruitmentWidget";
+import { ScannerView } from "../ScannerView";
 
 import React, { useState, useEffect, useRef } from "react";
 import {
