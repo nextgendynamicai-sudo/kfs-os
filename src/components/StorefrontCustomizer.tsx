@@ -121,7 +121,7 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="flex flex-col gap-2">
             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Logo / Foto de Perfil</label>
-            <div className="flex items-center gap-4 bg-gray-50 border border-gray-250 p-4 rounded-2xl relative overflow-hidden">
+            <div className="flex items-center gap-4 bg-gray-50 border border-gray-250 p-4 rounded-2xl relative">
               <label className="relative w-16 h-16 rounded-full border-2 border-dashed border-gray-300 cursor-pointer overflow-hidden flex items-center justify-center bg-white hover:bg-gray-100 transition-colors group flex-shrink-0 shadow-sm">
                 <input type="file" accept="image/*" className="hidden" onChange={handleProfilePicUpload} />
                 {settings.profilePicUrl ? (
@@ -139,7 +139,7 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
 
           <div className="flex flex-col gap-2">
             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest block">Banner de Portada</label>
-            <div className="flex items-center gap-4 bg-gray-50 border border-gray-250 p-4 rounded-2xl relative overflow-hidden">
+            <div className="flex items-center gap-4 bg-gray-50 border border-gray-250 p-4 rounded-2xl relative">
               <label className="relative w-24 h-16 rounded-xl border-2 border-dashed border-gray-300 cursor-pointer overflow-hidden flex items-center justify-center bg-white hover:bg-gray-100 transition-colors group flex-shrink-0 shadow-sm">
                 <input type="file" accept="image/*" className="hidden" onChange={handleCoverPhotoUpload} />
                 {settings.coverPhotoUrl ? (
