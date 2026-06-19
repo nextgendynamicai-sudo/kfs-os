@@ -10,6 +10,7 @@ import {
   Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database, Trash2
 } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
+import { KreatekLogo } from "./KreatekLogo";
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { CheckoutModal } from "../components/CheckoutModal";
 import { TopUpModal } from "../components/TopUpModal";

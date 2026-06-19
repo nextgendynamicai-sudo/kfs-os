@@ -86,7 +86,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
   const { transferP2P } = useP2PTransfer();
   const [p2pRecipient, setP2pRecipient] = useState("");
   const [p2pAmount, setP2pAmount] = useState("");
-  const [p2pType, setP2pType] = useState<"real_balance" | "k_points">("real_balance");
+  const [p2pType, setP2pType] = useState<"real_balance" | "k_points_balance">("real_balance");
 
   const handleP2PTransferSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -404,8 +404,8 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                     </button>
                     <button
                       type="button"
-                      onClick={() => setP2pType("k_points")}
-                      className={`py-2 px-4 rounded-xl text-xs font-bold border transition-all cursor-pointer ${p2pType === "k_points" ? "bg-sky-600 text-white border-sky-600 shadow-md shadow-sky-600/30" : "bg-sky-50 border-sky-100 text-slate-500 hover:border-sky-200"}`}
+                      onClick={() => setP2pType("k_points_balance")}
+                      className={`py-2 px-4 rounded-xl text-xs font-bold border transition-all cursor-pointer ${p2pType === "k_points_balance" ? "bg-sky-600 text-white border-sky-600 shadow-md shadow-sky-600/30" : "bg-sky-50 border-sky-100 text-slate-500 hover:border-sky-200"}`}
                     >
                       K-Points
                     </button>

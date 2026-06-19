@@ -17,6 +17,9 @@ import { PayoutModal } from "../PayoutModal";
 import { ReceiptModal } from "../ReceiptModal";
 import { UniversalWalletWidget } from "../UniversalWalletWidget";
 import { ProfileAvatarEditor } from "../ProfileAvatarEditor";
+import { KreatekLogo } from "../KreatekLogo";
+import { KFSIoTEdgeConsole } from "../KFSIoTEdgeConsole";
+import { ScannerView } from "../ScannerView";
 
 import { FlowExpressCatalog } from "../FlowExpressCatalog";
 import { B2BSelfOnboarding } from "../B2BSelfOnboarding";
@@ -62,11 +65,14 @@ const KREATEK_COLORS = {
 // Toast Component
 
 export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase, showToast, formatUSD, logout, approveOrder, rejectOrder, generateZReport, registerCrmExpress, triggerGhostTrap }: any) => {
+  const { paySubscription } = useKFS() as any;
   const [showAddModal, setShowAddModal] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [checkoutProduct, setCheckoutProduct] = useState<any>(null);
   const [receiptTx, setReceiptTx] = useState<any>(null);
+
+  const clientInfo = db.clients?.find((c: any) => c.id === currentUser.merchantId) || null;
   const [scannedGlobalProduct, setScannedGlobalProduct] = useState<any>(null);
   const [smsInput, setSmsInput] = useState("");
   const [searchProduct, setSearchProduct] = useState("");
@@ -304,7 +310,7 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
           </p>
           <div className="flex gap-4">
             <button
-              onClick={() => paySubscription(clientInfo.id)}
+              onClick={() => paySubscription(clientInfo.id, "Pago Manual de Seguridad")}
               className="bg-red-500 hover:bg-red-400 text-white font-black px-8 py-4 rounded-xl shadow-[0_10px_30px_rgba(239,68,68,0.4)] transition-all cursor-pointer"
             >
               Pagar Suscripción Ahora

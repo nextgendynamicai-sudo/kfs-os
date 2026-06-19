@@ -17,7 +17,7 @@ import { PayoutModal } from "../components/PayoutModal";
 import { ReceiptModal } from "../components/ReceiptModal";
 import { UniversalWalletWidget } from "../components/UniversalWalletWidget";
 import { ProfileAvatarEditor } from "../components/ProfileAvatarEditor";
-export { Toast } from "../components/Toast";
+import { Toast } from "../components/Toast";
 export { CvViewerModal } from "../components/CvViewerModal";
 export { SMSConciliatorSimulator } from "../components/SMSConciliatorSimulator";
 export { KFSFinancialSplitCalculator } from "../components/KFSFinancialSplitCalculator";

@@ -102,6 +102,7 @@ interface KFSContextType {
   setView: (view: string) => void;
   currentUser: any;
   setCurrentUser: (user: any) => void;
+  updateUserAvatar: (userId: string, role: string, avatarBase64: string) => Promise<void>;
   toast: { show: boolean; message: string; type: string };
   showToast: (message: string, type?: "success" | "error") => void;
   rates: typeof MOCK_BCV_RATES;
@@ -166,11 +167,16 @@ interface KFSContextType {
   processMonthlyBilling: (clientId: string) => void;
   convertAsset: (customerId: string, fromType: 'real_balance' | 'k_point_cash_balance', amount: number) => void;
   claimFlowMaster: (customerId: string) => void;
+  trimLocalDatabase: () => void;
   registerCustomer: (phone: string, password: string, name: string, referralCode?: string) => void;
   blockClient: (clientId: string) => void;
   releaseClient: (clientId: string) => void;
   deleteClient: (clientId: string) => void;
-  registerCandidate: (candidateData: any) => void;
+  deleteCustomer: (customerId: string) => void;
+  deletePromotora: (promotoraId: string) => void;
+  deleteVendedor: (vendedorId: string) => void;
+  deleteRider: (riderId: string) => void;
+  registerCandidate: (candidateData: any, customerId: string) => void;
   unlockCandidateContact: (candidateId: string, clientId: string, reference: string, screenshot?: string) => void;
   approveUnlock: (unlockId: string) => void;
   rejectUnlock: (unlockId: string) => void;
