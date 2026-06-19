@@ -39,7 +39,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
   };
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-xl z-[70] flex items-center justify-center p-4 animate-fade-in">
+    <div className="fixed inset-0 bg-sky-950/60 backdrop-blur-xl z-[70] flex items-center justify-center p-4 animate-fade-in">
       <motion.div 
         initial={{ y: 100, opacity: 0, scale: 0.9 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
@@ -48,9 +48,9 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
       >
         
         {/* Physical Printer Bezel Box */}
-        <div className="w-full bg-[#1A1F2C] rounded-t-[2.5rem] border border-white/10 p-5 shadow-2xl relative flex flex-col items-center gap-2">
+        <div className="w-full bg-[#1A1F2C] rounded-t-[2.5rem] border border-sky-100 p-5 shadow-2xl relative flex flex-col items-center gap-2">
           {/* Status Telemetry Light */}
-          <div className="absolute left-6 top-6 flex items-center gap-1.5 bg-black/40 px-2 py-1 rounded-full border border-green-500/30">
+          <div className="absolute left-6 top-6 flex items-center gap-1.5 bg-white px-2 py-1 rounded-full border border-green-500/30">
             <span className="relative flex h-1.5 w-1.5">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-green-500"></span>
@@ -63,7 +63,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
           {/* Printer Output Mouth */}
           <div className="w-full bg-[#0F131E] h-5 rounded-lg border-b border-black flex justify-center items-center shadow-inner relative overflow-hidden">
             <div className="w-48 h-1 bg-red-500/20 animate-pulse relative">
-              <div className="absolute top-0 left-0 h-full bg-[#C5A184] w-2 animate-bounce"></div>
+              <div className="absolute top-0 left-0 h-full bg-sky-600 w-2 animate-bounce"></div>
             </div>
           </div>
         </div>
@@ -71,19 +71,19 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
         {/* Paper Receipt Roll-out Container */}
         <div className={`w-[90%] bg-white shadow-2xl relative overflow-hidden transition-all duration-700 ease-out border-x border-gray-200 ${isPrinting ? "h-0 opacity-0" : "h-auto opacity-100"} ${isTorn ? "translate-y-4 rotate-2 opacity-0 scale-95" : ""}`} style={{ clipPath: 'polygon(0% 0%, 100% 0%, 100% 98%, 97% 100%, 94% 98%, 91% 100%, 88% 98%, 85% 100%, 82% 98%, 79% 100%, 76% 98%, 73% 100%, 70% 98%, 67% 100%, 64% 98%, 61% 100%, 58% 98%, 55% 100%, 52% 98%, 49% 100%, 46% 98%, 43% 100%, 40% 98%, 37% 100%, 34% 98%, 31% 100%, 28% 98%, 25% 100%, 22% 98%, 19% 100%, 16% 98%, 13% 100%, 10% 98%, 7% 100%, 4% 98%, 0% 100%)' }}>
           
-          <div className="p-6 pt-4 font-mono text-[#0A1128] text-xs space-y-4">
+          <div className="p-6 pt-4 font-mono text-white text-xs space-y-4">
             
             {/* Header Receipt */}
             <div className="text-center border-b border-dashed border-gray-300 pb-3">
               <h3 className="text-sm font-black tracking-widest uppercase mb-1">{product?.clientName || "KFS ECOSISTEMA"}</h3>
-              <p className="text-[10px] text-gray-500 font-bold">RIF: J-50201438-9</p>
-              <p className="text-[10px] text-gray-500">BOS CONTROL DIGITAL</p>
-              <p className="text-[9px] text-gray-400 font-mono mt-1">{new Date(tx.timestamp).toLocaleString()}</p>
+              <p className="text-[10px] text-slate-400 font-bold">RIF: J-50201438-9</p>
+              <p className="text-[10px] text-slate-400">BOS CONTROL DIGITAL</p>
+              <p className="text-[9px] text-slate-500 font-mono mt-1">{new Date(tx.timestamp).toLocaleString()}</p>
             </div>
 
             {/* Receipt Control Barcode (Pure CSS) */}
             <div className="flex flex-col items-center gap-1 border-b border-dashed border-gray-300 pb-3 mt-3">
-              <span className="text-[8px] text-gray-400 uppercase tracking-widest">{tx.isFiscal ? "Factura Fiscal" : "Recibo KFS Control"}</span>
+              <span className="text-[8px] text-slate-500 uppercase tracking-widest">{tx.isFiscal ? "Factura Fiscal" : "Recibo KFS Control"}</span>
               <div className="flex justify-center items-center gap-[1px] h-8 bg-gray-50 px-3 py-1 border border-gray-200/50 rounded">
                 <div className="w-1 h-6 bg-black"></div>
                 <div className="w-0.5 h-6 bg-black"></div>
@@ -98,7 +98,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
                 <div className="w-2 h-6 bg-black"></div>
               </div>
               <span className="text-[9px] font-mono font-bold text-gray-700">{tx.isFiscal ? `FACTURA NRO: 00-${Math.floor(10000 + Math.random() * 89999)}` : tx.receiptNumber}</span>
-              {tx.isFiscal && <span className="text-[8px] font-mono text-gray-500">MÁQUINA FISCAL: Z1F-00129841</span>}
+              {tx.isFiscal && <span className="text-[8px] font-mono text-slate-400">MÁQUINA FISCAL: Z1F-00129841</span>}
             </div>
 
             {/* Financial Ledger Details */}
@@ -113,24 +113,24 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
             </div>
 
             {/* SUNDDE Compliance Section */}
-            <div className="space-y-1 text-[10px] font-bold text-gray-500 border-b border-dashed border-gray-300 pb-3 mt-3">
+            <div className="space-y-1 text-[10px] font-bold text-slate-400 border-b border-dashed border-gray-300 pb-3 mt-3">
               <div className="flex justify-between"><span>TASA OFICIAL BCV:</span> <span>{tx.exchangeRateBCV?.toFixed(2)} Bs</span></div>
               <div className="flex justify-between text-xs text-gray-900 font-black mt-1"><span>TOTAL Bs:</span> <span>{(tx.amountUSD * (tx.exchangeRateBCV || 36.5)).toFixed(2)} Bs</span></div>
             </div>
 
             {/* Large Final Total */}
             <div className="text-center py-2 bg-gray-50 border border-gray-100 rounded-xl mt-3">
-              <span className="text-[9px] text-gray-400 font-black uppercase block tracking-widest">Total Cancelado</span>
-              <span className="text-3xl font-black text-[#0A1128] block">{formatUSD(tx.amountUSD)}</span>
+              <span className="text-[9px] text-slate-500 font-black uppercase block tracking-widest">Total Cancelado</span>
+              <span className="text-3xl font-black text-white block">{formatUSD(tx.amountUSD)}</span>
               {tx.kfsPointsEarned > 0 && (
-                <div className="mt-1 bg-[#C5A184]/10 rounded-lg py-1 px-2 inline-block">
-                  <span className="text-[10px] font-black text-[#C5A184]">+{tx.kfsPointsEarned.toFixed(1)} KFS Pts Ganados</span>
+                <div className="mt-1 bg-sky-600/10 rounded-lg py-1 px-2 inline-block">
+                  <span className="text-[10px] font-black text-sky-600">+{tx.kfsPointsEarned.toFixed(1)} KFS Pts Ganados</span>
                 </div>
               )}
             </div>
 
             {/* Passive Split Suggestion */}
-            <div className="text-center text-[9px] text-gray-400 border-t border-dashed border-gray-300 pt-3 flex flex-col gap-0.5 font-bold mt-3">
+            <div className="text-center text-[9px] text-slate-500 border-t border-dashed border-gray-300 pt-3 flex flex-col gap-0.5 font-bold mt-3">
               <span>Split KFS: Acreditación Directa Promotora</span>
               <span className="font-mono text-green-600 uppercase">Procesado Exitosamente</span>
             </div>
@@ -138,11 +138,11 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
         </div>
 
         {/* Tactile Hardware Drawer Base */}
-        <div className="w-full bg-[#151924] rounded-b-[2.5rem] border border-white/10 p-5 shadow-2xl flex flex-col gap-3 z-10 -mt-1">
+        <div className="w-full bg-[#151924] rounded-b-[2.5rem] border border-sky-100 p-5 shadow-2xl flex flex-col gap-3 z-10 -mt-1">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <button 
               onClick={playCashDrawerSound} 
-              className="py-3 rounded-xl font-black text-xs text-[#C5A184] bg-white/5 border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md hover:shadow-[0_0_15px_rgba(197,161,132,0.3)] active:scale-95"
+              className="py-3 rounded-xl font-black text-xs text-sky-600 bg-sky-50 border border-sky-100 hover:bg-sky-100 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md hover:shadow-[0_0_15px_rgba(197,161,132,0.3)] active:scale-95"
             >
               💸 Gaveta
             </button>
@@ -151,7 +151,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
                 showToast("Buscando Impresora Térmica vía WebUSB...", "success");
                 setTimeout(() => playCashDrawerSound(), 500);
               }} 
-              className="py-3 rounded-xl font-black text-xs text-[#C5A184] bg-white/5 border border-white/10 hover:bg-white/10 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md active:scale-95"
+              className="py-3 rounded-xl font-black text-xs text-sky-600 bg-sky-50 border border-sky-100 hover:bg-sky-100 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md active:scale-95"
             >
               🖨️ Imprimir
             </button>
@@ -161,12 +161,12 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
                 href={`https://wa.me/58${tx.customerPhone.replace(/^0+/, '').replace(/[^0-9]/g, '')}?text=Hola ${tx.customerName || 'Cliente'}, ¡Gracias por tu compra en ${product?.clientName || 'KFS ECOSISTEMA'}!%0A%0A*Recibo KFS: ${tx.receiptNumber}*${tx.isFiscal ? `%0A*Factura Fiscal / Control: 00-${Math.floor(10000 + Math.random() * 89999)}*` : ''}%0AProducto: ${product?.name} ${tx.isFiscal ? '(G)' : '(E)'}%0A${tx.isFiscal ? `Base Imponible: ${formatUSD(tx.baseUSD)}%0A` : ''}IVA: ${formatUSD(tx.ivaUSD)}%0AIGTF: ${formatUSD(tx.igtfUSD)}%0A%0ATasa Oficial BCV: ${tx.exchangeRateBCV?.toFixed(2)} Bs%0A*Total Pagado (USD): ${formatUSD(tx.amountUSD)}*%0A*Total Pagado (Bs): ${(tx.amountUSD * (tx.exchangeRateBCV || 36.5)).toFixed(2)} Bs*${tx.kfsPointsEarned > 0 ? `%0A%0A🎁 ¡Felicidades! Acumulaste +${tx.kfsPointsEarned.toFixed(1)} KFS Points con esta compra.` : ''}%0A%0ARecibo Digital Oficial KFS.`}
                 target="_blank"
                 rel="noreferrer"
-                className="py-3 rounded-xl font-black text-xs text-[#0A1128] bg-green-500 hover:bg-green-600 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
+                className="py-3 rounded-xl font-black text-xs text-white bg-green-500 hover:bg-green-600 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
               >
                 💬 Recibo WhatsApp
               </a>
             ) : (
-              <button disabled className="py-3 rounded-xl font-bold text-xs text-gray-500 bg-white/5 border border-white/5 flex items-center justify-center gap-1.5 cursor-not-allowed">
+              <button disabled className="py-3 rounded-xl font-bold text-xs text-slate-400 bg-sky-50 border border-white/5 flex items-center justify-center gap-1.5 cursor-not-allowed">
                 Sin Teléfono CRM
               </button>
             )}
@@ -188,7 +188,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
             <button 
               onClick={handleTearPaper}
               disabled={isPrinting}
-              className="w-full sm:w-2/3 py-4 bg-[#C5A184] hover:bg-[#b08d70] hover:shadow-[0_0_20px_rgba(197,161,132,0.6)] disabled:bg-gray-700 text-[#0A1128] font-black rounded-2xl text-xs hover:scale-[1.01] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full sm:w-2/3 py-4 bg-sky-600 hover:bg-[#b08d70] hover:shadow-[0_0_20px_rgba(197,161,132,0.6)] disabled:bg-gray-700 text-white font-black rounded-2xl text-xs hover:scale-[1.01] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
             ✂️ Rasgar Recibo y Volver
             </button>

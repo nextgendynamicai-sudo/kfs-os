@@ -55,18 +55,18 @@ export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualW
   };
 
   return (
-    <div className="bg-[#0A1128] border border-[#C5A184]/25 rounded-[2.5rem] p-6 md:p-8 shadow-[0_15px_50px_rgba(10,17,40,0.4)] text-white relative overflow-hidden space-y-6">
+    <div className="bg-white border border-sky-300/25 rounded-[2.5rem] p-6 md:p-8 shadow-[0_15px_50px_rgba(10,17,40,0.4)] text-sky-950 relative overflow-hidden space-y-6">
       {/* Background Decorative Rings */}
-      <div className="absolute top-0 right-0 w-48 h-48 bg-[#C5A184]/5 rounded-full blur-2xl -z-1"></div>
-      <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-[#C5A184]/5 rounded-full blur-3xl -z-1"></div>
+      <div className="absolute top-0 right-0 w-48 h-48 bg-sky-600/5 rounded-full blur-2xl -z-1"></div>
+      <div className="absolute -bottom-10 -left-10 w-64 h-64 bg-sky-600/5 rounded-full blur-3xl -z-1"></div>
 
       <div className="flex flex-col md:flex-row justify-between gap-6 border-b border-white/5 pb-6">
         <div>
-          <span className="text-[10px] font-black uppercase tracking-widest text-[#C5A184]/80 flex items-center gap-1.5 mb-2">
-            <Zap size={10} className="text-[#C5A184] animate-pulse" /> KFS Wallet Engine v4
+          <span className="text-[10px] font-black uppercase tracking-widest text-sky-600/80 flex items-center gap-1.5 mb-2">
+            <Zap size={10} className="text-sky-600 animate-pulse" /> KFS Wallet Engine v4
           </span>
           <h2 className="text-2xl font-black tracking-tight text-gray-100">Billetera Multicapa (Double Ledger)</h2>
-          <p className="text-xs text-gray-400 mt-1">Tu balance Fiat, Dinero Pro y Puntos segregados.</p>
+          <p className="text-xs text-slate-500 mt-1">Tu balance Fiat, Dinero Pro y Puntos segregados.</p>
         </div>
 
         {/* Expiry Countdown Widget for Bonus */}
@@ -86,36 +86,36 @@ export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualW
       {/* Balances Display */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Real Balance (USD) */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-[#C5A184]/20 transition-all">
+        <div className="bg-sky-50 border border-sky-100 rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-sky-200 transition-all">
           <DollarSign size={20} className="text-green-500 mb-2" />
-          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Reserva Central</p>
-          <p className="text-2xl font-black tracking-tight text-white mt-1">
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Reserva Central</p>
+          <p className="text-2xl font-black tracking-tight text-sky-950 mt-1">
             {formatUSD(realBalance)}
           </p>
         </div>
 
         {/* K-Point Cash */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-[#C5A184]/20 transition-all">
+        <div className="bg-sky-50 border border-sky-100 rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-sky-200 transition-all">
           <Zap size={20} className="text-[#3B82F6] mb-2" />
-          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">K-Point Cash</p>
-          <p className="text-2xl font-black tracking-tight text-white mt-1">
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">K-Point Cash</p>
+          <p className="text-2xl font-black tracking-tight text-sky-950 mt-1">
             {kPointCashBalance.toLocaleString()} <span className="text-xs">K$</span>
           </p>
         </div>
 
         {/* K-Points (Normal) */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-[#C5A184]/20 transition-all">
+        <div className="bg-sky-50 border border-sky-100 rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-sky-200 transition-all">
           <Gift size={20} className="text-[#8B5CF6] mb-2" />
-          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">K-Points Normal</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">K-Points Normal</p>
           <p className="text-2xl font-black tracking-tight text-[#8B5CF6] mt-1">
             {kPointsBalance.toLocaleString()} <span className="text-xs">KP</span>
           </p>
         </div>
 
         {/* K-Point Bonus */}
-        <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-[#C5A184]/20 transition-all">
+        <div className="bg-sky-50 border border-sky-100 rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-sky-200 transition-all">
           <Clock size={20} className="text-[#F59E0B] mb-2" />
-          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">K-Point Bonus</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">K-Point Bonus</p>
           <p className="text-2xl font-black tracking-tight text-[#F59E0B] mt-1">
             {kPointBonusBalance.toLocaleString()} <span className="text-xs">KB</span>
           </p>
@@ -123,33 +123,33 @@ export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualW
       </div>
 
       {/* Recharge ladder widget */}
-      <div className="bg-white/5 border border-white/5 rounded-2xl p-5 space-y-4">
+      <div className="bg-sky-50 border border-white/5 rounded-2xl p-5 space-y-4">
         <div>
           <h4 className="text-sm font-black text-gray-200">Recarga Express Cero Fricción</h4>
-          <p className="text-[10px] text-gray-400 mt-0.5">Elige un nivel operativo para acreditar saldo y recibir bonos instantáneos.</p>
+          <p className="text-[10px] text-slate-500 mt-0.5">Elige un nivel operativo para acreditar saldo y recibir bonos instantáneos.</p>
         </div>
 
         <div className="grid grid-cols-3 gap-2">
           <button
             onClick={() => handleSimulatedRecharge(5)}
-            className="bg-[#C5A184]/10 hover:bg-[#C5A184] hover:text-[#0A1128] border border-[#C5A184]/30 rounded-xl py-3 px-2 text-center transition-all cursor-pointer group"
+            className="bg-sky-600/10 hover:bg-sky-600 hover:text-white border border-sky-200 rounded-xl py-3 px-2 text-center transition-all cursor-pointer group"
           >
             <p className="text-xs font-black">Recarga $5</p>
             <p className="text-[9px] opacity-75 mt-0.5">+2,000 KP Bono</p>
           </button>
           <button
             onClick={() => handleSimulatedRecharge(10)}
-            className="bg-[#C5A184]/15 hover:bg-[#C5A184] hover:text-[#0A1128] border border-[#C5A184]/40 rounded-xl py-3 px-2 text-center transition-all cursor-pointer relative overflow-hidden group"
+            className="bg-sky-600/15 hover:bg-sky-600 hover:text-white border border-sky-200 rounded-xl py-3 px-2 text-center transition-all cursor-pointer relative overflow-hidden group"
           >
-            <div className="absolute top-0 right-0 bg-[#C5A184] text-[#0A1128] text-[7px] font-black px-1 py-0.5 rounded-bl">PRO</div>
+            <div className="absolute top-0 right-0 bg-sky-600 text-white text-[7px] font-black px-1 py-0.5 rounded-bl">PRO</div>
             <p className="text-xs font-black">Recarga $10</p>
             <p className="text-[9px] opacity-75 mt-0.5">+5,000 KP Bono</p>
           </button>
           <button
             onClick={() => handleSimulatedRecharge(20)}
-            className="bg-[#C5A184]/20 hover:bg-[#C5A184] hover:text-[#0A1128] border border-[#C5A184]/50 rounded-xl py-3 px-2 text-center transition-all cursor-pointer relative overflow-hidden group"
+            className="bg-sky-600/20 hover:bg-sky-600 hover:text-white border border-sky-200 rounded-xl py-3 px-2 text-center transition-all cursor-pointer relative overflow-hidden group"
           >
-            <div className="absolute top-0 right-0 bg-[#C5A184] text-[#0A1128] text-[7px] font-black px-1 py-0.5 rounded-bl">WHALE</div>
+            <div className="absolute top-0 right-0 bg-sky-600 text-white text-[7px] font-black px-1 py-0.5 rounded-bl">WHALE</div>
             <p className="text-xs font-black">Recarga $20</p>
             <p className="text-[9px] opacity-75 mt-0.5">+12,000 KP Bono</p>
           </button>
@@ -158,7 +158,7 @@ export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualW
         {/* Optional Promoter Referral Assignment */}
         {!currentUser.referred_by_promoter_id && (
           <div className="pt-2">
-            <label className="text-[10px] text-gray-400 font-bold block mb-1">
+            <label className="text-[10px] text-slate-500 font-bold block mb-1">
               ¿Te refirió alguna Promotora? Asignar ID (Opcional)
             </label>
             <input
@@ -166,7 +166,7 @@ export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualW
               placeholder="Ej: p1 o ID de Promotora"
               value={selectedPromoter}
               onChange={(e) => setSelectedPromoter(e.target.value)}
-              className="w-full bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-[#C5A184] transition-colors"
+              className="w-full bg-white border border-sky-100 rounded-xl px-3 py-2 text-xs text-sky-950 placeholder-gray-500 focus:outline-none focus:border-sky-300 transition-colors"
             />
           </div>
         )}

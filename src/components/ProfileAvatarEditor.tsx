@@ -32,9 +32,9 @@ export function ProfileAvatarEditor({ currentUser }: ProfileAvatarEditorProps) {
     <div className="relative group">
       <div className="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden border-4 border-white/20 shadow-lg relative bg-[#141E3A]">
         {isUploading ? (
-          <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center">
-            <Loader2 className="animate-spin text-white mb-1" size={24} />
-            <span className="text-[8px] text-white font-bold uppercase tracking-widest">Subiendo</span>
+          <div className="absolute inset-0 bg-sky-950/60 flex flex-col items-center justify-center">
+            <Loader2 className="animate-spin text-sky-950 mb-1" size={24} />
+            <span className="text-[8px] text-sky-950 font-bold uppercase tracking-widest">Subiendo</span>
           </div>
         ) : (
           <>
@@ -46,10 +46,10 @@ export function ProfileAvatarEditor({ currentUser }: ProfileAvatarEditorProps) {
             />
             <div 
               onClick={() => setIsEditing(true)}
-              className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer backdrop-blur-sm"
+              className="absolute inset-0 bg-sky-50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer backdrop-blur-sm"
             >
-              <Camera className="text-white mb-1" size={24} />
-              <span className="text-[10px] text-white font-bold uppercase tracking-widest text-center px-2">Editar Foto</span>
+              <Camera className="text-sky-950 mb-1" size={24} />
+              <span className="text-[10px] text-sky-950 font-bold uppercase tracking-widest text-center px-2">Editar Foto</span>
             </div>
           </>
         )}
@@ -57,17 +57,17 @@ export function ProfileAvatarEditor({ currentUser }: ProfileAvatarEditorProps) {
 
       {isEditing && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div className="bg-[#0A1128] border border-white/10 p-6 rounded-3xl w-full max-w-sm shadow-2xl relative">
+          <div className="bg-white border border-sky-100 p-6 rounded-3xl w-full max-w-sm shadow-2xl relative">
             <button 
               onClick={() => setIsEditing(false)}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+              className="absolute top-4 right-4 text-slate-500 hover:text-sky-950"
             >
               ✕
             </button>
-            <h3 className="text-lg font-black text-white mb-2 flex items-center gap-2">
+            <h3 className="text-lg font-black text-sky-950 mb-2 flex items-center gap-2">
               <Camera className="text-[violet-400]" /> Actualizar Perfil
             </h3>
-            <p className="text-xs text-gray-400 mb-6">Esta imagen será visible públicamente en tus comercios y/o enlaces KFS.</p>
+            <p className="text-xs text-slate-500 mb-6">Esta imagen será visible públicamente en tus comercios y/o enlaces KFS.</p>
             
             <ImageUploadWidget 
               label="Selecciona una nueva foto" 
@@ -78,7 +78,7 @@ export function ProfileAvatarEditor({ currentUser }: ProfileAvatarEditorProps) {
             <div className="mt-4 flex justify-end gap-2">
               <button 
                 onClick={() => setIsEditing(false)}
-                className="px-4 py-2 text-xs font-bold text-gray-300 hover:bg-white/5 rounded-xl transition-colors"
+                className="px-4 py-2 text-xs font-bold text-slate-600 hover:bg-sky-50 rounded-xl transition-colors"
               >
                 Cancelar
               </button>

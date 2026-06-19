@@ -64,9 +64,9 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A1128] text-white font-sans flex flex-col justify-between selection:bg-[#C5A184] selection:text-[#0A1128]">
+    <div className="min-h-screen bg-white text-white font-sans flex flex-col justify-between selection:bg-[#C5A184] selection:text-[#0A1128]">
       {/* Header navbar */}
-      <nav className="border-b border-white/5 py-4 px-6 sm:px-10 flex justify-between items-center bg-[#0A1128]/95 backdrop-blur-xl sticky top-0 z-50">
+      <nav className="border-b border-white/5 py-4 px-6 sm:px-10 flex justify-between items-center bg-white/95 backdrop-blur-xl sticky top-0 z-50">
         <div className="flex items-center gap-3">
           <Store className="text-[#C5A184] h-6 w-auto" />
           <span className="font-black tracking-tight text-lg">KFS B2B Portal</span>
@@ -333,7 +333,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
             </div>
 
             {/* Virtual QR Code Card */}
-            <div className="bg-[#0A1128] border border-[#C5A184]/30 rounded-3xl p-6 max-w-sm mx-auto space-y-4 shadow-xl relative overflow-hidden">
+            <div className="bg-white border border-[#C5A184]/30 rounded-3xl p-6 max-w-sm mx-auto space-y-4 shadow-xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-24 h-24 bg-[#C5A184]/5 rounded-full blur-xl -z-1"></div>
               
               <div className="flex justify-between items-center text-left border-b border-white/5 pb-3">

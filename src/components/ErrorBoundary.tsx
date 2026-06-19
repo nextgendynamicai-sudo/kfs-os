@@ -29,19 +29,19 @@ export class ErrorBoundary extends Component<Props, State> {
   public render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen bg-[#0A1128] text-white flex flex-col items-center justify-center p-6 text-center animate-fade-in">
+        <div className="min-h-screen bg-white text-sky-950 flex flex-col items-center justify-center p-6 text-center animate-fade-in">
           <div className="bg-red-500/10 border border-red-500/30 p-8 rounded-3xl max-w-md shadow-2xl">
             <div className="w-20 h-20 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
               <AlertTriangle size={40} className="text-red-400" />
             </div>
             <h1 className="text-2xl font-black mb-4">¡Fallo Crítico de Sistema!</h1>
-            <p className="text-sm text-gray-400 mb-6 leading-relaxed">
+            <p className="text-sm text-slate-500 mb-6 leading-relaxed">
               KFS OS ha detectado una excepción no controlada en la interfaz de usuario.
               El límite de errores ha prevenido una pantalla en blanco.
             </p>
             
             {this.state.error && (
-              <div className="bg-black/50 p-4 rounded-xl text-left overflow-x-auto mb-6 border border-white/5">
+              <div className="bg-sky-50 p-4 rounded-xl text-left overflow-x-auto mb-6 border border-white/5">
                 <code className="text-xs text-red-300 font-mono">
                   {this.state.error.toString()}
                 </code>
