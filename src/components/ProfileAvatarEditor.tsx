@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Camera, Loader2 } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { ImageUploadWidget } from "./ImageUploadWidget";
@@ -11,6 +12,11 @@ export function ProfileAvatarEditor({ currentUser }: ProfileAvatarEditorProps) {
   const { updateUserAvatar, showToast } = useKFS() as any;
   const [isEditing, setIsEditing] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Intentamos obtener el avatar de diferentes fuentes dependiendo del rol
   const currentAvatar = currentUser?.avatar || currentUser?.profilePicUrl || "https://cdn-icons-png.flaticon.com/512/3063/3063822.png";
@@ -55,8 +61,8 @@ export function ProfileAvatarEditor({ currentUser }: ProfileAvatarEditorProps) {
         )}
       </div>
 
-      {isEditing && (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in">
+      {isEditing && mounted && createPortal(
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in" style={{ zIndex: 99999 }}>
           <div className="bg-white border border-sky-100 p-6 rounded-3xl w-full max-w-sm shadow-2xl relative">
             <button 
               onClick={() => setIsEditing(false)}
@@ -84,7 +90,8 @@ export function ProfileAvatarEditor({ currentUser }: ProfileAvatarEditorProps) {
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

@@ -218,7 +218,7 @@ const CvViewerModal = ({ isOpen, onClose, candidate }: any) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[10000] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
       <div className="bg-white text-[violet-900] rounded-[2rem] w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-white/20 animate-scale-up">
         {/* Modal Actions */}
         <div className="bg-gray-50 border-b border-gray-100 p-5 flex justify-between items-center shrink-0">
@@ -4373,7 +4373,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 
         {/* Tactical Actions Modals */}
         {activeModal === 'store' && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
             <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative p-2 shadow-2xl">
               <button onClick={() => setActiveModal(null)} className="absolute top-6 right-6 z-50 text-gray-400 hover:text-black"><X size={24} /></button>
               <RegisterClientForm onRegister={(data: any, promoId: string, fee: number) => { registerClient(data, promoId, fee); setActiveModal(null); }} onCancel={() => setActiveModal(null)} />
@@ -4382,7 +4382,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
         )}
 
         {activeModal === 'assign' && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
             <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6 border border-sky-100">
               <div className="flex justify-between items-center border-b border-sky-100 pb-4">
                 <h3 className="text-xl font-black text-sky-950">Asignar Promotora</h3>
@@ -4412,7 +4412,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
 
         {/* ── Storefront Customizer Modal (Arquitecto) ───────────────────── */}
       {customizingClient && (
-        <div className="fixed inset-0 bg-black/60 z-[200] flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setCustomizingClient(null)}>
+        <div className="fixed inset-0 bg-black/60 z-[99999] flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setCustomizingClient(null)}>
           <div className="bg-white rounded-[2rem] w-full max-w-lg relative p-2 shadow-2xl" onClick={e => e.stopPropagation()}>
             <button onClick={() => setCustomizingClient(null)} className="absolute top-4 right-4 text-gray-400 hover:text-violet-900 transition-colors cursor-pointer z-10 border-none bg-transparent">
               <X size={24} />
@@ -4430,7 +4430,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
       )}
 
       {activeModal === 'product' && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
             <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6 border border-sky-100">
               <div className="flex justify-between items-center border-b border-sky-100 pb-4">
                 <h3 className="text-xl font-black text-sky-950">Catálogo Global</h3>
@@ -4459,7 +4459,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
         )}
 
         {activeModal === 'push' && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
             <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6 border border-sky-100">
               <div className="flex justify-between items-center border-b border-sky-100 pb-4">
                 <h3 className="text-xl font-black text-red-600">Alerta Push Network</h3>
@@ -4484,7 +4484,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
         )}
 
         {viewingKycPhoto && (
-          <div className="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md animate-fade-in">
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-md animate-fade-in">
             <div className="relative max-w-3xl w-full flex flex-col items-center">
               <button onClick={() => setViewingKycPhoto(null)} className="absolute -top-12 right-0 text-white hover:text-red-400 transition-colors cursor-pointer"><X size={32} /></button>
               <img src={viewingKycPhoto} alt="Visor KYC" className="w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl bg-white/5" />
@@ -4500,7 +4500,7 @@ const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePro
         )}
 
         {assignRiderModal !== null && (
-          <div className="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
             <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6 border border-sky-100">
               <div className="flex justify-between items-center border-b border-sky-100 pb-4">
                 <div>
@@ -5041,7 +5041,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
       </div>
 
       {customizingClient && (
-        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+        <div className="fixed inset-0 bg-black/60 z-[99999] flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-white rounded-[2rem] w-full max-w-lg relative p-2 shadow-2xl">
             <button onClick={() => setCustomizingClient(null)} className="absolute top-4 right-4 text-gray-400 hover:text-[violet-900] transition-colors cursor-pointer z-10">
               <X size={24} />
@@ -5055,7 +5055,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
       )}
 
       {activeManual && (
-        <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
+        <div className="fixed inset-0 bg-black/80 z-[99999] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
           <div className="bg-white text-[violet-900] rounded-[2rem] w-full max-w-2xl max-h-[85vh] overflow-y-auto relative p-8 shadow-2xl border-4 border-[violet-900]">
             <button onClick={() => setActiveManual(null)} className="absolute top-6 right-6 text-gray-500 hover:text-[violet-900] transition-colors cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200">
               <X size={20} />
@@ -5264,7 +5264,7 @@ const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToP
 
       {/* Customer Register Modal */}
       {showCustomerRegister && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
           <div className="bg-white rounded-[2rem] w-full max-w-2xl max-h-[90vh] overflow-y-auto relative p-2 shadow-2xl border border-sky-100">
             <button onClick={() => setShowCustomerRegister(false)} className="absolute top-6 right-6 z-50 text-slate-400 hover:text-sky-950 transition-colors cursor-pointer"><X size={24} /></button>
             <div className="p-4 border-b border-sky-100 mb-4">
@@ -6225,7 +6225,7 @@ const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
         </div>
       )}
       {ratingCandidateId && (
-        <div className="fixed inset-0 z-[11000] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
           <div className="bg-white text-[violet-900] rounded-[2rem] p-8 w-full max-w-md shadow-2xl border border-white/20 animate-scale-up space-y-6">
             <div className="text-center">
               <h3 className="text-xl font-black text-[violet-900]">Calificar Candidato</h3>
@@ -7726,7 +7726,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
         {/* Modal Agregar Producto */}
         {showAddModal && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 animate-fade-in">
             <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl">
               <h3 className="text-2xl font-black mb-6 text-sky-950">Nuevo Producto</h3>
               <form onSubmit={submitProduct} className="space-y-4">
@@ -7782,7 +7782,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
         {/* Modal Agregar Vendedor */}
         {showAddVendedor && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 animate-fade-in">
             <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl">
               <h3 className="text-2xl font-black mb-6 text-sky-950">Nuevo Empleado</h3>
               <form onSubmit={handleAddVendedor} className="space-y-4">
@@ -7825,7 +7825,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
 
         {/* Modal Agregar Gasto */}
         {showExpenseModal && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 animate-fade-in">
             <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl">
               <h3 className="text-2xl font-black mb-6 text-sky-950">Registrar Gasto (Egreso)</h3>
               <form onSubmit={(e) => {
@@ -7850,7 +7850,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
         )}
 
         {activeManual && (
-          <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
+          <div className="fixed inset-0 bg-black/80 z-[99999] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
             <div className="bg-white text-sky-950 rounded-[2rem] w-full max-w-2xl max-h-[85vh] overflow-y-auto relative p-8 shadow-2xl border-4 border-sky-900">
               <button onClick={() => setActiveManual(null)} className="absolute top-6 right-6 text-slate-500 hover:text-sky-950 transition-colors cursor-pointer bg-slate-100 p-2 rounded-full hover:bg-slate-200">
                 <X size={20} />
@@ -7906,7 +7906,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           </div>
         )}
         {showTicketModal && (
-          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4 animate-fade-in">
+          <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 animate-fade-in">
             <div className="bg-white rounded-[2rem] max-w-md w-full p-8 space-y-4 shadow-2xl border border-sky-100">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-xl font-black text-sky-950">Crear Ticket SOS</h3>
@@ -7922,7 +7922,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
           </div>
         )}
         {activeScreenshot && (
-          <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
+          <div className="fixed inset-0 bg-black/80 z-[99999] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
             <div className="bg-sky-900 border border-sky-600/30 rounded-[2.5rem] w-full max-w-lg p-6 shadow-2xl relative flex flex-col items-center">
               <button onClick={() => setActiveScreenshot(null)} className="absolute top-6 right-6 text-sky-200 hover:text-white transition-colors cursor-pointer bg-white/10 p-2 rounded-full">
                 <X size={20} />
@@ -7966,7 +7966,7 @@ const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showT
       </div>
 
       {showPayrollModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex justify-center items-center z-[99999] p-4">
           <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-2xl max-w-md w-full animate-scale-in border border-sky-100">
             <h3 className="text-xl font-black mb-1 flex items-center gap-2 text-sky-950"><DollarSign className="text-sky-500" /> Liquidación de Nómina</h3>
             <p className="text-xs text-slate-500 mb-6">Empleado: {showPayrollModal.name}</p>
@@ -8106,7 +8106,7 @@ const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }: any) 
   };
 
   return (
-    <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex flex-col items-center justify-center p-4 animate-fade-in">
+    <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex flex-col items-center justify-center p-4 animate-fade-in">
       <div className="w-full max-w-md bg-gradient-to-br from-sky-900 to-slate-900 border border-sky-800 rounded-[2.5rem] p-6 shadow-2xl relative">
         <button onClick={onClose} className="absolute right-6 top-6 text-sky-200 hover:text-white cursor-pointer">
           <X size={24} />
@@ -8419,7 +8419,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
   return (
     <div className="min-h-screen bg-slate-50 pb-20 font-sans relative">
       {clientInfo?.subscription?.status === 'past_due' && (
-        <div className="fixed inset-0 bg-red-900/95 backdrop-blur-xl z-[9999] flex flex-col items-center justify-center p-6 animate-fade-in text-center">
+        <div className="fixed inset-0 bg-red-900/95 backdrop-blur-xl z-[99999] flex flex-col items-center justify-center p-6 animate-fade-in text-center">
           <div className="w-24 h-24 bg-red-500/20 rounded-full flex items-center justify-center mb-6 animate-pulse">
             <Lock size={48} className="text-red-400" />
           </div>
@@ -8690,7 +8690,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
 
       {/* Modal Agregar Producto */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl border border-sky-100">
             <h3 className="text-2xl font-black mb-6 text-sky-950">Nuevo Producto</h3>
             <form onSubmit={submitProduct} className="space-y-4">
@@ -8736,7 +8736,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
 
       {/* Modal de Producto Detectado en Catálogo Global / Nacional */}
       {scannedGlobalProduct && (
-        <div className="fixed inset-0 bg-sky-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 animate-fade-in text-left">
+        <div className="fixed inset-0 bg-sky-950/90 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-fade-in text-left">
           <div className="bg-gradient-to-br from-sky-900 to-slate-900 border border-sky-700 rounded-[2.5rem] w-full max-w-lg p-8 shadow-2xl relative overflow-hidden">
             {/* Efecto de brillo de fondo */}
             <div className="absolute top-0 right-0 w-48 h-48 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -8818,7 +8818,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
       )}
 
       {activeManual && (
-        <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
+        <div className="fixed inset-0 bg-black/80 z-[99999] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
           <div className="bg-white text-sky-950 rounded-[2rem] w-full max-w-2xl max-h-[85vh] overflow-y-auto relative p-8 shadow-2xl border-4 border-sky-100">
             <button onClick={() => setActiveManual(null)} className="absolute top-6 right-6 text-slate-400 hover:text-sky-900 transition-colors cursor-pointer bg-slate-100 p-2 rounded-full hover:bg-slate-200">
               <X size={20} />
@@ -8851,7 +8851,7 @@ const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processPurchase
         </div>
       )}
       {activeScreenshot && (
-        <div className="fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
+        <div className="fixed inset-0 bg-black/80 z-[99999] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
           <div className="bg-gradient-to-br from-sky-900 to-slate-900 border border-sky-800 rounded-[2.5rem] w-full max-w-lg p-6 shadow-2xl relative flex flex-col items-center">
             <button onClick={() => setActiveScreenshot(null)} className="absolute top-6 right-6 text-sky-200/50 hover:text-white transition-colors cursor-pointer bg-white/10 p-2 rounded-full">
               <X size={20} />
@@ -9586,7 +9586,7 @@ export default function Home() {
       <Toast toast={toast} />
 
       {ghostTrapLocked && (
-        <div className="fixed inset-0 bg-[#0B0104]/95 backdrop-blur-xl z-[9999] flex items-center justify-center p-4 animate-fade-in">
+        <div className="fixed inset-0 bg-[#0B0104]/95 backdrop-blur-xl z-[99999] flex items-center justify-center p-4 animate-fade-in">
           <div className="bg-[#1A050A] border-2 border-red-500/30 rounded-[2.5rem] w-full max-w-lg p-10 shadow-[0_0_50px_rgba(239,68,68,0.25)] text-center relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-red-600 via-pink-500 to-red-600 animate-pulse"></div>
 

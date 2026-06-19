@@ -46,7 +46,7 @@ export const TopUpModal = ({ isOpen, onClose, amount: initialAmount, onSubmit, u
 
   return (
     <AnimatePresence>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[9999] bg-sky-950/60 backdrop-blur-md flex items-center justify-center p-4">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[99999] bg-sky-950/60 backdrop-blur-md flex items-center justify-center p-4">
         <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} className="bg-white text-sky-950 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-sky-100 flex flex-col max-h-[90vh]">
           <div className="flex justify-between items-center p-6 border-b border-sky-100 bg-sky-50 shrink-0">
             <h2 className="font-black text-xl flex items-center gap-2"><DollarSign className="text-green-400" /> Recargar Saldo</h2>

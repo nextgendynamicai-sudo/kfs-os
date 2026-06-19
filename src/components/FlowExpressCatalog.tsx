@@ -210,7 +210,7 @@ export function FlowExpressCatalog({ currentUser, formatUSD }: FlowExpressCatalo
 
       {/* Recharge Required Modal */}
       {showRechargeModal && (
-        <div className="fixed inset-0 z-[1000] flex items-center justify-center bg-gray-900/40 backdrop-blur-md px-4">
+        <div className="fixed inset-0 z-[99999] flex items-center justify-center bg-gray-900/40 backdrop-blur-md px-4">
           <div className="bg-[#EEF2F5] border-none rounded-[2.5rem] p-8 max-w-md w-full text-violet-900 shadow-[20px_20px_60px_#d1d9e6,-20px_-20px_60px_#ffffff] relative animate-fade-in space-y-6">
             <button
               onClick={() => setShowRechargeModal(false)}

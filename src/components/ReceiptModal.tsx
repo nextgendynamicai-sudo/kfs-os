@@ -39,7 +39,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
   };
 
   return (
-    <div className="fixed inset-0 bg-sky-950/60 backdrop-blur-xl z-[70] flex items-center justify-center p-4 animate-fade-in">
+    <div className="fixed inset-0 bg-sky-950/60 backdrop-blur-xl z-[99999] flex items-center justify-center p-4 animate-fade-in">
       <motion.div 
         initial={{ y: 100, opacity: 0, scale: 0.9 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}

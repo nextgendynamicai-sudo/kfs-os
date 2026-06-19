@@ -111,7 +111,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
 
   if (isProcessingPos) {
     return (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[60] flex items-center justify-center p-4 animate-fade-in">
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-fade-in">
         <div className="bg-white/90 backdrop-blur-xl text-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl border border-white/10 relative overflow-hidden text-center space-y-6">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#C5A184] via-amber-200 to-[#C5A184] animate-pulse"></div>
           
@@ -155,7 +155,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[60] flex items-center justify-center p-4 animate-fade-in">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-fade-in">
       <motion.div 
         initial={{ y: 50, opacity: 0, scale: 0.95 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}

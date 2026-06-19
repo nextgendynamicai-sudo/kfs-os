@@ -16,7 +16,7 @@ export const PayoutModal = ({ maxAmount, currency, onConfirm, onCancel, formatMo
   const isAmountValid = parsedAmount > 0 && totalToDeduct <= maxAmount;
 
   return (
-    <div className="fixed inset-0 bg-sky-950/60 backdrop-blur-md z-[80] flex items-center justify-center p-4 animate-fade-in">
+    <div className="fixed inset-0 bg-sky-950/60 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-fade-in">
       <motion.div 
         initial={{ y: 50, opacity: 0, scale: 0.95 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
