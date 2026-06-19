@@ -62,7 +62,7 @@ export function ProfileAvatarEditor({ currentUser }: ProfileAvatarEditorProps) {
       </div>
 
       {isEditing && mounted && createPortal(
-        <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in" style={{ zIndex: 99999 }}>
+        <div className="fixed inset-0 z-[999999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fade-in" style={{ zIndex: 999999 }}>
           <div className="bg-white border border-sky-100 p-6 rounded-3xl w-full max-w-sm shadow-2xl relative">
             <button 
               onClick={() => setIsEditing(false)}
