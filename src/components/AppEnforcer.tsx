@@ -61,12 +61,10 @@ export function AppEnforcer({ children, currentUser, updatePwaStatus }: { childr
 
   if (isChecking) return null;
 
-  if (isStandalone && hasPermissions) {
-    return <>{children}</>;
-  }
+  const showPwaWarning = !isStandalone && !currentUser?.pwaInstalled;
+  const showNotificationWarning = !hasPermissions;
 
-  // Si NO está en PWA, pero la nube sabe que ya la instaló antes en su dispositivo, le damos Bypass.
-  if (!isStandalone && currentUser?.pwaInstalled) {
+  if (!showPwaWarning && !showNotificationWarning) {
     return <>{children}</>;
   }
 
@@ -80,12 +78,12 @@ export function AppEnforcer({ children, currentUser, updatePwaStatus }: { childr
         <div>
           <h2 className="text-2xl font-black text-violet-900 mb-3">Acceso Restringido</h2>
           <p className="text-sm text-gray-500 leading-relaxed">
-            Por protocolos de seguridad, para operar en la nube web primero debes haber instalado la PWA oficial de KFS OS en tu dispositivo principal.
+            Por protocolos de seguridad, para operar en la nube web primero debes haber completado los requisitos del sistema en tu dispositivo principal.
           </p>
         </div>
 
         <div className="space-y-4">
-          {!isStandalone && (
+          {showPwaWarning && (
             <div className="bg-white rounded-2xl p-4 flex items-center justify-between shadow-sm border border-gray-100">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-amber-100 text-amber-600 rounded-xl">
