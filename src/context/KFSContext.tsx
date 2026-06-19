@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect, useRef } from "r
 import { supabase, isSupabaseConfigured, uploadAsset } from "./supabase";
 import { playScannerBeep, speakText, getStoreCoords, getCustomerCoords, playSyncChime } from "../lib/utils";
 import { getIndexedDBValue, setIndexedDBValue } from "../lib/indexedDB";
+import { syncToRelational } from "../lib/supabaseSync";
 
 const VENEZUELAN_PRODUCTS_CATALOG: Record<string, { name: string; imgUrl: string; category: string; brand: string }> = {
   "7591006000016": { name: "Harina PAN Blanca (1kg)", imgUrl: "", category: "Alimentos", brand: "Alimentos Polar" },
@@ -1087,6 +1088,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
               } else {
                 lastRemoteUpdatedAtRef.current = nextUpdatedAt;
                 console.log("[Supabase Cloud] Estado sincronizado directamente (sin colisión).");
+                  syncToRelational(db);
               }
             })
             .catch((err: any) => {
@@ -1119,6 +1121,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                     setDb(mergedDb);
                   }
                   console.log("[Supabase Cloud] Estado sincronizado asíncronamente con protección Anti-Colisión y Merge.");
+                    syncToRelational(mergedDb);
                 }
               })
               .catch((err: any) => {
