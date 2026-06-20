@@ -106,26 +106,38 @@ export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCanc
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 animate-fade-in">
-      <input required type="text" placeholder="Nombre y Apellido" value={name} onChange={e => setName(e.target.value)} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl px-4 py-3 text-sky-950 placeholder:text-slate-400 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition-all" />
+      <div className="relative">
+        <label className="block text-xs font-black text-sky-700 uppercase tracking-widest mb-1 ml-1">Nombre Completo</label>
+        <div className="relative">
+          <UserCheck className="absolute left-4 top-3.5 text-sky-400" size={20} />
+          <input required type="text" placeholder="Ej: Juan Pérez" value={name} onChange={e => setName(e.target.value)} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl pl-12 pr-4 py-3 text-sky-950 placeholder:text-slate-400 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition-all" />
+        </div>
+      </div>
 
-      <div className="flex gap-2">
-        <select
-          value={phonePrefix}
-          onChange={e => setPhonePrefix(e.target.value)}
-          className="bg-sky-50/50 border border-sky-100 rounded-xl px-3 py-3 text-sky-950 focus:outline-none focus:border-sky-400 text-sm cursor-pointer"
-        >
-          <option value="+58">VE (+58)</option>
-          <option value="+57">CO (+57)</option>
-          <option value="+507">PA (+507)</option>
-          <option value="+34">ES (+34)</option>
-          <option value="+56">CL (+56)</option>
-          <option value="+593">EC (+593)</option>
-          <option value="+51">PE (+51)</option>
-          <option value="+54">AR (+54)</option>
-          <option value="+1">US/CA (+1)</option>
-          <option value="+1809">DO (+1-809)</option>
-        </select>
-        <input required type="text" placeholder="Número Telefónico (Ej: 4141234567)" value={phoneBody} onChange={e => setPhoneBody(e.target.value)} className="flex-1 bg-sky-50/50 border border-sky-100 rounded-xl px-4 py-3 text-sky-950 placeholder:text-slate-400 focus:outline-none focus:border-sky-400 transition-all" />
+      <div className="relative">
+        <label className="block text-xs font-black text-sky-700 uppercase tracking-widest mb-1 ml-1">Teléfono Móvil</label>
+        <div className="flex gap-2">
+          <select
+            value={phonePrefix}
+            onChange={e => setPhonePrefix(e.target.value)}
+            className="bg-sky-50/50 border border-sky-100 rounded-xl px-3 py-3 text-sky-950 focus:outline-none focus:border-sky-400 text-sm cursor-pointer"
+          >
+            <option value="+58">VE (+58)</option>
+            <option value="+57">CO (+57)</option>
+            <option value="+507">PA (+507)</option>
+            <option value="+34">ES (+34)</option>
+            <option value="+56">CL (+56)</option>
+            <option value="+593">EC (+593)</option>
+            <option value="+51">PE (+51)</option>
+            <option value="+54">AR (+54)</option>
+            <option value="+1">US/CA (+1)</option>
+            <option value="+1809">DO (+1-809)</option>
+          </select>
+          <div className="relative flex-1">
+            <Smartphone className="absolute left-4 top-3.5 text-sky-400" size={20} />
+            <input required type="text" placeholder="Ej: 4141234567" value={phoneBody} onChange={e => setPhoneBody(e.target.value)} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl pl-12 pr-4 py-3 text-sky-950 placeholder:text-slate-400 focus:outline-none focus:border-sky-400 transition-all" />
+          </div>
+        </div>
       </div>
 
       <div className="flex gap-4 mb-2">
@@ -153,9 +165,22 @@ export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCanc
         </label>
       </div>
 
-      <textarea required placeholder="Dirección Residencial Completa" value={kycAddress} onChange={e => setKycAddress(e.target.value)} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl px-4 py-3 text-sky-950 placeholder:text-slate-400 focus:outline-none focus:border-sky-400 transition-all text-sm h-20 resize-none" />
+      <div className="relative">
+        <label className="block text-xs font-black text-sky-700 uppercase tracking-widest mb-1 ml-1">Dirección Exacta</label>
+        <div className="relative">
+          <MapPin className="absolute left-4 top-4 text-sky-400" size={20} />
+          <textarea required placeholder="Calle, Av, Edificio, Casa..." value={kycAddress} onChange={e => setKycAddress(e.target.value)} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl pl-12 pr-4 py-3 text-sky-950 placeholder:text-slate-400 focus:outline-none focus:border-sky-400 transition-all text-sm h-20 resize-none" />
+        </div>
+      </div>
 
-      <input required type="password" placeholder="Crear Contraseña" value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl px-4 py-3 text-sky-950 placeholder:text-slate-400 focus:outline-none focus:border-sky-400 transition-all" />
+      <div className="relative">
+        <label className="block text-xs font-black text-sky-700 uppercase tracking-widest mb-1 ml-1">Contraseña de Acceso</label>
+        <div className="relative">
+          <Lock className="absolute left-4 top-3.5 text-sky-400" size={20} />
+          <input required type="password" placeholder="Mínimo 6 caracteres" value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl pl-12 pr-4 py-3 text-sky-950 placeholder:text-slate-400 focus:outline-none focus:border-sky-400 transition-all" />
+        </div>
+      </div>
+
       <div className="flex gap-2 pt-2">
         <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl border border-sky-200 text-slate-500 font-bold hover:bg-sky-50 transition-all cursor-pointer">Atrás</button>
         <button type="submit" className="w-2/3 py-3 rounded-xl bg-sky-600 text-white font-black hover:scale-[1.02] active:scale-95 transition-all shadow-md shadow-sky-600/30 border-none cursor-pointer">Crear Cuenta</button>
