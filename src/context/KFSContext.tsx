@@ -1047,6 +1047,18 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
 
   // Save DB to LocalStorage & Supabase Cloud
+  const compressDbForCloud = (database: any) => {
+    if (!database) return database;
+    return {
+      ...database,
+      transactions: database.transactions?.slice(-50) || [],
+      auditLogs: database.auditLogs?.slice(-50) || [],
+      zReports: database.zReports?.slice(-50) || [],
+      ghostLogs: database.ghostLogs?.slice(-50) || [],
+      orders: database.orders?.slice(-50) || [],
+      expenses: database.expenses?.slice(-50) || []
+    };
+  };
   useEffect(() => {
     if (!isClient || !isDataLoaded) return;
     
@@ -1079,7 +1091,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
             .from("kfs_store_states")
             .upsert({
               id: syncId,
-              db_state: db,
+              db_state: compressDbForCloud(db),
               updated_at: nextUpdatedAt
             })
             .then(({ error }: any) => {
@@ -1108,7 +1120,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
               .from("kfs_store_states")
               .upsert({
                 id: syncId,
-                db_state: mergedDb,
+                db_state: compressDbForCloud(mergedDb),
                 updated_at: nextUpdatedAt
               })
               .then(({ error }: any) => {
