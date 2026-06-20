@@ -11,6 +11,8 @@ export const isSupabaseConfigured = !!(
   supabaseUrl.startsWith("http") &&
   !supabaseUrl.includes("your-project-id") && 
   !supabaseUrl.includes("dummy-project") && 
+  !supabaseUrl.includes("uplgtylqjkxallwtnehj") && // Suspended project 1
+  !supabaseUrl.includes("poycfdnudyrgtyegvnoa") && // Suspended project 2
   !supabaseAnonKey.includes("your-anon-public-key") &&
   !supabaseAnonKey.includes("YOUR_SUPABASE_KEY_HERE")
 );
