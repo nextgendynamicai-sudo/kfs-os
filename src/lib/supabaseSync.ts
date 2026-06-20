@@ -1,5 +1,23 @@
 import { supabase } from '../context/supabase';
 
+const cleanBase64 = (obj: any): any => {
+  if (!obj) return obj;
+  if (typeof obj === 'string' && obj.startsWith('data:image')) {
+    return '[BASE64_IMAGE_STRIPPED_FOR_EGRESS_QUOTA]';
+  }
+  if (Array.isArray(obj)) {
+    return obj.map(cleanBase64);
+  }
+  if (typeof obj === 'object') {
+    const newObj: any = {};
+    for (const key in obj) {
+      newObj[key] = cleanBase64(obj[key]);
+    }
+    return newObj;
+  }
+  return obj;
+};
+
 export const syncToRelational = async (db: any) => {
   if (!supabase) return;
   try {
@@ -14,7 +32,7 @@ export const syncToRelational = async (db: any) => {
         phone: c.phone,
         walletBalanceUSD: c.walletBalanceUSD,
         salesUSD: c.salesUSD,
-        raw_data: c
+        raw_data: cleanBase64(c)
       }));
       await supabase.from('clients').upsert(clientsPayload);
     }
@@ -28,7 +46,7 @@ export const syncToRelational = async (db: any) => {
         email: c.email,
         walletUSD: c.walletUSD,
         k_points_balance: c.k_points_balance,
-        raw_data: c
+        raw_data: cleanBase64(c)
       }));
       await supabase.from('customers').upsert(customersPayload);
     }
@@ -42,7 +60,7 @@ export const syncToRelational = async (db: any) => {
         phone: c.phone,
         passiveEarningsEUR: c.passiveEarningsEUR,
         pendingPayoutEUR: c.pendingPayoutEUR,
-        raw_data: c
+        raw_data: cleanBase64(c)
       }));
       await supabase.from('promotoras').upsert(promoPayload);
     }
@@ -57,7 +75,7 @@ export const syncToRelational = async (db: any) => {
         type: c.type,
         amount: c.amount,
         status: c.status,
-        raw_data: c
+        raw_data: cleanBase64(c)
       }));
       await supabase.from('transactions').upsert(txPayload);
     }
@@ -69,7 +87,7 @@ export const syncToRelational = async (db: any) => {
         clientId: c.clientId,
         name: c.name,
         price: c.price,
-        raw_data: c
+        raw_data: cleanBase64(c)
       }));
       await supabase.from('products').upsert(prodPayload);
     }

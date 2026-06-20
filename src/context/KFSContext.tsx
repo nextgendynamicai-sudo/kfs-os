@@ -1578,12 +1578,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         options: { data: { full_name: name, role: "customer", phone } }
       });
       if (error) {
-        showToast("Error en registro Supabase (Nube): " + error.message, "error");
-        return; // Strict cloud-first
+        showToast("Aviso Supabase: " + error.message + " (Guardando en modo Offline)", "error");
       }
     } catch (e: any) {
       showToast("Supabase no configurado o sin conexión: " + e.message, "error");
-      return;
     }
 
     let referred_by_promoter_id = null;
@@ -1911,11 +1909,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       });
       if (authError) {
         showToast("Error en registro Supabase (Nube): " + authError.message, "error");
-        return; // Abort local creation in prod
       }
     } catch (e: any) {
       showToast("Supabase no configurado o sin conexión: " + e.message, "error");
-      return;
     }
 
     const newClient = { 
@@ -1997,12 +1993,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         options: { data: { full_name: promoData.name, role: "promotora" } }
       });
       if (error) {
-        showToast("Error en registro Supabase (Nube): " + error.message, "error");
-        return;
+        showToast("Aviso Supabase (Nube): " + error.message, "warning");
       }
     } catch (e: any) {
-      showToast("Supabase no configurado o sin conexión: " + e.message, "error");
-      return;
+      showToast("Supabase no configurado o sin conexión: " + e.message, "warning");
     }
     
     const newPromo = { 
@@ -3626,12 +3620,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         options: { data: { full_name: riderData.name, role: "rider" } }
       });
       if (error) {
-        showToast("Error en registro Supabase (Nube): " + error.message, "error");
-        return;
+        showToast("Aviso Supabase (Nube): " + error.message, "warning");
       }
     } catch (e: any) {
-      showToast("Supabase no configurado o sin conexión: " + e.message, "error");
-      return;
+      showToast("Supabase no configurado o sin conexión: " + e.message, "warning");
     }
 
     const newRider = {
