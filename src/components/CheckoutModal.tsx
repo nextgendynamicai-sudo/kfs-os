@@ -1,6 +1,6 @@
-import { KFS_BRAND } from "../config/brandConfig";
 "use client";
 
+import { KFS_BRAND } from "../config/brandConfig";
 import React, { useState } from "react";
 import { CreditCard, QrCode, Shield, X } from "lucide-react";
 import { useKFS } from "../context/KFSContext";

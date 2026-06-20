@@ -1,5 +1,6 @@
-import { KFS_BRAND } from "../config/brandConfig";
 "use client";
+
+import { KFS_BRAND } from "../config/brandConfig";
 import React, { useState, useEffect } from "react";
 import { BellRing, Smartphone, ShieldAlert } from "lucide-react";
 

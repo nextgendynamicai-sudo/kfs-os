@@ -1,6 +1,6 @@
-import { KFS_BRAND } from "../../config/brandConfig";
 "use client";
 
+import { KFS_BRAND } from "../../config/brandConfig";
 import React, { useState, useEffect, useRef } from "react";
 import {
   Camera, Upload, ShoppingCart, TrendingUp, Users, DollarSign,

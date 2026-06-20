@@ -1,6 +1,6 @@
-import { KFS_BRAND } from "../config/brandConfig";
 "use client";
 
+import { KFS_BRAND } from "../config/brandConfig";
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { supabase, isSupabaseConfigured, uploadAsset } from "./supabase";
 import { playScannerBeep, speakText, getStoreCoords, getCustomerCoords, playSyncChime } from "../lib/utils";

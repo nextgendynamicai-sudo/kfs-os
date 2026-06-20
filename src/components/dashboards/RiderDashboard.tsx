@@ -1,5 +1,6 @@
-import { KFS_BRAND } from "../../config/brandConfig";
 "use client";
+
+import { KFS_BRAND } from "../../config/brandConfig";
 import { Toast } from "../Toast";
 import { CvViewerModal } from "../CvViewerModal";
 import { SMSConciliatorSimulator } from "../SMSConciliatorSimulator";

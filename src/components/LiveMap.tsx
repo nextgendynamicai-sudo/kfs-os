@@ -1,5 +1,6 @@
-import { KFS_BRAND } from "../config/brandConfig";
 "use client";
+
+import { KFS_BRAND } from "../config/brandConfig";
 import { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
 import L from 'leaflet';

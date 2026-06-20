@@ -1,6 +1,6 @@
-import { KFS_BRAND } from "../config/brandConfig";
 "use client";
 
+import { KFS_BRAND } from "../config/brandConfig";
 import React, { Component, ErrorInfo, ReactNode } from "react";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 
