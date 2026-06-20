@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../../config/brandConfig";
 "use client";
 import { Toast } from "../Toast";
 import { CvViewerModal } from "../CvViewerModal";
@@ -335,12 +336,12 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
           <p className="text-gray-600 mb-8 font-bold relative z-10 text-lg">
             {isPendingVerification
               ? "Tu comprobante de pago ha sido enviado al equipo Kreatek Core y está siendo auditado. Tu tienda se reactivará en breve."
-              : "Tu membresía mensual a KFS OS ($6) se encuentra vencida. Tu tienda está pausada."}
+              : "Tu membresía mensual a {KFS_BRAND.productAcronym} OS ($6) se encuentra vencida. Tu tienda está pausada."}
           </p>
 
           {!isPendingVerification && (
             <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-6 rounded-2xl mb-8 relative z-10 placeholder:text-gray-400">
-              <h3 className="font-bold text-violet-900 mb-4">¿Cómo reactivar tu Tienda?</h3>
+              <h3 className="font-bold text-violet-900 mb-4">¿Cómo reactivar tu {KFS_BRAND.modules.marketplace}?</h3>
               <p className="text-sm text-gray-500 mb-4">Transfiere $6 USD vía Zinli, AirTM, Wally, Ubbi, Binance Pay o Pago Móvil y escribe la referencia bancaria a continuación:</p>
 
               <form onSubmit={(e) => {
@@ -394,7 +395,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
             <span className="bg-white/20 p-2 rounded-xl text-white"><Store size={20} /></span>
-            <h1 className="font-black text-xl tracking-tight text-white">KFS Negocio</h1>
+            <h1 className="font-black text-xl tracking-tight text-white">{KFS_BRAND.productAcronym} Negocio</h1>
           </div>
           <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
             <LogOut size={16} />
@@ -442,7 +443,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                       </select>
                     </div>
                     <div className="flex items-center gap-2 bg-sky-50 px-4 py-2 rounded-xl border border-sky-100 placeholder:text-slate-400">
-                      <span className="text-xs font-bold text-slate-500">Tasa KFS Activa (Oráculo):</span>
+                      <span className="text-xs font-bold text-slate-500">Tasa {KFS_BRAND.productAcronym} Activa (Oráculo):</span>
                       <span className="text-sm font-black text-sky-600">
                         {currentUser.oracle_fee_percentage !== undefined && currentUser.oracle_fee_percentage !== null
                           ? currentUser.oracle_fee_percentage
@@ -564,7 +565,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
               </button>
               <button onClick={() => setActiveManual('benefits')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
                 <Star size={32} className="text-amber-400" />
-                <span className="font-bold text-sm">Whitepaper de Beneficios KFS</span>
+                <span className="font-bold text-sm">Whitepaper de Beneficios {KFS_BRAND.productAcronym}</span>
               </button>
             </div>
           </div>
@@ -724,7 +725,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
           <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-xl shadow-sky-200/50 border border-sky-100 relative overflow-hidden w-full">
             <div className="absolute top-0 right-0 w-40 h-40 bg-sky-50 rounded-bl-[100px] -z-10"></div>
             <div className="flex flex-col md:flex-row justify-between md:items-center gap-4 mb-6 border-b border-sky-100 pb-4">
-              <h3 className="font-black text-xl text-sky-950 flex items-center gap-2"><DollarSign className="text-sky-600" /> Datos Oficiales de Liquidación KFS</h3>
+              <h3 className="font-black text-xl text-sky-950 flex items-center gap-2"><DollarSign className="text-sky-600" /> Datos Oficiales de Liquidación {KFS_BRAND.productAcronym}</h3>
               <span className="bg-sky-50 text-sky-600 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider border border-sky-100">Transferencia Directa</span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -768,7 +769,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                     onClick={() => {
                       window.open(`https://wa.me/584127740041?text=Hola Kreatek, soy el local *${currentUser.company}*. Adjunto comprobante de pago de BOS diario correspondiente a la deuda de *${formatUSD(currentUser.kfsFeesOwedUSD || 0)}*.`, '_blank');
                       window.dispatchEvent(new CustomEvent('kfs-payment-alert', { detail: { company: currentUser.company, amount: currentUser.kfsFeesOwedUSD } }));
-                      showToast("Abriendo WhatsApp y notificando a KFS Core...", "success");
+                      showToast("Abriendo WhatsApp y notificando a {KFS_BRAND.productAcronym} Core...", "success");
                     }}
                     className="bg-sky-600 text-white font-black text-xs px-5 py-3 rounded-xl shadow-lg shadow-sky-600/30 hover:scale-105 transition-transform flex items-center gap-1.5 cursor-pointer border-none"
                   >
@@ -781,9 +782,9 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
               <div className="flex-1 flex flex-col justify-between p-6 bg-emerald-950/40 rounded-2xl border border-emerald-500/20 relative">
                 <div className="space-y-2">
                   <span className="text-emerald-300 text-[10px] font-black uppercase tracking-widest block font-mono">Plan de Tracción de Tráfico</span>
-                  <h3 className="text-xl font-black text-white">Inversión en Publicidad KFS</h3>
+                  <h3 className="text-xl font-black text-white">Inversión en Publicidad {KFS_BRAND.productAcronym}</h3>
                   <p className="text-xs text-emerald-200/70 leading-relaxed">
-                    El oráculo de KFS OS reinyecta automáticamente el **20% de tu tarifa BOS diaria** en campañas de publicidad geolocalizada mañana.
+                    El oráculo de {KFS_BRAND.productAcronym} OS reinyecta automáticamente el **20% de tu tarifa BOS diaria** en campañas de publicidad geolocalizada mañana.
                   </p>
                 </div>
                 <div className="mt-6 pt-4 border-t border-emerald-500/20 flex justify-between items-baseline">
@@ -924,7 +925,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
           <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-sky-200/50 border border-sky-100 space-y-6">
             <div className="flex justify-between items-center border-b border-sky-100 pb-4">
               <h3 className="font-black text-xl text-sky-950 flex items-center gap-2">
-                📊 Inteligencia de Mercado y Metas KFS
+                📊 Inteligencia de Mercado y Metas {KFS_BRAND.productAcronym}
               </h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -952,14 +953,14 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
               </div>
               <div className="bg-rose-50 p-6 rounded-2xl border border-rose-100">
                 <h4 className="text-[10px] font-black uppercase text-rose-500 mb-2 font-mono">Fuga de Capital Detectada</h4>
-                <p className="text-xs text-rose-700 mt-2">KFS Oracle™ ha detectado que no tienes productos en la categoría <strong>'Higiene Personal'</strong>. Estás perdiendo aproximadamente un 15% de ventas combinadas ante tu competencia local.</p>
+                <p className="text-xs text-rose-700 mt-2">{KFS_BRAND.productAcronym} Oracle™ ha detectado que no tienes productos en la categoría <strong>'Higiene Personal'</strong>. Estás perdiendo aproximadamente un 15% de ventas combinadas ante tu competencia local.</p>
                 <button className="mt-4 text-xs font-black text-rose-600 hover:underline uppercase tracking-wider cursor-pointer">Poblar Catálogo →</button>
               </div>
             </div>
           </div>
         )}
 
-        {/* Bóveda KFS (Métodos de Pago del Dueño) */}
+        {/* Bóveda {KFS_BRAND.productAcronym} (Métodos de Pago del Dueño) */}
         {activeTab === 'config' && (
           <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-sky-200/50 border border-sky-100 space-y-6">
             <div className="flex justify-between items-center border-b border-sky-100 pb-4">
@@ -1285,12 +1286,12 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                         </div>
                         <div>
                           <h4 className="font-black text-sm tracking-wide text-white">CONCILIADOR SMS</h4>
-                          <p className="text-[9px] text-sky-400 font-mono uppercase tracking-widest">Tecnología Inteligente KFS</p>
+                          <p className="text-[9px] text-sky-400 font-mono uppercase tracking-widest">Tecnología Inteligente {KFS_BRAND.productAcronym}</p>
                         </div>
                       </div>
 
                       <p className="text-[11px] text-sky-200/70 mb-4 leading-relaxed">
-                        Pega el SMS de Pago Móvil, Zinli o AirTM. El motor KFS extraerá la referencia y el monto para conciliar y liberar la orden al instante sin intervención manual.
+                        Pega el SMS de Pago Móvil, Zinli o AirTM. El motor {KFS_BRAND.productAcronym} extraerá la referencia y el monto para conciliar y liberar la orden al instante sin intervención manual.
                       </p>
 
                       <textarea
@@ -1363,7 +1364,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                     <Users className="text-sky-600" /> Clientes Frecuentes (CRM)
                   </h3>
                   <div className="flex items-center gap-3 bg-sky-50 px-4 py-2 rounded-xl border border-sky-100">
-                    <span className="text-xs font-bold text-slate-600">Programa Fidelidad KFS</span>
+                    <span className="text-xs font-bold text-slate-600">Programa Fidelidad {KFS_BRAND.productAcronym}</span>
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input type="checkbox" checked={currentUser.loyaltyProgramActive || false} onChange={e => toggleLoyaltyProgram(currentUser.id, e.target.checked)} className="sr-only peer" />
                       <div className="w-9 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-sky-600"></div>
@@ -1473,7 +1474,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
 
                         {marginVulnerable && (
                           <div className="bg-rose-50/50 border border-rose-100 p-2 rounded-lg text-center space-y-1.5">
-                            <p className="text-[9px] font-bold text-rose-600">Sugerido KFS: <span className="font-black text-xs">{formatUSD(recPrice)}</span></p>
+                            <p className="text-[9px] font-bold text-rose-600">Sugerido {KFS_BRAND.productAcronym}: <span className="font-black text-xs">{formatUSD(recPrice)}</span></p>
                             <button
                               onClick={() => shieldMargin(p.id, recPrice)}
                               className="w-full py-1.5 bg-rose-600 hover:bg-rose-700 text-white text-[9px] font-black uppercase tracking-widest rounded-md shadow transition-colors cursor-pointer"
@@ -1639,8 +1640,8 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                   <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><BookOpen className="text-sky-600" size={28} /> Manual de Uso del Dueño</h2>
                   <div className="space-y-5 text-slate-700 text-sm leading-relaxed">
                     <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                      <p className="font-black text-sky-950 mb-1">1. ¿Qué es KFS OS?</p>
-                      <p>Es tu centro de comando. Desde aquí controlas tus ventas físicas, tu E-Commerce (Flow Express Marketplace), empleados e inventario en un solo lugar.</p>
+                      <p className="font-black text-sky-950 mb-1">1. ¿Qué es {KFS_BRAND.productAcronym} OS?</p>
+                      <p>Es tu centro de comando. Desde aquí controlas tus ventas físicas, tu E-Commerce (Flow Express {KFS_BRAND.modules.marketplace}), empleados e inventario en un solo lugar.</p>
                     </div>
                     <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
                       <p className="font-black text-sky-950 mb-1">2. Control de Inventario:</p>
@@ -1652,14 +1653,14 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                     </div>
                     <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
                       <p className="font-black text-sky-950 mb-1">4. Liquidación y Tarifas:</p>
-                      <p>Tus ganancias netas están en la cima de este panel. La deuda KFS se calcula basada en tu tarifa operativa y debe ser cancelada en los datos de transferencia mostrados abajo.</p>
+                      <p>Tus ganancias netas están en la cima de este panel. La deuda {KFS_BRAND.productAcronym} se calcula basada en tu tarifa operativa y debe ser cancelada en los datos de transferencia mostrados abajo.</p>
                     </div>
                   </div>
                 </div>
               )}
               {activeManual === 'benefits' && (
                 <div>
-                  <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><Star className="text-sky-600" size={28} /> Whitepaper de Beneficios KFS</h2>
+                  <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><Star className="text-sky-600" size={28} /> Whitepaper de Beneficios {KFS_BRAND.productAcronym}</h2>
                   <div className="space-y-5 text-slate-700 text-sm leading-relaxed">
                     <div className="bg-sky-50 border border-sky-200 p-4 rounded-xl mb-4">
                       <p className="font-black text-sky-800 text-xs uppercase tracking-widest mb-1">El Ecosistema Financiero</p>

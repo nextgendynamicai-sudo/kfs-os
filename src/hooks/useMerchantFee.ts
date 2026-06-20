@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 import { useKFS } from "../context/KFSContext";
 
 export function useMerchantFee() {
@@ -49,7 +50,7 @@ export function useMerchantFee() {
     };
   };
 
-  // Split payment handler: processes payment of Real USD + K-Points
+  // Split payment handler: processes payment of Real USD + {KFS_BRAND.economy.currency}
   const processSplitPayment = (
     merchantId: string,
     customerPhone: string,
@@ -74,7 +75,7 @@ export function useMerchantFee() {
 
     // Verify balances
     if ((customer.k_points_balance || 0) < kPointsToUse) {
-      showToast("K-Points insuficientes.", "error");
+      showToast(`${KFS_BRAND.economy.currency} insuficientes.`, "error");
       return null;
     }
     if ((customer.real_balance || 0) < realUSDNeeded) {

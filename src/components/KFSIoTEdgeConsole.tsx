@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -72,7 +73,7 @@ const KREATEK_COLORS = {
 // Toast Component
 
 export const KFSIoTEdgeConsole = ({ showToast }: { showToast: any }) => {
-  const [devices, setDevices] = useState<string[]>(["Tiquetera Virtual KFS (Loopback)"]);
+  const [devices, setDevices] = useState<string[]>(["Tiquetera Virtual {KFS_BRAND.productAcronym} (Loopback)"]);
   const [isScanningUSB, setIsScanningUSB] = useState(false);
   const [isScanningBT, setIsScanningBT] = useState(false);
 

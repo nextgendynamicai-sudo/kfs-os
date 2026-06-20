@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 "use client";
 
 import React, { useState, useEffect } from "react";
@@ -75,7 +76,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
             
             {/* Header Receipt */}
             <div className="text-center border-b border-dashed border-gray-300 pb-3">
-              <h3 className="text-sm font-black tracking-widest uppercase mb-1">{product?.clientName || "KFS ECOSISTEMA"}</h3>
+              <h3 className="text-sm font-black tracking-widest uppercase mb-1">{product?.clientName || "{KFS_BRAND.productAcronym} ECOSISTEMA"}</h3>
               <p className="text-[10px] text-slate-400 font-bold">RIF: J-50201438-9</p>
               <p className="text-[10px] text-slate-400">BOS CONTROL DIGITAL</p>
               <p className="text-[9px] text-slate-500 font-mono mt-1">{new Date(tx.timestamp).toLocaleString()}</p>
@@ -83,7 +84,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
 
             {/* Receipt Control Barcode (Pure CSS) */}
             <div className="flex flex-col items-center gap-1 border-b border-dashed border-gray-300 pb-3 mt-3">
-              <span className="text-[8px] text-slate-500 uppercase tracking-widest">{tx.isFiscal ? "Factura Fiscal" : "Recibo KFS Control"}</span>
+              <span className="text-[8px] text-slate-500 uppercase tracking-widest">{tx.isFiscal ? "Factura Fiscal" : "Recibo {KFS_BRAND.productAcronym} Control"}</span>
               <div className="flex justify-center items-center gap-[1px] h-8 bg-gray-50 px-3 py-1 border border-gray-200/50 rounded">
                 <div className="w-1 h-6 bg-black"></div>
                 <div className="w-0.5 h-6 bg-black"></div>
@@ -124,14 +125,14 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
               <span className="text-3xl font-black text-white block">{formatUSD(tx.amountUSD)}</span>
               {tx.kfsPointsEarned > 0 && (
                 <div className="mt-1 bg-sky-600/10 rounded-lg py-1 px-2 inline-block">
-                  <span className="text-[10px] font-black text-sky-600">+{tx.kfsPointsEarned.toFixed(1)} KFS Pts Ganados</span>
+                  <span className="text-[10px] font-black text-sky-600">+{tx.kfsPointsEarned.toFixed(1)} {KFS_BRAND.productAcronym} Pts Ganados</span>
                 </div>
               )}
             </div>
 
             {/* Passive Split Suggestion */}
             <div className="text-center text-[9px] text-slate-500 border-t border-dashed border-gray-300 pt-3 flex flex-col gap-0.5 font-bold mt-3">
-              <span>Split KFS: Acreditación Directa Promotora</span>
+              <span>Split {KFS_BRAND.productAcronym}: Acreditación Directa Promotora</span>
               <span className="font-mono text-green-600 uppercase">Procesado Exitosamente</span>
             </div>
           </div>
@@ -158,7 +159,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
             
             {tx.customerPhone ? (
               <a 
-                href={`https://wa.me/58${tx.customerPhone.replace(/^0+/, '').replace(/[^0-9]/g, '')}?text=Hola ${tx.customerName || 'Cliente'}, ¡Gracias por tu compra en ${product?.clientName || 'KFS ECOSISTEMA'}!%0A%0A*Recibo KFS: ${tx.receiptNumber}*${tx.isFiscal ? `%0A*Factura Fiscal / Control: 00-${Math.floor(10000 + Math.random() * 89999)}*` : ''}%0AProducto: ${product?.name} ${tx.isFiscal ? '(G)' : '(E)'}%0A${tx.isFiscal ? `Base Imponible: ${formatUSD(tx.baseUSD)}%0A` : ''}IVA: ${formatUSD(tx.ivaUSD)}%0AIGTF: ${formatUSD(tx.igtfUSD)}%0A%0ATasa Oficial BCV: ${tx.exchangeRateBCV?.toFixed(2)} Bs%0A*Total Pagado (USD): ${formatUSD(tx.amountUSD)}*%0A*Total Pagado (Bs): ${(tx.amountUSD * (tx.exchangeRateBCV || 36.5)).toFixed(2)} Bs*${tx.kfsPointsEarned > 0 ? `%0A%0A🎁 ¡Felicidades! Acumulaste +${tx.kfsPointsEarned.toFixed(1)} KFS Points con esta compra.` : ''}%0A%0ARecibo Digital Oficial KFS.`}
+                href={`https://wa.me/58${tx.customerPhone.replace(/^0+/, '').replace(/[^0-9]/g, '')}?text=Hola ${tx.customerName || 'Cliente'}, ¡Gracias por tu compra en ${product?.clientName || 'KFS ECOSISTEMA'}!%0A%0A*Recibo KFS: ${tx.receiptNumber}*${tx.isFiscal ? `%0A*Factura Fiscal / Control: 00-${Math.floor(10000 + Math.random() * 89999)}*` : ''}%0AProducto: ${product?.name} ${tx.isFiscal ? '(G)' : '(E)'}%0A${tx.isFiscal ? `Base Imponible: ${formatUSD(tx.baseUSD)}%0A` : ''}IVA: ${formatUSD(tx.ivaUSD)}%0AIGTF: ${formatUSD(tx.igtfUSD)}%0A%0ATasa Oficial BCV: ${tx.exchangeRateBCV?.toFixed(2)} Bs%0A*Total Pagado (USD): ${formatUSD(tx.amountUSD)}*%0A*Total Pagado (Bs): ${(tx.amountUSD * (tx.exchangeRateBCV || 36.5)).toFixed(2)} Bs*${tx.kfsPointsEarned > 0 ? `%0A%0A🎁 ¡Felicidades! Acumulaste +${tx.kfsPointsEarned.toFixed(1)} {KFS_BRAND.productAcronym} Points con esta compra.` : ''}%0A%0ARecibo Digital Oficial {KFS_BRAND.productAcronym}.`}
                 target="_blank"
                 rel="noreferrer"
                 className="py-3 rounded-xl font-black text-xs text-white bg-green-500 hover:bg-green-600 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"

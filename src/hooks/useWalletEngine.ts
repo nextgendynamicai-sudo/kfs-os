@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 import { useKFS } from "../context/KFSContext";
 
 export function useWalletEngine() {
@@ -32,7 +33,7 @@ export function useWalletEngine() {
         }
       }
 
-      // 2. K-Points Normal AOF (0.5% degradation every 5 days)
+      // 2. {KFS_BRAND.economy.currency} Normal AOF (0.5% degradation every 5 days)
       if (!newC.isFlowMaster && newC.k_points_expiry && newC.k_points_balance > 0) {
         const aofTime = new Date(newC.k_points_expiry).getTime();
         if (now > aofTime) {
@@ -142,7 +143,7 @@ export function useWalletEngine() {
       };
     });
 
-    showToast(`Recarga exitosa de $${amountUSD} USD! ${bonusKP > 0 ? `Bono de +${bonusKP} K-Points asignado.` : ""}`, "success");
+    showToast(`Recarga exitosa de $${amountUSD} USD! ${bonusKP > 0 ? `Bono de +${bonusKP} {KFS_BRAND.economy.currency} asignado.` : ""}`, "success");
   };
 
   // Award cashback (1% on real USD spent)

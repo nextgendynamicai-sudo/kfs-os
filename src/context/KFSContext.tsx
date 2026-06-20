@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
@@ -50,7 +51,7 @@ const initialDB = {
       company: "Arquitecto Flow Express",
       email: "arquitecto@kfs.com",
       password: "000",
-      address: "Soporte Central KFS",
+      address: "Soporte Central {KFS_BRAND.productAcronym}",
       rating: 5.0,
       reviewCount: 0,
       kfsFeePercentage: 0.01,
@@ -737,7 +738,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         try {
           setCurrentUser(JSON.parse(savedUser));
         } catch (e) {
-          console.error("[KFS Context] Error parsing saved user session:", e);
+          console.error("[{KFS_BRAND.productAcronym} Context] Error parsing saved user session:", e);
         }
       }
       hasRestoredRef.current = true;
@@ -754,9 +755,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                 // Migrate to IndexedDB
                 setIndexedDBValue("kfs_os_db_prod", parsed);
                 localStorage.removeItem("kfs_os_db_prod");
-                console.log("[KFS Migration] Local database successfully migrated to IndexedDB.");
+                console.log("[{KFS_BRAND.productAcronym} Migration] Local database successfully migrated to IndexedDB.");
               } catch (e) {
-                console.error("[KFS Migration] Failed to parse LocalStorage fallback", e);
+                console.error("[{KFS_BRAND.productAcronym} Migration] Failed to parse LocalStorage fallback", e);
               }
             }
           }
@@ -764,7 +765,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           if (parsed) {
             parsed = cleanupOldDemos(parsed);
             if (parsed.kreatekCore?.wipeVersion !== CURRENT_WIPE_VERSION) {
-              console.log("[KFS] Database version mismatch. Resetting database to 0.");
+              console.log("[{KFS_BRAND.productAcronym}] Database version mismatch. Resetting database to 0.");
               setDb(initialDB);
               setIndexedDBValue("kfs_os_db_prod", initialDB);
             } else {
@@ -974,7 +975,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           if (installingWorker) {
             installingWorker.addEventListener("statechange", () => {
               if (installingWorker.state === "installed" && navigator.serviceWorker.controller) {
-                console.log("[KFS SW] Nuevo Service Worker instalado. Recargando...");
+                console.log("[{KFS_BRAND.productAcronym} SW] Nuevo Service Worker instalado. Recargando...");
                 window.location.reload();
               }
             });
@@ -1010,7 +1011,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
             }
           }
 
-          // 2. K-Points Normal AOF (0.5% degradation every 5 days)
+          // 2. {KFS_BRAND.economy.currency} Normal AOF (0.5% degradation every 5 days)
           if (!newC.isFlowMaster && newC.k_points_expiry && newC.k_points_balance > 0) {
             const aofTime = new Date(newC.k_points_expiry).getTime();
             if (now > aofTime) {
@@ -1020,7 +1021,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
               newC.k_points_expiry = new Date(now + 5 * 24 * 60 * 60 * 1000).toISOString();
               
               // Simulate Webhook sending
-              console.log(`[WEBHOOK WHATSAPP SENT to ${newC.phone}]: KFS: Tu balance inactivo de K-Points ha sufrido un AOF del 0.5% (${penalty.toFixed(2)} pts). Utilízalos pronto.`);
+              console.log(`[WEBHOOK WHATSAPP SENT to ${newC.phone}]: {KFS_BRAND.productAcronym}: Tu balance inactivo de {KFS_BRAND.economy.currency} ha sufrido un AOF del 0.5% (${penalty.toFixed(2)} pts). Utilízalos pronto.`);
             }
           }
 
@@ -1069,7 +1070,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         }
       })
       .catch((err) => {
-        console.warn("[KFS IndexedDB] Error al persistir base de datos offline", err);
+        console.warn("[{KFS_BRAND.productAcronym} IndexedDB] Error al persistir base de datos offline", err);
       });
     
     if (isRemoteUpdate.current) {
@@ -1096,7 +1097,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
             })
             .then(({ error }: any) => {
               if (error) {
-                console.warn("[KFS Cloud] Aviso: Sincronización asíncrona omitida. Verifique que haya ejecutado 'supabase_setup.sql' en su proyecto.", error.message || error.code || "");
+                console.warn("[{KFS_BRAND.productAcronym} Cloud] Aviso: Sincronización asíncrona omitida. Verifique que haya ejecutado 'supabase_setup.sql' en su proyecto.", error.message || error.code || "");
               } else {
                 lastRemoteUpdatedAtRef.current = nextUpdatedAt;
                 console.log("[Supabase Cloud] Estado sincronizado directamente (sin colisión).");
@@ -1125,7 +1126,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
               })
               .then(({ error }: any) => {
                 if (error) {
-                  console.warn("[KFS Cloud] Aviso: Sincronización asíncrona omitida. Verifique que haya ejecutado 'supabase_setup.sql' en su proyecto.", error.message || error.code || "");
+                  console.warn("[{KFS_BRAND.productAcronym} Cloud] Aviso: Sincronización asíncrona omitida. Verifique que haya ejecutado 'supabase_setup.sql' en su proyecto.", error.message || error.code || "");
                 } else {
                   lastRemoteUpdatedAtRef.current = nextUpdatedAt;
                   if (JSON.stringify(db) !== JSON.stringify(mergedDb)) {
@@ -1156,7 +1157,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     // Native Push Notification Support
     if ("Notification" in window && Notification.permission === "granted" && type === "success") {
       try {
-        new Notification("KFS OS", { body: message, icon: "/kfs-logo.png" });
+        new Notification("{KFS_BRAND.productAcronym} OS", { body: message, icon: "/kfs-logo.png" });
       } catch (e) {
         console.warn("Native notification failed", e);
       }
@@ -1188,7 +1189,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         if (role === "core" && safePass === corePass) {
           setCurrentUser({ role: "core", name: "El Arquitecto", avatar: db.kreatekCore?.avatar || "" });
           setView("core");
-          showToast("KFS OS Accesado. Bienvenido, Arquitecto.");
+          showToast("{KFS_BRAND.productAcronym} OS Accesado. Bienvenido, Arquitecto.");
           return;
         }
         
@@ -1233,7 +1234,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           Notification.requestPermission();
         }
       } else {
-        showToast("Usuario autenticado pero perfil no encontrado en KFS OS.", "error");
+        showToast("Usuario autenticado pero perfil no encontrado en {KFS_BRAND.productAcronym} OS.", "error");
       }
     } catch (err) {
       showToast("Error de conexión al autenticar.", "error");
@@ -1322,8 +1323,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         )
       };
     });
-    logAction("Arquitecto", "EMIT_KFS_POINTS", `Emisión/Transferencia de ${amount} K-Points a ${userId} en ${collectionName}`);
-    showToast(`Se han transferido ${amount} K-Points exitosamente.`, "success");
+    logAction("Arquitecto", "EMIT_KFS_POINTS", `Emisión/Transferencia de ${amount} {KFS_BRAND.economy.currency} a ${userId} en ${collectionName}`);
+    showToast(`Se han transferido ${amount} {KFS_BRAND.economy.currency} exitosamente.`, "success");
   };
 
   const requestTopUp = async (userId: string, userType: 'client' | 'customer', amountUSD: number, paymentReference: string, screenshotBase64: string) => {
@@ -1358,7 +1359,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
             c.id === topup.userId ? { ...c, walletBalanceUSD: (c.walletBalanceUSD || 0) + topup.amountUSD } : c
           );
         } else {
-          // Customer logic with K-Points
+          // Customer logic with {KFS_BRAND.economy.currency}
           let bonusKP = 0;
           let promoterCommissionUSD = 0;
 
@@ -2114,7 +2115,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const addGlobalProduct = (product: any) => {
     const globalProd = { ...product, id: `global${Date.now()}`, clientId: "global", stock: 9999 };
     setDb((prev: any) => ({ ...prev, products: [...prev.products, globalProd] }));
-    showToast("Producto Global KFS inyectado a la red.");
+    showToast("Producto Global {KFS_BRAND.productAcronym} inyectado a la red.");
   };
 
   const finishOnboarding = async (clientId: string, kycDocBase64?: string) => {
@@ -2128,7 +2129,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         c.id === clientId ? { ...c, isOnboarded: true, kycDocumentUrl: kycUrl || c.kycDocumentUrl || "" } : c
       )
     }));
-    showToast("¡Onboarding completado! Bienvenido a KFS OS.", "success");
+    showToast("¡Onboarding completado! Bienvenido a {KFS_BRAND.productAcronym} OS.", "success");
   };
 
   const paySubscription = (clientId: string, reference: string) => {
@@ -2360,7 +2361,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
             showToast("Auto-Fill Activado: Liquidación USD (1% fee) aplicada.", "success");
             // The actual deduction happens below in the setDb mapping
           } else {
-            showToast("Puntos K-Points insuficientes y Auto-Fill fallido.", "error");
+            showToast("Puntos {KFS_BRAND.economy.currency} insuficientes y Auto-Fill fallido.", "error");
             return null;
           }
         }
@@ -2654,7 +2655,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
     if (applyIva) {
       const fiscalPayload = {
-        clientName: product.clientName || "Comercio KFS",
+        clientName: product.clientName || "Comercio {KFS_BRAND.productAcronym}",
         clientRif: "J-25218648-9",
         customerName: customerName || "Consumidor Final",
         customerRif: customerRif,
@@ -3174,7 +3175,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     
     // 1. Catálogo local de alta velocidad (Garantía de Offline-First)
     if (VENEZUELAN_PRODUCTS_CATALOG[barcode]) {
-      console.log("[KFS Offline Catalog] Encontrado localmente:", VENEZUELAN_PRODUCTS_CATALOG[barcode]);
+      console.log("[{KFS_BRAND.productAcronym} Offline Catalog] Encontrado localmente:", VENEZUELAN_PRODUCTS_CATALOG[barcode]);
       return {
         barcode,
         ...VENEZUELAN_PRODUCTS_CATALOG[barcode],
@@ -3192,7 +3193,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           .single();
         
         if (data && !error) {
-          console.log("[KFS Supabase Catalog] Encontrado en la nube:", data);
+          console.log("[{KFS_BRAND.productAcronym} Supabase Catalog] Encontrado en la nube:", data);
           return {
             barcode: data.barcode,
             name: data.name,
@@ -3203,7 +3204,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           };
         }
       } catch (err) {
-        console.warn("[KFS Supabase Catalog] Error consultando Supabase:", err);
+        console.warn("[{KFS_BRAND.productAcronym} Supabase Catalog] Error consultando Supabase:", err);
       }
     }
     
@@ -3299,7 +3300,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (deductionSuccessful) {
-      showToast("Perfil enviado. Se debitó $1.00 USD de tu Reserva Central. En espera de revisión por el KFS Core.", "success");
+      showToast("Perfil enviado. Se debitó $1.00 USD de tu Reserva Central. En espera de revisión por el {KFS_BRAND.productAcronym} Core.", "success");
     }
   };
 
@@ -3333,7 +3334,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         timestamp: new Date().toISOString()
       };
 
-      // Distribute KFS Core earnings
+      // Distribute {KFS_BRAND.productAcronym} Core earnings
       const feeEUR = (10 * prev.kreatekCore.wipeVersion || 1) > 0 ? (10 * rates.USD) / rates.EUR : 10;
       const promoCut = feeEUR * 0.20;
       const finalNetEUR = feeEUR - promoCut;
@@ -3439,14 +3440,14 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       const updatedCandidates = prev.candidates.map((c: any) => {
         if (c.id === candidateId) {
           const newStatus = c.status === "backed" ? "pending" : "backed";
-          setTimeout(() => showToast(newStatus === "backed" ? "Candidato ahora respaldado por KFS OS" : "Respaldo KFS OS removido", "success"), 50);
+          setTimeout(() => showToast(newStatus === "backed" ? "Candidato ahora respaldado por {KFS_BRAND.productAcronym} OS" : "Respaldo {KFS_BRAND.productAcronym} OS removido", "success"), 50);
           const updated = { ...c, status: newStatus };
           return addCandidateNotification(
             updated,
-            newStatus === "backed" ? "Sello de Aval Otorgado 🏆" : "Aval KFS OS Removido",
+            newStatus === "backed" ? "Sello de Aval Otorgado 🏆" : "Aval {KFS_BRAND.productAcronym} OS Removido",
             newStatus === "backed"
-              ? "¡Felicidades! Tu perfil ha recibido el Sello Dorado de Aval por parte del soporte de KFS OS."
-              : "El Aval de KFS OS ha sido removido de tu perfil."
+              ? "¡Felicidades! Tu perfil ha recibido el Sello Dorado de Aval por parte del soporte de {KFS_BRAND.productAcronym} OS."
+              : "El Aval de {KFS_BRAND.productAcronym} OS ha sido removido de tu perfil."
           );
         }
         return c;
@@ -3473,7 +3474,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           return addCandidateNotification(
             updated,
             "Postulación Aprobada ($1 USD) 🟢",
-            "Tu pago de $1 USD fue verificado con éxito. Tu perfil ya está activo y visible para los comercios de KFS OS."
+            "Tu pago de $1 USD fue verificado con éxito. Tu perfil ya está activo y visible para los comercios de {KFS_BRAND.productAcronym} OS."
           );
         }
         return c;
@@ -3599,7 +3600,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         c.id === candidateId ? { ...c, useKfsCvBuilder: useBuilder } : c
       )
     }));
-    showToast(useBuilder ? "CV Digital KFS activado." : "CV Digital KFS desactivado.");
+    showToast(useBuilder ? "CV Digital {KFS_BRAND.productAcronym} activado." : "CV Digital {KFS_BRAND.productAcronym} desactivado.");
   };
 
   // ==========================================

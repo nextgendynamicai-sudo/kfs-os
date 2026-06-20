@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 import React, { useState } from 'react';
 import { X, Upload, DollarSign, CreditCard, Camera } from 'lucide-react';
 import { compressImage } from '../lib/utils';
@@ -63,7 +64,7 @@ export const TopUpModal = ({ isOpen, onClose, amount: initialAmount, onSubmit, u
               <div className="mt-4 space-y-2 text-sm font-mono bg-sky-50 p-4 rounded-xl border border-sky-100">
                 <p><span className="text-slate-400">Banco:</span> Banco Nacional de Crédito (BNC)</p>
                 <p><span className="text-slate-400">Cuenta:</span> 0104-XXXX-XXXX-XXXX-XXXX</p>
-                <p><span className="text-slate-400">Titular:</span> Javier Castillo (KFS OS)</p>
+                <p><span className="text-slate-400">Titular:</span> Javier Castillo ({KFS_BRAND.productAcronym} OS)</p>
                 <p><span className="text-slate-400">RIF/CI:</span> V-25.218.648</p>
               </div>
             </div>

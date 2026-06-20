@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 import React, { useState } from 'react';
 import { Link, Copy, Store, Users, Car, Shield, CheckCircle } from 'lucide-react';
 
@@ -15,7 +16,7 @@ export const ReferralLinksWidget = ({ userId, showToast }: { userId: string, sho
     { id: "dueño", label: "Referir Dueño (Comercio)", role: "dueño", icon: Store, description: "Crea una tienda y únete al ecosistema." },
     { id: "cliente", label: "Referir Cliente (Customer)", role: "customer", icon: Users, description: "Afiliar a un cliente consumidor final." },
     { id: "promotora", label: "Referir Gobernadora", role: "promotora", icon: Shield, description: "Invita a un líder de territorio." },
-    { id: "rider", label: "Referir Delivery (Rider)", role: "rider", icon: Car, description: "Atrae flotilla para KFS." }
+    { id: "rider", label: "Referir Delivery (Rider)", role: "rider", icon: Car, description: "Atrae flotilla para {KFS_BRAND.productAcronym}." }
   ];
 
   const handleCopy = (role: string) => {

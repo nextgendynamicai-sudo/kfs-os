@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 import { useKFS } from "../context/KFSContext";
 
 export function useP2PTransfer() {
@@ -99,7 +100,7 @@ export function useP2PTransfer() {
                 real_balance: currentReal - usdRequiredWithFee 
               };
             } else {
-              setTimeout(() => showToast("K-Points Insuficientes y Auto-Fill fallido por falta de Reserva USD.", "error"), 10);
+              setTimeout(() => showToast(`${KFS_BRAND.economy.currency} Insuficientes y Auto-Fill fallido por falta de Reserva USD.`, "error"), 10);
               return c;
             }
           }

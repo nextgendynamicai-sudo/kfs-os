@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../../config/brandConfig";
 "use client";
 import { Toast } from "../Toast";
 import { CvViewerModal } from "../CvViewerModal";
@@ -163,9 +164,9 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
     }
   };
 
-  // Feature 5: Inject KFS Points to any user
+  // Feature 5: Inject {KFS_BRAND.productAcronym} Points to any user
   const handleInjectPoints = (collection: string, userId: string) => {
-    const raw = prompt('Cantidad de KFS Points a inyectar (ej: 500 = $0.50 USD):', '500');
+    const raw = prompt('Cantidad de {KFS_BRAND.productAcronym} Points a inyectar (ej: 500 = $0.50 USD):', '500');
     if (!raw || isNaN(Number(raw))) return;
     const amount = parseInt(raw, 10);
     setDb((prev: any) => ({
@@ -174,7 +175,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
         u.id === userId ? { ...u, kfsPoints: (u.kfsPoints || 0) + amount } : u
       ),
     }));
-    showToast(`🎁 ${amount} K-Points inyectados.`, 'success');
+    showToast(`🎁 ${amount} {KFS_BRAND.economy.currency} inyectados.`, 'success');
   };
 
   const [activeModal, setActiveModal] = useState<string | null>(null);
@@ -209,7 +210,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
   useEffect(() => {
     const handleGlobalSale = (e: any) => {
-      showToast(`⚡ KFS Network: Venta reportada de ${e.detail.name} por ${formatUSD(e.detail.priceUSD)}`, "success");
+      showToast(`⚡ {KFS_BRAND.productAcronym} Network: Venta reportada de ${e.detail.name} por ${formatUSD(e.detail.priceUSD)}`, "success");
     };
     const handlePaymentAlert = (e: any) => {
       showToast(`🔔 ALERTA DE PAGO: ${e.detail.company} reportó transferencia por ${formatUSD(e.detail.amount)}`, "success");
@@ -242,7 +243,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
             <span className="bg-violet-100 p-2 rounded-xl text-violet-600 shadow-inner"><Shield size={20} /></span>
-            <h1 className="font-black text-xl tracking-tight">KFS OS (Arquitecto)</h1>
+            <h1 className="font-black text-xl tracking-tight">{KFS_BRAND.productAcronym} OS (Arquitecto)</h1>
           </div>
           <button onClick={logout} className="p-2 bg-white shadow-sm rounded-xl hover:text-red-500 transition-colors cursor-pointer text-gray-500 border-none">
             <LogOut size={16} />
@@ -255,7 +256,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
               <ProfileAvatarEditor currentUser={currentUser} />
             </div>
             <div>
-              <h2 className="text-xl md:text-2xl font-black tracking-tight truncate text-sky-950">Control Matriz KFS</h2>
+              <h2 className="text-xl md:text-2xl font-black tracking-tight truncate text-sky-950">Control Matriz {KFS_BRAND.productAcronym}</h2>
               <p className="text-sky-700 font-mono text-xs mt-1 bg-sky-100 shadow-sm inline-block px-2 py-0.5 rounded-md border border-sky-200">Vista de Dios • Arquitectura de Red</p>
             </div>
           </div>
@@ -317,7 +318,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             {/* Core Approvals Panel */}
             <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 rounded-[2rem] p-6 space-y-6">
               <h3 className="font-black text-sky-950 text-xl flex items-center gap-2 border-b border-sky-100 pb-4">
-                <CheckCircle size={24} className="text-sky-600" /> Aprobaciones Pendientes del KFS Core
+                <CheckCircle size={24} className="text-sky-600" /> Aprobaciones Pendientes del {KFS_BRAND.productAcronym} Core
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -415,7 +416,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 text-sky-950 p-8 rounded-[2rem] relative overflow-hidden">
                 <div className="relative z-10">
-                  <p className="text-emerald-600 text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><DollarSign size={14} className="text-emerald-500" /> Ganancia Neta KFS</p>
+                  <p className="text-emerald-600 text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><DollarSign size={14} className="text-emerald-500" /> Ganancia Neta {KFS_BRAND.productAcronym}</p>
                   <h2 className="text-5xl font-black mb-1 text-emerald-500">{formatEUR(db.kreatekCore?.netEarningsEUR || 0)}</h2>
                   <p className="text-xs text-slate-500 mt-2">Libre de pago a promotoras y fondos.</p>
                 </div>
@@ -432,10 +433,10 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                 <Activity size={100} className="absolute -right-10 -bottom-10 text-sky-50" />
               </div>
 
-              {/* K-Points Emitidos (Phase E) */}
+              {/* {KFS_BRAND.economy.currency} Emitidos (Phase E) */}
               <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 text-sky-950 p-8 rounded-[2rem] relative overflow-hidden">
                 <div className="relative z-10">
-                  <p className="text-purple-600 text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><TrendingUp size={14} className="text-purple-500" /> Total K-Points Emitidos</p>
+                  <p className="text-purple-600 text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><TrendingUp size={14} className="text-purple-500" /> Total {KFS_BRAND.economy.currency} Emitidos</p>
                   <h2 className="text-5xl font-black mb-1 text-purple-500">{totalKPoints} K-Pts</h2>
                   <p className="text-xs text-slate-500 mt-2">Deuda interna en la economía. {(totalKPoints * 0.001).toFixed(2)} USD (Ref).</p>
                 </div>
@@ -444,7 +445,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
               <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 text-sky-950 p-8 rounded-[2rem] flex flex-col justify-center relative overflow-hidden">
                 <div className="relative z-10">
-                  <p className="text-sky-600 text-xs font-black uppercase tracking-widest mb-2">Fondo Publicidad KFS</p>
+                  <p className="text-sky-600 text-xs font-black uppercase tracking-widest mb-2">Fondo Publicidad {KFS_BRAND.productAcronym}</p>
                   <h2 className="text-5xl font-black text-sky-950">{formatEUR(db.kreatekCore?.adBudgetEUR || 0)}</h2>
                   <p className="text-xs text-slate-500 mt-2">Fondo sugerido para inyección días 13-17 y 28-2.</p>
                 </div>
@@ -454,7 +455,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             <KFSFinancialSplitCalculator formatUSD={formatUSD} formatEUR={formatEUR} />
 
             <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 rounded-[2rem] p-8">
-              <h3 className="text-xl font-black mb-6 text-sky-950 flex items-center gap-2"><TrendingUp className="text-sky-600" /> Flujo de Comisiones KFS</h3>
+              <h3 className="text-xl font-black mb-6 text-sky-950 flex items-center gap-2"><TrendingUp className="text-sky-600" /> Flujo de Comisiones {KFS_BRAND.productAcronym}</h3>
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={chartData}>
@@ -941,7 +942,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                               }}
                               className="text-[10px] font-black text-sky-600 underline cursor-pointer flex items-center gap-1 hover:text-sky-700 transition-colors"
                             >
-                              👁️ {cand.useKfsCvBuilder ? "Ver CV Digital KFS" : `Abrir Currículum (${cand.cvFileType?.includes('pdf') ? 'PDF' : 'Imagen'})`}
+                              👁️ {cand.useKfsCvBuilder ? "Ver CV Digital {KFS_BRAND.productAcronym}" : `Abrir Currículum (${cand.cvFileType?.includes('pdf') ? 'PDF' : 'Imagen'})`}
                             </button>
                           )}
                           {cand.registrationPaymentProof && (
@@ -1038,7 +1039,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                       <th className="py-4 px-4 rounded-tl-xl">Candidato</th>
                       <th className="py-4 px-4">Cargo & Habilidades</th>
                       <th className="py-4 px-4">Contacto</th>
-                      <th className="py-4 px-4 text-center">Estado KFS</th>
+                      <th className="py-4 px-4 text-center">Estado {KFS_BRAND.productAcronym}</th>
                       <th className="py-4 px-4 text-right rounded-tr-xl">Acciones</th>
                     </tr>
                   </thead>
@@ -1093,7 +1094,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                             onClick={() => toggleCandidateBacking(cand.id)}
                             className={`px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer transition-colors shadow-sm ${cand.status === 'backed' ? 'bg-red-50 text-red-600 hover:bg-red-100 border border-red-200' : 'bg-amber-400 text-amber-950 hover:bg-amber-500 border-none'}`}
                           >
-                            {cand.status === 'backed' ? "Quitar Aval KFS" : "Otorgar Aval KFS"}
+                            {cand.status === 'backed' ? "Quitar Aval {KFS_BRAND.productAcronym}" : "Otorgar Aval {KFS_BRAND.productAcronym}"}
                           </button>
                         </td>
                       </tr>
@@ -1118,7 +1119,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 font-sans">
               <button onClick={() => setActiveModal('product')} className="bg-sky-50 border border-sky-100 hover:bg-sky-100 hover:border-sky-200 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group cursor-pointer">
                 <div className="bg-sky-600 text-white p-3 rounded-xl group-hover:scale-110 transition-transform shadow-md shadow-sky-600/30"><Package size={24} /></div>
-                <span className="font-black text-sky-950 text-sm text-center font-bold">Catálogo Global KFS</span>
+                <span className="font-black text-sky-950 text-sm text-center font-bold">Catálogo Global {KFS_BRAND.productAcronym}</span>
               </button>
               <button onClick={() => setActiveModal('push')} className="bg-red-50 border border-red-100 hover:bg-red-100 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group cursor-pointer hover:border-red-200">
                 <div className="bg-red-500 text-white p-3 rounded-xl group-hover:scale-110 transition-transform shadow-md shadow-red-500/30"><Bell size={24} /></div>
@@ -1391,8 +1392,8 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
         {activeTab === "nodos" && (
           <div className="space-y-8 flex flex-col">
             <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 rounded-[2rem] p-8 animate-fade-in">
-              <h3 className="text-xl font-black mb-6 text-sky-950 flex items-center gap-2"><QrCode className="text-sky-600" /> Creador de Nodos KFS (Invitaciones)</h3>
-              <p className="text-sm text-slate-500 mb-6">Genera enlaces QR oficiales para registrar nuevos actores en la economía KFS como tus referidos.</p>
+              <h3 className="text-xl font-black mb-6 text-sky-950 flex items-center gap-2"><QrCode className="text-sky-600" /> Creador de Nodos {KFS_BRAND.productAcronym} (Invitaciones)</h3>
+              <p className="text-sm text-slate-500 mb-6">Genera enlaces QR oficiales para registrar nuevos actores en la economía {KFS_BRAND.productAcronym} como tus referidos.</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
                   { role: 'registerCustomer', title: 'Invitar Cliente' },
@@ -1453,7 +1454,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                   <label className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 block">Nueva Promotora</label>
                   <select value={targetPromotoraId} onChange={e => setTargetPromotoraId(e.target.value)} className="w-full bg-white border border-sky-200 rounded-xl p-3 font-bold text-sky-950 focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-400 transition-all placeholder:text-slate-400">
                     <option value="">Seleccione Promotora...</option>
-                    <option value="none">Sin Promotora (100% KFS)</option>
+                    <option value="none">Sin Promotora (100% {KFS_BRAND.productAcronym})</option>
                     {db.promotoras.filter((p: any) => p.status !== 'pending').map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
                   </select>
                 </div>
@@ -1495,7 +1496,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                 <input type="text" placeholder="Categoría" value={globalProdCategory} onChange={e => setGlobalProdCategory(e.target.value)} className="w-full bg-white border border-sky-200 rounded-xl p-3 font-bold text-sky-950 focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-400 transition-all placeholder:text-slate-400" />
                 <label className="flex items-center gap-2 text-sm font-bold text-slate-700 cursor-pointer p-3 border border-sky-200 rounded-xl bg-sky-50">
                   <input type="checkbox" id="globalKPoints" className="w-5 h-5 accent-sky-600 rounded" defaultChecked={true} />
-                  Permitir pago mixto con K-Points (Lealtad)
+                  Permitir pago mixto con {KFS_BRAND.economy.currency} (Lealtad)
                 </label>
                 <button onClick={() => { 
                   if (globalProdName && globalProdPrice) { 
@@ -1504,7 +1505,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                     setActiveModal(null); 
                   } 
                 }} className="w-full bg-sky-600 hover:bg-sky-700 text-white py-4 rounded-xl font-black shadow-lg shadow-sky-600/30 transition-colors cursor-pointer">
-                  Inyectar a la Red KFS
+                  Inyectar a la Red {KFS_BRAND.productAcronym}
                 </button>
               </div>
             </div>
@@ -1522,7 +1523,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                 <div>
                   <label className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 block">Audiencia Destino</label>
                   <select value={notifTarget} onChange={e => setNotifTarget(e.target.value)} className="w-full bg-white border border-sky-200 rounded-xl p-3 font-bold text-sky-950 focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-400 transition-all placeholder:text-slate-400">
-                    <option value="all">Toda la Red KFS</option>
+                    <option value="all">Toda la Red {KFS_BRAND.productAcronym}</option>
                     <option value="dueño">Comercios Afiliados</option>
                     <option value="promotora">Fuerza de Promotoras</option>
                     <option value="vendedor">Terminales (Vendedores)</option>
@@ -1653,7 +1654,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                           <th className="pb-2">Fecha</th>
                           <th className="pb-2">Comercio</th>
                           <th className="pb-2">Bruto</th>
-                          <th className="pb-2">Comisiones KFS</th>
+                          <th className="pb-2">Comisiones {KFS_BRAND.productAcronym}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1702,7 +1703,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                         <tr>
                           <th className="pb-2">Fecha</th>
                           <th className="pb-2">Comprador</th>
-                          <th className="pb-2">Tienda</th>
+                          <th className="pb-2">{KFS_BRAND.modules.marketplace}</th>
                           <th className="pb-2">Total USD</th>
                           <th className="pb-2">Método</th>
                         </tr>
@@ -1754,9 +1755,9 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
               <div className="w-24 h-24 bg-gradient-to-tr from-sky-600 to-sky-400 rounded-[2rem] shadow-lg shadow-sky-600/30 flex items-center justify-center mb-6">
                 <Store className="w-12 h-12 text-white" />
               </div>
-              <h2 className="text-3xl font-black text-sky-950 mb-2">Tienda Oficial KFS</h2>
+              <h2 className="text-3xl font-black text-sky-950 mb-2">{KFS_BRAND.modules.marketplace} Oficial {KFS_BRAND.productAcronym}</h2>
               <p className="text-slate-500 font-bold mb-8 max-w-md">
-                Administra el inventario del Marketplace Global (Flow Express). Los productos aquí subidos forzarán el consumo de K-Points.
+                Administra el inventario del {KFS_BRAND.modules.marketplace} Global (Flow Express). Los productos aquí subidos forzarán el consumo de {KFS_BRAND.economy.currency}.
               </p>
               
               <button 
@@ -1771,7 +1772,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                 className="bg-sky-950 text-white px-8 py-4 rounded-2xl font-black text-lg flex items-center gap-3 hover:bg-black transition-all cursor-pointer shadow-xl hover:-translate-y-1 border-none"
               >
                 <Database className="w-6 h-6 text-sky-400" />
-                Acceder como Dueño de Tienda
+                Acceder como Dueño de {KFS_BRAND.modules.marketplace}
               </button>
             </div>
           </div>
@@ -1784,14 +1785,14 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
         <div className="max-w-5xl mx-auto px-6 py-4 flex justify-around items-center relative">
           {[
             { id: "panel", icon: Activity, label: "Panel" },
-            { id: "red", icon: Store, label: "Red KFS", badge: (db.riders?.filter((r: any) => r.status === "pending") || []).length },
+            { id: "red", icon: Store, label: "Red {KFS_BRAND.productAcronym}", badge: (db.riders?.filter((r: any) => r.status === "pending") || []).length },
             { id: "soporte", icon: Bell, label: "Soporte", badge: (db.clients.filter((c: any) => c.subscription?.status === 'pending_verification').length + (db.candidates?.filter((c: any) => c.registrationPaymentStatus === 'pending_approval').length || 0) + (db.unlockedContacts?.filter((u: any) => u.status === 'pending_approval').length || 0) + (db.supportTickets || []).filter((t: any) => t.status === 'open').length) },
             { id: "auditoria", icon: Shield, label: "Auditoría" },
             { id: "kyc", icon: FileText, label: "Bóveda KYC" },
-            { id: "nodos", icon: QrCode, label: "Nodos KFS" },
+            { id: "nodos", icon: QrCode, label: "Nodos {KFS_BRAND.productAcronym}" },
             { id: "vista_dios", icon: Eye, label: "Vista Dios" },
             { id: "db_manager", icon: Database, label: "Gestión DB" },
-            { id: "tienda_oficial", icon: Store, label: "Tienda KFS" }
+            { id: "tienda_oficial", icon: Store, label: "{KFS_BRAND.modules.marketplace} {KFS_BRAND.productAcronym}" }
           ].map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;

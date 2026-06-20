@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -92,7 +93,7 @@ export const KFSFinancialSplitCalculator = ({ formatUSD, formatEUR, clientFeePer
         <div className="flex justify-between items-center border-b border-violet-600/20 pb-4">
           <div>
             <h3 className="text-lg font-black text-violet-600 tracking-wide uppercase">Oráculo Financiero & Splits</h3>
-            <p className="text-[10px] text-gray-400 font-mono">Simulador de Ecosistema KFS OS</p>
+            <p className="text-[10px] text-gray-400 font-mono">Simulador de Ecosistema {KFS_BRAND.productAcronym} OS</p>
           </div>
           <span className="bg-violet-600/15 border border-violet-600/30 text-violet-600 text-[9px] font-black px-2 py-1 rounded-full uppercase tracking-wider font-mono">Fórmula SaaS + POS</span>
         </div>
@@ -138,7 +139,7 @@ export const KFSFinancialSplitCalculator = ({ formatUSD, formatEUR, clientFeePer
           {/* 1. Commerce share */}
           <div className="space-y-1">
             <div className="flex justify-between text-xs font-bold text-gray-300">
-              <span>Ingreso Neto Comercio (Tienda)</span>
+              <span>Ingreso Neto Comercio ({KFS_BRAND.modules.marketplace})</span>
               <span className="text-green-400 font-black">{formatUSD(commerceNetUSD)} ({((commerceNetUSD / inputAmt) * 100).toFixed(1)}%)</span>
             </div>
             <div className="w-full bg-white/5 h-2.5 rounded-full overflow-hidden border border-white/5">
@@ -146,10 +147,10 @@ export const KFSFinancialSplitCalculator = ({ formatUSD, formatEUR, clientFeePer
             </div>
           </div>
 
-          {/* 2. Total KFS Fee split */}
+          {/* 2. Total {KFS_BRAND.productAcronym} Fee split */}
           <div className="bg-white/5 border border-white/10 p-5 rounded-2xl space-y-4">
             <div className="flex justify-between items-center border-b border-white/10 pb-2">
-              <span className="text-xs font-black text-violet-600">Comisión Total Kreatek KFS</span>
+              <span className="text-xs font-black text-violet-600">Comisión Total Kreatek {KFS_BRAND.productAcronym}</span>
               <span className="text-red-400 font-mono font-black text-sm">{formatUSD(kfsFeeTotalUSD)}</span>
             </div>
             <p className="text-[9px] text-gray-400 leading-normal mb-2">Se distribuye en caliente de forma instantánea al registrar el cobro:</p>
@@ -170,7 +171,7 @@ export const KFSFinancialSplitCalculator = ({ formatUSD, formatEUR, clientFeePer
               <div className="bg-violet-600/10 border border-violet-600/20 p-3 rounded-xl">
                 <span className="text-[9px] text-violet-600 font-black block uppercase tracking-wider">Arquitecto (Neto Neto)</span>
                 <span className="text-sm font-black text-green-400 block mt-1">{formatEUR(finalNetEUR)}</span>
-                <span className="text-[8px] text-gray-400 font-mono block">Ganancia Neta KFS</span>
+                <span className="text-[8px] text-gray-400 font-mono block">Ganancia Neta {KFS_BRAND.productAcronym}</span>
               </div>
             </div>
           </div>

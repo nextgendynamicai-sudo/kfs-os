@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 import React, { useState } from "react";
 import { Store, ShieldCheck, CreditCard, ArrowRight, Download, Printer, CheckCircle } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
@@ -69,7 +70,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
       <nav className="border-b border-white/5 py-4 px-6 sm:px-10 flex justify-between items-center bg-white/95 backdrop-blur-xl sticky top-0 z-50">
         <div className="flex items-center gap-3">
           <Store className="text-[#C5A184] h-6 w-auto" />
-          <span className="font-black tracking-tight text-lg">KFS B2B Portal</span>
+          <span className="font-black tracking-tight text-lg">{KFS_BRAND.productAcronym} B2B Portal</span>
         </div>
         <button
           onClick={() => setView("landing")}
@@ -230,7 +231,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
               <ul className="space-y-2 text-xs text-gray-300">
                 <li className="flex items-start gap-2">
                   <span className="text-[#C5A184] font-black">•</span>
-                  <span><strong>Regalía Base:</strong> KFS OS cobra una comisión estándar del 5% sobre la facturación procesada.</span>
+                  <span><strong>Regalía Base:</strong> {KFS_BRAND.productAcronym} OS cobra una comisión estándar del 5% sobre la facturación procesada.</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-[#C5A184] font-black">•</span>
@@ -328,7 +329,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
             <div className="space-y-2">
               <h2 className="text-2xl font-black text-gray-100">¡Comercio Activado Exitosamente!</h2>
               <p className="text-xs text-gray-400 max-w-sm mx-auto">
-                Tu pago ha sido validado y tu terminal de KFS OS está listo para operar bajo la licencia base del 5%.
+                Tu pago ha sido validado y tu terminal de {KFS_BRAND.productAcronym} OS está listo para operar bajo la licencia base del 5%.
               </p>
             </div>
 
@@ -414,7 +415,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
 
       {/* Footer footer */}
       <footer className="border-t border-white/5 py-4 px-6 text-center text-[10px] text-gray-500">
-        KFS OS Overdrive. Todos los derechos reservados. B2B self-onboarding automatizado.
+        {KFS_BRAND.productAcronym} OS Overdrive. Todos los derechos reservados. B2B self-onboarding automatizado.
       </footer>
     </div>
   );

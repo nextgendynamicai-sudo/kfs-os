@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 import React, { useState } from 'react';
 import { Database, Trash2, Plus, Store, Users, Briefcase, Car, Shield } from 'lucide-react';
 
@@ -84,7 +85,7 @@ export const DatabaseManagerWidget = ({ db, deleteClient, deleteCustomer, delete
               <Database className="w-8 h-8 text-violet-600" />
               Gestor de Base de Datos
             </h2>
-            <p className="text-gray-500 font-bold mt-2">Control absoluto (CRUD) sobre las entidades del ecosistema KFS.</p>
+            <p className="text-gray-500 font-bold mt-2">Control absoluto (CRUD) sobre las entidades del ecosistema {KFS_BRAND.productAcronym}.</p>
           </div>
           <button 
             onClick={() => handleForceAdd({ preventDefault: () => {} } as any)}

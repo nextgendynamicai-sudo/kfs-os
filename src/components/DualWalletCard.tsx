@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 import React, { useState, useEffect } from "react";
 import { DollarSign, Clock, Zap, Gift, Lock } from "lucide-react";
 
@@ -63,7 +64,7 @@ export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualW
       <div className="flex flex-col md:flex-row justify-between gap-6 border-b border-white/5 pb-6">
         <div>
           <span className="text-[10px] font-black uppercase tracking-widest text-sky-600/80 flex items-center gap-1.5 mb-2">
-            <Zap size={10} className="text-sky-600 animate-pulse" /> KFS Wallet Engine v4
+            <Zap size={10} className="text-sky-600 animate-pulse" /> {KFS_BRAND.productAcronym} Wallet Engine v4
           </span>
           <h2 className="text-2xl font-black tracking-tight text-gray-100">Billetera Multicapa (Double Ledger)</h2>
           <p className="text-xs text-slate-500 mt-1">Tu balance Fiat, Dinero Pro y Puntos segregados.</p>
@@ -103,10 +104,10 @@ export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualW
           </p>
         </div>
 
-        {/* K-Points (Normal) */}
+        {/* {KFS_BRAND.economy.currency} (Normal) */}
         <div className="bg-sky-50 border border-sky-100 rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-sky-200 transition-all">
           <Gift size={20} className="text-[#8B5CF6] mb-2" />
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">K-Points Normal</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{KFS_BRAND.economy.currency} Normal</p>
           <p className="text-2xl font-black tracking-tight text-[#8B5CF6] mt-1">
             {kPointsBalance.toLocaleString()} <span className="text-xs">KP</span>
           </p>

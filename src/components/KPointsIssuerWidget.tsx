@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 import React, { useState } from 'react';
 import { Database, Search, Gift, Users, Store, Shield, Car, CheckCircle } from 'lucide-react';
 
@@ -52,7 +53,7 @@ export const KPointsIssuerWidget = ({ db, transferKFSPoints }: any) => {
           </div>
           <div>
             <h2 className="text-2xl font-black tracking-tight">Central del Oráculo</h2>
-            <p className="text-violet-200 text-sm">Emisión y Transferencia Universal de K-Points</p>
+            <p className="text-violet-200 text-sm">Emisión y Transferencia Universal de {KFS_BRAND.economy.currency}</p>
           </div>
         </div>
 
@@ -149,7 +150,7 @@ export const KPointsIssuerWidget = ({ db, transferKFSPoints }: any) => {
           {selectedUser && (
             <div className="animate-fade-in space-y-4 pt-2 border-t border-white/10">
               <div>
-                <label className="text-xs font-bold text-violet-300 uppercase tracking-widest mb-2 block">3. Cantidad de K-Points a Emitir</label>
+                <label className="text-xs font-bold text-violet-300 uppercase tracking-widest mb-2 block">3. Cantidad de {KFS_BRAND.economy.currency} a Emitir</label>
                 <input
                   type="number"
                   placeholder="Ej: 5000"
@@ -164,7 +165,7 @@ export const KPointsIssuerWidget = ({ db, transferKFSPoints }: any) => {
                 className="w-full bg-green-500 text-white py-4 rounded-xl font-black text-lg hover:bg-green-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-[0_0_20px_rgba(34,197,94,0.3)] cursor-pointer border-none flex items-center justify-center gap-2"
               >
                 <Gift size={24} /> 
-                Transferir K-Points
+                Transferir {KFS_BRAND.economy.currency}
               </button>
             </div>
           )}

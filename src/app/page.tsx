@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -240,7 +241,7 @@ const KREATEK_COLORS = {
 
 ;
 
-// Marketplace Public View
+// {KFS_BRAND.modules.marketplace} Public View
 
 
 /* MarketplaceView EXTRACTED */

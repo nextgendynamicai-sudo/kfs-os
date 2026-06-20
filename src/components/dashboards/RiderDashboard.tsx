@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../../config/brandConfig";
 "use client";
 import { Toast } from "../Toast";
 import { CvViewerModal } from "../CvViewerModal";
@@ -129,7 +130,7 @@ export const RiderDashboard = ({ db, currentUser, logout }: any) => {
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
             <span className="bg-white/20 p-2 rounded-xl text-sky-100 backdrop-blur-sm"><Truck size={20} /></span>
-            <h1 className="font-black text-xl tracking-tight text-white">KFS Delivery</h1>
+            <h1 className="font-black text-xl tracking-tight text-white">{KFS_BRAND.productAcronym} Delivery</h1>
           </div>
           <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-rose-500 transition-colors cursor-pointer text-white">
             <LogOut size={16} />
@@ -430,7 +431,7 @@ export const RiderDashboard = ({ db, currentUser, logout }: any) => {
               </div>
             ))}
             <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 shadow-sm">
-              <p className="text-xs text-amber-700 font-bold">⚠️ Los documentos son revisados por el Arquitecto KFS para verificar tu identidad antes de aprobar tu cuenta.</p>
+              <p className="text-xs text-amber-700 font-bold">⚠️ Los documentos son revisados por el Arquitecto {KFS_BRAND.productAcronym} para verificar tu identidad antes de aprobar tu cuenta.</p>
             </div>
           </div>
         )}

@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 import React, { useState, useEffect } from "react";
 import { DollarSign, Zap, Gift, CircleDollarSign } from "lucide-react";
 
@@ -56,7 +57,7 @@ export function UniversalWalletWidget({ currentUser, formatUSD, children }: Univ
       <div className="flex flex-col md:flex-row justify-between gap-6 border-b border-white/5 pb-6">
         <div>
           <span className="text-[10px] font-black uppercase tracking-widest text-[#3B82F6]/80 flex items-center gap-1.5 mb-2">
-            <Zap size={10} className="text-[#3B82F6] animate-pulse" /> KFS Universal Wallet
+            <Zap size={10} className="text-[#3B82F6] animate-pulse" /> {KFS_BRAND.productAcronym} Universal Wallet
           </span>
           <h2 className="text-2xl font-black tracking-tight text-gray-100">Mi Billetera</h2>
           <p className="text-xs text-slate-500 mt-1">Gestión centralizada de activos Fiat y Cripto.</p>
@@ -98,11 +99,11 @@ export function UniversalWalletWidget({ currentUser, formatUSD, children }: Univ
           </div>
         </div>
 
-        {/* K-Points (Normal) */}
+        {/* {KFS_BRAND.economy.currency} (Normal) */}
         <div className="bg-sky-50 border border-sky-100 rounded-2xl p-5 flex flex-col justify-between hover:border-[#8B5CF6]/20 transition-all">
           <div className="flex justify-between items-start">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-1">
-              <Gift size={10} className="text-[#8B5CF6]" /> K-Points (KP)
+              <Gift size={10} className="text-[#8B5CF6]" /> {KFS_BRAND.economy.currency} (KP)
             </p>
             <div className="w-8 h-8 rounded-full bg-[#8B5CF6]/10 flex items-center justify-center text-[#8B5CF6] text-xs font-bold">
               KP

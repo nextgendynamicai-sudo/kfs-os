@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../../config/brandConfig";
 "use client";
 import { Toast } from "../Toast";
 import { CvViewerModal } from "../CvViewerModal";
@@ -184,7 +185,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
       return;
     }
     if (!useKfsCvBuilder && !cvFile) {
-      showToast("Debe cargar su Currículum Vitae en PDF/Imagen o activar el CV Digital KFS.", "error");
+      showToast("Debe cargar su Currículum Vitae en PDF/Imagen o activar el CV Digital {KFS_BRAND.productAcronym}.", "error");
       return;
     }
 
@@ -230,7 +231,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
             <span className="bg-white/20 p-2 rounded-xl text-white"><UserCheck size={20} /></span>
-            <h1 className="font-black text-xl tracking-tight">KFS Customer</h1>
+            <h1 className="font-black text-xl tracking-tight">{KFS_BRAND.productAcronym} Customer</h1>
           </div>
           <div className="flex items-center gap-2">
               <div className="bg-white/20 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-sm border border-white/30 backdrop-blur-md" title="Billetera KFS Points">
@@ -334,7 +335,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                   <Users size={24} /> Transferencias P2P Instantáneas
                 </h3>
                 <p className="text-xs text-slate-500 mt-1">
-                  Envía Saldo Real o K-Points a cualquier contacto registrado en la red KFS OS al instante.
+                  Envía Saldo Real o {KFS_BRAND.economy.currency} a cualquier contacto registrado en la red {KFS_BRAND.productAcronym} OS al instante.
                 </p>
               </div>
 
@@ -354,7 +355,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                     <h4 className="font-black text-sky-950 text-base">Bono Viral Embajador</h4>
                   </div>
                   <p className="text-xs text-slate-500 leading-relaxed mb-3">
-                    Escanea o comparte tu QR. Cuando tu referido haga su primera recarga de <strong className="text-sky-600">$5.00+</strong>, recibirás <strong className="text-sky-600">+500 K-Points ($0.50)</strong> automáticos.
+                    Escanea o comparte tu QR. Cuando tu referido haga su primera recarga de <strong className="text-sky-600">$5.00+</strong>, recibirás <strong className="text-sky-600">+500 {KFS_BRAND.economy.currency} ($0.50)</strong> automáticos.
                   </p>
                   <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
                     <span className="font-mono bg-white border border-sky-200 px-2 py-1 rounded-lg text-sky-700 text-xs">ID: {currentUser.id}</span>
@@ -407,7 +408,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                       onClick={() => setP2pType("k_points_balance")}
                       className={`py-2 px-4 rounded-xl text-xs font-bold border transition-all cursor-pointer ${p2pType === "k_points_balance" ? "bg-sky-600 text-white border-sky-600 shadow-md shadow-sky-600/30" : "bg-sky-50 border-sky-100 text-slate-500 hover:border-sky-200"}`}
                     >
-                      K-Points
+                      {KFS_BRAND.economy.currency}
                     </button>
                   </div>
                   <button
@@ -527,7 +528,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                 <div className="text-center py-10 opacity-70">
                   <Package size={48} className="mx-auto mb-4 text-sky-300" />
                   <p className="font-bold text-sky-900">Aún no tienes historial de compras.</p>
-                  <p className="text-xs text-slate-500 mt-1">Visita tiendas KFS o compra en Flow Express.</p>
+                  <p className="text-xs text-slate-500 mt-1">Visita tiendas {KFS_BRAND.productAcronym} o compra en Flow Express.</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -540,7 +541,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                             <Store size={18} />
                           </div>
                           <div>
-                            <p className="font-black text-sky-950 text-lg">{store?.company || "Tienda Desconocida"}</p>
+                            <p className="font-black text-sky-950 text-lg">{store?.company || "{KFS_BRAND.modules.marketplace} Desconocida"}</p>
                             <p className="text-[10px] uppercase tracking-widest text-slate-500 mt-1 font-bold">{c.purchasesCount} Compras Registradas</p>
                           </div>
                         </div>
@@ -597,7 +598,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                 <div className="space-y-2">
                   <h3 className="text-xl font-black text-sky-950">Postulación en Espera de Verificación</h3>
                   <p className="text-sm text-slate-600 leading-relaxed">
-                    Hemos recibido tu postulación laboral y tu reporte de pago de **$1.00 USD**. Nuestro equipo de soporte técnico de KFS OS está verificando la transferencia y auditando tu CV.
+                    Hemos recibido tu postulación laboral y tu reporte de pago de **$1.00 USD**. Nuestro equipo de soporte técnico de {KFS_BRAND.productAcronym} OS está verificando la transferencia y auditando tu CV.
                   </p>
                   <p className="text-xs text-sky-700 font-mono mt-1">
                     Referencia de pago de activación: <span className="font-bold">{currentCandidate.registrationPaymentRef}</span>
@@ -615,19 +616,19 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                     <h3 className="text-2xl font-black text-sky-700 flex items-center gap-2">
                       <Briefcase size={26} /> Mi Perfil Laboral
                     </h3>
-                    <p className="text-xs text-slate-500 mt-1">Configura tu perfil profesional para ser visible ante dueños de comercios KFS OS.</p>
+                    <p className="text-xs text-slate-500 mt-1">Configura tu perfil profesional para ser visible ante dueños de comercios {KFS_BRAND.productAcronym} OS.</p>
                   </div>
 
                   {currentCandidate ? (
                     currentCandidate.status === "backed" ? (
                       <div className="bg-yellow-50 border border-yellow-200 text-yellow-700 px-4 py-2 rounded-2xl flex items-center gap-2 text-xs font-black shadow-sm shadow-yellow-200/30 animate-pulse">
                         <Award size={16} className="text-yellow-500" />
-                        <span>Perfil Respaldado por KFS OS</span>
+                        <span>Perfil Respaldado por {KFS_BRAND.productAcronym} OS</span>
                       </div>
                     ) : (
                       <div className="bg-sky-50 border border-sky-200 text-sky-600 px-4 py-2 rounded-2xl flex items-center gap-2 text-xs font-bold">
                         <Clock size={16} className="animate-spin" />
-                        <span>Perfil en Evaluación KFS</span>
+                        <span>Perfil en Evaluación {KFS_BRAND.productAcronym}</span>
                       </div>
                     )
                   ) : (
@@ -677,7 +678,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                         className="w-full bg-sky-50/50 border border-sky-100 rounded-xl px-4 py-3 text-sm text-sky-950 focus:border-sky-400 focus:ring-1 focus:ring-sky-400 focus:outline-none transition-colors cursor-pointer"
                       >
                         <option value="Cajero">Cajero / Cajera</option>
-                        <option value="Vendedor">Vendedor de Tienda</option>
+                        <option value="Vendedor">Vendedor de {KFS_BRAND.modules.marketplace}</option>
                         <option value="Almacenista">Almacenista / Despachador</option>
                         <option value="Administrador">Administrador de Local</option>
                         <option value="Delivery">Delivery / Mensajero</option>
@@ -705,14 +706,14 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                         onClick={() => setUseKfsCvBuilder(!useKfsCvBuilder)}
                         className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${useKfsCvBuilder ? "bg-sky-600 text-white shadow-md shadow-sky-600/30" : "bg-sky-50 border border-sky-100 text-slate-500 hover:text-sky-700 hover:bg-sky-100"}`}
                       >
-                        {useKfsCvBuilder ? "⚡ Usando CV Digital KFS" : "📄 Usar CV Digital KFS"}
+                        {useKfsCvBuilder ? "⚡ Usando CV Digital {KFS_BRAND.productAcronym}" : "📄 Usar CV Digital {KFS_BRAND.productAcronym}"}
                       </button>
                     </div>
 
                     {useKfsCvBuilder ? (
                       <div className="bg-sky-50 border border-sky-100 p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4">
                         <div>
-                          <p className="text-xs text-sky-700 font-bold">✨ CV Digital Autogenerado KFS OS</p>
+                          <p className="text-xs text-sky-700 font-bold">✨ CV Digital Autogenerado {KFS_BRAND.productAcronym} OS</p>
                           <p className="text-[10px] text-slate-500 mt-0.5">Se generará un currículum formateado profesionalmente con tu Bio, Habilidades y Respuestas.</p>
                         </div>
                         <button
@@ -863,7 +864,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                         Pago de Activación de Perfil ($1.00 USD)
                       </h4>
                       <p className="text-xs text-slate-600 leading-relaxed">
-                        Para activar tu perfil en la Bolsa de Trabajo de KFS OS y ser visible ante dueños de locales, debes realizar un pago único de <strong className="text-sky-900">$1.00 USD</strong>.
+                        Para activar tu perfil en la Bolsa de Trabajo de {KFS_BRAND.productAcronym} OS y ser visible ante dueños de locales, debes realizar un pago único de <strong className="text-sky-900">$1.00 USD</strong>.
                       </p>
 
                       <div className="bg-white border border-sky-200 p-4 rounded-xl space-y-2 font-mono text-xs text-slate-600">

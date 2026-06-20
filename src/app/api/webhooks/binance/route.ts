@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../../../../config/brandConfig";
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
@@ -55,7 +56,7 @@ export async function POST(req: Request) {
     const isFirstRecharge = !customer.hasRecharged;
     let kPointsBonus = 0;
 
-    // Bonos Virales de recarga (KFS Network effect)
+    // Bonos Virales de recarga ({KFS_BRAND.productAcronym} Network effect)
     if (amountUSD >= 5 && amountUSD < 10) kPointsBonus = 100;
     else if (amountUSD >= 10 && amountUSD < 20) kPointsBonus = 300;
     else if (amountUSD >= 20) kPointsBonus = 800;

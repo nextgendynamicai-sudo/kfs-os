@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -122,7 +123,7 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
           <Truck className="text-sky-600" size={24} />
         </div>
         <h3 className="text-base font-black text-sky-700 uppercase tracking-wider">Registro Rider Delivery</h3>
-        <p className="text-[10px] text-slate-400 mt-1">Sujeto a aprobación del Arquitecto KFS</p>
+        <p className="text-[10px] text-slate-400 mt-1">Sujeto a aprobación del Arquitecto {KFS_BRAND.productAcronym}</p>
       </div>
 
       {/* Personal Data */}
@@ -159,7 +160,7 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
       </div>
 
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-3">
-        <p className="text-[10px] text-amber-700 font-bold leading-relaxed">⚠️ Tu solicitud será revisada por el Arquitecto KFS. Recibirás notificación de aprobación antes de poder operar.</p>
+        <p className="text-[10px] text-amber-700 font-bold leading-relaxed">⚠️ Tu solicitud será revisada por el Arquitecto {KFS_BRAND.productAcronym}. Recibirás notificación de aprobación antes de poder operar.</p>
       </div>
 
       <div className="flex gap-3 pt-2">

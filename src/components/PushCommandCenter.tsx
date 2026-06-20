@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 import React, { useState } from "react";
 import { Send, Link as LinkIcon, Image as ImageIcon, Users } from "lucide-react";
 import { ImageUploadWidget } from "./ImageUploadWidget";
@@ -48,7 +49,7 @@ export function PushCommandCenter({ currentUser }: any) {
         return;
       }
   
-      // Map plural Spanish UI roles to KFS internal roles
+      // Map plural Spanish UI roles to {KFS_BRAND.productAcronym} internal roles
       const roleMapping: Record<string, string> = {
         clientes: 'customer',
         dueños: 'dueño',
@@ -204,7 +205,7 @@ export function PushCommandCenter({ currentUser }: any) {
             >
               <option value="app">App Principal</option>
               <option value="external">URL Externa</option>
-              <option value="local">Local / Tienda Específica</option>
+              <option value="local">Local / {KFS_BRAND.modules.marketplace} Específica</option>
               <option value="product">Producto Específico</option>
             </select>
             

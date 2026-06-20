@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -114,7 +115,7 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
 
   return (
     <div className="bg-white p-6 md:p-8 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col gap-6 h-full">
-      <h4 className="font-black text-violet-900 text-lg flex items-center gap-2"><Palette className="text-violet-600" /> Personalizar Tienda</h4>
+      <h4 className="font-black text-violet-900 text-lg flex items-center gap-2"><Palette className="text-violet-600" /> Personalizar {KFS_BRAND.modules.marketplace}</h4>
       <p className="text-xs text-gray-500">Ajusta la apariencia visual de tu vitrina pública en Flow Express.</p>
 
       <div className="space-y-4 pt-4">
@@ -132,7 +133,7 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
               </label>
               <div className="flex-grow">
                 <p className="text-xs font-bold text-violet-900">Subir desde Galería</p>
-                <p className="text-[9px] text-gray-400 mt-0.5 leading-normal">Se guardará directamente en tu base de datos KFS.</p>
+                <p className="text-[9px] text-gray-400 mt-0.5 leading-normal">Se guardará directamente en tu base de datos {KFS_BRAND.productAcronym}.</p>
               </div>
             </div>
           </div>

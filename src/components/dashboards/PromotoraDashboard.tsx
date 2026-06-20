@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../../config/brandConfig";
 "use client";
 import { Toast } from "../Toast";
 import { CvViewerModal } from "../CvViewerModal";
@@ -105,7 +106,7 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
             <span className="bg-white/20 p-2 rounded-xl text-sky-300"><CheckCircle size={20} /></span>
-            <h1 className="font-black text-xl tracking-tight text-white">KFS Promotora</h1>
+            <h1 className="font-black text-xl tracking-tight text-white">{KFS_BRAND.productAcronym} Promotora</h1>
           </div>
           <div className="flex items-center gap-2">
               <div className="bg-gradient-to-r from-amber-400 to-orange-500 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-sm border border-orange-300/50" title="Billetera KFS Points">
@@ -145,7 +146,7 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
                 }}
                 className="bg-white text-sky-950 px-6 py-3 rounded-2xl font-black text-sm hover:scale-105 transition-transform cursor-pointer shadow-lg shadow-black/10 border-none"
               >
-                Abrir Mi Propia Tienda
+                Abrir Mi Propia {KFS_BRAND.modules.marketplace}
               </button>
             </div>
             <ReferralLinksWidget userId={currentUser.id} showToast={showToast} />
@@ -300,8 +301,8 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
                         <th className="py-4 px-4 rounded-tl-xl">Nodo Comercial</th>
                         <th className="py-4 px-4">Contacto</th>
                         <th className="py-4 px-4">Tarifa BOS</th>
-                        <th className="py-4 px-4 text-center">Tienda</th>
-                        <th className="py-4 px-4 text-right rounded-tr-xl">Deuda KFS</th>
+                        <th className="py-4 px-4 text-center">{KFS_BRAND.modules.marketplace}</th>
+                        <th className="py-4 px-4 text-right rounded-tr-xl">Deuda {KFS_BRAND.productAcronym}</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white">
@@ -372,7 +373,7 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
 
             {activeManual === 'sales' && (
               <div>
-                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><BookOpen className="text-violet-600" size={28} /> Manual de Ventas: KFS Ecosistema</h2>
+                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><BookOpen className="text-violet-600" size={28} /> Manual de Ventas: {KFS_BRAND.productAcronym} Ecosistema</h2>
                 <div className="space-y-5 text-gray-700 text-sm leading-relaxed">
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
                     <p className="font-black text-violet-900 mb-1">1. Elevator Pitch (El Gancho):</p>
@@ -388,14 +389,14 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
                     <p className="font-black text-violet-900 mb-1">4. Manejo de Objeciones:</p>
-                    <p>"Ya tengo un sistema". Respuesta: "KFS es gratis de instalar y de licencia perpetua en la nube. Reemplazamos sus licencias caras y les damos E-Commerce gratis integrado en una sola app web."</p>
+                    <p>"Ya tengo un sistema". Respuesta: "{KFS_BRAND.productAcronym} es gratis de instalar y de licencia perpetua en la nube. Reemplazamos sus licencias caras y les damos E-Commerce gratis integrado en una sola app web."</p>
                   </div>
                 </div>
               </div>
             )}
             {activeManual === 'implementation' && (
               <div>
-                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><Settings className="text-violet-600" size={28} /> Guía de Implementación KFS</h2>
+                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><Settings className="text-violet-600" size={28} /> Guía de Implementación {KFS_BRAND.productAcronym}</h2>
                 <div className="space-y-5 text-gray-700 text-sm leading-relaxed">
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
                     <p className="font-black text-violet-900 mb-1">1. Registro del Comercio:</p>
@@ -407,7 +408,7 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
                     <p className="font-black text-violet-900 mb-1">3. Personalización UI:</p>
-                    <p>Usa el botón "Diseño" en la tabla de comercios para subir el logo del cliente, fondo y colores de su Flow Express Marketplace.</p>
+                    <p>Usa el botón "Diseño" en la tabla de comercios para subir el logo del cliente, fondo y colores de su Flow Express {KFS_BRAND.modules.marketplace}.</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
                     <p className="font-black text-violet-900 mb-1">4. Carga de Inventario:</p>
@@ -434,7 +435,7 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
                     <p className="font-black text-violet-900 mb-1">4. Pruebas de Transmisión:</p>
-                    <p>En KFS OS (Caja), abrir el Setup Sincro-Shield y presionar "Probar Conexión Proxy". Si responde, marcar la casilla "Imprimir Copias Fiscales por Defecto".</p>
+                    <p>En {KFS_BRAND.productAcronym} OS (Caja), abrir el Setup Sincro-Shield y presionar "Probar Conexión Proxy". Si responde, marcar la casilla "Imprimir Copias Fiscales por Defecto".</p>
                   </div>
                 </div>
               </div>
@@ -444,9 +445,9 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
       )}
       {activeTab === "afiliados" && (
         <div className="space-y-6">
-          {/* ── Captación Universal KFS — 3 QR Codes ─────────────────── */}
+          {/* ── Captación Universal {KFS_BRAND.productAcronym} — 3 QR Codes ─────────────────── */}
           <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 rounded-[2rem] p-8 text-sky-950">
-            <h3 className="text-xl font-black mb-6 flex items-center gap-2"><span>📡</span> Captación Universal KFS</h3>
+            <h3 className="text-xl font-black mb-6 flex items-center gap-2"><span>📡</span> Captación Universal {KFS_BRAND.productAcronym}</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-sky-50/50 shadow-sm border border-sky-100 rounded-2xl p-5 flex flex-col items-center gap-3 text-center">
                 <h4 className="font-black text-lg mb-1">🏪 Dueños / Comercios</h4>

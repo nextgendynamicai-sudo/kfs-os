@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -224,7 +225,7 @@ export const CvViewerModal = ({ isOpen, onClose, candidate }: any) => {
         <div className="bg-gray-50 border-b border-gray-100 p-5 flex justify-between items-center shrink-0">
           <div>
             <h3 className="font-black text-lg text-violet-900">Previsualizar CV Digital</h3>
-            <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Generador de PDF KFS OS</p>
+            <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Generador de PDF {KFS_BRAND.productAcronym} OS</p>
           </div>
           <div className="flex gap-2">
             <button
@@ -268,7 +269,7 @@ export const CvViewerModal = ({ isOpen, onClose, candidate }: any) => {
               )}
             </div>
 
-            <div className="section-title">Micro-Encuesta KFS</div>
+            <div className="section-title">Micro-Encuesta {KFS_BRAND.productAcronym}</div>
             <div className="grid">
               <div className="grid-item">
                 <div className="grid-label">Disponibilidad de Horario</div>
@@ -298,7 +299,7 @@ export const CvViewerModal = ({ isOpen, onClose, candidate }: any) => {
             </div>
 
             <div className="footer">
-              Sello de Validación Técnica KFS OS • ID Postulante: {candidate.id}
+              Sello de Validación Técnica {KFS_BRAND.productAcronym} OS • ID Postulante: {candidate.id}
             </div>
           </div>
         </div>

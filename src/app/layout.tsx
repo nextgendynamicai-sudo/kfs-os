@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -19,13 +20,13 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: "KFS OS",
+  title: `${KFS_BRAND.productAcronym} OS`,
   description: "Business Operating System by Kreatek.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "KFS OS",
+    title: `${KFS_BRAND.productAcronym} OS`,
   },
   icons: {
     icon: "/kfs-logo.png",

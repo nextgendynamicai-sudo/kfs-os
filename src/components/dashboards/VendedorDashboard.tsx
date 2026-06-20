@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../../config/brandConfig";
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -306,7 +307,7 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
           </div>
           <h1 className="text-3xl font-black text-white mb-2">SISTEMA BLOQUEADO</h1>
           <p className="text-red-200 text-sm max-w-md mb-8">
-            Tu suscripción KFS-OS se encuentra vencida. Por políticas de seguridad comercial, tu acceso operativo ha sido suspendido. Paga tu saldo pendiente de <strong className="text-white">${clientInfo.subscription.costUSD || 6} USD</strong> usando tu Reserva Central para reactivar tu negocio inmediatamente.
+            Tu suscripción {KFS_BRAND.productAcronym}-OS se encuentra vencida. Por políticas de seguridad comercial, tu acceso operativo ha sido suspendido. Paga tu saldo pendiente de <strong className="text-white">${clientInfo.subscription.costUSD || 6} USD</strong> usando tu Reserva Central para reactivar tu negocio inmediatamente.
           </p>
           <div className="flex gap-4">
             <button
@@ -723,7 +724,7 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
                   </div>
                   <div className="bg-slate-50 p-4 rounded-xl border border-sky-100">
                     <p className="font-black text-sky-900 mb-1">4. Impresión Fiscal:</p>
-                    <p>Asegúrate de que la aplicación "Sincro-Shield Proxy" esté corriendo en la PC de caja para que el sistema KFS pueda emitir los recibos por la impresora conectada.</p>
+                    <p>Asegúrate de que la aplicación "Sincro-Shield Proxy" esté corriendo en la PC de caja para que el sistema {KFS_BRAND.productAcronym} pueda emitir los recibos por la impresora conectada.</p>
                   </div>
                 </div>
               </div>

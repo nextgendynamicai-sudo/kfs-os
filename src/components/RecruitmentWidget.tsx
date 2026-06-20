@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -211,7 +212,7 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
           <h3 className="font-black text-2xl text-violet-900 flex items-center gap-2">
             <Users className="text-violet-600" /> Reclutamiento & Bolsa de Trabajo
           </h3>
-          <p className="text-xs text-gray-500 mt-1">Busca talento verificado y respaldado por la red KFS OS en Venezuela.</p>
+          <p className="text-xs text-gray-500 mt-1">Busca talento verificado y respaldado por la red {KFS_BRAND.productAcronym} OS en Venezuela.</p>
         </div>
 
         <div className="flex gap-2 p-1 bg-gray-50 rounded-xl border border-gray-200 text-xs">
@@ -249,7 +250,7 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                 className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-600 placeholder:text-gray-400"
               >
                 <option value="Cajero">Cajero / Cajera</option>
-                <option value="Vendedor">Vendedor de Tienda</option>
+                <option value="Vendedor">Vendedor de {KFS_BRAND.modules.marketplace}</option>
                 <option value="Almacenista">Almacenista / Despachador</option>
                 <option value="Administrador">Administrador de Local</option>
                 <option value="Delivery">Delivery / Mensajero</option>
@@ -334,7 +335,7 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
         <div className="space-y-6">
           <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl flex items-start gap-3 text-xs text-amber-800 leading-relaxed font-bold">
             <Info size={16} className="text-amber-600 shrink-0 mt-0.5" />
-            <p>Se muestran los perfiles ordenados por afinidad. El sello dorado indica perfiles entrenados y "Respaldados por KFS OS". El costo de desbloqueo de cada contacto de candidato es de <strong>$10 USD</strong>.</p>
+            <p>Se muestran los perfiles ordenados por afinidad. El sello dorado indica perfiles entrenados y "Respaldados por {KFS_BRAND.productAcronym} OS". El costo de desbloqueo de cada contacto de candidato es de <strong>$10 USD</strong>.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -378,7 +379,7 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                         </span>
                         {cand.status === "backed" && (
                           <span className="text-[9px] font-black text-amber-700 bg-amber-100 border border-amber-300/30 px-2 py-0.5 rounded-full flex items-center gap-1">
-                            🏆 Respaldado KFS
+                            🏆 Respaldado {KFS_BRAND.productAcronym}
                           </span>
                         )}
                       </div>
@@ -524,7 +525,7 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                       </div>
                       {cand.status === "backed" && (
                         <span className="text-[9px] font-black text-amber-700 bg-amber-100 border border-amber-300/30 px-2 py-0.5 rounded-full flex items-center gap-1">
-                          🏆 Respaldado KFS
+                          🏆 Respaldado {KFS_BRAND.productAcronym}
                         </span>
                       )}
                     </div>
@@ -580,14 +581,14 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                             }}
                             className="text-violet-600 underline cursor-pointer text-[10px]"
                           >
-                            👁️ {cand.useKfsCvBuilder ? "Ver CV Digital KFS" : "Ver CV Adjunto"}
+                            👁️ {cand.useKfsCvBuilder ? "Ver CV Digital {KFS_BRAND.productAcronym}" : "Ver CV Adjunto"}
                           </button>
                         </div>
                       )}
                     </div>
                     {cand.reviews && cand.reviews.length > 0 && (
                       <div className="bg-gray-50 border border-gray-150 p-4 rounded-xl space-y-2">
-                        <p className="text-[10px] font-black uppercase text-gray-500 tracking-wider">Historial de Referencias KFS:</p>
+                        <p className="text-[10px] font-black uppercase text-gray-500 tracking-wider">Historial de Referencias {KFS_BRAND.productAcronym}:</p>
                         <div className="space-y-2 max-h-32 overflow-y-auto pr-1">
                           {cand.reviews.map((r: any) => (
                             <div key={r.id} className="p-3 bg-white border border-gray-200 rounded-lg text-[10px] space-y-1">
@@ -684,7 +685,7 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
           <div className="bg-white text-violet-900 rounded-[2rem] p-8 w-full max-w-md shadow-2xl border border-white/20 animate-scale-up space-y-6">
             <div className="text-center">
               <h3 className="text-xl font-black text-violet-900">Calificar Candidato</h3>
-              <p className="text-xs text-gray-500 mt-1">Comparte tu experiencia para ayudar a otros comercios de la red KFS.</p>
+              <p className="text-xs text-gray-500 mt-1">Comparte tu experiencia para ayudar a otros comercios de la red {KFS_BRAND.productAcronym}.</p>
             </div>
 
             {/* Stars Selector */}

@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 "use client";
 import React, { useState, useEffect } from "react";
 import { BellRing, Smartphone, ShieldAlert } from "lucide-react";
@@ -92,7 +93,7 @@ export function AppEnforcer({ children, currentUser, updatePwaStatus }: { childr
                 </div>
                 <div className="text-left">
                   <p className="font-bold text-sm text-violet-900">App No Instalada</p>
-                  <p className="text-[10px] text-gray-400">Añade KFS a tu pantalla de inicio</p>
+                  <p className="text-[10px] text-gray-400">Añade {KFS_BRAND.productAcronym} a tu pantalla de inicio</p>
                 </div>
               </div>
               <button 

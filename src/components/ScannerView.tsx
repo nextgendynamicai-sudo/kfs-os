@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -110,7 +111,7 @@ export const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }
           }
         );
       } catch (err) {
-        console.warn("Cámara física no disponible o error iniciando escáner. Se activa el simulador interactivo KFS.", err);
+        console.warn("Cámara física no disponible o error iniciando escáner. Se activa el simulador interactivo {KFS_BRAND.productAcronym}.", err);
       }
     };
 
@@ -140,7 +141,7 @@ export const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }
         <button onClick={onClose} className="absolute right-6 top-6 text-sky-200 hover:text-white cursor-pointer">
           <X size={24} />
         </button>
-        <h3 className="text-xl font-black text-sky-400 mb-4 flex items-center gap-2"><QrCode /> Terminal de Escaneo KFS</h3>
+        <h3 className="text-xl font-black text-sky-400 mb-4 flex items-center gap-2"><QrCode /> Terminal de Escaneo {KFS_BRAND.productAcronym}</h3>
 
         {/* Scan Frame */}
         <div id="kfs-reader" className="relative w-full aspect-square bg-black/40 rounded-2xl overflow-hidden border border-white/5 flex flex-col items-center justify-center mb-6">

@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../../config/brandConfig";
 "use client";
 import { Toast } from "../Toast";
 import { CvViewerModal } from "../CvViewerModal";
@@ -90,7 +91,7 @@ export const LandingPageView = ({ setView }: any) => {
             Soy Cliente
           </button>
           <button onClick={() => setView("login")} className="text-sm font-bold text-slate-500 hover:text-sky-600 transition-colors cursor-pointer hidden sm:block pt-2">
-            Soy Tienda / Promotora
+            Soy {KFS_BRAND.modules.marketplace} / Promotora
           </button>
           <button onClick={() => setView("b2b-onboarding")} className="text-sky-600 text-sm font-bold hover:text-sky-800 transition-colors cursor-pointer hidden sm:block pt-2">
             Afiliar Comercio (B2B)
@@ -199,7 +200,7 @@ export const LandingPageView = ({ setView }: any) => {
               <Users className="text-sky-600" size={28} />
             </div>
             <h3 className="text-xl font-black mb-3 text-sky-950">CRM & Fidelización Express</h3>
-            <p className="text-sm text-slate-500 leading-relaxed">Registra compras vinculando la cédula del cliente (escaneo manual o cámara), otorga puntos KFS y premia su fidelidad.</p>
+            <p className="text-sm text-slate-500 leading-relaxed">Registra compras vinculando la cédula del cliente (escaneo manual o cámara), otorga puntos {KFS_BRAND.productAcronym} y premia su fidelidad.</p>
           </div>
         </div>
       </section>
@@ -210,7 +211,7 @@ export const LandingPageView = ({ setView }: any) => {
 
         <div className="text-center mt-16 mb-16">
           <h2 className="text-4xl md:text-6xl font-black text-sky-950 tracking-tighter mb-6">Planes Escalamiento</h2>
-          <p className="text-xl text-slate-500 max-w-2xl mx-auto font-medium">Elige el ecosistema KFS que se adapte al flujo de tu negocio o aprovecha la tasa Pionero arriba.</p>
+          <p className="text-xl text-slate-500 max-w-2xl mx-auto font-medium">Elige el ecosistema {KFS_BRAND.productAcronym} que se adapte al flujo de tu negocio o aprovecha la tasa Pionero arriba.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-4">
@@ -227,7 +228,7 @@ export const LandingPageView = ({ setView }: any) => {
 
               <ul className="space-y-3 pt-6 text-sm text-slate-600">
                 <li className="flex items-center gap-2"><CheckCircle size={16} className="text-sky-600" /> POS Offline/Online</li>
-                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-sky-600" /> Tienda PWA Personalizada</li>
+                <li className="flex items-center gap-2"><CheckCircle size={16} className="text-sky-600" /> {KFS_BRAND.modules.marketplace} PWA Personalizada</li>
                 <li className="flex items-center gap-2"><CheckCircle size={16} className="text-sky-600" /> Control de 1 Caja Múltiple</li>
                 <li className="flex items-center gap-2"><CheckCircle size={16} className="text-sky-600" /> Cierre Z Básico</li>
               </ul>
@@ -310,10 +311,10 @@ export const LandingPageView = ({ setView }: any) => {
             </div>
             <h4 className="font-black text-xl text-sky-950 mb-3">Outreach Automatizado (Cada 4 Días)</h4>
             <p className="text-sm text-slate-500 leading-relaxed">
-              El motor de KFS OS audita los clientes inactivos. Gemini Flash analiza el historial de compras del cliente y las ofertas planificadas por tus vendedores para redactar mensajes promocionales de WhatsApp Business hiper-personalizados.
+              El motor de {KFS_BRAND.productAcronym} OS audita los clientes inactivos. Gemini Flash analiza el historial de compras del cliente y las ofertas planificadas por tus vendedores para redactar mensajes promocionales de WhatsApp Business hiper-personalizados.
             </p>
             <p className="text-xs text-slate-400 mt-4 italic">
-              *Nota: KFS cubre el costo de la IA. El envío por WhatsApp Cloud API (Meta) tiene un costo externo de aprox. $0.05 por conversación iniciado por el comercio (recargable en tu balance KFS).
+              *Nota: {KFS_BRAND.productAcronym} cubre el costo de la IA. El envío por WhatsApp Cloud API (Meta) tiene un costo externo de aprox. $0.05 por conversación iniciado por el comercio (recargable en tu balance {KFS_BRAND.productAcronym}).
             </p>
           </div>
 
@@ -322,7 +323,7 @@ export const LandingPageView = ({ setView }: any) => {
             <div className="w-12 h-12 bg-sky-50 rounded-xl flex items-center justify-center mb-6">
               <ShoppingCart className="text-sky-500" size={24} />
             </div>
-            <h4 className="font-black text-xl text-sky-950 mb-3">Optimización del Marketplace</h4>
+            <h4 className="font-black text-xl text-sky-950 mb-3">Optimización del {KFS_BRAND.modules.marketplace}</h4>
             <p className="text-sm text-slate-500 leading-relaxed">
               Gemini audita el catálogo en vivo. Si detecta productos con descripciones incompletas o sin gancho comercial, redacta propuestas de copywriting optimizadas para SEO y conversiones. Los comerciantes pueden aplicarlas en su catálogo con un solo clic.
             </p>
@@ -392,12 +393,12 @@ export const LandingPageView = ({ setView }: any) => {
             <h4 className="font-black text-lg text-sky-950 mb-2">Regalías de Venta (Comisiones)</h4>
             <div className="text-4xl font-black text-sky-600 my-4">3% / 5% / 10% <span className="text-xs text-slate-400 font-normal">por venta real</span></div>
             <p className="text-xs text-slate-500 leading-relaxed mb-6">
-              KFS no te cobra licencias de software fijas si no vendes. La comisión se descuenta automáticamente por venta confirmada en caja POS o Marketplace online.
+              {KFS_BRAND.productAcronym} no te cobra licencias de software fijas si no vendes. La comisión se descuenta automáticamente por venta confirmada en caja POS o {KFS_BRAND.modules.marketplace} online.
             </p>
             <div className="border-t border-sky-100 pt-4">
               <span className="text-xs font-bold text-slate-400 block">Distribución de Red (Split):</span>
               <p className="text-xs text-green-600 mt-1 font-bold">
-                La Promotora recibe el 20% de las regalías de KFS de por vida sobre cada artículo vendido por el comercio.
+                La Promotora recibe el 20% de las regalías de {KFS_BRAND.productAcronym} de por vida sobre cada artículo vendido por el comercio.
               </p>
             </div>
           </div>
@@ -425,7 +426,7 @@ export const LandingPageView = ({ setView }: any) => {
               <span className="text-sky-600 text-xs font-black uppercase tracking-widest block">Para Dueños de Negocio</span>
               <h3 className="text-3xl font-black text-sky-950">Simplifica tu operación y reduce tus gastos al mínimo</h3>
               <p className="text-sm text-slate-600 leading-relaxed">
-                KFS OS unifica tu tienda física y e-commerce bajo un mismo motor lógico. Olvídate de pagar suscripciones separadas de inventario, pasarelas de pago externas y licencias para conectar impresoras fiscales.
+                {KFS_BRAND.productAcronym} OS unifica tu tienda física y e-commerce bajo un mismo motor lógico. Olvídate de pagar suscripciones separadas de inventario, pasarelas de pago externas y licencias para conectar impresoras fiscales.
               </p>
 
               <div className="space-y-4 border-t border-sky-200 pt-6">
@@ -551,7 +552,7 @@ export const LandingPageView = ({ setView }: any) => {
           <div className="bg-white shadow-xl shadow-sky-100/50 border border-sky-50 p-6 rounded-[2rem] relative hover:-translate-y-1 transition-transform">
             <span className="text-6xl font-black text-sky-100 absolute right-6 top-6">04</span>
             <h4 className="font-black text-lg text-sky-950 mb-2 relative z-10">Cobrar y Vender</h4>
-            <p className="text-sm text-slate-500 relative z-10">Publica el enlace de tu Marketplace o usa la caja POS física. Valida captures y emite facturas.</p>
+            <p className="text-sm text-slate-500 relative z-10">Publica el enlace de tu {KFS_BRAND.modules.marketplace} o usa la caja POS física. Valida captures y emite facturas.</p>
           </div>
         </div>
       </section>

@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -204,7 +205,7 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
       <div className="flex items-start gap-2 pt-2 mb-2">
         <input type="checkbox" required checked={acceptedToS} onChange={(e) => setAcceptedToS(e.target.checked)} className="mt-1 cursor-pointer" />
         <span className={`text-[10px] leading-tight ${standalone ? "text-slate-500" : "text-slate-500"}`}>
-          He leído y acepto los <strong className="text-sky-600 cursor-pointer hover:underline">Términos de Servicio (ToS)</strong>. Entiendo que KFS cobra $6 mensuales por mantenimiento, y que Kreatek no asume responsabilidad financiera sobre el comercio frente al cliente final.
+          He leído y acepto los <strong className="text-sky-600 cursor-pointer hover:underline">Términos de Servicio (ToS)</strong>. Entiendo que {KFS_BRAND.productAcronym} cobra $6 mensuales por mantenimiento, y que Kreatek no asume responsabilidad financiera sobre el comercio frente al cliente final.
         </span>
       </div>
 

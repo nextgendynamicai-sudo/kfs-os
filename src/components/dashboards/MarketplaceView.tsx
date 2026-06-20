@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../../config/brandConfig";
 "use client";
 import { Toast } from "../Toast";
 import { CvViewerModal } from "../CvViewerModal";
@@ -153,7 +154,7 @@ export const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, curr
                 <img src={profilePicUrl} alt="Store Logo" className="w-16 h-16 rounded-full object-cover border-2 shadow-sm" style={{ borderColor: themeColor }} />
               )}
               <div>
-                <h2 className="text-2xl font-black text-violet-900">{activeStore ? activeStore.company : "Centros Comerciales KFS"}</h2>
+                <h2 className="text-2xl font-black text-violet-900">{activeStore ? activeStore.company : "Centros Comerciales {KFS_BRAND.productAcronym}"}</h2>
                 <p className="text-xs text-gray-500 mt-1">{activeStore ? (settings.bioText || "Catálogo exclusivo de este negocio.") : "Explora nuestras tiendas destacadas y descubre sus productos."}</p>
               </div>
             </div>

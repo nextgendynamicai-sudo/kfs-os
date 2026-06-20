@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 import React, { useState } from "react";
 import { BookOpen, FileText, Award, Star, ShoppingCart, X, HelpCircle, Check, UserCheck, PenTool, Camera, MonitorPlay } from "lucide-react";
 import { useMerchantFee } from "../hooks/useMerchantFee";
@@ -152,7 +153,7 @@ export function FlowExpressCatalog({ currentUser, formatUSD }: FlowExpressCatalo
           <ShoppingCart size={24} className="text-violet-600" /> Catálogo Flow Express
         </h3>
         <p className="text-xs text-gray-500 mt-1">
-          Tienda digital nativa KFS. Canjea tus K-Points acumulados o usa Pago Híbrido.
+          {KFS_BRAND.modules.marketplace} digital nativa {KFS_BRAND.productAcronym}. Canjea tus {KFS_BRAND.economy.currency} acumulados o usa Pago Híbrido.
         </p>
       </div>
 
@@ -225,7 +226,7 @@ export function FlowExpressCatalog({ currentUser, formatUSD }: FlowExpressCatalo
               </div>
               <h4 className="text-2xl font-black text-violet-900">Saldo Insuficiente</h4>
               <p className="text-sm text-gray-500 leading-relaxed">
-                Tu saldo consolidado (K-Points + Saldo Real) es insuficiente para adquirir <strong className="text-violet-700">{selectedProduct?.name}</strong>.
+                Tu saldo consolidado ({KFS_BRAND.economy.currency} + Saldo Real) es insuficiente para adquirir <strong className="text-violet-700">{selectedProduct?.name}</strong>.
               </p>
               <div className="bg-white rounded-2xl p-4 flex justify-between items-center text-sm font-bold shadow-sm">
                 <span className="text-gray-500">Monto Requerido:</span>

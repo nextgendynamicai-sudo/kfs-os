@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
@@ -195,7 +196,7 @@ export const SMSConciliatorSimulator = () => {
               <div className="flex items-center gap-2">
                 <span className="text-xl">🛎️</span>
                 <div>
-                  <h3 className="font-black text-sm tracking-wide text-violet-600">KFS SMART CONCILIATOR</h3>
+                  <h3 className="font-black text-sm tracking-wide text-violet-600">{KFS_BRAND.productAcronym} SMART CONCILIATOR</h3>
                   <p className="text-[9px] text-gray-400 font-mono">Simulador de Telemetría SMS</p>
                 </div>
               </div>
@@ -289,7 +290,7 @@ export const SMSConciliatorSimulator = () => {
             >
               🚀 Detonar Conciliación Zero-Clic
             </button>
-            <p className="text-[9px] text-gray-500 font-mono text-center">Simula la intercepción de notificaciones de pago KFS SMS Companion.</p>
+            <p className="text-[9px] text-gray-500 font-mono text-center">Simula la intercepción de notificaciones de pago {KFS_BRAND.productAcronym} SMS Companion.</p>
           </div>
         </div>
       )}

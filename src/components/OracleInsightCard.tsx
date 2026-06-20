@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 import React, { useState, useEffect } from 'react';
 import { requestPushPermission, triggerLocalPush } from '../lib/pushNotifications';
 
@@ -13,13 +14,13 @@ export const OracleInsightCard = ({ role, data }: any) => {
   const generateInsight = () => {
     switch (role) {
       case 'owner':
-        return `🔮 Oráculo KFS: Tu producto estrella '${data?.topProduct || 'cargando...'}' se agota pronto. Estás perdiendo margen. Sugiero subir el precio $0.50 mañana.`;
+        return `🔮 Oráculo {KFS_BRAND.productAcronym}: Tu producto estrella '${data?.topProduct || 'cargando...'}' se agota pronto. Estás perdiendo margen. Sugiero subir el precio $0.50 mañana.`;
       case 'cashier':
-        return `💸 Oráculo KFS: ¡Racha activa! Llevas ${data?.streak || 0} ventas perfectas. Tu bono acumulado hoy es $${data?.bonusEarned || '0.00'}. Haz que paguen con K-Points.`;
+        return `💸 Oráculo {KFS_BRAND.productAcronym}: ¡Racha activa! Llevas ${data?.streak || 0} ventas perfectas. Tu bono acumulado hoy es $${data?.bonusEarned || '0.00'}. Haz que paguen con {KFS_BRAND.economy.currency}.`;
       case 'promoter':
-        return `🎯 Oráculo KFS: Alerta Operativa. El Nodo '${data?.inactiveNode || 'cargando...'}' lleva 4h sin ventas. Desvío sugerido para auditoría. Quedan ${data?.remainingPioneerNodes || 0} cupos de Nodos.`;
+        return `🎯 Oráculo {KFS_BRAND.productAcronym}: Alerta Operativa. El Nodo '${data?.inactiveNode || 'cargando...'}' lleva 4h sin ventas. Desvío sugerido para auditoría. Quedan ${data?.remainingPioneerNodes || 0} cupos de Nodos.`;
       case 'customer':
-        return `🔥 Oráculo KFS: Tienes $${data?.walletBalance || '0.00'} en poder adquisitivo. A 50 metros hay un 'Combo Kreatek' por $8. Ve ahora y multiplica tus puntos.`;
+        return `🔥 Oráculo {KFS_BRAND.productAcronym}: Tienes $${data?.walletBalance || '0.00'} en poder adquisitivo. A 50 metros hay un 'Combo Kreatek' por $8. Ve ahora y multiplica tus puntos.`;
       default:
         return "El Oráculo está analizando tu flujo operativo...";
     }
@@ -33,7 +34,7 @@ export const OracleInsightCard = ({ role, data }: any) => {
     }
     
     if (granted) {
-      triggerLocalPush("Oráculo KFS", generateInsight());
+      triggerLocalPush("Oráculo {KFS_BRAND.productAcronym}", generateInsight());
     }
   };
 

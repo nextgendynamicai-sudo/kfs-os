@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 "use client";
 
 import React, { useState } from "react";
@@ -29,7 +30,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
   const iva = applyIva ? price * 0.16 : 0;
   const igtf = isForeign ? (price + iva) * 0.03 : 0;
   
-  // Calcular descuento por K-Points (100 puntos = $0.10 -> 1 punto = $0.001)
+  // Calcular descuento por {KFS_BRAND.economy.currency} (100 puntos = $0.10 -> 1 punto = $0.001)
   const discountUSD = kPointsToBurn * 0.001;
   const total = Math.max(0, price + iva + igtf - discountUSD);
   
@@ -177,11 +178,11 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
               <option value="binance">Binance Pay</option>
               {!isOnline && (
                 <>
-                  <option value="pos_integrated">⚡ Tarjeta (POS Integrado KFS)</option>
+                  <option value="pos_integrated">⚡ Tarjeta (POS Integrado {KFS_BRAND.productAcronym})</option>
                   <option value="nfc_web">💳 Tarjeta (NFC Contactless)</option>
                   <option value="cash_usd">Efectivo (USD)</option>
                   <option value="cash_eur">Efectivo (EUR)</option>
-                  <option value="vale_credit">🎫 Vale / Crédito de Tienda</option>
+                  <option value="vale_credit">🎫 Vale / Crédito de {KFS_BRAND.modules.marketplace}</option>
                   <option value="split_currency">🔀 Pago Mixto Coercitivo (USD + Bs)</option>
                 </>
               )}
@@ -245,7 +246,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
               <div>
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 block">Número de Referencia Bancaria</label>
                 <input type="text" placeholder="Ej: 034199..." value={paymentReference} onChange={e => setPaymentReference(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C5A184]" />
-                <p className="text-[10px] text-gray-400 mt-1">Obligatorio. Nuestro KFS SMS Conciliator leerá esto para aprobar tu envío.</p>
+                <p className="text-[10px] text-gray-400 mt-1">Obligatorio. Nuestro {KFS_BRAND.productAcronym} SMS Conciliator leerá esto para aprobar tu envío.</p>
               </div>
 
               <div>
@@ -300,7 +301,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
           {availableKPoints > 0 && product.allowKPoints !== false && (
             <div className="bg-purple-50 p-4 rounded-xl border border-purple-200 space-y-2 animate-fade-in">
               <label className="text-[10px] font-black text-purple-900 uppercase tracking-widest flex justify-between">
-                <span>Quemar K-Points Disponibles</span>
+                <span>Quemar {KFS_BRAND.economy.currency} Disponibles</span>
                 <span>Max: {availableKPoints}</span>
               </label>
               <input 
@@ -341,7 +342,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
             <div className="flex justify-between text-sm font-bold text-gray-600"><span>Subtotal:</span> <span>{formatUSD(price)}</span></div>
             {applyIva && <div className="flex justify-between text-sm font-bold text-gray-600"><span>IVA (16%):</span> <span className="text-red-500">+{formatUSD(iva)}</span></div>}
             {isForeign && <div className="flex justify-between text-sm font-bold text-gray-600"><span>IGTF (3%):</span> <span className="text-red-500">+{formatUSD(igtf)}</span></div>}
-            {kPointsToBurn > 0 && <div className="flex justify-between text-sm font-bold text-purple-600"><span>Descuento K-Points:</span> <span>-{formatUSD(discountUSD)}</span></div>}
+            {kPointsToBurn > 0 && <div className="flex justify-between text-sm font-bold text-purple-600"><span>Descuento {KFS_BRAND.economy.currency}:</span> <span>-{formatUSD(discountUSD)}</span></div>}
             <div className="flex justify-between text-lg font-black text-[#0A1128] pt-2 border-t border-gray-200 mt-2"><span>Total a Pagar:</span> <span>{formatUSD(total)}</span></div>
           </div>
 

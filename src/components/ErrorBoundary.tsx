@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 "use client";
 
 import React, { Component, ErrorInfo, ReactNode } from "react";
@@ -36,7 +37,7 @@ export class ErrorBoundary extends Component<Props, State> {
             </div>
             <h1 className="text-2xl font-black mb-4">¡Fallo Crítico de Sistema!</h1>
             <p className="text-sm text-slate-500 mb-6 leading-relaxed">
-              KFS OS ha detectado una excepción no controlada en la interfaz de usuario.
+              {KFS_BRAND.productAcronym} OS ha detectado una excepción no controlada en la interfaz de usuario.
               El límite de errores ha prevenido una pantalla en blanco.
             </p>
             
@@ -53,7 +54,7 @@ export class ErrorBoundary extends Component<Props, State> {
               className="bg-white text-black font-black py-4 px-8 rounded-xl flex items-center justify-center gap-2 w-full hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)]"
             >
               <RefreshCw size={18} />
-              Reiniciar KFS OS
+              Reiniciar {KFS_BRAND.productAcronym} OS
             </button>
           </div>
         </div>

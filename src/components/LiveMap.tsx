@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 "use client";
 import { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
@@ -109,7 +110,7 @@ export default function LiveMap({ riderPos, storePos, customerPos, className = "
         
         {storePos && (
           <Marker position={[storePos.lat, storePos.lng]} icon={storeIcon}>
-            <Popup><strong>Tienda</strong><br/>Punto de Recolección</Popup>
+            <Popup><strong>{KFS_BRAND.modules.marketplace}</strong><br/>Punto de Recolección</Popup>
           </Marker>
         )}
         

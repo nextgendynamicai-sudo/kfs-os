@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../../config/brandConfig";
 "use client";
 import { Toast } from "../Toast";
 import { CvViewerModal } from "../CvViewerModal";
@@ -153,7 +154,7 @@ export const LoginView = ({ handleLogin, registerClient, registerPromotora, db, 
                 <div className="w-16 h-16 bg-sky-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-sky-100 shadow-sm">
                   <Shield className="text-sky-600" size={32} />
                 </div>
-                <h1 className="text-2xl font-black text-sky-950 tracking-tight">KFS Core <span className="text-sky-600">Access</span></h1>
+                <h1 className="text-2xl font-black text-sky-950 tracking-tight">{KFS_BRAND.productAcronym} Core <span className="text-sky-600">Access</span></h1>
                 <p className="text-sm text-slate-500 mt-2 font-mono">Seleccione su vector de entrada</p>
               </div>
 
@@ -228,7 +229,7 @@ export const LoginView = ({ handleLogin, registerClient, registerPromotora, db, 
 
           <div className="mt-8 pt-6 border-t border-sky-100 text-center">
             <button onClick={() => setView("landing")} className="text-sm font-black text-sky-600 hover:text-sky-800 transition-colors cursor-pointer flex items-center justify-center gap-2 mx-auto border-none bg-transparent">
-              <Star size={16} /> Ver Landing de Ventas - KFS OS
+              <Star size={16} /> Ver Landing de Ventas - {KFS_BRAND.productAcronym} OS
             </button>
           </div>
 

@@ -1,3 +1,4 @@
+import { KFS_BRAND } from "../config/brandConfig";
 "use client";
 
 import React, { useState } from "react";
@@ -62,7 +63,7 @@ export const PayoutModal = ({ maxAmount, currency, onConfirm, onCancel, formatMo
             />
             {parsedAmount > 0 && (
               <div className="flex justify-between items-center text-[10px] text-slate-500 mt-1 px-1 font-mono">
-                <span>Comisión KFS (2%): <strong className="text-red-400">{formatMoney(withdrawalFee)}</strong></span>
+                <span>Comisión {KFS_BRAND.productAcronym} (2%): <strong className="text-red-400">{formatMoney(withdrawalFee)}</strong></span>
                 <span>Total a Debitar: <strong className="text-sky-950">{formatMoney(totalToDeduct)}</strong></span>
               </div>
             )}
@@ -96,7 +97,7 @@ export const PayoutModal = ({ maxAmount, currency, onConfirm, onCancel, formatMo
           <div className="bg-blue-900/20 p-4 rounded-xl border border-blue-500/20 flex gap-3">
             <Shield className="text-blue-400 shrink-0 mt-0.5" size={16} />
             <p className="text-[10px] text-blue-300 font-medium leading-relaxed">
-              Las liquidaciones son procesadas por el equipo de KFS Core en un lapso de 24 a 48 horas hábiles.
+              Las liquidaciones son procesadas por el equipo de {KFS_BRAND.productAcronym} Core en un lapso de 24 a 48 horas hábiles.
             </p>
           </div>
 
