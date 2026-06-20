@@ -74,7 +74,7 @@ const KREATEK_COLORS = {
 export const Toast = ({ toast }: { toast: any }) => {
   if (!toast.show) return null;
   return (
-    <div className={`fixed top-6 left-1/2 -translate-x-1/2 z-[999999] px-6 py-3 rounded-full shadow-2xl backdrop-blur-md font-bold text-sm transition-all duration-300 flex items-center gap-2 ${toast.type === "error" ? "bg-red-500/90 text-white border border-red-400" : "bg-[violet-600]/90 text-[violet-900] border border-white/20"}`}>
+    <div className={`fixed top-6 left-1/2 -translate-x-1/2 z-[999999] px-6 py-3 rounded-full shadow-2xl backdrop-blur-md font-bold text-sm transition-all duration-300 flex items-center gap-2 ${toast.type === "error" ? "bg-red-500/90 text-white border border-red-400" : toast.type === "warning" ? "bg-amber-500/90 text-white border border-amber-400" : "bg-[violet-600]/90 text-[violet-900] border border-white/20"}`}>
       {toast.type === "success" ? <CheckCircle size={18} /> : <Activity size={18} />}
       {toast.message}
     </div>

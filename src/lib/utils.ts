@@ -12,16 +12,36 @@ export const compressImage = (file: File, maxWidth: number = 500, quality: numbe
       const img = new window.Image();
       img.onload = () => {
         const canvas = document.createElement('canvas');
-        const scaleSize = maxWidth / img.width;
-        if (scaleSize < 1) {
-          canvas.width = maxWidth;
-          canvas.height = img.height * scaleSize;
+        
+        // Strict 4:5 Aspect Ratio target (width = 4, height = 5) -> targetRatio = 0.8
+        const targetRatio = 4 / 5;
+        const sourceRatio = img.width / img.height;
+        
+        let cropWidth = img.width;
+        let cropHeight = img.height;
+        let cropX = 0;
+        let cropY = 0;
+
+        if (sourceRatio > targetRatio) {
+          // Image is too wide, bottleneck is height
+          cropHeight = img.height;
+          cropWidth = cropHeight * targetRatio;
+          cropX = (img.width - cropWidth) / 2;
         } else {
-          canvas.width = img.width;
-          canvas.height = img.height;
+          // Image is too tall, bottleneck is width
+          cropWidth = img.width;
+          cropHeight = cropWidth / targetRatio;
+          cropY = (img.height - cropHeight) / 2;
         }
+
+        // Output canvas dimensions
+        canvas.width = maxWidth;
+        canvas.height = maxWidth / targetRatio;
+
         const ctx = canvas.getContext('2d');
-        ctx?.drawImage(img, 0, 0, canvas.width, canvas.height);
+        // Draw cropped and scaled image
+        ctx?.drawImage(img, cropX, cropY, cropWidth, cropHeight, 0, 0, canvas.width, canvas.height);
+        
         resolve(canvas.toDataURL('image/jpeg', quality));
       };
       img.src = event.target?.result as string;

@@ -1149,7 +1149,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     }
   }, [db, isClient, networkState, currentUser, isDataLoaded]);
 
-  const showToast = (message: string, type: "success" | "error" = "success") => {
+  const showToast = (message: string, type: "success" | "error" | "warning" = "success") => {
     setToast({ show: true, message, type });
     setTimeout(() => setToast({ show: false, message: "", type: "success" }), 3000);
     
