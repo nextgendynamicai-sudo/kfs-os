@@ -111,17 +111,17 @@ export const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
   };
 
   return (
-    <div className="min-h-screen bg-[violet-900] flex flex-col items-center justify-center p-4 text-white animate-fade-in relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-[violet-900] via-[violet-600]/10 to-[violet-900] opacity-50"></div>
+    <div className="min-h-screen bg-violet-900 flex flex-col items-center justify-center p-4 text-white animate-fade-in relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-violet-900 via-violet-600/10 to-violet-900 opacity-50"></div>
 
       <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 max-w-lg w-full relative z-10 shadow-2xl flex flex-col items-center text-center">
         <KreatekLogo className="h-16 sm:h-20 w-auto mb-6" />
-        <h2 className="text-3xl font-black mb-2 text-[violet-600]">Setup Inicial</h2>
+        <h2 className="text-3xl font-black mb-2 text-violet-600">Setup Inicial</h2>
         <p className="text-gray-300 mb-8 font-light">Vamos a preparar tu ecosistema {currentUser.company} para la nueva era digital en 3 simples pasos.</p>
 
         <div className="flex gap-2 mb-8">
           {[1, 2, 3].map(s => (
-            <div key={s} className={`h-2 flex-1 rounded-full ${s <= step ? 'bg-[violet-600]' : 'bg-white/10'}`}></div>
+            <div key={s} className={`h-2 flex-1 rounded-full ${s <= step ? 'bg-violet-600' : 'bg-white/10'}`}></div>
           ))}
         </div>
 
@@ -129,7 +129,7 @@ export const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
           <div className="space-y-4 animate-slide-up">
             <h3 className="text-xl font-bold">1. Cumplimiento Legal (KYC)</h3>
             <p className="text-sm text-gray-400">Por normativas internacionales anti-lavado de dinero (AML), debes adjuntar una foto de tu RIF o Documento de Identidad Fiscal.</p>
-            <label className="border-2 border-dashed border-[violet-600]/50 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-colors">
+            <label className="border-2 border-dashed border-violet-600/50 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-colors">
               <input type="file" accept="image/*" className="hidden" onChange={handleKycUpload} />
               {kycDoc ? (
                 <div className="text-green-400 font-bold flex items-center gap-2"><CheckCircle size={20} /> Documento Cargado</div>
@@ -140,7 +140,7 @@ export const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
                 </div>
               )}
             </label>
-            <button disabled={!kycDoc} onClick={() => setStep(2)} className="w-full bg-[violet-600] text-[violet-900] py-4 rounded-xl font-black mt-6 shadow-lg shadow-[violet-600]/20 hover:scale-[1.02] disabled:opacity-50 transition-transform cursor-pointer">Siguiente Paso →</button>
+            <button disabled={!kycDoc} onClick={() => setStep(2)} className="w-full bg-violet-600 text-violet-900 py-4 rounded-xl font-black mt-6 shadow-lg shadow-violet-600/20 hover:scale-[1.02] disabled:opacity-50 transition-transform cursor-pointer">Siguiente Paso →</button>
           </div>
         )}
 
@@ -149,9 +149,9 @@ export const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
             <h3 className="text-xl font-bold">2. Sube un Producto</h3>
             <p className="text-sm text-gray-400">Personaliza tu inventario ahora mismo. Sube una foto de tu producto directamente desde la galería.</p>
 
-            <input type="text" placeholder="Nombre de tu producto (Ej. Refresco)" value={productName} onChange={e => setProductName(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[violet-600]" />
+            <input type="text" placeholder="Nombre de tu producto (Ej. Refresco)" value={productName} onChange={e => setProductName(e.target.value)} className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-violet-600" />
 
-            <label className="border-2 border-dashed border-[violet-600]/50 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-colors">
+            <label className="border-2 border-dashed border-violet-600/50 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-white/5 transition-colors">
               <input type="file" accept="image/*" className="hidden" onChange={handleProductUpload} />
               {productImage ? (
                 <img src={productImage} alt="Preview" className="h-32 object-contain rounded-lg" />
@@ -162,7 +162,7 @@ export const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
                 </div>
               )}
             </label>
-            <button onClick={saveOnboardingProduct} className="w-full bg-[violet-600] text-[violet-900] py-4 rounded-xl font-black mt-6 shadow-lg shadow-[violet-600]/20 hover:scale-[1.02] transition-transform cursor-pointer">Guardar y Continuar →</button>
+            <button onClick={saveOnboardingProduct} className="w-full bg-violet-600 text-violet-900 py-4 rounded-xl font-black mt-6 shadow-lg shadow-violet-600/20 hover:scale-[1.02] transition-transform cursor-pointer">Guardar y Continuar →</button>
           </div>
         )}
 
@@ -173,7 +173,7 @@ export const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
             </div>
             <h3 className="text-xl font-bold">3. ¡Todo Listo!</h3>
             <p className="text-sm text-gray-400 mb-6">El sistema base de datos, el POS y la tienda online están desplegados y 100% enlazados en tiempo real.</p>
-            <button onClick={() => finishOnboarding(currentUser.id, kycDoc)} className="w-full bg-[violet-600] text-[violet-900] py-4 rounded-xl font-black shadow-lg shadow-[violet-600]/20 hover:scale-[1.02] transition-transform cursor-pointer">Ir a mi Panel de Control</button>
+            <button onClick={() => finishOnboarding(currentUser.id, kycDoc)} className="w-full bg-violet-600 text-violet-900 py-4 rounded-xl font-black shadow-lg shadow-violet-600/20 hover:scale-[1.02] transition-transform cursor-pointer">Ir a mi Panel de Control</button>
           </div>
         )}
       </div>

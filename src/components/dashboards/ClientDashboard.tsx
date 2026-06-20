@@ -324,12 +324,12 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
 
   if (isPastDue || isPendingVerification) {
     return (
-      <div className="min-h-screen bg-[violet-900] flex flex-col items-center justify-center p-6 text-center">
-        <div className="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full p-10 border-t-8 border-[violet-600] animate-fade-in relative overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-full bg-[violet-600]/5 z-0 pointer-events-none"></div>
+      <div className="min-h-screen bg-violet-900 flex flex-col items-center justify-center p-6 text-center">
+        <div className="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full p-10 border-t-8 border-violet-600 animate-fade-in relative overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-full bg-violet-600/5 z-0 pointer-events-none"></div>
 
-          <Lock size={64} className="text-[violet-600] mx-auto mb-6 relative z-10" />
-          <h2 className="text-3xl font-black text-[violet-900] mb-2 relative z-10">
+          <Lock size={64} className="text-violet-600 mx-auto mb-6 relative z-10" />
+          <h2 className="text-3xl font-black text-violet-900 mb-2 relative z-10">
             {isPendingVerification ? "Pago en Verificación" : "Suscripción Vencida"}
           </h2>
           <p className="text-gray-600 mb-8 font-bold relative z-10 text-lg">
@@ -340,7 +340,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
 
           {!isPendingVerification && (
             <div className="bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none p-6 rounded-2xl mb-8 relative z-10 placeholder:text-gray-400">
-              <h3 className="font-bold text-[violet-900] mb-4">¿Cómo reactivar tu Tienda?</h3>
+              <h3 className="font-bold text-violet-900 mb-4">¿Cómo reactivar tu Tienda?</h3>
               <p className="text-sm text-gray-500 mb-4">Transfiere $6 USD vía Zinli, AirTM, Wally, Ubbi, Binance Pay o Pago Móvil y escribe la referencia bancaria a continuación:</p>
 
               <form onSubmit={(e) => {
@@ -353,9 +353,9 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                   name="reference"
                   required
                   placeholder="Ej: 12345678"
-                  className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-[violet-600] focus:outline-none"
+                  className="w-full bg-white border border-gray-300 rounded-xl px-4 py-3 text-sm focus:border-violet-600 focus:outline-none"
                 />
-                <button type="submit" className="w-full bg-[violet-600] text-white font-black py-4 rounded-xl hover:bg-[#b08e72] transition-colors cursor-pointer flex justify-center items-center gap-2 shadow-md">
+                <button type="submit" className="w-full bg-violet-600 text-white font-black py-4 rounded-xl hover:bg-[#b08e72] transition-colors cursor-pointer flex justify-center items-center gap-2 shadow-md">
                   <Upload size={18} /> Enviar Comprobante al Core
                 </button>
               </form>

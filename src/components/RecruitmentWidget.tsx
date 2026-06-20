@@ -208,8 +208,8 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
     <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 w-full space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-100 pb-6">
         <div>
-          <h3 className="font-black text-2xl text-[violet-900] flex items-center gap-2">
-            <Users className="text-[violet-600]" /> Reclutamiento & Bolsa de Trabajo
+          <h3 className="font-black text-2xl text-violet-900 flex items-center gap-2">
+            <Users className="text-violet-600" /> Reclutamiento & Bolsa de Trabajo
           </h3>
           <p className="text-xs text-gray-500 mt-1">Busca talento verificado y respaldado por la red KFS OS en Venezuela.</p>
         </div>
@@ -217,19 +217,19 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
         <div className="flex gap-2 p-1 bg-gray-50 rounded-xl border border-gray-200 text-xs">
           <button
             onClick={() => setActiveWidgetTab("search")}
-            className={`px-4 py-2 font-bold rounded-lg cursor-pointer transition-colors ${activeWidgetTab === "search" ? "bg-[violet-900] text-white" : "text-gray-500 hover:text-[violet-900]"}`}
+            className={`px-4 py-2 font-bold rounded-lg cursor-pointer transition-colors ${activeWidgetTab === "search" ? "bg-violet-900 text-white" : "text-gray-500 hover:text-violet-900"}`}
           >
             Buscar Candidatos
           </button>
           <button
             onClick={() => setActiveWidgetTab("preset")}
-            className={`px-4 py-2 font-bold rounded-lg cursor-pointer transition-colors ${activeWidgetTab === "preset" ? "bg-[violet-900] text-white" : "text-gray-500 hover:text-[violet-900]"}`}
+            className={`px-4 py-2 font-bold rounded-lg cursor-pointer transition-colors ${activeWidgetTab === "preset" ? "bg-violet-900 text-white" : "text-gray-500 hover:text-violet-900"}`}
           >
             Configurar Criterios
           </button>
           <button
             onClick={() => setActiveWidgetTab("unlocked")}
-            className={`px-4 py-2 font-bold rounded-lg cursor-pointer transition-colors ${activeWidgetTab === "unlocked" ? "bg-[violet-900] text-white" : "text-gray-500 hover:text-[violet-900]"}`}
+            className={`px-4 py-2 font-bold rounded-lg cursor-pointer transition-colors ${activeWidgetTab === "unlocked" ? "bg-violet-900 text-white" : "text-gray-500 hover:text-violet-900"}`}
           >
             Desbloqueados
           </button>
@@ -238,7 +238,7 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
 
       {activeWidgetTab === "preset" && (
         <form onSubmit={handleSavePreset} className="space-y-6">
-          <h4 className="text-sm font-black text-[violet-900] uppercase tracking-wider">¿Qué perfil necesitas contratar?</h4>
+          <h4 className="text-sm font-black text-violet-900 uppercase tracking-wider">¿Qué perfil necesitas contratar?</h4>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -246,7 +246,7 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
               <select
                 value={role}
                 onChange={e => setRole(e.target.value)}
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] placeholder:text-gray-400"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-600 placeholder:text-gray-400"
               >
                 <option value="Cajero">Cajero / Cajera</option>
                 <option value="Vendedor">Vendedor de Tienda</option>
@@ -261,7 +261,7 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
               <select
                 value={location}
                 onChange={e => setLocation(e.target.value)}
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] placeholder:text-gray-400"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-600 placeholder:text-gray-400"
               >
                 <option value="Caracas - Este">Caracas - Este</option>
                 <option value="Caracas - Oeste">Caracas - Oeste</option>
@@ -277,7 +277,7 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
               <select
                 value={experienceYears}
                 onChange={e => setExperienceYears(e.target.value)}
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] placeholder:text-gray-400"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-600 placeholder:text-gray-400"
               >
                 <option value="0-1">Menos de 1 año</option>
                 <option value="1-3">1 a 3 años</option>
@@ -290,7 +290,7 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
               <select
                 value={availability}
                 onChange={e => setAvailability(e.target.value)}
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[violet-600] placeholder:text-gray-400"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-600 placeholder:text-gray-400"
               >
                 <option value="full-time">Tiempo Completo (Full-time)</option>
                 <option value="part-time">Medio Tiempo (Part-time)</option>
@@ -309,7 +309,7 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                     key={skill}
                     type="button"
                     onClick={() => handleToggleSkill(skill)}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${isSelected ? "bg-[violet-900] text-white shadow-md" : "bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100"}`}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${isSelected ? "bg-violet-900 text-white shadow-md" : "bg-gray-50 text-gray-500 border border-gray-200 hover:bg-gray-100"}`}
                   >
                     {isSelected && <Check size={12} />}
                     {skill}
@@ -322,7 +322,7 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
           <div className="flex justify-end pt-4 border-t border-gray-100">
             <button
               type="submit"
-              className="bg-[violet-900] text-white px-8 py-4 rounded-xl font-black hover:scale-[1.03] active:scale-95 transition-transform flex items-center justify-center gap-2 cursor-pointer shadow-lg"
+              className="bg-violet-900 text-white px-8 py-4 rounded-xl font-black hover:scale-[1.03] active:scale-95 transition-transform flex items-center justify-center gap-2 cursor-pointer shadow-lg"
             >
               Guardar Configuración de Búsqueda
             </button>
@@ -356,7 +356,7 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                         <span className="text-[10px] font-black uppercase text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
                           {cand.role}
                         </span>
-                        <h4 className="text-lg font-black text-[violet-900] mt-1 filter blur-[4px] select-none">
+                        <h4 className="text-lg font-black text-violet-900 mt-1 filter blur-[4px] select-none">
                           {cand.name}
                         </h4>
                         {(() => {
@@ -397,10 +397,10 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                     </div>
 
                     <div className="grid grid-cols-2 gap-2 text-[10px] text-gray-500 font-bold bg-gray-50/50 p-3 rounded-xl">
-                      <div>📍 Residencia: <span className="text-[violet-900]">{cand.answers?.location || "No especificada"}</span></div>
-                      <div>⏳ Experiencia: <span className="text-[violet-900]">{cand.answers?.experienceYears || "0-1"} años</span></div>
-                      <div>🚗 Vehículo: <span className="text-[violet-900]">{cand.answers?.hasVehicle === "no" ? "No posee" : cand.answers?.hasVehicle === "moto" ? "Moto" : "Carro"}</span></div>
-                      <div>⏰ Horario: <span className="text-[violet-900]">{cand.answers?.availability === "full-time" ? "Completo" : "Parcial"}</span></div>
+                      <div>📍 Residencia: <span className="text-violet-900">{cand.answers?.location || "No especificada"}</span></div>
+                      <div>⏳ Experiencia: <span className="text-violet-900">{cand.answers?.experienceYears || "0-1"} años</span></div>
+                      <div>🚗 Vehículo: <span className="text-violet-900">{cand.answers?.hasVehicle === "no" ? "No posee" : cand.answers?.hasVehicle === "moto" ? "Moto" : "Carro"}</span></div>
+                      <div>⏰ Horario: <span className="text-violet-900">{cand.answers?.availability === "full-time" ? "Completo" : "Parcial"}</span></div>
                     </div>
                   </div>
 
@@ -418,9 +418,9 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                         </div>
                         
                         <div className="bg-white border border-gray-200 p-3 rounded-xl text-[10px] space-y-1 font-mono text-gray-600">
-                          <p><strong className="text-[violet-900]">Banco:</strong> Banco Nacional de Crédito (BNC)</p>
-                          <p><strong className="text-[violet-900]">Teléfono:</strong> 0414-0000000</p>
-                          <p><strong className="text-[violet-900]">Cédula:</strong> V-25.218.648</p>
+                          <p><strong className="text-violet-900">Banco:</strong> Banco Nacional de Crédito (BNC)</p>
+                          <p><strong className="text-violet-900">Teléfono:</strong> 0414-0000000</p>
+                          <p><strong className="text-violet-900">Cédula:</strong> V-25.218.648</p>
                         </div>
 
                         <div>
@@ -429,7 +429,7 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                             placeholder="Referencia Bancaria"
                             value={refNum}
                             onChange={(e) => setRefNum(e.target.value)}
-                            className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-[violet-400]"
+                            className="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-violet-400"
                           />
                         </div>
                         
@@ -478,9 +478,9 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                         )}
                         <button
                           onClick={() => setPayingCandidateId(cand.id)}
-                          className="w-full bg-[violet-900] text-white hover:bg-gray-800 transition-colors font-black text-xs py-3 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
+                          className="w-full bg-violet-900 text-white hover:bg-gray-800 transition-colors font-black text-xs py-3 rounded-xl flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
                         >
-                          <Lock size={14} className="text-[violet-600]" /> Desbloquear Datos ($10)
+                          <Lock size={14} className="text-violet-600" /> Desbloquear Datos ($10)
                         </button>
                       </div>
                     )}
@@ -517,7 +517,7 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                         <span className="text-[10px] font-black uppercase text-green-700 bg-green-100 px-2 py-0.5 rounded-full">
                           {cand.role}
                         </span>
-                        <h4 className="text-lg font-black text-[violet-900] mt-1 flex items-center gap-1.5">
+                        <h4 className="text-lg font-black text-violet-900 mt-1 flex items-center gap-1.5">
                           {cand.name}
                           <CheckCircle size={16} className="text-green-600 shrink-0" />
                         </h4>
@@ -542,22 +542,22 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                     </div>
 
                     <div className="grid grid-cols-2 gap-2 text-[10px] text-gray-500 font-bold bg-gray-50/50 p-3 rounded-xl border border-gray-100">
-                      <div>📍 Residencia: <span className="text-[violet-900]">{cand.answers?.location || "No especificada"}</span></div>
-                      <div>⏳ Experiencia: <span className="text-[violet-900]">{cand.answers?.experienceYears || "0-1"} años</span></div>
-                      <div>🚗 Vehículo: <span className="text-[violet-900]">{cand.answers?.hasVehicle === "no" ? "No posee" : cand.answers?.hasVehicle === "moto" ? "Moto" : "Carro"}</span></div>
-                      <div>⏰ Horario: <span className="text-[violet-900]">{cand.answers?.availability === "full-time" ? "Completo" : "Parcial"}</span></div>
+                      <div>📍 Residencia: <span className="text-violet-900">{cand.answers?.location || "No especificada"}</span></div>
+                      <div>⏳ Experiencia: <span className="text-violet-900">{cand.answers?.experienceYears || "0-1"} años</span></div>
+                      <div>🚗 Vehículo: <span className="text-violet-900">{cand.answers?.hasVehicle === "no" ? "No posee" : cand.answers?.hasVehicle === "moto" ? "Moto" : "Carro"}</span></div>
+                      <div>⏰ Horario: <span className="text-violet-900">{cand.answers?.availability === "full-time" ? "Completo" : "Parcial"}</span></div>
                     </div>
 
-                    <div className="bg-[violet-900] text-white p-4 rounded-xl space-y-2 border border-[violet-600]/20 shadow-inner">
+                    <div className="bg-violet-900 text-white p-4 rounded-xl space-y-2 border border-violet-600/20 shadow-inner">
                       <div className="flex justify-between items-center text-xs font-bold">
                         <span className="text-gray-400">Teléfono:</span>
-                        <span className="text-[violet-600] font-mono">{cand.phone}</span>
+                        <span className="text-violet-600 font-mono">{cand.phone}</span>
                       </div>
                       <div className="flex justify-between items-center text-xs font-bold">
                         <span className="text-gray-400">Email:</span>
                         <span className="text-white font-mono select-all text-[10px]">{cand.email}</span>
                       </div>
-                      <div className="flex justify-between items-center text-[10px] font-bold border-t border-[violet-600]/10 pt-2 mt-1">
+                      <div className="flex justify-between items-center text-[10px] font-bold border-t border-violet-600/10 pt-2 mt-1">
                         <span className="text-gray-400">Estado de Contratación:</span>
                         <span className={`uppercase tracking-wider font-black px-1.5 py-0.5 rounded ${cand.hiringState === 'hired' ? 'bg-green-500/20 text-green-400' :
                             cand.hiringState === 'interviewing' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-gray-500/20 text-gray-400'
@@ -578,7 +578,7 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                                 window.open(cand.cvFile, '_blank');
                               }
                             }}
-                            className="text-[violet-600] underline cursor-pointer text-[10px]"
+                            className="text-violet-600 underline cursor-pointer text-[10px]"
                           >
                             👁️ {cand.useKfsCvBuilder ? "Ver CV Digital KFS" : "Ver CV Adjunto"}
                           </button>
@@ -592,7 +592,7 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                           {cand.reviews.map((r: any) => (
                             <div key={r.id} className="p-3 bg-white border border-gray-200 rounded-lg text-[10px] space-y-1">
                               <div className="flex justify-between items-center font-bold">
-                                <span className="text-[violet-900]">{r.clientName}</span>
+                                <span className="text-violet-900">{r.clientName}</span>
                                 <div className="flex items-center gap-1">
                                   {renderStars(r.rating)}
                                   <span className="text-gray-500 font-mono">({r.rating})</span>
@@ -681,9 +681,9 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
       )}
       {ratingCandidateId && (
         <div className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-white text-[violet-900] rounded-[2rem] p-8 w-full max-w-md shadow-2xl border border-white/20 animate-scale-up space-y-6">
+          <div className="bg-white text-violet-900 rounded-[2rem] p-8 w-full max-w-md shadow-2xl border border-white/20 animate-scale-up space-y-6">
             <div className="text-center">
-              <h3 className="text-xl font-black text-[violet-900]">Calificar Candidato</h3>
+              <h3 className="text-xl font-black text-violet-900">Calificar Candidato</h3>
               <p className="text-xs text-gray-500 mt-1">Comparte tu experiencia para ayudar a otros comercios de la red KFS.</p>
             </div>
 
@@ -709,7 +709,7 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                 placeholder="Ej: Excelente actitud, muy rápido en el POS y puntual. Altamente recomendado."
                 value={ratingComment}
                 onChange={(e) => setRatingComment(e.target.value)}
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[violet-600] text-[violet-900] font-bold placeholder:text-gray-400"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-violet-600 text-violet-900 font-bold placeholder:text-gray-400"
               />
             </div>
 
@@ -731,7 +731,7 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                   releaseCandidate(ratingCandidateId, currentUser.id, { rating: ratingStars, comment: ratingComment });
                   setRatingCandidateId(null);
                 }}
-                className="w-1/2 py-3 bg-[violet-900] hover:bg-gray-800 text-white rounded-xl font-black text-xs transition-colors cursor-pointer text-center shadow-md"
+                className="w-1/2 py-3 bg-violet-900 hover:bg-gray-800 text-white rounded-xl font-black text-xs transition-colors cursor-pointer text-center shadow-md"
               >
                 Enviar y Liberar
               </button>

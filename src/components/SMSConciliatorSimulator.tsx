@@ -145,12 +145,12 @@ export const SMSConciliatorSimulator = () => {
         const flash = document.createElement("div");
         flash.className = "fixed inset-0 pointer-events-none z-[99999] flex items-center justify-center animate-fade-in";
         flash.innerHTML = `
-          <div class="absolute inset-0 bg-[violet-600]/20 backdrop-blur-sm transition-all duration-1000"></div>
-          <div class="bg-[violet-900] border-2 border-[violet-600] p-10 rounded-[3rem] shadow-2xl flex flex-col items-center justify-center max-w-sm text-center transform scale-95 animate-scale-up animate-pulse" style="box-shadow: 0 0 50px rgba(197, 161, 132, 0.4)">
-            <div class="w-16 h-16 bg-[violet-600]/20 rounded-full flex items-center justify-center mb-4">
+          <div class="absolute inset-0 bg-violet-600/20 backdrop-blur-sm transition-all duration-1000"></div>
+          <div class="bg-violet-900 border-2 border-violet-600 p-10 rounded-[3rem] shadow-2xl flex flex-col items-center justify-center max-w-sm text-center transform scale-95 animate-scale-up animate-pulse" style="box-shadow: 0 0 50px rgba(197, 161, 132, 0.4)">
+            <div class="w-16 h-16 bg-violet-600/20 rounded-full flex items-center justify-center mb-4">
               <span class="text-3xl">🛎️</span>
             </div>
-            <h2 class="text-2xl font-black text-[violet-600] mb-2 uppercase tracking-widest">Pago Conciliado</h2>
+            <h2 class="text-2xl font-black text-violet-600 mb-2 uppercase tracking-widest">Pago Conciliado</h2>
             <p class="text-xs text-white/80 font-mono mb-4">Smart SMS Sync Engine</p>
             <div class="bg-white/5 border border-white/10 p-4 rounded-2xl w-full mb-2">
               <span class="text-[10px] text-gray-400 font-bold block uppercase">Referencia</span>
@@ -179,7 +179,7 @@ export const SMSConciliatorSimulator = () => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 left-6 z-[80] w-14 h-14 bg-gradient-to-br from-[violet-600] to-[#a38063] rounded-full shadow-[0_4px_20px_rgba(197,161,132,0.4)] flex items-center justify-center text-[violet-900] hover:scale-110 active:scale-95 transition-all cursor-pointer group animate-bounce"
+        className="fixed bottom-6 left-6 z-[80] w-14 h-14 bg-gradient-to-br from-violet-600 to-[#a38063] rounded-full shadow-[0_4px_20px_rgba(197,161,132,0.4)] flex items-center justify-center text-violet-900 hover:scale-110 active:scale-95 transition-all cursor-pointer group animate-bounce"
         style={{ animationDuration: '3s' }}
       >
         <span className="text-2xl group-hover:rotate-12 transition-transform">🛎️</span>
@@ -189,13 +189,13 @@ export const SMSConciliatorSimulator = () => {
       </button>
 
       {isOpen && (
-        <div className="fixed inset-y-0 left-0 w-full max-w-sm bg-[violet-900]/95 backdrop-blur-xl border-r border-white/10 z-[90] shadow-2xl p-6 overflow-y-auto animate-slide-right flex flex-col justify-between text-white">
+        <div className="fixed inset-y-0 left-0 w-full max-w-sm bg-violet-900/95 backdrop-blur-xl border-r border-white/10 z-[90] shadow-2xl p-6 overflow-y-auto animate-slide-right flex flex-col justify-between text-white">
           <div className="space-y-6">
             <div className="flex justify-between items-center border-b border-white/10 pb-4">
               <div className="flex items-center gap-2">
                 <span className="text-xl">🛎️</span>
                 <div>
-                  <h3 className="font-black text-sm tracking-wide text-[violet-600]">KFS SMART CONCILIATOR</h3>
+                  <h3 className="font-black text-sm tracking-wide text-violet-600">KFS SMART CONCILIATOR</h3>
                   <p className="text-[9px] text-gray-400 font-mono">Simulador de Telemetría SMS</p>
                 </div>
               </div>
@@ -203,7 +203,7 @@ export const SMSConciliatorSimulator = () => {
             </div>
 
             <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3">
-              <span className="text-[10px] font-black text-[violet-600] uppercase tracking-widest block font-mono">Órdenes Pendientes</span>
+              <span className="text-[10px] font-black text-violet-600 uppercase tracking-widest block font-mono">Órdenes Pendientes</span>
               {pendingOrders.length === 0 ? (
                 <p className="text-xs text-gray-400 font-bold">No hay órdenes online pendientes. Crea una en Flow Express para probar el auto-llenado.</p>
               ) : (
@@ -213,7 +213,7 @@ export const SMSConciliatorSimulator = () => {
                       key={o.id}
                       type="button"
                       onClick={() => handleAutofillReference(o.paymentReference, o.amountUSD, o.customerPhone)}
-                      className="w-full text-left bg-white/5 hover:bg-[violet-600]/15 border border-white/10 p-2.5 rounded-xl transition-all flex justify-between items-center group cursor-pointer"
+                      className="w-full text-left bg-white/5 hover:bg-violet-600/15 border border-white/10 p-2.5 rounded-xl transition-all flex justify-between items-center group cursor-pointer"
                     >
                       <div>
                         <span className="text-[9px] font-mono block text-gray-400 group-hover:text-white">Ref: {o.paymentReference}</span>
@@ -232,7 +232,7 @@ export const SMSConciliatorSimulator = () => {
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Banco</label>
-                  <select value={bank} onChange={e => setBank(e.target.value)} className="w-full bg-[violet-900] border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-[violet-600] text-white">
+                  <select value={bank} onChange={e => setBank(e.target.value)} className="w-full bg-violet-900 border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-violet-600 text-white">
                     <option value="Mercantil">Mercantil</option>
                     <option value="Banesco">Banesco</option>
                     <option value="Provincial">Provincial</option>
@@ -241,18 +241,18 @@ export const SMSConciliatorSimulator = () => {
                 </div>
                 <div>
                   <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Monto (Bs o $)</label>
-                  <input type="text" placeholder="Ej: 150,00" value={amount} onChange={e => setAmount(e.target.value)} className="w-full bg-[violet-900] border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-[violet-600] text-white font-mono placeholder:text-gray-400" />
+                  <input type="text" placeholder="Ej: 150,00" value={amount} onChange={e => setAmount(e.target.value)} className="w-full bg-violet-900 border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-violet-600 text-white font-mono placeholder:text-gray-400" />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Referencia</label>
-                  <input type="text" value={reference} onChange={e => setReference(e.target.value)} className="w-full bg-[violet-900] border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-[violet-600] text-white font-mono" placeholder="Ej: 123456" />
+                  <input type="text" value={reference} onChange={e => setReference(e.target.value)} className="w-full bg-violet-900 border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-violet-600 text-white font-mono" placeholder="Ej: 123456" />
                 </div>
                 <div>
                   <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Teléfono Emisor</label>
-                  <input type="text" placeholder="Ej: 04121234567" value={phone} onChange={e => setPhone(e.target.value)} className="w-full bg-[violet-900] border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-[violet-600] text-white font-mono placeholder:text-gray-400" />
+                  <input type="text" placeholder="Ej: 04121234567" value={phone} onChange={e => setPhone(e.target.value)} className="w-full bg-violet-900 border border-white/20 rounded-lg px-2.5 py-2 text-xs focus:outline-none focus:border-violet-600 text-white font-mono placeholder:text-gray-400" />
                 </div>
               </div>
 
@@ -262,7 +262,7 @@ export const SMSConciliatorSimulator = () => {
                   value={customSMS}
                   onChange={e => setCustomSMS(e.target.value)}
                   rows={3}
-                  className="w-full bg-[violet-900] border border-white/20 rounded-lg p-2.5 text-xs focus:outline-none focus:border-[violet-600] text-white font-mono"
+                  className="w-full bg-violet-900 border border-white/20 rounded-lg p-2.5 text-xs focus:outline-none focus:border-violet-600 text-white font-mono"
                 />
               </div>
             </div>
@@ -285,7 +285,7 @@ export const SMSConciliatorSimulator = () => {
             <button
               type="button"
               onClick={handleSimulateSync}
-              className="w-full py-4 bg-gradient-to-br from-[violet-600] to-[#a38063] text-[violet-900] font-black rounded-xl text-xs hover:scale-[1.02] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer"
+              className="w-full py-4 bg-gradient-to-br from-violet-600 to-[#a38063] text-violet-900 font-black rounded-xl text-xs hover:scale-[1.02] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer"
             >
               🚀 Detonar Conciliación Zero-Clic
             </button>

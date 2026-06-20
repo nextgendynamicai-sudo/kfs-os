@@ -1153,7 +1153,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                             </a>
                           )}
                           <div>
-                            <p className="font-bold text-sm text-[violet-900]">{name} <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded-full text-gray-500 uppercase ml-2">{t.userType}</span></p>
+                            <p className="font-bold text-sm text-violet-900">{name} <span className="text-[10px] bg-gray-100 px-2 py-0.5 rounded-full text-gray-500 uppercase ml-2">{t.userType}</span></p>
                             <p className="text-xs text-gray-500 font-mono mt-1">Ref: {t.paymentReference} | {new Date(t.timestamp).toLocaleString()}</p>
                           </div>
                         </div>

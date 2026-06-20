@@ -71,7 +71,7 @@ export function ProfileAvatarEditor({ currentUser }: ProfileAvatarEditorProps) {
               ✕
             </button>
             <h3 className="text-lg font-black text-sky-950 mb-2 flex items-center gap-2">
-              <Camera className="text-[violet-400]" /> Actualizar Perfil
+              <Camera className="text-violet-400" /> Actualizar Perfil
             </h3>
             <p className="text-xs text-slate-500 mb-6">Esta imagen será visible públicamente en tus comercios y/o enlaces KFS.</p>
             

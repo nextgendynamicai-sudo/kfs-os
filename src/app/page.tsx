@@ -334,10 +334,10 @@ export default function Home() {
 
   if (isBooting || !isClient) {
     return (
-      <div className="min-h-screen bg-[violet-900] flex flex-col items-center justify-center text-white">
+      <div className="min-h-screen bg-violet-900 flex flex-col items-center justify-center text-white">
         <div className="relative flex flex-col items-center">
           <img src="/kfs-loading.png" className="h-28 sm:h-32 w-auto animate-pulse mb-8 object-contain" alt="KFS OS" />
-          <div className="w-12 h-12 border-4 border-[violet-600]/20 border-t-[violet-600] rounded-full animate-spin" />
+          <div className="w-12 h-12 border-4 border-violet-600/20 border-t-violet-600 rounded-full animate-spin" />
           <p className="text-xs text-gray-500 font-mono mt-6">Loading core vectors...</p>
         </div>
       </div>
@@ -345,7 +345,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-[violet-900]">
+    <div className="min-h-screen bg-violet-900">
       <Toast toast={toast} />
 
       {ghostTrapLocked && (

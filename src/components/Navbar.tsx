@@ -150,7 +150,7 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
           <span className="font-normal">{latestNotif.message}</span>
         </div>
       )}
-      <nav className="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-white/5 bg-[violet-900] sticky top-0 z-40 backdrop-blur-md gap-3 w-full">
+      <nav className="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-white/5 bg-violet-900 sticky top-0 z-40 backdrop-blur-md gap-3 w-full">
         <div className="flex items-center gap-3">
           {showBack && (
             <button
@@ -183,7 +183,7 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
           {title && <span className="text-white/80 text-xs sm:text-sm uppercase tracking-wider font-mono bg-white/5 px-3 py-1.5 rounded-full">{title}</span>}
 
           {currentUser && currentUser.role !== "marketplace" && (
-            <label className="relative w-8 h-8 rounded-full border border-[violet-600]/50 cursor-pointer overflow-hidden flex items-center justify-center bg-white/10 hover:bg-white/20 transition-all shadow-inner group" title="Toca tu foto para actualizar tu imagen de perfil">
+            <label className="relative w-8 h-8 rounded-full border border-violet-600/50 cursor-pointer overflow-hidden flex items-center justify-center bg-white/10 hover:bg-white/20 transition-all shadow-inner group" title="Toca tu foto para actualizar tu imagen de perfil">
               <input
                 type="file"
                 accept="image/*"
@@ -222,7 +222,7 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
               {currentUser.avatar ? (
                 <img src={currentUser.avatar} className="w-full h-full object-cover" alt="Perfil" />
               ) : (
-                <div className="w-full h-full bg-[violet-600] text-[violet-900] font-black text-[10px] flex items-center justify-center">
+                <div className="w-full h-full bg-violet-600 text-violet-900 font-black text-[10px] flex items-center justify-center">
                   {currentUser.name ? currentUser.name.slice(0, 2).toUpperCase() : (currentUser.company ? currentUser.company.slice(0, 2).toUpperCase() : "KF")}
                 </div>
               )}

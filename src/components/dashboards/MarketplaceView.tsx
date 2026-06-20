@@ -131,7 +131,7 @@ export const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, curr
                 )}
               </div>
               <div className="mt-2 sm:mt-0 sm:ml-28">
-                <h2 className="text-3xl font-black text-[violet-900]">{activeStore.company}</h2>
+                <h2 className="text-3xl font-black text-violet-900">{activeStore.company}</h2>
                 <p className="text-sm text-gray-500 mt-1 max-w-xl">{settings.bioText || "Catálogo exclusivo de este negocio."}</p>
               </div>
               <div className="relative w-full sm:w-80 shrink-0">
@@ -141,7 +141,7 @@ export const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, curr
                   placeholder="Buscar en esta tienda..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[violet-600] text-gray-900 placeholder:text-gray-400"
+                  className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-violet-600 text-gray-900 placeholder:text-gray-400"
                 />
               </div>
             </div>
@@ -153,7 +153,7 @@ export const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, curr
                 <img src={profilePicUrl} alt="Store Logo" className="w-16 h-16 rounded-full object-cover border-2 shadow-sm" style={{ borderColor: themeColor }} />
               )}
               <div>
-                <h2 className="text-2xl font-black text-[violet-900]">{activeStore ? activeStore.company : "Centros Comerciales KFS"}</h2>
+                <h2 className="text-2xl font-black text-violet-900">{activeStore ? activeStore.company : "Centros Comerciales KFS"}</h2>
                 <p className="text-xs text-gray-500 mt-1">{activeStore ? (settings.bioText || "Catálogo exclusivo de este negocio.") : "Explora nuestras tiendas destacadas y descubre sus productos."}</p>
               </div>
             </div>
@@ -165,7 +165,7 @@ export const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, curr
                 placeholder={activeStore ? "Buscar en esta tienda..." : "Buscar comercio..."}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-[violet-600] text-gray-900 placeholder:text-gray-400"
+                className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-violet-600 text-gray-900 placeholder:text-gray-400"
               />
             </div>
           </div>
@@ -179,18 +179,18 @@ export const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, curr
                 return (
                   <div key={c.id} onClick={() => setActiveStoreId(c.id)} className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none p-6 rounded-3xl cursor-pointer hover:-translate-y-1 transition-transform group">
                     <div className="flex items-start justify-between mb-4">
-                      <div className="w-16 h-16 bg-[violet-900]/5 rounded-2xl flex items-center justify-center group-hover:bg-[violet-600]/10 transition-colors">
-                        <Store size={32} className="text-[violet-900] group-hover:text-[violet-600] transition-colors" />
+                      <div className="w-16 h-16 bg-violet-900/5 rounded-2xl flex items-center justify-center group-hover:bg-violet-600/10 transition-colors">
+                        <Store size={32} className="text-violet-900 group-hover:text-violet-600 transition-colors" />
                       </div>
                       <div className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full flex items-center gap-1 text-xs font-black">
                         <Star size={12} className="fill-yellow-600" /> {c.rating || "5.0"}
                       </div>
                     </div>
-                    <h3 className="text-xl font-black text-[violet-900]">{c.company}</h3>
+                    <h3 className="text-xl font-black text-violet-900">{c.company}</h3>
                     <p className="text-sm text-gray-500 line-clamp-1">{c.address || "Comercio Afiliado"}</p>
                     <div className="mt-4 pt-4 border-t border-gray-100 flex justify-between items-center text-xs font-bold text-gray-400">
                       <span>{pCount} Productos</span>
-                      <span className="text-[violet-600]">Entrar a la tienda &rarr;</span>
+                      <span className="text-violet-600">Entrar a la tienda &rarr;</span>
                     </div>
                   </div>
                 );
@@ -209,7 +209,7 @@ export const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, curr
         ) : (
           <>
             <div className="flex items-center justify-between mb-4">
-              <button onClick={() => { setActiveStoreId(null); setSearchQuery(""); }} className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-[violet-900] transition-colors">
+              <button onClick={() => { setActiveStoreId(null); setSearchQuery(""); }} className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-violet-900 transition-colors">
                 <ChevronLeft size={16} /> Volver a Tiendas
               </button>
             </div>
@@ -228,7 +228,7 @@ export const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, curr
 
             {featuredProducts.length > 0 && selectedCategory === "All" && searchQuery === "" && (
               <div className="mb-8">
-                <h3 className="text-lg font-black text-[violet-900] mb-4 flex items-center gap-2">
+                <h3 className="text-lg font-black text-violet-900 mb-4 flex items-center gap-2">
                   <Star className="text-yellow-500 fill-yellow-500" /> Productos Estrella
                 </h3>
                 <div className={`grid gap-6 ${layoutType === 'list' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 min-[400px]:grid-cols-2 md:grid-cols-4'}`}>
@@ -244,7 +244,7 @@ export const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, curr
                         </div>
                         <div className={`p-4 flex flex-col justify-between ${layoutType === 'list' ? 'w-full' : ''}`}>
                           <div>
-                            <h4 className="font-bold text-sm text-[violet-900] truncate mb-1">{p.name}</h4>
+                            <h4 className="font-bold text-sm text-violet-900 truncate mb-1">{p.name}</h4>
                             {p.description && <p className="text-[10px] text-gray-500 line-clamp-2 mt-0.5 leading-relaxed">{p.description}</p>}
                             <div className="flex justify-between items-center mt-2">
                               <div>
@@ -272,13 +272,13 @@ export const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, curr
                   <div className={layoutType === 'list' ? 'flex flex-row w-full h-full' : 'w-full'}>
                     <div className={`${layoutType === 'list' ? 'w-32 h-full' : 'h-44 w-full'} bg-gray-100 overflow-hidden relative shrink-0`}>
                       <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
-                      <span className="absolute bottom-2 left-2 text-[8px] bg-[violet-900]/80 text-[violet-600] font-black uppercase tracking-wider px-2 py-0.5 rounded-full border border-[violet-600]/20 backdrop-blur-sm">
+                      <span className="absolute bottom-2 left-2 text-[8px] bg-violet-900/80 text-violet-600 font-black uppercase tracking-wider px-2 py-0.5 rounded-full border border-violet-600/20 backdrop-blur-sm">
                         {p.category || "General"}
                       </span>
                     </div>
                     <div className={`p-4 flex flex-col justify-between ${layoutType === 'list' ? 'w-full' : ''}`}>
                       <div>
-                        <h4 className="font-bold text-sm text-[violet-900] truncate mb-1">{p.name}</h4>
+                        <h4 className="font-bold text-sm text-violet-900 truncate mb-1">{p.name}</h4>
                         {p.description && <p className="text-[10px] text-gray-500 line-clamp-2 mt-0.5 leading-relaxed">{p.description}</p>}
                         <div className="flex justify-between items-center mt-2">
                           <div>

@@ -30,8 +30,8 @@ export const ReferralLinksWidget = ({ userId, showToast }: { userId: string, sho
     <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8 mb-8 animate-fade-in">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h2 className="text-2xl font-black text-[violet-900] flex items-center gap-3">
-            <Link className="w-8 h-8 text-[violet-600]" />
+          <h2 className="text-2xl font-black text-violet-900 flex items-center gap-3">
+            <Link className="w-8 h-8 text-violet-600" />
             Red de Referidos
           </h2>
           <p className="text-gray-500 font-bold mt-2">Comparte tus enlaces directos. Cualquier persona que se registre quedará anclada a ti.</p>
@@ -43,13 +43,13 @@ export const ReferralLinksWidget = ({ userId, showToast }: { userId: string, sho
           const Icon = link.icon;
           const isCopied = copiedLink === link.role;
           return (
-            <div key={link.id} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm flex flex-col justify-between hover:border-[violet-300] transition-colors group">
+            <div key={link.id} className="bg-white rounded-2xl p-4 border border-gray-100 shadow-sm flex flex-col justify-between hover:border-violet-300 transition-colors group">
               <div className="flex items-start gap-4 mb-4">
-                <div className="w-12 h-12 rounded-xl bg-[violet-50] flex items-center justify-center flex-shrink-0 text-[violet-600]">
+                <div className="w-12 h-12 rounded-xl bg-violet-50 flex items-center justify-center flex-shrink-0 text-violet-600">
                   <Icon size={24} />
                 </div>
                 <div>
-                  <h4 className="font-bold text-[violet-900]">{link.label}</h4>
+                  <h4 className="font-bold text-violet-900">{link.label}</h4>
                   <p className="text-xs text-gray-500 mt-1">{link.description}</p>
                 </div>
               </div>
@@ -59,7 +59,7 @@ export const ReferralLinksWidget = ({ userId, showToast }: { userId: string, sho
                 className={`w-full py-3 rounded-xl font-bold flex items-center justify-center gap-2 cursor-pointer transition-all border-none ${
                   isCopied 
                   ? 'bg-green-100 text-green-700' 
-                  : 'bg-[#EEF2F5] text-[violet-900] hover:bg-[violet-600] hover:text-white'
+                  : 'bg-[#EEF2F5] text-violet-900 hover:bg-violet-600 hover:text-white'
                 }`}
               >
                 {isCopied ? <><CheckCircle size={18} /> Copiado</> : <><Copy size={18} /> Copiar Enlace Directo</>}

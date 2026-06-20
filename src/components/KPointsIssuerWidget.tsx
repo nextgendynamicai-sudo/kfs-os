@@ -42,7 +42,7 @@ export const KPointsIssuerWidget = ({ db, transferKFSPoints }: any) => {
   ).slice(0, 5); // Show only top 5 results to save space
 
   return (
-    <div className="bg-gradient-to-br from-[violet-900] to-sky-50 shadow-2xl border-none rounded-[2rem] p-8 animate-fade-in text-white relative overflow-hidden">
+    <div className="bg-gradient-to-br from-violet-900 to-sky-50 shadow-2xl border-none rounded-[2rem] p-8 animate-fade-in text-white relative overflow-hidden">
       <Gift size={120} className="absolute -right-10 -bottom-10 text-white/5 pointer-events-none" />
       
       <div className="relative z-10">

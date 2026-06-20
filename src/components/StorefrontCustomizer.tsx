@@ -114,7 +114,7 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
 
   return (
     <div className="bg-white p-6 md:p-8 rounded-[2rem] border border-gray-100 shadow-sm flex flex-col gap-6 h-full">
-      <h4 className="font-black text-[violet-900] text-lg flex items-center gap-2"><Palette className="text-[violet-600]" /> Personalizar Tienda</h4>
+      <h4 className="font-black text-violet-900 text-lg flex items-center gap-2"><Palette className="text-violet-600" /> Personalizar Tienda</h4>
       <p className="text-xs text-gray-500">Ajusta la apariencia visual de tu vitrina pública en Flow Express.</p>
 
       <div className="space-y-4 pt-4">
@@ -131,7 +131,7 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
                 )}
               </label>
               <div className="flex-grow">
-                <p className="text-xs font-bold text-[violet-900]">Subir desde Galería</p>
+                <p className="text-xs font-bold text-violet-900">Subir desde Galería</p>
                 <p className="text-[9px] text-gray-400 mt-0.5 leading-normal">Se guardará directamente en tu base de datos KFS.</p>
               </div>
             </div>
@@ -149,7 +149,7 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
                 )}
               </label>
               <div className="flex-grow">
-                <p className="text-xs font-bold text-[violet-900]">Subir desde Galería</p>
+                <p className="text-xs font-bold text-violet-900">Subir desde Galería</p>
                 <p className="text-[9px] text-gray-400 mt-0.5 leading-normal">Banner panorámico para tu Flow Express.</p>
               </div>
             </div>
@@ -158,7 +158,7 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
 
         <div className="flex flex-col gap-1">
           <label className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Biografía o Eslogan (Max 150 char)</label>
-          <textarea maxLength={150} value={settings.bioText} onChange={e => setSettings({ ...settings, bioText: e.target.value })} placeholder="Los mejores productos..." className="w-full h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-[violet-600] resize-none placeholder:text-gray-400" />
+          <textarea maxLength={150} value={settings.bioText} onChange={e => setSettings({ ...settings, bioText: e.target.value })} placeholder="Los mejores productos..." className="w-full h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-600 resize-none placeholder:text-gray-400" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -198,7 +198,7 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
               <Truck size={18} />
             </div>
             <div>
-              <h5 className="font-black text-[violet-900] text-sm">Dirección de Delivery</h5>
+              <h5 className="font-black text-violet-900 text-sm">Dirección de Delivery</h5>
               <p className="text-[10px] text-gray-400">Esta dirección se enviará al rider cuando despaches un pedido.</p>
             </div>
           </div>
@@ -246,7 +246,7 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
           </div>
         </div>
 
-        <button onClick={handleSave} className="w-full mt-4 bg-[violet-900] text-white py-3 rounded-xl font-bold hover:bg-gray-800 transition-colors">
+        <button onClick={handleSave} className="w-full mt-4 bg-violet-900 text-white py-3 rounded-xl font-bold hover:bg-gray-800 transition-colors">
           Guardar Diseño y Dirección
         </button>
       </div>

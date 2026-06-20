@@ -80,8 +80,8 @@ export const DatabaseManagerWidget = ({ db, deleteClient, deleteCustomer, delete
       <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2rem] p-8">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8 border-b border-gray-200 pb-6">
           <div>
-            <h2 className="text-2xl font-black text-[violet-900] flex items-center gap-3">
-              <Database className="w-8 h-8 text-[violet-600]" />
+            <h2 className="text-2xl font-black text-violet-900 flex items-center gap-3">
+              <Database className="w-8 h-8 text-violet-600" />
               Gestor de Base de Datos
             </h2>
             <p className="text-gray-500 font-bold mt-2">Control absoluto (CRUD) sobre las entidades del ecosistema KFS.</p>

@@ -51,7 +51,7 @@ export function UniversalWalletWidget({ currentUser, formatUSD, children }: Univ
     <div className="bg-white border border-[#3B82F6]/25 rounded-[2.5rem] p-6 md:p-8 shadow-[0_15px_50px_rgba(10,17,40,0.4)] text-sky-950 relative overflow-hidden space-y-6 animate-fade-in">
       {/* Background Decorative Rings */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-[#3B82F6]/5 rounded-full blur-[80px] -z-10 pointer-events-none"></div>
-      <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-[violet]/5 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
+      <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-violet-500/5 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
 
       <div className="flex flex-col md:flex-row justify-between gap-6 border-b border-white/5 pb-6">
         <div>

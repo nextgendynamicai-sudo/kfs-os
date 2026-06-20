@@ -219,17 +219,17 @@ export const CvViewerModal = ({ isOpen, onClose, candidate }: any) => {
 
   return (
     <div className="fixed inset-0 z-[99999] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-      <div className="bg-white text-[violet-900] rounded-[2rem] w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-white/20 animate-scale-up">
+      <div className="bg-white text-violet-900 rounded-[2rem] w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl border border-white/20 animate-scale-up">
         {/* Modal Actions */}
         <div className="bg-gray-50 border-b border-gray-100 p-5 flex justify-between items-center shrink-0">
           <div>
-            <h3 className="font-black text-lg text-[violet-900]">Previsualizar CV Digital</h3>
+            <h3 className="font-black text-lg text-violet-900">Previsualizar CV Digital</h3>
             <p className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Generador de PDF KFS OS</p>
           </div>
           <div className="flex gap-2">
             <button
               onClick={handlePrint}
-              className="bg-[violet-900] text-white hover:bg-gray-800 px-4 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-md transition-colors"
+              className="bg-violet-900 text-white hover:bg-gray-800 px-4 py-2 rounded-xl text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-md transition-colors"
             >
               🖨️ Imprimir / PDF
             </button>

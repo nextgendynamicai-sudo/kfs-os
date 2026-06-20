@@ -123,7 +123,7 @@ export const FiscalPrinterSetupWidget = () => {
             <Shield size={24} />
           </div>
           <div>
-            <h3 className="font-black text-sm text-[violet-900] uppercase tracking-wider">🛡️ Sincro-Shield Fiscal (SENIAT)</h3>
+            <h3 className="font-black text-sm text-violet-900 uppercase tracking-wider">🛡️ Sincro-Shield Fiscal (SENIAT)</h3>
             <p className="text-[10px] text-gray-500 mt-1">Conexión con impresoras fiscales de Venezuela en red local.</p>
           </div>
         </div>
@@ -147,7 +147,7 @@ export const FiscalPrinterSetupWidget = () => {
                 type="button"
                 onClick={testConnection}
                 disabled={testing}
-                className="bg-[violet-900] text-white px-4 rounded-xl font-bold text-xs hover:bg-gray-800 disabled:opacity-50 flex-shrink-0 cursor-pointer"
+                className="bg-violet-900 text-white px-4 rounded-xl font-bold text-xs hover:bg-gray-800 disabled:opacity-50 flex-shrink-0 cursor-pointer"
               >
                 {testing ? "Probando..." : "Probar"}
               </button>
@@ -155,7 +155,7 @@ export const FiscalPrinterSetupWidget = () => {
           </div>
 
           <div className="bg-gray-50 p-3 rounded-xl border border-gray-100 font-mono text-[9px] text-gray-500 space-y-1">
-            <p className="font-bold text-[violet-900] uppercase tracking-wider text-[8px]">Telemetría Local:</p>
+            <p className="font-bold text-violet-900 uppercase tracking-wider text-[8px]">Telemetría Local:</p>
             {details ? (
               <>
                 <p>• Impresora: <span className="text-green-600 font-bold">{details.model}</span></p>
@@ -168,14 +168,14 @@ export const FiscalPrinterSetupWidget = () => {
           </div>
         </div>
 
-        <div className="bg-[violet-900] text-white p-4 rounded-xl border border-white/5 flex flex-col justify-between">
+        <div className="bg-violet-900 text-white p-4 rounded-xl border border-white/5 flex flex-col justify-between">
           <p className="text-[10px] text-gray-300 leading-relaxed">
             Descarga el script `fiscal-proxy.js` y ejecútalo en la PC que tenga la impresora fiscal física conectada por serial.
           </p>
           <button
             type="button"
             onClick={downloadProxyScript}
-            className="w-full mt-2 py-2 bg-[violet-600] hover:bg-[#b08e72] text-[violet-900] font-black rounded-lg text-xs transition-colors cursor-pointer text-center"
+            className="w-full mt-2 py-2 bg-violet-600 hover:bg-[#b08e72] text-violet-900 font-black rounded-lg text-xs transition-colors cursor-pointer text-center"
           >
             Descargar fiscal-proxy.js
           </button>

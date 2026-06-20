@@ -352,7 +352,7 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
       {customizingClient && (
         <div className="fixed inset-0 bg-black/60 z-[99999] flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-white rounded-[2rem] w-full max-w-lg relative p-2 shadow-2xl">
-            <button onClick={() => setCustomizingClient(null)} className="absolute top-4 right-4 text-gray-400 hover:text-[violet-900] transition-colors cursor-pointer z-10">
+            <button onClick={() => setCustomizingClient(null)} className="absolute top-4 right-4 text-gray-400 hover:text-violet-900 transition-colors cursor-pointer z-10">
               <X size={24} />
             </button>
             <StorefrontCustomizer client={customizingClient} updateStoreSettings={(id: string, settings: any) => {
@@ -365,29 +365,29 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
 
       {activeManual && (
         <div className="fixed inset-0 bg-black/80 z-[99999] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
-          <div className="bg-white text-[violet-900] rounded-[2rem] w-full max-w-2xl max-h-[85vh] overflow-y-auto relative p-8 shadow-2xl border-4 border-[violet-900]">
-            <button onClick={() => setActiveManual(null)} className="absolute top-6 right-6 text-gray-500 hover:text-[violet-900] transition-colors cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200">
+          <div className="bg-white text-violet-900 rounded-[2rem] w-full max-w-2xl max-h-[85vh] overflow-y-auto relative p-8 shadow-2xl border-4 border-violet-900">
+            <button onClick={() => setActiveManual(null)} className="absolute top-6 right-6 text-gray-500 hover:text-violet-900 transition-colors cursor-pointer bg-gray-100 p-2 rounded-full hover:bg-gray-200">
               <X size={20} />
             </button>
 
             {activeManual === 'sales' && (
               <div>
-                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><BookOpen className="text-[violet-600]" size={28} /> Manual de Ventas: KFS Ecosistema</h2>
+                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><BookOpen className="text-violet-600" size={28} /> Manual de Ventas: KFS Ecosistema</h2>
                 <div className="space-y-5 text-gray-700 text-sm leading-relaxed">
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[violet-900] mb-1">1. Elevator Pitch (El Gancho):</p>
+                    <p className="font-black text-violet-900 mb-1">1. Elevator Pitch (El Gancho):</p>
                     <p>Kreatek Flow Systems OS no es solo un punto de venta. Es un sistema operativo integral que fusiona facturación fiscal, control de inventario y un marketplace E-Commerce automatizado llamado "Flow Express".</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[violet-900] mb-1">2. Beneficio Principal (Comercio):</p>
+                    <p className="font-black text-violet-900 mb-1">2. Beneficio Principal (Comercio):</p>
                     <p>Eliminación de hardware obsoleto. Nuestro Sincro-Shield fiscal proxy permite conectar la nube directamente con impresoras fiscales sin pagar licencias de terceros anuales altísimas.</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[violet-900] mb-1">3. Beneficio Principal (Tú como Promotor):</p>
+                    <p className="font-black text-violet-900 mb-1">3. Beneficio Principal (Tú como Promotor):</p>
                     <p>Recibes <span className="font-black text-green-600">20% de Revenue Share (Regalías)</span> de por vida sobre las comisiones generadas por los nodos comerciales que afilies. Esto es ingreso pasivo real y escalable.</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[violet-900] mb-1">4. Manejo de Objeciones:</p>
+                    <p className="font-black text-violet-900 mb-1">4. Manejo de Objeciones:</p>
                     <p>"Ya tengo un sistema". Respuesta: "KFS es gratis de instalar y de licencia perpetua en la nube. Reemplazamos sus licencias caras y les damos E-Commerce gratis integrado en una sola app web."</p>
                   </div>
                 </div>
@@ -395,22 +395,22 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
             )}
             {activeManual === 'implementation' && (
               <div>
-                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><Settings className="text-[violet-600]" size={28} /> Guía de Implementación KFS</h2>
+                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><Settings className="text-violet-600" size={28} /> Guía de Implementación KFS</h2>
                 <div className="space-y-5 text-gray-700 text-sm leading-relaxed">
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[violet-900] mb-1">1. Registro del Comercio:</p>
+                    <p className="font-black text-violet-900 mb-1">1. Registro del Comercio:</p>
                     <p>En este panel, haz clic en "+ Nuevo Setup". Llena los datos reales del comercio, asignando el email del dueño y una clave genérica para su primer acceso.</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[violet-900] mb-1">2. Configuración de Tarifa BOS:</p>
+                    <p className="font-black text-violet-900 mb-1">2. Configuración de Tarifa BOS:</p>
                     <p>El default es 3% del total facturado. Puedes negociar hasta un 1% para clientes de alto volumen. Ese % es de lo que tú ganarás el 20%.</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[violet-900] mb-1">3. Personalización UI:</p>
+                    <p className="font-black text-violet-900 mb-1">3. Personalización UI:</p>
                     <p>Usa el botón "Diseño" en la tabla de comercios para subir el logo del cliente, fondo y colores de su Flow Express Marketplace.</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[violet-900] mb-1">4. Carga de Inventario:</p>
+                    <p className="font-black text-violet-900 mb-1">4. Carga de Inventario:</p>
                     <p>Acompaña al dueño en la creación de los primeros 5 productos para asegurar que entienda cómo funciona el código de barras y la vinculación de precios base.</p>
                   </div>
                 </div>
@@ -418,22 +418,22 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
             )}
             {activeManual === 'installation' && (
               <div>
-                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><DownloadCloud className="text-[violet-600]" size={28} /> Setup Sincro-Shield Fiscal</h2>
+                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><DownloadCloud className="text-violet-600" size={28} /> Setup Sincro-Shield Fiscal</h2>
                 <div className="space-y-5 text-gray-700 text-sm leading-relaxed">
                   <div className="bg-red-50 border border-red-200 p-4 rounded-xl mb-4">
                     <p className="font-black text-red-800 text-xs uppercase tracking-widest mb-1">Obligatorio por Ley SENIAT</p>
                     <p className="text-red-700 text-xs">Esta integración garantiza que el comercio cumpla con las normativas fiscales venezolanas.</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[violet-900] mb-1">1. Requisitos de Hardware:</p>
+                    <p className="font-black text-violet-900 mb-1">1. Requisitos de Hardware:</p>
                     <p>Máquina fiscal compatible (Ej: The Factory HKA modelo Bixolon, Aclas) conectada por cable USB a la PC principal de Caja (Windows/Mac).</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[violet-900] mb-1">2. Descarga del Proxy Local:</p>
+                    <p className="font-black text-violet-900 mb-1">2. Descarga del Proxy Local:</p>
                     <p>En el dashboard del Cliente o Vendedor, se debe descargar "Sincro-Shield Fiscal Proxy" y tener Node.js instalado en el sistema operativo del cliente.</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
-                    <p className="font-black text-[violet-900] mb-1">4. Pruebas de Transmisión:</p>
+                    <p className="font-black text-violet-900 mb-1">4. Pruebas de Transmisión:</p>
                     <p>En KFS OS (Caja), abrir el Setup Sincro-Shield y presionar "Probar Conexión Proxy". Si responde, marcar la casilla "Imprimir Copias Fiscales por Defecto".</p>
                   </div>
                 </div>
