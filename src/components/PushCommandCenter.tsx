@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Send, Link as LinkIcon, Image as ImageIcon, Users } from "lucide-react";
+import { ImageUploadWidget } from "./ImageUploadWidget";
 
 export function PushCommandCenter({ currentUser }: any) {
   const [roles, setRoles] = useState<Record<string, boolean>>({
@@ -132,14 +133,12 @@ export function PushCommandCenter({ currentUser }: any) {
             </div>
             <div>
               <label className="text-xs font-bold text-violet-900 uppercase tracking-wider block mb-2 flex items-center gap-2">
-                <ImageIcon size={14} /> 4. URL de Imagen (Opcional)
+                <ImageIcon size={14} /> 4. Adjuntar Imagen (Opcional)
               </label>
-              <input 
-                type="url" 
-                value={imageUrl}
-                onChange={e => setImageUrl(e.target.value)}
-                placeholder="https://ejemplo.com/imagen.jpg"
-                className="w-full bg-white px-4 py-3 rounded-xl border-none shadow-inner focus:ring-2 focus:ring-violet-400 outline-none text-sm"
+              <ImageUploadWidget 
+                onImageSelected={(base64) => setImageUrl(base64)} 
+                currentImage={imageUrl} 
+                className="h-32" 
               />
             </div>
           </div>

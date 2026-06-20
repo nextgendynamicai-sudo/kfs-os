@@ -92,7 +92,7 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
     const file = e.target.files?.[0];
     if (file) {
       try {
-        const base64 = await compressImage(file, 200, 0.6);
+        const base64 = await compressImage(file, 200, 0.5);
         setSettings((prev: any) => ({ ...prev, profilePicUrl: base64 }));
       } catch (err) {
         alert("Error al comprimir/subir imagen");
@@ -104,7 +104,7 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
     const file = e.target.files?.[0];
     if (file) {
       try {
-        const base64 = await compressImage(file, 600, 0.6);
+        const base64 = await compressImage(file, 600, 0.5);
         setSettings((prev: any) => ({ ...prev, coverPhotoUrl: base64 }));
       } catch (err) {
         alert("Error al comprimir/subir imagen");

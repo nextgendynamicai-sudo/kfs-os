@@ -17,6 +17,7 @@ import { RecruitmentWidget } from "../RecruitmentWidget";
 import { ScannerView } from "../ScannerView";
 
 import React, { useState, useEffect, useRef } from "react";
+import { QRCodeSVG } from "qrcode.react";
 import {
   Camera, Upload, ShoppingCart, TrendingUp, Users, DollarSign,
   LogOut, Shield, Package, Activity, Search, QrCode, Lock,
@@ -1404,7 +1405,6 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                     host = window.location.origin + window.location.pathname;
                   }
                   const url = `${host}?role=${invite.role}&ref=arquitecto`;
-                  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(url)}`;
                   return (
                     <div key={idx} className="bg-sky-50/50 border border-sky-100 p-6 rounded-2xl flex flex-col items-center text-center shadow-sm placeholder:text-slate-400">
                       <h4 className="font-black text-sky-950 mb-4">{invite.title}</h4>
@@ -1412,7 +1412,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                         <Users size={32} />
                       </div>
                       <div className="bg-white p-2 rounded-xl border border-sky-100 shadow-sm mb-4">
-                        <img src={qrUrl} alt={`QR ${invite.title}`} className="w-32 h-32 rounded-lg" />
+                        <QRCodeSVG value={url} size={128} bgColor="#ffffff" fgColor="#0c4a6e" level="Q" />
                       </div>
                       <input type="text" readOnly value={url} className="w-full text-[10px] bg-white border border-sky-200 rounded p-2 text-slate-500 mb-2 focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200" />
                       <button onClick={() => { navigator.clipboard.writeText(url); showToast('Enlace copiado', 'success'); }} className="w-full py-2 bg-sky-600 text-white font-bold text-xs rounded hover:bg-sky-700 transition-colors shadow-md shadow-sky-600/30 cursor-pointer">Copiar Enlace</button>

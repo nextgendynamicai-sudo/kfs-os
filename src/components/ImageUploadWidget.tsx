@@ -21,7 +21,7 @@ export function ImageUploadWidget({ label = "Subir Imagen", onImageSelected, cur
     setIsLoading(true);
     try {
       // Comprimir la imagen para que no pese más de lo necesario
-      const compressedBase64 = await compressImage(file, 800, 0.7);
+      const compressedBase64 = await compressImage(file, 600, 0.5);
       setPreview(compressedBase64);
       onImageSelected(compressedBase64);
     } catch (error) {
