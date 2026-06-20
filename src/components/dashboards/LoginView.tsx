@@ -176,11 +176,22 @@ export const LoginView = ({ handleLogin, registerClient, registerPromotora, db, 
               {(activeTab === "core" || activeTab === "promotora" || activeTab === "dueño" || activeTab === "vendedor" || activeTab === "customer" || activeTab === "rider") && (
                 <div className="space-y-4">
                   {(activeTab === "dueño" || activeTab === "vendedor" || activeTab === "promotora" || activeTab === "customer" || activeTab === "rider") && (
-                    <input type="text" placeholder={activeTab === "customer" ? "Número de Teléfono (Ej: +584141234567)" : "Correo Electrónico de Usuario"} value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl px-4 py-4 text-sky-950 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all" />
+                    <div className="relative">
+                      <label className="block text-xs font-black text-sky-700 uppercase tracking-widest mb-1 ml-1">
+                        {activeTab === "customer" ? "Teléfono Móvil Registrado" : "Correo Electrónico de Acceso"}
+                      </label>
+                      <div className="relative">
+                        {activeTab === "customer" ? <Smartphone className="absolute left-4 top-4 text-sky-400" size={20} /> : <Info className="absolute left-4 top-4 text-sky-400" size={20} />}
+                        <input type="text" placeholder={activeTab === "customer" ? "Ej: +584141234567" : "usuario@correo.com"} value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl pl-12 pr-4 py-4 text-sky-950 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all" />
+                      </div>
+                    </div>
                   )}
                   <div className="relative">
-                    <Lock className="absolute left-4 top-4 text-sky-400" size={20} />
-                    <input type="password" placeholder="Clave de Seguridad" value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl pl-12 pr-4 py-4 text-sky-950 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all" />
+                    <label className="block text-xs font-black text-sky-700 uppercase tracking-widest mb-1 ml-1">Contraseña de Acceso</label>
+                    <div className="relative">
+                      <Lock className="absolute left-4 top-4 text-sky-400" size={20} />
+                      <input type="password" placeholder="Ingresa tu clave de seguridad" value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl pl-12 pr-4 py-4 text-sky-950 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all" />
+                    </div>
                   </div>
                   <button onClick={() => handleLogin(activeTab, password, email)} className="w-full py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-sky-600/30 border-none text-white bg-sky-600 cursor-pointer">
                     Entrar a mi Panel <ChevronRight size={20} />

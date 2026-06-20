@@ -42,34 +42,48 @@ export function PushCommandCenter({ currentUser }: any) {
       return;
     }
 
-    const selectedRoles = Object.entries(roles).filter(([k, v]) => v && k !== 'todos').map(([k]) => k);
-    if (selectedRoles.length === 0) {
-      alert("Selecciona al menos una audiencia.");
-      return;
-    }
+      const selectedRoles = Object.entries(roles).filter(([k, v]) => v && k !== 'todos').map(([k]) => k);
+      if (selectedRoles.length === 0) {
+        alert("Selecciona al menos una audiencia.");
+        return;
+      }
+  
+      // Map plural Spanish UI roles to KFS internal roles
+      const roleMapping: Record<string, string> = {
+        clientes: 'customer',
+        dueños: 'dueño',
+        promotoras: 'promotora',
+        vendedores: 'vendedor',
+        riders: 'rider'
+      };
+      const internalRoles = selectedRoles.map(r => roleMapping[r] || r);
+  
+      setIsSending(true);
+      try {
+        // 1. Enviar a notificaciones PWA Internas (Campanita)
+        internalRoles.forEach(role => {
+          sendNotification(role, title, message);
+        });
+  
+        // 2. Intentar enviar notificación Push Nativa via Supabase Edge Function
+        const { supabase } = await import("../context/supabase");
+        if (supabase.functions) {
+          const { data, error } = await supabase.functions.invoke('push-notify', {
+            body: {
+              title,
+              body: message,
+              image: imageUrl,
+              roles: internalRoles,
+            destinationType,
+            destinationValue
+          }
+        });
 
-    setIsSending(true);
-    try {
-      // 1. Enviar a notificaciones PWA Internas (Campanita)
-      selectedRoles.forEach(role => {
-        sendNotification(role, title, message);
-      });
-
-      // 2. Intentar enviar notificación Push Nativa via Supabase Edge Function
-      const { supabase } = await import("../context/supabase");
-      const { data, error } = await supabase.functions.invoke('push-notify', {
-        body: {
-          title,
-          body: message,
-          image: imageUrl,
-          roles: selectedRoles,
-          destinationType,
-          destinationValue
+        if (error) {
+          console.warn("[Push] La función Edge no está desplegada o falló. Fallback a PWA interna activa.", error.message);
         }
-      });
-
-      if (error) {
-        console.warn("[Push] La función Edge no está desplegada o falló. Fallback a PWA interna activa.", error.message);
+      } else {
+        console.warn("[Push] Supabase functions no está disponible en este entorno. Fallback a PWA interna activa.");
       }
       
       alert("Notificaciones enviadas exitosamente!");

@@ -128,14 +128,48 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
         </label>
       </div>
 
-      <input required placeholder="Nombre Completo" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, name: e.target.value })} />
-      <input required placeholder="Cédula / RIF" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, idCard: e.target.value })} />
-      <input required placeholder="Nombre de la Empresa" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, company: e.target.value })} />
-      <textarea required placeholder="Dirección Comercial" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, address: e.target.value })} />
-      <input required type="number" placeholder="Facturación Promedio Diaria ($)" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, avgBilling: e.target.value })} />
+      <div className="relative">
+        <label className={`block text-xs font-black uppercase tracking-widest mb-1 ml-1 ${standalone ? "text-sky-700" : "text-sky-800"}`}>Nombre Completo</label>
+        <div className="relative">
+          <UserCheck className="absolute left-4 top-3.5 text-sky-400" size={20} />
+          <input required placeholder="Ej: Juan Pérez" className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+        </div>
+      </div>
+
+      <div className="relative">
+        <label className={`block text-xs font-black uppercase tracking-widest mb-1 ml-1 ${standalone ? "text-sky-700" : "text-sky-800"}`}>Cédula / RIF</label>
+        <div className="relative">
+          <FileText className="absolute left-4 top-3.5 text-sky-400" size={20} />
+          <input required placeholder="Ej: V-12345678 o J-12345678" className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, idCard: e.target.value })} />
+        </div>
+      </div>
+
+      <div className="relative">
+        <label className={`block text-xs font-black uppercase tracking-widest mb-1 ml-1 ${standalone ? "text-sky-700" : "text-sky-800"}`}>Nombre de la Empresa / Comercio</label>
+        <div className="relative">
+          <Store className="absolute left-4 top-3.5 text-sky-400" size={20} />
+          <input required placeholder="Ej: Inversiones El Sol C.A." className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, company: e.target.value })} />
+        </div>
+      </div>
+
+      <div className="relative">
+        <label className={`block text-xs font-black uppercase tracking-widest mb-1 ml-1 ${standalone ? "text-sky-700" : "text-sky-800"}`}>Dirección Comercial Exacta</label>
+        <div className="relative">
+          <MapPin className="absolute left-4 top-4 text-sky-400" size={20} />
+          <textarea required placeholder="Calle, Avenida, Centro Comercial, Local..." className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all h-20 resize-none ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, address: e.target.value })} />
+        </div>
+      </div>
+
+      <div className="relative">
+        <label className={`block text-xs font-black uppercase tracking-widest mb-1 ml-1 ${standalone ? "text-sky-700" : "text-sky-800"}`}>Facturación Promedio Diaria ($)</label>
+        <div className="relative">
+          <DollarSign className="absolute left-4 top-3.5 text-sky-400" size={20} />
+          <input required type="number" placeholder="Ej: 500" className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, avgBilling: e.target.value })} />
+        </div>
+      </div>
 
       <div className="flex flex-col mb-2">
-        <label className={`text-xs font-bold mb-2 uppercase tracking-widest ${standalone ? "text-slate-400" : "text-slate-500"}`}>Tarifa BOS (Comisión Kreatek)</label>
+        <label className={`text-xs font-black mb-1 ml-1 uppercase tracking-widest ${standalone ? "text-sky-700" : "text-sky-800"}`}>Tarifa BOS (Comisión Kreatek)</label>
         <select required value={formData.kfsFeePercentage} onChange={e => setFormData({ ...formData, kfsFeePercentage: parseFloat(e.target.value) })} className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all font-bold cursor-pointer ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`}>
           <option value={0.03}>Plan Base (3%)</option>
           <option value={0.05}>Plan Estándar (5%)</option>
@@ -143,9 +177,29 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
         </select>
       </div>
 
-      <input required placeholder="Teléfono Personal" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
-      <input required type="email" placeholder="Correo Electrónico" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, email: e.target.value })} />
-      <input required type="password" placeholder="Crear Clave de Acceso" className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, password: e.target.value })} />
+      <div className="relative">
+        <label className={`block text-xs font-black uppercase tracking-widest mb-1 ml-1 ${standalone ? "text-sky-700" : "text-sky-800"}`}>Teléfono Personal</label>
+        <div className="relative">
+          <Smartphone className="absolute left-4 top-3.5 text-sky-400" size={20} />
+          <input required placeholder="Ej: 04141234567" className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
+        </div>
+      </div>
+      
+      <div className="relative">
+        <label className={`block text-xs font-black uppercase tracking-widest mb-1 ml-1 ${standalone ? "text-sky-700" : "text-sky-800"}`}>Correo Electrónico</label>
+        <div className="relative">
+          <Info className="absolute left-4 top-3.5 text-sky-400" size={20} />
+          <input required type="email" placeholder="ejemplo@correo.com" className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, email: e.target.value })} />
+        </div>
+      </div>
+      
+      <div className="relative">
+        <label className={`block text-xs font-black uppercase tracking-widest mb-1 ml-1 ${standalone ? "text-sky-700" : "text-sky-800"}`}>Crear Clave de Acceso</label>
+        <div className="relative">
+          <Lock className="absolute left-4 top-3.5 text-sky-400" size={20} />
+          <input required type="password" placeholder="Mínimo 6 caracteres" className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, password: e.target.value })} />
+        </div>
+      </div>
 
       <div className="flex items-start gap-2 pt-2 mb-2">
         <input type="checkbox" required checked={acceptedToS} onChange={(e) => setAcceptedToS(e.target.checked)} className="mt-1 cursor-pointer" />
