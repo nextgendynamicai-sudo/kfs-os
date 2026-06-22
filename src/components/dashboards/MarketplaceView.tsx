@@ -274,7 +274,7 @@ export const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, curr
                   <div className={layoutType === 'list' ? 'flex flex-row w-full h-full' : 'w-full'}>
                     <div className={`${layoutType === 'list' ? 'w-32 h-full' : 'h-44 w-full'} bg-gray-100 overflow-hidden relative shrink-0`}>
                       <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
-                      <span className="absolute bottom-2 left-2 text-[8px] bg-violet-900/80 text-violet-600 font-black uppercase tracking-wider px-2 py-0.5 rounded-full border border-violet-600/20 backdrop-blur-sm">
+                      <span className="absolute bottom-2 left-2 text-[8px] bg-violet-900/80 text-white font-black uppercase tracking-wider px-2 py-0.5 rounded-full border border-white/20 backdrop-blur-sm">
                         {p.category || "General"}
                       </span>
                     </div>
