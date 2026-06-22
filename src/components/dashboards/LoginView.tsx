@@ -160,7 +160,7 @@ export const LoginView = ({ handleLogin, registerClient, registerPromotora, db, 
               </div>
 
               <div className="flex flex-wrap justify-center gap-2 mb-8">
-                <button onClick={() => setActiveTab("marketplace")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "marketplace" ? "bg-sky-600 text-white shadow-md" : "bg-sky-50 text-sky-600 hover:text-sky-800"}`}>Flow Exp.</button>
+                <button onClick={() => setActiveTab("marketplace")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "marketplace" ? "bg-sky-600 text-white shadow-md" : "bg-sky-50 text-sky-600 hover:text-sky-800"}`}>Nitro Market</button>
                 <button onClick={() => setActiveTab("customer")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "customer" ? "bg-sky-600 text-white shadow-md" : "bg-sky-50 text-sky-600 hover:text-sky-800"}`}>Cliente</button>
                 <button onClick={() => setActiveTab("dueño")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "dueño" ? "bg-sky-600 text-white shadow-md" : "bg-sky-50 text-sky-600 hover:text-sky-800"}`}>Dueño</button>
                 <button onClick={() => setActiveTab("vendedor")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "vendedor" ? "bg-sky-600 text-white shadow-md" : "bg-sky-50 text-sky-600 hover:text-sky-800"}`}>Vendedor</button>
@@ -171,7 +171,7 @@ export const LoginView = ({ handleLogin, registerClient, registerPromotora, db, 
 
               {activeTab === "marketplace" && (
                 <button onClick={() => handleLogin("marketplace", "")} className="w-full py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-sky-600/30 border-none text-white bg-sky-600 cursor-pointer">
-                  <ShoppingCart size={20} /> Entrar a Flow Express
+                  <ShoppingCart size={20} /> Entrar a Nitro Market
                 </button>
               )}
 

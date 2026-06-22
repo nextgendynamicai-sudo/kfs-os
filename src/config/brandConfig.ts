@@ -14,7 +14,7 @@ export const KFS_BRAND = {
   // Módulos del Producto
   modules: {
     backend: "Axis OS",
-    marketplace: "Nitro",
+    marketplace: "Nitro Market",
     logistics: "Nitro Squad",
     partner: "Kreatek Operator", // Antes: Partner/Dueño/Tienda/Comercio
   },

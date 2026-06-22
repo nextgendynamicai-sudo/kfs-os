@@ -99,6 +99,12 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
   const [activeTab, setActiveTab] = useState("panel"); // panel | negocios | afiliados
   const [activeManual, setActiveManual] = useState<string | null>(null);
   const [showPayoutModal, setShowPayoutModal] = useState(false);
+  const [hostUrl, setHostUrl] = useState("https://kfs-os.vercel.app");
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setHostUrl(window.location.origin);
+    }
+  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50 pb-24 font-sans text-sky-950 relative">
@@ -392,7 +398,7 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
                 <div className="space-y-5 text-gray-700 text-sm leading-relaxed">
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
                     <p className="font-black text-violet-900 mb-1">1. Elevator Pitch (El Gancho):</p>
-                    <p>Kreatek Flow Systems OS no es solo un punto de venta. Es un sistema operativo integral que fusiona facturación fiscal, control de inventario y un marketplace E-Commerce automatizado llamado "Flow Express".</p>
+                    <p>Kreatek Flow Systems OS no es solo un punto de venta. Es un sistema operativo integral que fusiona facturación fiscal, control de inventario y un marketplace E-Commerce automatizado llamado "Nitro Market".</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
                     <p className="font-black text-violet-900 mb-1">2. Beneficio Principal (Comercio):</p>
@@ -423,7 +429,7 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
                     <p className="font-black text-violet-900 mb-1">3. Personalización UI:</p>
-                    <p>Usa el botón "Diseño" en la tabla de comercios para subir el logo del cliente, fondo y colores de su Flow Express {KFS_BRAND.modules.marketplace}.</p>
+                    <p>Usa el botón "Diseño" en la tabla de comercios para subir el logo del cliente, fondo y colores de su {KFS_BRAND.modules.marketplace}.</p>
                   </div>
                   <div className="bg-gray-50 p-4 rounded-xl border border-gray-200">
                     <p className="font-black text-violet-900 mb-1">4. Carga de Inventario:</p>
@@ -467,26 +473,26 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
               <div className="bg-sky-50/50 shadow-sm border border-sky-100 rounded-2xl p-5 flex flex-col items-center gap-3 text-center">
                 <h4 className="font-black text-lg mb-1">🏪 Dueños / Comercios</h4>
                 <div className="w-36 h-36 bg-white rounded-xl border border-sky-200 p-1.5 shadow-sm">
-                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://kfs-os.vercel.app?role=due%C3%B1o&ref=' + currentUser.id)}`} alt="QR Dueños" className="w-full h-full object-contain rounded-lg" loading="lazy" />
+                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(hostUrl + '?role=dueño&ref=' + currentUser.id)}`} alt="QR Dueños" className="w-full h-full object-contain rounded-lg" loading="lazy" />
                 </div>
                 <p className="text-xs text-slate-500 leading-tight">Ganas <strong className="text-sky-700">50% de la cuota</strong> + 20% regalías de por vida.</p>
-                <button onClick={() => { navigator.clipboard.writeText('https://kfs-os.vercel.app?role=due%C3%B1o&ref=' + currentUser.id); showToast('Enlace copiado', 'success'); }} className="text-[10px] font-black text-sky-700 bg-sky-100 hover:bg-sky-200 px-3 py-1.5 rounded-lg cursor-pointer w-full transition-colors border border-sky-200">📋 Copiar Enlace Comercios</button>
+                <button onClick={() => { navigator.clipboard.writeText(hostUrl + '?role=dueño&ref=' + currentUser.id); showToast('Enlace copiado', 'success'); }} className="text-[10px] font-black text-sky-700 bg-sky-100 hover:bg-sky-200 px-3 py-1.5 rounded-lg cursor-pointer w-full transition-colors border border-sky-200">📋 Copiar Enlace Comercios</button>
               </div>
               <div className="bg-sky-50/50 shadow-sm border border-sky-100 rounded-2xl p-5 flex flex-col items-center gap-3 text-center">
                 <h4 className="font-black text-lg mb-1">👨‍💼 Fuerza de Ventas</h4>
                 <div className="w-36 h-36 bg-white rounded-xl border border-sky-200 p-1.5 shadow-sm">
-                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://kfs-os.vercel.app?role=vendedor&ref=' + currentUser.id)}`} alt="QR Vendedores" className="w-full h-full object-contain rounded-lg" loading="lazy" />
+                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(hostUrl + '?role=vendedor&ref=' + currentUser.id)}`} alt="QR Vendedores" className="w-full h-full object-contain rounded-lg" loading="lazy" />
                 </div>
                 <p className="text-xs text-slate-500 leading-tight">Recluta vendedores para tus comercios y expande tu red de ventas físicas.</p>
-                <button onClick={() => { navigator.clipboard.writeText('https://kfs-os.vercel.app?role=vendedor&ref=' + currentUser.id); showToast('Enlace copiado', 'success'); }} className="text-[10px] font-black text-sky-700 bg-sky-100 hover:bg-sky-200 px-3 py-1.5 rounded-lg cursor-pointer w-full transition-colors border border-sky-200">📋 Copiar Enlace Vendedores</button>
+                <button onClick={() => { navigator.clipboard.writeText(hostUrl + '?role=vendedor&ref=' + currentUser.id); showToast('Enlace copiado', 'success'); }} className="text-[10px] font-black text-sky-700 bg-sky-100 hover:bg-sky-200 px-3 py-1.5 rounded-lg cursor-pointer w-full transition-colors border border-sky-200">📋 Copiar Enlace Vendedores</button>
               </div>
               <div className="bg-sky-50/50 shadow-sm border border-sky-100 rounded-2xl p-5 flex flex-col items-center gap-3 text-center">
-                <h4 className="font-black text-lg mb-1">🛒 Clientes / Flow Express</h4>
+                <h4 className="font-black text-lg mb-1">🛒 Clientes / {KFS_BRAND.modules.marketplace}</h4>
                 <div className="w-36 h-36 bg-white rounded-xl border border-sky-200 p-1.5 shadow-sm">
-                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://kfs-os.vercel.app?role=customer&ref=' + currentUser.id)}`} alt="QR Clientes" className="w-full h-full object-contain rounded-lg" loading="lazy" />
+                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(hostUrl + '?role=customer&ref=' + currentUser.id)}`} alt="QR Clientes" className="w-full h-full object-contain rounded-lg" loading="lazy" />
                 </div>
                 <p className="text-xs text-slate-500 leading-tight">Ganas <strong className="text-emerald-700">$1.00 USD</strong> cuando tu referido recarga sus primeros $5.00 USD.</p>
-                <button onClick={() => { navigator.clipboard.writeText('https://kfs-os.vercel.app?role=customer&ref=' + currentUser.id); showToast('Enlace copiado', 'success'); }} className="text-[10px] font-black text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-3 py-1.5 rounded-lg cursor-pointer w-full transition-colors border border-emerald-200">📋 Copiar Enlace Clientes</button>
+                <button onClick={() => { navigator.clipboard.writeText(hostUrl + '?role=customer&ref=' + currentUser.id); showToast('Enlace copiado', 'success'); }} className="text-[10px] font-black text-emerald-700 bg-emerald-100 hover:bg-emerald-200 px-3 py-1.5 rounded-lg cursor-pointer w-full transition-colors border border-emerald-200">📋 Copiar Enlace Clientes</button>
               </div>
             </div>
             <div className="mt-6 pt-6 border-t border-sky-100 flex flex-col sm:flex-row items-center justify-between gap-4">

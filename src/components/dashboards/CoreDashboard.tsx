@@ -39,6 +39,7 @@ import { ProfileAvatarEditor } from "../ProfileAvatarEditor";
 
 import { FlowExpressCatalog } from "../FlowExpressCatalog";
 import { B2BSelfOnboarding } from "../B2BSelfOnboarding";
+import { AxisNitroPOS } from "../AxisNitroPOS";
 import { DatabaseManagerWidget } from "../DatabaseManagerWidget";
 import { ReferralLinksWidget } from "../ReferralLinksWidget";
 import { KPointsIssuerWidget } from "../KPointsIssuerWidget";
@@ -1754,6 +1755,12 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
           />
         )}
 
+        {activeTab === "axis_nitro_pos" && (
+          <div className="animate-fade-in relative z-10 pb-16">
+            <AxisNitroPOS />
+          </div>
+        )}
+
         {activeTab === "tienda_oficial" && (
           <div className="space-y-8 flex flex-col animate-fade-in relative">
               <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 rounded-[2rem] p-8 text-center flex flex-col items-center">
@@ -1824,8 +1831,9 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             { id: "kyc", icon: FileText, label: "Bóveda KYC" },
             { id: "nodos", icon: QrCode, label: `Nodos ${KFS_BRAND.productAcronym}` },
             { id: "vista_dios", icon: Eye, label: "Vista Dios" },
+            { id: "axis_nitro_pos", icon: Zap, label: "POS Demo" },
             { id: "db_manager", icon: Database, label: "Gestión DB" },
-            { id: "tienda_oficial", icon: Store, label: `{KFS_BRAND.modules.marketplace} ${KFS_BRAND.productAcronym}` }
+            { id: "tienda_oficial", icon: Store, label: `${KFS_BRAND.modules.marketplace} ${KFS_BRAND.productAcronym}` }
           ].map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;

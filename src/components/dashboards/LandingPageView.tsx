@@ -88,9 +88,6 @@ export const LandingPageView = ({ setView }: any) => {
           <KreatekLogo className="h-8 w-auto text-sky-600" />
         </div>
         <div className="flex gap-4">
-          <button onClick={() => setView("axis_nitro_pos")} className="text-violet-600 border border-violet-200 bg-violet-50 hover:bg-violet-100 text-xs sm:text-sm font-bold px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1 shadow-sm hover:scale-105">
-            ⚡ Axis Nitro POS (Demo)
-          </button>
           <button onClick={() => setView("login")} className="text-sm font-bold text-sky-700 hover:text-sky-900 transition-colors cursor-pointer pt-2">
             Soy Cliente
           </button>
@@ -158,7 +155,7 @@ export const LandingPageView = ({ setView }: any) => {
             <div className="w-14 h-14 bg-sky-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
               <ShoppingCart className="text-sky-600" size={28} />
             </div>
-            <h3 className="text-xl font-black mb-3 text-sky-950">Flow Express (E-Commerce)</h3>
+            <h3 className="text-xl font-black mb-3 text-sky-950">Nitro Market (E-Commerce)</h3>
             <p className="text-sm text-slate-500 leading-relaxed">Tu inventario físico se refleja automáticamente en tu vitrina e-commerce gratuita. Los clientes compran online en tiempo real.</p>
           </div>
 
