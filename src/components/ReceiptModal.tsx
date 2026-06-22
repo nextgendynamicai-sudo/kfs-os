@@ -125,7 +125,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
               <span className="text-3xl font-black text-white block">{formatUSD(tx.amountUSD)}</span>
               {tx.kfsPointsEarned > 0 && (
                 <div className="mt-1 bg-sky-600/10 rounded-lg py-1 px-2 inline-block">
-                  <span className="text-[10px] font-black text-sky-600">+{tx.kfsPointsEarned.toFixed(1)} {KFS_BRAND.productAcronym} Pts Ganados</span>
+                  <span className="text-[10px] font-black text-sky-600">+{tx.kfsPointsEarned.toFixed(1)} {KFS_BRAND.economy.currency} Ganados</span>
                 </div>
               )}
             </div>
@@ -159,7 +159,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
             
             {tx.customerPhone ? (
               <a 
-                href={`https://wa.me/58${tx.customerPhone.replace(/^0+/, '').replace(/[^0-9]/g, '')}?text=Hola ${tx.customerName || 'Cliente'}, ¡Gracias por tu compra en ${product?.clientName || 'KFS ECOSISTEMA'}!%0A%0A*Recibo KFS: ${tx.receiptNumber}*${tx.isFiscal ? `%0A*Factura Fiscal / Control: 00-${Math.floor(10000 + Math.random() * 89999)}*` : ''}%0AProducto: ${product?.name} ${tx.isFiscal ? '(G)' : '(E)'}%0A${tx.isFiscal ? `Base Imponible: ${formatUSD(tx.baseUSD)}%0A` : ''}IVA: ${formatUSD(tx.ivaUSD)}%0AIGTF: ${formatUSD(tx.igtfUSD)}%0A%0ATasa Oficial BCV: ${tx.exchangeRateBCV?.toFixed(2)} Bs%0A*Total Pagado (USD): ${formatUSD(tx.amountUSD)}*%0A*Total Pagado (Bs): ${(tx.amountUSD * (tx.exchangeRateBCV || 36.5)).toFixed(2)} Bs*${tx.kfsPointsEarned > 0 ? `%0A%0A🎁 ¡Felicidades! Acumulaste +${tx.kfsPointsEarned.toFixed(1)} {KFS_BRAND.productAcronym} Points con esta compra.` : ''}%0A%0ARecibo Digital Oficial {KFS_BRAND.productAcronym}.`}
+                href={`https://wa.me/58${tx.customerPhone.replace(/^0+/, '').replace(/[^0-9]/g, '')}?text=Hola ${tx.customerName || 'Cliente'}, ¡Gracias por tu compra en ${product?.clientName || 'KFS ECOSISTEMA'}!%0A%0A*Recibo KFS: ${tx.receiptNumber}*${tx.isFiscal ? `%0A*Factura Fiscal / Control: 00-${Math.floor(10000 + Math.random() * 89999)}*` : ''}%0AProducto: ${product?.name} ${tx.isFiscal ? '(G)' : '(E)'}%0A${tx.isFiscal ? `Base Imponible: ${formatUSD(tx.baseUSD)}%0A` : ''}IVA: ${formatUSD(tx.ivaUSD)}%0AIGTF: ${formatUSD(tx.igtfUSD)}%0A%0ATasa Oficial BCV: ${tx.exchangeRateBCV?.toFixed(2)} Bs%0A*Total Pagado (USD): ${formatUSD(tx.amountUSD)}*%0A*Total Pagado (Bs): ${(tx.amountUSD * (tx.exchangeRateBCV || 36.5)).toFixed(2)} Bs*${tx.kfsPointsEarned > 0 ? `%0A%0A🎁 ¡Felicidades! Acumulaste +${tx.kfsPointsEarned.toFixed(1)} ${KFS_BRAND.economy.currency} con esta compra.` : ''}%0A%0ARecibo Digital Oficial ${KFS_BRAND.productAcronym}.`}
                 target="_blank"
                 rel="noreferrer"
                 className="py-3 rounded-xl font-black text-xs text-white bg-green-500 hover:bg-green-600 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
