@@ -83,14 +83,14 @@ export function UniversalWalletWidget({ currentUser, formatUSD, children }: Univ
           </div>
         </div>
 
-        {/* K-Point Cash (Dinero Pro) */}
+        {/* Axis Cash (Dinero Pro) */}
         <div className="bg-sky-50 border border-sky-100 rounded-2xl p-5 flex flex-col justify-between hover:border-[#3B82F6]/20 transition-all relative overflow-hidden">
           <div className="flex justify-between items-start">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-1">
-              <CircleDollarSign size={10} className="text-[#3B82F6]" /> K-Point Cash
+              <CircleDollarSign size={10} className="text-[#3B82F6]" /> Axis Cash
             </p>
             <div className="w-8 h-8 rounded-full bg-[#3B82F6]/10 flex items-center justify-center text-[#3B82F6] text-sm font-bold">
-              K$
+              AC
             </div>
           </div>
           <div className="mt-4">
@@ -103,15 +103,15 @@ export function UniversalWalletWidget({ currentUser, formatUSD, children }: Univ
         <div className="bg-sky-50 border border-sky-100 rounded-2xl p-5 flex flex-col justify-between hover:border-[#8B5CF6]/20 transition-all">
           <div className="flex justify-between items-start">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-1">
-              <Gift size={10} className="text-[#8B5CF6]" /> {KFS_BRAND.economy.currency} (KP)
+              <Gift size={10} className="text-[#8B5CF6]" /> {KFS_BRAND.economy.currency}
             </p>
             <div className="w-8 h-8 rounded-full bg-[#8B5CF6]/10 flex items-center justify-center text-[#8B5CF6] text-xs font-bold">
-              KP
+              AP
             </div>
           </div>
           <div className="mt-4">
             <p className="text-3xl font-black tracking-tight text-[#8B5CF6]">
-              {kPointsBalance.toLocaleString()} <span className="text-xs text-[#8B5CF6]/80">KP</span>
+              {kPointsBalance.toLocaleString()} <span className="text-xs text-[#8B5CF6]/80">Axis Points</span>
             </p>
             <p className="text-[9px] text-slate-500 mt-1">
               {kPointsBalance > 0 && !isExpired && timeLeftStr ? `AOF en: ${timeLeftStr}` : "Moneda de consumo forzado."}
@@ -119,19 +119,19 @@ export function UniversalWalletWidget({ currentUser, formatUSD, children }: Univ
           </div>
         </div>
 
-        {/* K-Point Bonus */}
+        {/* Axis Bonus */}
         <div className="bg-sky-50 border border-sky-100 rounded-2xl p-5 flex flex-col justify-between hover:border-[#F59E0B]/20 transition-all">
           <div className="flex justify-between items-start">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-1">
-              <Zap size={10} className="text-[#F59E0B]" /> K-Point Bonus
+              <Zap size={10} className="text-[#F59E0B]" /> Axis Bonus
             </p>
             <div className="w-8 h-8 rounded-full bg-[#F59E0B]/10 flex items-center justify-center text-[#F59E0B] text-xs font-bold">
-              KB
+              AB
             </div>
           </div>
           <div className="mt-4">
             <p className="text-3xl font-black tracking-tight text-[#F59E0B]">
-              {kPointBonusBalance.toLocaleString()} <span className="text-xs text-[#F59E0B]/80">KB</span>
+              {kPointBonusBalance.toLocaleString()} <span className="text-xs text-[#F59E0B]/80">AB</span>
             </p>
             <p className="text-[9px] text-slate-500 mt-1">
               Expira en 7 días. Intransferible.

@@ -111,7 +111,7 @@ export function FlowExpressCatalog({ currentUser, formatUSD }: FlowExpressCatalo
     const userKP = currentUser.k_points_balance || 0;
     const userReal = currentUser.real_balance || 0;
 
-    // Convert points to USD equivalent (1000 KP = $1.00)
+    // Convert points to USD equivalent (1000 Axis Points = $1.00)
     const pointsUSDValue = userKP / 1000;
     const totalUserBalanceUSD = userReal + pointsUSDValue;
 
@@ -121,14 +121,14 @@ export function FlowExpressCatalog({ currentUser, formatUSD }: FlowExpressCatalo
       return;
     }
 
-    // Determine how much K-Points and Real USD to use
-    // We spend as much K-Points as possible first (since they expire)
+    // Determine how much Axis Points and Real USD to use
+    // We spend as much Axis Points as possible first (since they expire)
     const pointsToUse = Math.min(userKP, product.pointsPrice);
     const usdEquivalentUsed = pointsToUse / 1000;
     const realUSDNeeded = Math.max(0, product.priceUSD - usdEquivalentUsed);
 
     // Call the split payment processor.
-    // Flow Express digital catalog is a virtual Kreatek store, let's use client ID "kfs-express"
+    // Nitro digital catalog is a virtual Kreatek store, let's use client ID "kfs-express"
     const tx = processSplitPayment("kfs-express", currentUser.phone, product.priceUSD, pointsToUse);
 
     if (tx) {
@@ -150,7 +150,7 @@ export function FlowExpressCatalog({ currentUser, formatUSD }: FlowExpressCatalo
     <div className="bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2.5rem] p-6 md:p-8 space-y-6">
       <div>
         <h3 className="text-xl font-black text-violet-900 flex items-center gap-2">
-          <ShoppingCart size={24} className="text-violet-600" /> Catálogo Flow Express
+          <ShoppingCart size={24} className="text-violet-600" /> Catálogo {KFS_BRAND.modules.marketplace}
         </h3>
         <p className="text-xs text-gray-500 mt-1">
           {KFS_BRAND.modules.marketplace} digital nativa {KFS_BRAND.productAcronym}. Canjea tus {KFS_BRAND.economy.currency} acumulados o usa Pago Híbrido.
@@ -181,7 +181,7 @@ export function FlowExpressCatalog({ currentUser, formatUSD }: FlowExpressCatalo
                     {p.name}
                   </h4>
                   <p className="text-[11px] text-gray-500 font-bold uppercase tracking-wider bg-violet-100 px-3 py-1 rounded-full inline-block shadow-inner">
-                    {p.pointsPrice.toLocaleString()} KP / {formatUSD(p.priceUSD)}
+                    {p.pointsPrice.toLocaleString()} Axis Points / {formatUSD(p.priceUSD)}
                   </p>
                   <p className="text-sm text-gray-600 leading-relaxed mt-2 line-clamp-3">
                     {p.description}
@@ -238,26 +238,26 @@ export function FlowExpressCatalog({ currentUser, formatUSD }: FlowExpressCatalo
 
             <div className="space-y-4 pt-4 border-t border-gray-200">
               <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest text-center">
-                Recarga Express ahora (Recibe Bono KP)
+                Recarga Express ahora (Recibe Bono Axis Points)
               </p>
               <div className="grid grid-cols-3 gap-3">
                 <button
                   onClick={() => handleModalRecharge(5)}
                   className="bg-white text-violet-600 hover:bg-violet-600 hover:text-white rounded-2xl py-3 px-2 text-center transition-all cursor-pointer font-black text-sm shadow-[0_5px_15px_rgba(139,92,246,0.15)] border-none"
                 >
-                  $5 <br/><span className="text-[9px] font-bold opacity-80 block mt-1">+2K KP</span>
+                  $5 <br/><span className="text-[9px] font-bold opacity-80 block mt-1">+2K Axis Points</span>
                 </button>
                 <button
                   onClick={() => handleModalRecharge(10)}
                   className="bg-white text-violet-600 hover:bg-violet-600 hover:text-white rounded-2xl py-3 px-2 text-center transition-all cursor-pointer font-black text-sm shadow-[0_5px_15px_rgba(139,92,246,0.15)] border-none"
                 >
-                  $10 <br/><span className="text-[9px] font-bold opacity-80 block mt-1">+5K KP</span>
+                  $10 <br/><span className="text-[9px] font-bold opacity-80 block mt-1">+5K Axis Points</span>
                 </button>
                 <button
                   onClick={() => handleModalRecharge(20)}
                   className="bg-white text-violet-600 hover:bg-violet-600 hover:text-white rounded-2xl py-3 px-2 text-center transition-all cursor-pointer font-black text-sm shadow-[0_5px_15px_rgba(139,92,246,0.15)] border-none"
                 >
-                  $20 <br/><span className="text-[9px] font-bold opacity-80 block mt-1">+12K KP</span>
+                  $20 <br/><span className="text-[9px] font-bold opacity-80 block mt-1">+12K Axis Points</span>
                 </button>
               </div>
             </div>

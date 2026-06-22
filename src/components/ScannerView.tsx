@@ -111,7 +111,7 @@ export const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }
           }
         );
       } catch (err) {
-        console.warn("Cámara física no disponible o error iniciando escáner. Se activa el simulador interactivo {KFS_BRAND.productAcronym}.", err);
+        console.warn(`Cámara física no disponible o error iniciando escáner. Se activa el simulador interactivo ${KFS_BRAND.productAcronym}.`, err);
       }
     };
 

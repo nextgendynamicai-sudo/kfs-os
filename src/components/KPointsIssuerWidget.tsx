@@ -116,7 +116,7 @@ export const KPointsIssuerWidget = ({ db, transferKFSPoints }: any) => {
                         </div>
                         <div className="text-right">
                           <p className="text-[10px] text-violet-400 uppercase">Saldo Actual</p>
-                          <p className="font-black text-green-400 text-sm">{item.k_points_balance || 0} KP</p>
+                          <p className="font-black text-green-400 text-sm">{item.k_points_balance || 0} Axis Points</p>
                         </div>
                       </div>
                     )) : (

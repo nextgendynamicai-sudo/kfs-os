@@ -21,7 +21,7 @@ export const KFS_BRAND = {
   
   // Economía
   economy: {
-    currency: "Axis Points", // Antes: K-Points / Puntos
+    currency: "Axis Points", // Antes: Axis Points / Puntos
     rewardCenter: "Centro de Recompensas Axis"
   }
 };

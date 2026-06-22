@@ -72,7 +72,7 @@ export async function POST(req: Request) {
     let updatedClients = [...db.clients];
     let updatedPromotoras = [...db.promotoras];
 
-    // Bono Viral de Primera Recarga (500 K-Points o 0.50 EUR)
+    // Bono Viral de Primera Recarga (500 Axis Points o 0.50 EUR)
     if (isFirstRecharge && customer.referred_by_customer_id) {
        const refId = customer.referred_by_customer_id;
        const cIdx = updatedCustomers.findIndex((c: any) => c.id === refId);

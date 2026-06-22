@@ -335,7 +335,7 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
         <div className="space-y-6">
           <div className="bg-amber-50 border border-amber-200 p-4 rounded-2xl flex items-start gap-3 text-xs text-amber-800 leading-relaxed font-bold">
             <Info size={16} className="text-amber-600 shrink-0 mt-0.5" />
-            <p>Se muestran los perfiles ordenados por afinidad. El sello dorado indica perfiles entrenados y "Respaldados por {KFS_BRAND.productAcronym} OS". El costo de desbloqueo de cada contacto de candidato es de <strong>$10 USD</strong>.</p>
+            <p>Se muestran los perfiles ordenados por afinidad. El sello dorado indica perfiles entrenados y `Respaldados por ${KFS_BRAND.productAcronym} OS`. El costo de desbloqueo de cada contacto de candidato es de <strong>$10 USD</strong>.</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -581,7 +581,7 @@ export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
                             }}
                             className="text-violet-600 underline cursor-pointer text-[10px]"
                           >
-                            👁️ {cand.useKfsCvBuilder ? "Ver CV Digital {KFS_BRAND.productAcronym}" : "Ver CV Adjunto"}
+                            👁️ {cand.useKfsCvBuilder ? `Ver CV Digital ${KFS_BRAND.productAcronym}` : "Ver CV Adjunto"}
                           </button>
                         </div>
                       )}

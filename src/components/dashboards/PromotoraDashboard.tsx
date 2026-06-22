@@ -150,6 +150,20 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
                 Abrir Mi Propia {KFS_BRAND.modules.marketplace}
               </button>
             </div>
+            
+            {/* Axis Nitro Hub Action */}
+            <div className="flex justify-between items-center bg-gradient-to-r from-yellow-600 to-yellow-500 rounded-[2rem] p-6 text-black shadow-xl shadow-yellow-500/20 border border-yellow-400 animate-fade-in">
+              <div>
+                <h3 className="font-black text-xl text-black">Desplegar Tienda Axis Nitro</h3>
+                <p className="text-yellow-900 text-sm mt-1 font-bold">Configura una tienda online independiente para tus comercios.</p>
+              </div>
+              <a 
+                href="/axis/nitro-setup"
+                className="bg-black text-white px-6 py-3 rounded-2xl font-black text-sm hover:scale-105 transition-transform cursor-pointer shadow-lg shadow-black/10 no-underline text-center"
+              >
+                Activar Nodo Nitro
+              </a>
+            </div>
             <ReferralLinksWidget userId={currentUser.id} showToast={showToast} />
             <UniversalWalletWidget currentUser={myPromotoraData} formatUSD={formatUSD} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

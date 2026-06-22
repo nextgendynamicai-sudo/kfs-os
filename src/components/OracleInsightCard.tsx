@@ -34,7 +34,7 @@ export const OracleInsightCard = ({ role, data }: any) => {
     }
     
     if (granted) {
-      triggerLocalPush("Oráculo {KFS_BRAND.productAcronym}", generateInsight());
+      triggerLocalPush(`Oráculo ${KFS_BRAND.productAcronym}`, generateInsight());
     }
   };
 

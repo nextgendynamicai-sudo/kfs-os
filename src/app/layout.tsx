@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { KFSProvider } from "../context/KFSContext";
+import { PresetProvider } from "../context/PresetContext";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 
 const geistSans = Geist({
@@ -68,7 +69,9 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <ErrorBoundary>
           <KFSProvider>
+            <PresetProvider>
               {children}
+            </PresetProvider>
           </KFSProvider>
         </ErrorBoundary>
       </body>

@@ -350,9 +350,9 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
               Cerrar Caja (Z)
             </button>
           </div>
-<div className="flex items-center gap-2">
-            <div className="bg-gradient-to-r from-amber-400 to-orange-500 px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm" title="K-Pts">
-              <span className="text-[9px] font-black text-orange-900 uppercase">K-Pts</span>
+          <div className="flex items-center gap-2">
+            <div className="bg-gradient-to-r from-amber-400 to-orange-500 px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm" title="Axis Pts">
+              <span className="text-[9px] font-black text-orange-900 uppercase">Axis Pts</span>
               <span className="font-black text-white text-xs">{currentUser?.kfsPoints || 0}</span>
             </div>
             <button onClick={logout} className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 px-3 py-1.5 rounded-xl transition-colors text-white cursor-pointer text-xs font-bold">

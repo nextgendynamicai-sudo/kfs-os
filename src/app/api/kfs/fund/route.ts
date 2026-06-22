@@ -50,7 +50,7 @@ export async function POST(req: Request) {
     let updatedClients = [...db.clients];
     let updatedPromotoras = [...db.promotoras];
 
-    // Lógica del Bono Viral (500 K-Points al referidor)
+    // Lógica del Bono Viral (500 Axis Points al referidor)
     if (isFirstRecharge && customer.referralCode) {
       const refCode = customer.referralCode;
       
@@ -58,7 +58,7 @@ export async function POST(req: Request) {
       if (pIdx !== -1) {
         updatedPromotoras[pIdx] = {
           ...updatedPromotoras[pIdx],
-          passiveEarningsEUR: (updatedPromotoras[pIdx].passiveEarningsEUR || 0) + 0.50 // 500 K-Points equiv.
+          passiveEarningsEUR: (updatedPromotoras[pIdx].passiveEarningsEUR || 0) + 0.50 // 500 Axis Points equiv.
         };
       } else {
         const cIdx = updatedClients.findIndex((c: any) => c.id === refCode);

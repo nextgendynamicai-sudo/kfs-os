@@ -95,12 +95,12 @@ export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualW
           </p>
         </div>
 
-        {/* K-Point Cash */}
+        {/* Axis Cash */}
         <div className="bg-sky-50 border border-sky-100 rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-sky-200 transition-all">
           <Zap size={20} className="text-[#3B82F6] mb-2" />
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">K-Point Cash</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Axis Cash</p>
           <p className="text-2xl font-black tracking-tight text-sky-950 mt-1">
-            {kPointCashBalance.toLocaleString()} <span className="text-xs">K$</span>
+            {kPointCashBalance.toLocaleString()} <span className="text-xs">Axis Cash</span>
           </p>
         </div>
 
@@ -109,16 +109,16 @@ export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualW
           <Gift size={20} className="text-[#8B5CF6] mb-2" />
           <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">{KFS_BRAND.economy.currency} Normal</p>
           <p className="text-2xl font-black tracking-tight text-[#8B5CF6] mt-1">
-            {kPointsBalance.toLocaleString()} <span className="text-xs">KP</span>
+            {kPointsBalance.toLocaleString()} <span className="text-xs">Axis Points</span>
           </p>
         </div>
 
-        {/* K-Point Bonus */}
+        {/* Axis Bonus */}
         <div className="bg-sky-50 border border-sky-100 rounded-2xl p-4 flex flex-col items-center justify-center text-center hover:border-sky-200 transition-all">
           <Clock size={20} className="text-[#F59E0B] mb-2" />
-          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">K-Point Bonus</p>
+          <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Axis Bonus</p>
           <p className="text-2xl font-black tracking-tight text-[#F59E0B] mt-1">
-            {kPointBonusBalance.toLocaleString()} <span className="text-xs">KB</span>
+            {kPointBonusBalance.toLocaleString()} <span className="text-xs">Axis Bonus</span>
           </p>
         </div>
       </div>
@@ -136,7 +136,7 @@ export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualW
             className="bg-sky-600/10 hover:bg-sky-600 hover:text-white border border-sky-200 rounded-xl py-3 px-2 text-center transition-all cursor-pointer group"
           >
             <p className="text-xs font-black">Recarga $5</p>
-            <p className="text-[9px] opacity-75 mt-0.5">+2,000 KP Bono</p>
+            <p className="text-[9px] opacity-75 mt-0.5">+2,000 Axis Points Bono</p>
           </button>
           <button
             onClick={() => handleSimulatedRecharge(10)}
@@ -144,7 +144,7 @@ export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualW
           >
             <div className="absolute top-0 right-0 bg-sky-600 text-white text-[7px] font-black px-1 py-0.5 rounded-bl">PRO</div>
             <p className="text-xs font-black">Recarga $10</p>
-            <p className="text-[9px] opacity-75 mt-0.5">+5,000 KP Bono</p>
+            <p className="text-[9px] opacity-75 mt-0.5">+5,000 Axis Points Bono</p>
           </button>
           <button
             onClick={() => handleSimulatedRecharge(20)}
@@ -152,7 +152,7 @@ export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualW
           >
             <div className="absolute top-0 right-0 bg-sky-600 text-white text-[7px] font-black px-1 py-0.5 rounded-bl">WHALE</div>
             <p className="text-xs font-black">Recarga $20</p>
-            <p className="text-[9px] opacity-75 mt-0.5">+12,000 KP Bono</p>
+            <p className="text-[9px] opacity-75 mt-0.5">+12,000 Axis Points Bono</p>
           </button>
         </div>
 

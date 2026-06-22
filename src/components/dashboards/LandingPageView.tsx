@@ -88,6 +88,9 @@ export const LandingPageView = ({ setView }: any) => {
           <KreatekLogo className="h-8 w-auto text-sky-600" />
         </div>
         <div className="flex gap-4">
+          <button onClick={() => setView("axis_nitro_pos")} className="text-violet-600 border border-violet-200 bg-violet-50 hover:bg-violet-100 text-xs sm:text-sm font-bold px-3 py-1.5 rounded-xl transition-all cursor-pointer flex items-center gap-1 shadow-sm hover:scale-105">
+            ⚡ Axis Nitro POS (Demo)
+          </button>
           <button onClick={() => setView("login")} className="text-sm font-bold text-sky-700 hover:text-sky-900 transition-colors cursor-pointer pt-2">
             Soy Cliente
           </button>

@@ -65,16 +65,16 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
   };
 
   return (
-    <div className="min-h-screen bg-white text-white font-sans flex flex-col justify-between selection:bg-[#C5A184] selection:text-[#0A1128]">
+    <div className="min-h-screen bg-slate-50 text-[#0A1128] font-sans flex flex-col justify-between selection:bg-[#C5A184] selection:text-[#0A1128]">
       {/* Header navbar */}
-      <nav className="border-b border-white/5 py-4 px-6 sm:px-10 flex justify-between items-center bg-white/95 backdrop-blur-xl sticky top-0 z-50">
+      <nav className="border-b border-white/5 py-4 px-6 sm:px-10 flex justify-between items-center bg-white/90 backdrop-blur-xl border-b border-[#e2e8f0] sticky top-0 z-50">
         <div className="flex items-center gap-3">
           <Store className="text-[#C5A184] h-6 w-auto" />
           <span className="font-black tracking-tight text-lg">{KFS_BRAND.productAcronym} B2B Portal</span>
         </div>
         <button
           onClick={() => setView("landing")}
-          className="text-xs font-bold text-gray-400 hover:text-white transition-colors cursor-pointer"
+          className="text-xs font-bold text-[#64748b] hover:text-[#1e293b] transition-colors cursor-pointer"
         >
           Volver al Inicio
         </button>
@@ -94,12 +94,12 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                 className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all ${
                   step >= s.num
                     ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]"
-                    : "bg-white/10 text-gray-400"
+                    : "bg-[#e2e8f0] text-[#64748b]"
                 }`}
               >
                 {s.num}
               </div>
-              <span className={`text-xs font-bold ${step >= s.num ? "text-gray-200" : "text-gray-500"}`}>
+              <span className={`text-xs font-bold ${step >= s.num ? "text-[#1e293b]" : "text-[#94a3b8]"}`}>
                 {s.label}
               </span>
             </div>
@@ -108,93 +108,93 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
 
         {/* Step 1: Registration Form */}
         {step === 1 && (
-          <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-6 sm:p-8 space-y-6 shadow-2xl">
+          <div className="bg-white border border-[#e2e8f0] rounded-[2.5rem] p-6 sm:p-8 space-y-6 shadow-2xl">
             <div className="space-y-2">
-              <h1 className="text-2xl sm:text-3xl font-black text-gray-100 flex items-center gap-2">
+              <h1 className="text-2xl sm:text-3xl font-black text-[#0A1128] flex items-center gap-2">
                 Afiliación Comercial Nacional
               </h1>
-              <p className="text-xs text-gray-400 leading-relaxed">
+              <p className="text-xs text-[#64748b] leading-relaxed">
                 Únete a la red Kreatek Flow Systems OS en minutos. Completa los datos primarios de tu comercio.
               </p>
             </div>
 
             <div className="space-y-4">
               <div>
-                <label className="text-xs font-bold text-gray-300 block mb-1">Nombre Comercial de la Empresa</label>
+                <label className="text-xs font-bold text-[#334155] block mb-1">Nombre Comercial de la Empresa</label>
                 <input
                   type="text"
                   placeholder="Ej: Bodegón Chacao, C.A."
                   value={formData.company}
                   onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                  className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors"
+                  className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-bold text-gray-300 block mb-1">Correo Electrónico Corporativo</label>
+                  <label className="text-xs font-bold text-[#334155] block mb-1">Correo Electrónico Corporativo</label>
                   <input
                     type="email"
                     placeholder="empresa@kfs.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors"
+                    className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-gray-300 block mb-1">Contraseña de Acceso</label>
+                  <label className="text-xs font-bold text-[#334155] block mb-1">Contraseña de Acceso</label>
                   <input
                     type="password"
                     placeholder="••••••••"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors"
+                    className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="text-xs font-bold text-gray-300 block mb-1">Teléfono Móvil (WhatsApp)</label>
+                  <label className="text-xs font-bold text-[#334155] block mb-1">Teléfono Móvil (WhatsApp)</label>
                   <input
                     type="tel"
                     placeholder="Ej: 04121234567"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors"
+                    className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-bold text-gray-300 block mb-1">Registro de Información Fiscal (RIF)</label>
+                  <label className="text-xs font-bold text-[#334155] block mb-1">Registro de Información Fiscal (RIF)</label>
                   <input
                     type="text"
                     placeholder="Ej: J-12345678-9"
                     value={formData.rif}
                     onChange={(e) => setFormData({ ...formData, rif: e.target.value })}
-                    className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors"
+                    className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-gray-300 block mb-1">Dirección Física de Local / Almacén</label>
+                <label className="text-xs font-bold text-[#334155] block mb-1">Dirección Física de Local / Almacén</label>
                 <textarea
                   rows={2}
                   placeholder="Calle, Edificio, Local, Chacao, Caracas"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors resize-none"
+                  className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors resize-none"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold text-gray-300 block mb-1">ID de Promotora Aliada (Opcional)</label>
+                <label className="text-xs font-bold text-[#334155] block mb-1">ID de Promotora Aliada (Opcional)</label>
                 <input
                   type="text"
                   placeholder="Ej: p1 (dejar vacío si no aplica)"
                   value={promoterId}
                   onChange={(e) => setPromoterId(e.target.value)}
-                  className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors"
+                  className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors"
                 />
               </div>
             </div>
@@ -212,23 +212,23 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
         {step === 2 && (
           <form
             onSubmit={handleOnboardSubmit}
-            className="bg-white/5 border border-white/10 rounded-[2.5rem] p-6 sm:p-8 space-y-6 shadow-2xl"
+            className="bg-white border border-[#e2e8f0] rounded-[2.5rem] p-6 sm:p-8 space-y-6 shadow-2xl"
           >
             <div className="space-y-2">
-              <h2 className="text-2xl font-black text-gray-100 flex items-center gap-2">
+              <h2 className="text-2xl font-black text-[#0A1128] flex items-center gap-2">
                 Acuerdo Comercial & Setup Fee
               </h2>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-[#64748b]">
                 Acepta las comisiones de regalías y realiza el pago único de instalación técnica.
               </p>
             </div>
 
             {/* Contract terms card */}
-            <div className="bg-black/40 border border-white/5 rounded-2xl p-5 space-y-3">
+            <div className="bg-slate-50 border border-[#e2e8f0] rounded-2xl p-5 space-y-3">
               <h3 className="text-sm font-black text-[#C5A184] flex items-center gap-1.5">
                 <ShieldCheck size={16} /> Términos del Peaje Gamificado
               </h3>
-              <ul className="space-y-2 text-xs text-gray-300">
+              <ul className="space-y-2 text-xs text-[#334155]">
                 <li className="flex items-start gap-2">
                   <span className="text-[#C5A184] font-black">•</span>
                   <span><strong>Regalía Base:</strong> {KFS_BRAND.productAcronym} OS cobra una comisión estándar del 5% sobre la facturación procesada.</span>
@@ -243,25 +243,25 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                 </li>
               </ul>
 
-              <label className="flex items-center gap-3 pt-3 border-t border-white/5 mt-3 cursor-pointer">
+              <label className="flex items-center gap-3 pt-3 border-t border-[#e2e8f0] mt-3 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={agreedToContract}
                   onChange={(e) => setAgreedToContract(e.target.checked)}
                   className="rounded border-white/10 bg-black/40 text-[#C5A184] focus:ring-0 cursor-pointer h-4 w-4"
                 />
-                <span className="text-xs text-gray-200 font-bold select-none">
+                <span className="text-xs text-[#1e293b] font-bold select-none">
                   Acepto el contrato de regalías base (5%) y setup.
                 </span>
               </label>
             </div>
 
             {/* Setup Fee Payment */}
-            <div className="bg-black/30 border border-white/5 rounded-2xl p-5 space-y-4">
-              <h3 className="text-sm font-black text-gray-200 flex items-center gap-1.5">
+            <div className="bg-slate-50 border border-[#e2e8f0] rounded-2xl p-5 space-y-4">
+              <h3 className="text-sm font-black text-[#1e293b] flex items-center gap-1.5">
                 <CreditCard size={16} /> Pago de Setup Fee ($75.00 USD)
               </h3>
-              <p className="text-[10px] text-gray-400">
+              <p className="text-[10px] text-[#64748b]">
                 Realiza la recarga/transferencia a una de nuestras cuentas oficiales y proporciona la referencia de validación.
               </p>
 
@@ -274,7 +274,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                     className={`py-2 px-1 text-center font-bold text-xs rounded-xl border transition-all cursor-pointer ${
                       paymentMethod === m
                         ? "bg-[#C5A184]/15 border-[#C5A184] text-white"
-                        : "bg-white/5 border-white/5 text-gray-400 hover:border-white/20"
+                        : "bg-white/5 border-white/5 text-[#64748b] hover:border-white/20"
                     }`}
                   >
                     {m === "binance" ? "Binance Pay" : m === "zinli" ? "Zinli" : "Pago Móvil"}
@@ -283,20 +283,20 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
               </div>
 
               {/* Instructions */}
-              <div className="bg-white/5 p-3 rounded-xl text-[10px] text-gray-400 leading-relaxed font-mono">
+              <div className="bg-white/5 p-3 rounded-xl text-[10px] text-[#64748b] leading-relaxed font-mono">
                 {paymentMethod === "binance" && "Binance Pay ID: 252186489 (Holding Kreatek OS)"}
                 {paymentMethod === "zinli" && "Zinli: corporativo@kreatek.com"}
                 {paymentMethod === "pago_movil" && "Pago Móvil: Banesco (0102), Teléfono: 0412-2521864, RIF: J-25218648-9"}
               </div>
 
               <div>
-                <label className="text-xs font-bold text-gray-300 block mb-1">Referencia del Pago</label>
+                <label className="text-xs font-bold text-[#334155] block mb-1">Referencia del Pago</label>
                 <input
                   type="text"
                   placeholder="Ingresa los últimos 6 u 8 dígitos"
                   value={paymentRef}
                   onChange={(e) => setPaymentRef(e.target.value)}
-                  className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors"
+                  className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors"
                 />
               </div>
             </div>
@@ -305,7 +305,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="w-1/3 border border-white/10 hover:border-white/20 text-white font-bold py-4 rounded-xl cursor-pointer transition-colors"
+                className="w-1/3 bg-white border border-[#e2e8f0] hover:border-slate-300 text-[#334155] font-bold py-4 rounded-xl cursor-pointer transition-colors"
               >
                 Atrás
               </button>
@@ -321,14 +321,14 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
 
         {/* Step 3: Success & Download QR Code Card */}
         {step === 3 && (
-          <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-6 sm:p-8 shadow-2xl text-center space-y-6 animate-fade-in">
+          <div className="bg-white border border-[#e2e8f0] rounded-[2.5rem] p-6 sm:p-8 shadow-2xl text-center space-y-6 animate-fade-in">
             <div className="w-16 h-16 bg-green-500/10 rounded-full border border-green-500/30 flex items-center justify-center mx-auto text-green-400">
               <CheckCircle size={32} />
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-2xl font-black text-gray-100">¡Comercio Activado Exitosamente!</h2>
-              <p className="text-xs text-gray-400 max-w-sm mx-auto">
+              <h2 className="text-2xl font-black text-[#0A1128]">¡Comercio Activado Exitosamente!</h2>
+              <p className="text-xs text-[#64748b] max-w-sm mx-auto">
                 Tu pago ha sido validado y tu terminal de {KFS_BRAND.productAcronym} OS está listo para operar bajo la licencia base del 5%.
               </p>
             </div>
@@ -342,7 +342,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                   <h4 className="text-xs font-black tracking-tight text-white truncate max-w-[150px]">
                     {formData.company}
                   </h4>
-                  <p className="text-[8px] text-gray-400 font-mono">RIF: {formData.rif}</p>
+                  <p className="text-[8px] text-[#64748b] font-mono">RIF: {formData.rif}</p>
                 </div>
                 <span className="bg-[#C5A184]/10 border border-[#C5A184]/35 text-[#C5A184] text-[8px] font-mono px-2 py-0.5 rounded">
                   ID: {newMerchantId}
@@ -375,14 +375,14 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                 </div>
               </div>
 
-              <p className="text-[9px] text-gray-400 leading-normal text-center">
+              <p className="text-[9px] text-[#64748b] leading-normal text-center">
                 Código QR autogenerado para acceso rápido de clientes a tu tienda digital y escaneo de mostrador.
               </p>
 
               <div className="flex gap-2">
                 <button
                   onClick={() => showToast("Imprimiendo código QR...", "success")}
-                  className="flex-1 bg-white/5 hover:bg-white/10 text-white text-[10px] font-bold py-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
+                  className="flex-1 bg-slate-100 hover:bg-[#e2e8f0] text-[#334155] text-[10px] font-bold py-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
                 >
                   <Printer size={12} /> Imprimir QR
                 </button>
@@ -395,7 +395,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
               </div>
             </div>
 
-            <div className="pt-4 border-t border-white/5 flex flex-col gap-2">
+            <div className="pt-4 border-t border-[#e2e8f0] flex flex-col gap-2">
               <button
                 onClick={() => setView("login")}
                 className="w-full bg-[#C5A184] text-[#0A1128] font-black text-sm py-4 rounded-xl cursor-pointer hover:scale-[1.02] active:scale-95 transition-transform"
@@ -404,7 +404,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
               </button>
               <button
                 onClick={() => setView("landing")}
-                className="text-xs text-gray-400 hover:text-white transition-colors cursor-pointer"
+                className="text-xs text-[#64748b] hover:text-white transition-colors cursor-pointer"
               >
                 Volver al Portal de Inicio
               </button>
@@ -414,7 +414,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
       </main>
 
       {/* Footer footer */}
-      <footer className="border-t border-white/5 py-4 px-6 text-center text-[10px] text-gray-500">
+      <footer className="border-t border-[#e2e8f0] py-4 px-6 text-center text-[10px] text-gray-500">
         {KFS_BRAND.productAcronym} OS Overdrive. Todos los derechos reservados. B2B self-onboarding automatizado.
       </footer>
     </div>

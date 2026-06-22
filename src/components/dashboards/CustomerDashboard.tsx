@@ -186,7 +186,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
       return;
     }
     if (!useKfsCvBuilder && !cvFile) {
-      showToast("Debe cargar su Currículum Vitae en PDF/Imagen o activar el CV Digital {KFS_BRAND.productAcronym}.", "error");
+      showToast(`Debe cargar su Currículum Vitae en PDF/Imagen o activar el CV Digital ${KFS_BRAND.productAcronym}.`, "error");
       return;
     }
 
@@ -235,8 +235,8 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
             <h1 className="font-black text-xl tracking-tight">{KFS_BRAND.productAcronym} Customer</h1>
           </div>
           <div className="flex items-center gap-2">
-              <div className="bg-white/20 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-sm border border-white/30 backdrop-blur-md" title="Billetera KFS Points">
-                <span className="text-[10px] font-black uppercase tracking-wider text-sky-100">K-Pts</span>
+              <div className="bg-white/20 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-sm border border-white/30 backdrop-blur-md" title="Billetera Axis Points">
+                <span className="text-[10px] font-black uppercase tracking-wider text-sky-100">Axis Pts</span>
                 <span className="font-black text-white text-sm">{currentUser?.kfsPoints || 0}</span>
               </div>
               <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
@@ -303,7 +303,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                   </div>
                   <div className="bg-sky-50/50 rounded-lg p-2.5 flex justify-between items-center border border-sky-100">
                     <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">50K Puntos ($50) Movidos</span>
-                    <span className={`text-xs font-black ${volumeKPoints >= 50000 ? 'text-sky-600' : 'text-slate-400'}`}>{volumeKPoints.toLocaleString()}/50,000 KP</span>
+                    <span className={`text-xs font-black ${volumeKPoints >= 50000 ? 'text-sky-600' : 'text-slate-400'}`}>{volumeKPoints.toLocaleString()}/50,000 Axis Points</span>
                   </div>
                 </div>
               )}
@@ -529,7 +529,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                 <div className="text-center py-10 opacity-70">
                   <Package size={48} className="mx-auto mb-4 text-sky-300" />
                   <p className="font-bold text-sky-900">Aún no tienes historial de compras.</p>
-                  <p className="text-xs text-slate-500 mt-1">Visita tiendas {KFS_BRAND.productAcronym} o compra en Flow Express.</p>
+                  <p className="text-xs text-slate-500 mt-1">Visita tiendas {KFS_BRAND.productAcronym} o compra en {KFS_BRAND.modules.marketplace}.</p>
                 </div>
               ) : (
                 <div className="space-y-4">
@@ -542,7 +542,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                             <Store size={18} />
                           </div>
                           <div>
-                            <p className="font-black text-sky-950 text-lg">{store?.company || "{KFS_BRAND.modules.marketplace} Desconocida"}</p>
+                            <p className="font-black text-sky-950 text-lg">{store?.company || `${KFS_BRAND.modules.marketplace} Desconocida`}</p>
                             <p className="text-[10px] uppercase tracking-widest text-slate-500 mt-1 font-bold">{c.purchasesCount} Compras Registradas</p>
                           </div>
                         </div>
@@ -707,7 +707,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                         onClick={() => setUseKfsCvBuilder(!useKfsCvBuilder)}
                         className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${useKfsCvBuilder ? "bg-sky-600 text-white shadow-md shadow-sky-600/30" : "bg-sky-50 border border-sky-100 text-slate-500 hover:text-sky-700 hover:bg-sky-100"}`}
                       >
-                        {useKfsCvBuilder ? "⚡ Usando CV Digital {KFS_BRAND.productAcronym}" : "📄 Usar CV Digital {KFS_BRAND.productAcronym}"}
+                        {useKfsCvBuilder ? `⚡ Usando CV Digital ${KFS_BRAND.productAcronym}` : `📄 Usar CV Digital ${KFS_BRAND.productAcronym}`}
                       </button>
                     </div>
 

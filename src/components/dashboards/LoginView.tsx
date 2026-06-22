@@ -194,6 +194,11 @@ export const LoginView = ({ handleLogin, registerClient, registerPromotora, db, 
                       <Lock className="absolute left-4 top-4 text-sky-400" size={20} />
                       <input type="password" placeholder="Ingresa tu clave de seguridad" value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl pl-12 pr-4 py-4 text-sky-950 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all" />
                     </div>
+                    {password === "000" && (
+                      <p className="text-[10px] text-amber-600 font-bold mt-2 bg-amber-50 p-2 rounded-lg border border-amber-100">
+                        <Info size={12} className="inline mr-1" /> Modo Demostración activado. Puedes dejar el correo vacío y entrar directo.
+                      </p>
+                    )}
                   </div>
                   <button onClick={() => handleLogin(activeTab, password, email)} className="w-full py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-sky-600/30 border-none text-white bg-sky-600 cursor-pointer">
                     Entrar a mi Panel <ChevronRight size={20} />
@@ -230,7 +235,7 @@ export const LoginView = ({ handleLogin, registerClient, registerPromotora, db, 
 
           <div className="mt-8 pt-6 border-t border-sky-100 text-center">
             <button onClick={() => setView("landing")} className="text-sm font-black text-sky-600 hover:text-sky-800 transition-colors cursor-pointer flex items-center justify-center gap-2 mx-auto border-none bg-transparent">
-              <Star size={16} /> Ver Landing de Ventas - {KFS_BRAND.productAcronym} OS
+              <Star size={16} /> Ver Landing de Ventas - {KFS_BRAND.modules.marketplace} & Axis Points
             </button>
           </div>
 

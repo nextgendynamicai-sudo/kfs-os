@@ -206,7 +206,7 @@ export const SMSConciliatorSimulator = () => {
             <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3">
               <span className="text-[10px] font-black text-violet-600 uppercase tracking-widest block font-mono">Órdenes Pendientes</span>
               {pendingOrders.length === 0 ? (
-                <p className="text-xs text-gray-400 font-bold">No hay órdenes online pendientes. Crea una en Flow Express para probar el auto-llenado.</p>
+                <p className="text-xs text-gray-400 font-bold">No hay órdenes online pendientes. Crea una en {KFS_BRAND.modules.marketplace} para probar el auto-llenado.</p>
               ) : (
                 <div className="space-y-2 max-h-32 overflow-y-auto pr-1">
                   {pendingOrders.map((o: any) => (

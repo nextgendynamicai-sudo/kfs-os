@@ -44,6 +44,7 @@ import { CustomerDashboard } from "../components/dashboards/CustomerDashboard";
 import { LoginView } from "../components/dashboards/LoginView";
 import { MarketplaceView } from "../components/dashboards/MarketplaceView";
 import { LandingPageView } from "../components/dashboards/LandingPageView";
+import { AxisNitroPOS } from "../components/AxisNitroPOS";
 
 
 import { FlowExpressCatalog } from "../components/FlowExpressCatalog";
@@ -426,6 +427,7 @@ export default function Home() {
       )}
 
       {safeView === "landing" && <LandingPageView setView={setView} />}
+      {safeView === "axis_nitro_pos" && <AxisNitroPOS />}
       {safeView === "b2b-onboarding" && <B2BSelfOnboarding setView={setView} />}
 
       {safeView === "login" && (

@@ -76,7 +76,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
             
             {/* Header Receipt */}
             <div className="text-center border-b border-dashed border-gray-300 pb-3">
-              <h3 className="text-sm font-black tracking-widest uppercase mb-1">{product?.clientName || "{KFS_BRAND.productAcronym} ECOSISTEMA"}</h3>
+              <h3 className="text-sm font-black tracking-widest uppercase mb-1">{product?.clientName || `${KFS_BRAND.productAcronym} ECOSISTEMA`}</h3>
               <p className="text-[10px] text-slate-400 font-bold">RIF: J-50201438-9</p>
               <p className="text-[10px] text-slate-400">BOS CONTROL DIGITAL</p>
               <p className="text-[9px] text-slate-500 font-mono mt-1">{new Date(tx.timestamp).toLocaleString()}</p>
@@ -84,7 +84,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
 
             {/* Receipt Control Barcode (Pure CSS) */}
             <div className="flex flex-col items-center gap-1 border-b border-dashed border-gray-300 pb-3 mt-3">
-              <span className="text-[8px] text-slate-500 uppercase tracking-widest">{tx.isFiscal ? "Factura Fiscal" : "Recibo {KFS_BRAND.productAcronym} Control"}</span>
+              <span className="text-[8px] text-slate-500 uppercase tracking-widest">{tx.isFiscal ? "Factura Fiscal" : `Recibo ${KFS_BRAND.productAcronym} Control`}</span>
               <div className="flex justify-center items-center gap-[1px] h-8 bg-gray-50 px-3 py-1 border border-gray-200/50 rounded">
                 <div className="w-1 h-6 bg-black"></div>
                 <div className="w-0.5 h-6 bg-black"></div>

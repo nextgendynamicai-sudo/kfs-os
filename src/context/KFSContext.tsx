@@ -48,10 +48,10 @@ const initialDB = {
   clients: [
     {
       id: "kfs-express",
-      company: "Arquitecto Flow Express",
+      company: "Arquitecto Axis Points Reward",
       email: "arquitecto@kfs.com",
       password: "000",
-      address: "Soporte Central {KFS_BRAND.productAcronym}",
+      address: `Soporte Central ${KFS_BRAND.productAcronym}`,
       rating: 5.0,
       reviewCount: 0,
       kfsFeePercentage: 0.01,
@@ -62,7 +62,7 @@ const initialDB = {
       walletBalanceUSD: 0,
       salesUSD: 0,
       storeSettings: {
-        bioText: "En esta tienda podrás canjear tus KF Points. Mira todo lo que tenemos para ti",
+        bioText: "En esta tienda podrás canjear tus Axis Points. Mira todo lo que tenemos para ti",
         themeColor: "#C5A184",
         typography: "font-sans",
         layoutType: "grid",
@@ -738,7 +738,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         try {
           setCurrentUser(JSON.parse(savedUser));
         } catch (e) {
-          console.error("[{KFS_BRAND.productAcronym} Context] Error parsing saved user session:", e);
+          console.error(`[${KFS_BRAND.productAcronym} Context] Error parsing saved user session:`, e);
         }
       }
       hasRestoredRef.current = true;
@@ -755,9 +755,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                 // Migrate to IndexedDB
                 setIndexedDBValue("kfs_os_db_prod", parsed);
                 localStorage.removeItem("kfs_os_db_prod");
-                console.log("[{KFS_BRAND.productAcronym} Migration] Local database successfully migrated to IndexedDB.");
+                console.log(`[${KFS_BRAND.productAcronym} Migration] Local database successfully migrated to IndexedDB.`);
               } catch (e) {
-                console.error("[{KFS_BRAND.productAcronym} Migration] Failed to parse LocalStorage fallback", e);
+                console.error(`[${KFS_BRAND.productAcronym} Migration] Failed to parse LocalStorage fallback`, e);
               }
             }
           }
@@ -765,7 +765,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           if (parsed) {
             parsed = cleanupOldDemos(parsed);
             if (parsed.kreatekCore?.wipeVersion !== CURRENT_WIPE_VERSION) {
-              console.log("[{KFS_BRAND.productAcronym}] Database version mismatch. Resetting database to 0.");
+              console.log(`[${KFS_BRAND.productAcronym}] Database version mismatch. Resetting database to 0.`);
               setDb(initialDB);
               setIndexedDBValue("kfs_os_db_prod", initialDB);
             } else {
@@ -975,7 +975,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           if (installingWorker) {
             installingWorker.addEventListener("statechange", () => {
               if (installingWorker.state === "installed" && navigator.serviceWorker.controller) {
-                console.log("[{KFS_BRAND.productAcronym} SW] Nuevo Service Worker instalado. Recargando...");
+                console.log(`[${KFS_BRAND.productAcronym} SW] Nuevo Service Worker instalado. Recargando...`);
                 window.location.reload();
               }
             });
@@ -1001,7 +1001,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           let hasChanges = false;
           let newC = { ...c };
 
-          // 1. K-Point Bonus Expiry (7 days irreversible)
+          // 1. Axis Bonus Expiry (7 days irreversible)
           if (newC.k_point_bonus_expiry && newC.k_point_bonus_balance > 0) {
             const expiryTime = new Date(newC.k_point_bonus_expiry).getTime();
             if (now > expiryTime) {
@@ -1070,7 +1070,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         }
       })
       .catch((err) => {
-        console.warn("[{KFS_BRAND.productAcronym} IndexedDB] Error al persistir base de datos offline", err);
+        console.warn(`[${KFS_BRAND.productAcronym} IndexedDB] Error al persistir base de datos offline`, err);
       });
     
     if (isRemoteUpdate.current) {
@@ -1097,7 +1097,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
             })
             .then(({ error }: any) => {
               if (error) {
-                console.warn("[{KFS_BRAND.productAcronym} Cloud] Aviso: Sincronización asíncrona omitida. Verifique que haya ejecutado 'supabase_setup.sql' en su proyecto.", error.message || error.code || "");
+                console.warn(`[${KFS_BRAND.productAcronym} Cloud] Aviso: Sincronización asíncrona omitida. Verifique que haya ejecutado 'supabase_setup.sql' en su proyecto.`, error.message || error.code || "");
               } else {
                 lastRemoteUpdatedAtRef.current = nextUpdatedAt;
                 console.log("[Supabase Cloud] Estado sincronizado directamente (sin colisión).");
@@ -1126,7 +1126,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
               })
               .then(({ error }: any) => {
                 if (error) {
-                  console.warn("[{KFS_BRAND.productAcronym} Cloud] Aviso: Sincronización asíncrona omitida. Verifique que haya ejecutado 'supabase_setup.sql' en su proyecto.", error.message || error.code || "");
+                  console.warn(`[${KFS_BRAND.productAcronym} Cloud] Aviso: Sincronización asíncrona omitida. Verifique que haya ejecutado 'supabase_setup.sql' en su proyecto.`, error.message || error.code || "");
                 } else {
                   lastRemoteUpdatedAtRef.current = nextUpdatedAt;
                   if (JSON.stringify(db) !== JSON.stringify(mergedDb)) {
@@ -1157,7 +1157,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     // Native Push Notification Support
     if ("Notification" in window && Notification.permission === "granted" && type === "success") {
       try {
-        new Notification("{KFS_BRAND.productAcronym} OS", { body: message, icon: "/kfs-logo.png" });
+        new Notification(`${KFS_BRAND.productAcronym} OS`, { body: message, icon: "/kfs-logo.png" });
       } catch (e) {
         console.warn("Native notification failed", e);
       }
@@ -1176,6 +1176,27 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     const safePass = password ? password.trim() : "";
     const safeEmail = email ? email.trim() : "";
 
+    // MODO DEMOSTRACIÓN: Clave universal "000" para ingresos de prueba
+    if (safePass === "000") {
+      let demoUser = null;
+      if (role === "core") demoUser = { role: "core", name: "El Arquitecto", avatar: db.kreatekCore?.avatar || "" };
+      if (role === "promotora") demoUser = db.promotoras.find((p: any) => p.email === safeEmail) || db.promotoras[0];
+      if (role === "dueño") demoUser = db.clients.find((c: any) => c.email === safeEmail) || db.clients[0];
+      if (role === "vendedor") demoUser = db.vendedores.find((v: any) => v.email === safeEmail) || db.vendedores[0];
+      if (role === "rider") demoUser = db.riders?.find((r: any) => r.email === safeEmail) || db.riders?.[0];
+      if (role === "customer") demoUser = db.customers?.find((c: any) => c.phone === safeEmail) || db.customers?.[0];
+
+      if (demoUser) {
+        setCurrentUser({ ...demoUser, role });
+        setView(role === "dueño" ? "client" : role);
+        showToast(`Modo Demostración Activado: ${demoUser.name || demoUser.company || "Test User"}`, "warning");
+        return;
+      }
+      // Si no encuentra ni siquiera un primer usuario para el fallback, muestra error
+      showToast("No hay usuarios registrados para este rol. Crea uno primero.", "error");
+      return;
+    }
+
     // Auth Real con Supabase
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -1189,7 +1210,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         if (role === "core" && safePass === corePass) {
           setCurrentUser({ role: "core", name: "El Arquitecto", avatar: db.kreatekCore?.avatar || "" });
           setView("core");
-          showToast("{KFS_BRAND.productAcronym} OS Accesado. Bienvenido, Arquitecto.");
+          showToast(`${KFS_BRAND.productAcronym} OS Accesado. Bienvenido, Arquitecto.`);
           return;
         }
         
@@ -1234,7 +1255,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           Notification.requestPermission();
         }
       } else {
-        showToast("Usuario autenticado pero perfil no encontrado en {KFS_BRAND.productAcronym} OS.", "error");
+        showToast(`Usuario autenticado pero perfil no encontrado en ${KFS_BRAND.productAcronym} OS.`, "error");
       }
     } catch (err) {
       showToast("Error de conexión al autenticar.", "error");
@@ -1501,18 +1522,18 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         const netAmount = amount * 0.99; // 1% fee
         customer.real_balance = currentReal - amount;
         customer.k_point_cash_balance = (customer.k_point_cash_balance || 0) + netAmount;
-        showToast(`Convertiste $${amount} a ${netAmount} K$ (Cash) con 1% fee.`, "success");
+        showToast(`Convertiste $${amount} a ${netAmount} Axis Cash con 1% fee.`, "success");
       } else if (fromType === 'k_point_cash_balance') {
         const currentCash = customer.k_point_cash_balance || 0;
         if (currentCash < amount) {
-          showToast("K-Point Cash insuficiente.", "error");
+          showToast("Axis Cash insuficiente.", "error");
           return prev;
         }
         const netAmount = amount * 0.99; // 1% fee
         const kPointsMinted = netAmount * 1000;
         customer.k_point_cash_balance = currentCash - amount;
         customer.k_points_balance = (customer.k_points_balance || 0) + kPointsMinted;
-        showToast(`Convertiste ${amount} K$ a ${kPointsMinted} KP con 1% fee.`, "success");
+        showToast(`Convertiste ${amount} Axis Cash a ${kPointsMinted} Axis Points con 1% fee.`, "success");
       }
 
       return { ...prev, customers: [...updatedCustomers] };
@@ -1784,7 +1805,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       };
     });
 
-    showToast("Comercio Freemium registrado con éxito. Bono de 2000 KP otorgado (Bloqueado).", "success");
+    showToast("Comercio Freemium registrado con éxito. Bono de 2000 Axis Points otorgado (Bloqueado).", "success");
     if (view !== "promotora") setView("login");
     return newClient;
   };
@@ -2115,7 +2136,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const addGlobalProduct = (product: any) => {
     const globalProd = { ...product, id: `global${Date.now()}`, clientId: "global", stock: 9999 };
     setDb((prev: any) => ({ ...prev, products: [...prev.products, globalProd] }));
-    showToast("Producto Global {KFS_BRAND.productAcronym} inyectado a la red.");
+    showToast(`Producto Global ${KFS_BRAND.productAcronym} inyectado a la red.`);
   };
 
   const finishOnboarding = async (clientId: string, kycDocBase64?: string) => {
@@ -2129,7 +2150,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         c.id === clientId ? { ...c, isOnboarded: true, kycDocumentUrl: kycUrl || c.kycDocumentUrl || "" } : c
       )
     }));
-    showToast("¡Onboarding completado! Bienvenido a {KFS_BRAND.productAcronym} OS.", "success");
+    showToast(`¡Onboarding completado! Bienvenido a ${KFS_BRAND.productAcronym} OS.`, "success");
   };
 
   const paySubscription = (clientId: string, reference: string) => {
@@ -2296,7 +2317,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
   const addProduct = (productData: any) => {
     setDb((prev: any) => ({ ...prev, products: [...prev.products, { ...productData, id: `prod${Date.now()}` }] }));
-    showToast("Producto sincronizado con Flow Express.");
+    showToast("Producto sincronizado con {KFS_BRAND.modules.marketplace}.");
   };
 
   const addExpense = (expenseData: any) => {
@@ -2361,7 +2382,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
             showToast("Auto-Fill Activado: Liquidación USD (1% fee) aplicada.", "success");
             // The actual deduction happens below in the setDb mapping
           } else {
-            showToast("Puntos {KFS_BRAND.economy.currency} insuficientes y Auto-Fill fallido.", "error");
+            showToast(`Puntos ${KFS_BRAND.economy.currency} insuficientes y Auto-Fill fallido.`, "error");
             return null;
           }
         }
@@ -2655,7 +2676,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
     if (applyIva) {
       const fiscalPayload = {
-        clientName: product.clientName || "Comercio {KFS_BRAND.productAcronym}",
+        clientName: product.clientName || `Comercio ${KFS_BRAND.productAcronym}`,
         clientRif: "J-25218648-9",
         customerName: customerName || "Consumidor Final",
         customerRif: customerRif,
@@ -3175,7 +3196,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     
     // 1. Catálogo local de alta velocidad (Garantía de Offline-First)
     if (VENEZUELAN_PRODUCTS_CATALOG[barcode]) {
-      console.log("[{KFS_BRAND.productAcronym} Offline Catalog] Encontrado localmente:", VENEZUELAN_PRODUCTS_CATALOG[barcode]);
+      console.log(`[${KFS_BRAND.productAcronym} Offline Catalog] Encontrado localmente:`, VENEZUELAN_PRODUCTS_CATALOG[barcode]);
       return {
         barcode,
         ...VENEZUELAN_PRODUCTS_CATALOG[barcode],
@@ -3193,7 +3214,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           .single();
         
         if (data && !error) {
-          console.log("[{KFS_BRAND.productAcronym} Supabase Catalog] Encontrado en la nube:", data);
+          console.log(`[${KFS_BRAND.productAcronym} Supabase Catalog] Encontrado en la nube:`, data);
           return {
             barcode: data.barcode,
             name: data.name,
@@ -3204,7 +3225,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           };
         }
       } catch (err) {
-        console.warn("[{KFS_BRAND.productAcronym} Supabase Catalog] Error consultando Supabase:", err);
+        console.warn(`[${KFS_BRAND.productAcronym} Supabase Catalog] Error consultando Supabase:`, err);
       }
     }
     
@@ -3300,7 +3321,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (deductionSuccessful) {
-      showToast("Perfil enviado. Se debitó $1.00 USD de tu Reserva Central. En espera de revisión por el {KFS_BRAND.productAcronym} Core.", "success");
+      showToast(`Perfil enviado. Se debitó $1.00 USD de tu Reserva Central. En espera de revisión por el ${KFS_BRAND.productAcronym} Core.`, "success");
     }
   };
 
@@ -3440,14 +3461,14 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       const updatedCandidates = prev.candidates.map((c: any) => {
         if (c.id === candidateId) {
           const newStatus = c.status === "backed" ? "pending" : "backed";
-          setTimeout(() => showToast(newStatus === "backed" ? "Candidato ahora respaldado por {KFS_BRAND.productAcronym} OS" : "Respaldo {KFS_BRAND.productAcronym} OS removido", "success"), 50);
+          setTimeout(() => showToast(newStatus === "backed" ? `Candidato ahora respaldado por ${KFS_BRAND.productAcronym} OS` : `Respaldo ${KFS_BRAND.productAcronym} OS removido`, "success"), 50);
           const updated = { ...c, status: newStatus };
           return addCandidateNotification(
             updated,
-            newStatus === "backed" ? "Sello de Aval Otorgado 🏆" : "Aval {KFS_BRAND.productAcronym} OS Removido",
+            newStatus === "backed" ? "Sello de Aval Otorgado 🏆" : `Aval ${KFS_BRAND.productAcronym} OS Removido`,
             newStatus === "backed"
-              ? "¡Felicidades! Tu perfil ha recibido el Sello Dorado de Aval por parte del soporte de {KFS_BRAND.productAcronym} OS."
-              : "El Aval de {KFS_BRAND.productAcronym} OS ha sido removido de tu perfil."
+              ? `¡Felicidades! Tu perfil ha recibido el Sello Dorado de Aval por parte del soporte de ${KFS_BRAND.productAcronym} OS.`
+              : `El Aval de ${KFS_BRAND.productAcronym} OS ha sido removido de tu perfil.`
           );
         }
         return c;
@@ -3474,7 +3495,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           return addCandidateNotification(
             updated,
             "Postulación Aprobada ($1 USD) 🟢",
-            "Tu pago de $1 USD fue verificado con éxito. Tu perfil ya está activo y visible para los comercios de {KFS_BRAND.productAcronym} OS."
+            `Tu pago de $1 USD fue verificado con éxito. Tu perfil ya está activo y visible para los comercios de ${KFS_BRAND.productAcronym} OS.`
           );
         }
         return c;
@@ -3600,7 +3621,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         c.id === candidateId ? { ...c, useKfsCvBuilder: useBuilder } : c
       )
     }));
-    showToast(useBuilder ? "CV Digital {KFS_BRAND.productAcronym} activado." : "CV Digital {KFS_BRAND.productAcronym} desactivado.");
+    showToast(useBuilder ? `CV Digital ${KFS_BRAND.productAcronym} activado.` : `CV Digital ${KFS_BRAND.productAcronym} desactivado.`);
   };
 
   // ==========================================

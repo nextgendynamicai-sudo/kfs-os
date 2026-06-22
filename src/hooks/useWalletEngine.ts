@@ -5,7 +5,7 @@ export function useWalletEngine() {
   const kfs = useKFS() as any;
   const { db, setDb, rates, showToast } = kfs;
 
-  // 100 K-Points = $0.10 USD (meaning 1000 KP = $1.00 USD)
+  // 100 Axis Points = $0.10 USD (meaning 1000 Axis Points = $1.00 USD)
   const usdToKPoints = (usd: number): number => {
     return Math.round(usd * 1000);
   };
@@ -23,7 +23,7 @@ export function useWalletEngine() {
       let hasChanges = false;
       let newC = { ...c };
 
-      // 1. K-Point Bonus Expiry (7 days irreversible)
+      // 1. Axis Bonus Expiry (7 days irreversible)
       if (newC.k_point_bonus_expiry && newC.k_point_bonus_balance > 0) {
         const expiryTime = new Date(newC.k_point_bonus_expiry).getTime();
         if (now > expiryTime) {
@@ -131,7 +131,7 @@ export function useWalletEngine() {
         date: new Date().toISOString(),
         actor: "System",
         action: "RECHARGE_WALLET",
-        details: `Usuario ${phone} recargó $${amountUSD} USD. Recibe bono: ${bonusKP} KP. Promotora: ${targetPromoterId || "ninguna"}`
+        details: `Usuario ${phone} recargó $${amountUSD} USD. Recibe bono: ${bonusKP} Axis Points. Promotora: ${targetPromoterId || "ninguna"}`
       };
 
       return {
@@ -171,7 +171,7 @@ export function useWalletEngine() {
         date: new Date().toISOString(),
         actor: "System",
         action: "AWARD_CASHBACK",
-        details: `Usuario ${phone} recibió cashback de ${cashbackKP} KP por gastar $${realUSDSpent} USD reales.`
+        details: `Usuario ${phone} recibió cashback de ${cashbackKP} Axis Points por gastar $${realUSDSpent} USD reales.`
       };
 
       return {

@@ -17,7 +17,7 @@ export function useP2PTransfer() {
     }
 
     if (type === "k_point_bonus_balance") {
-      showToast("Los K-Point Bonus son intransferibles.", "error");
+      showToast("Los Axis Bonus son intransferibles.", "error");
       return false;
     }
 
@@ -69,7 +69,7 @@ export function useP2PTransfer() {
           else if (type === "k_point_cash_balance") {
             const currentCash = c.k_point_cash_balance || 0;
             if (currentCash < amount) {
-              setTimeout(() => showToast("K-Point Cash insuficiente.", "error"), 10);
+              setTimeout(() => showToast("Axis Cash insuficiente.", "error"), 10);
               return c;
             }
             success = true;
@@ -143,12 +143,12 @@ export function useP2PTransfer() {
         date: new Date().toISOString(),
         actor: sender.name,
         action: `P2P_TRANSFER_${type.toUpperCase()}`,
-        details: `Transfirió ${amount} ${type === "real_balance" ? "USD" : "K-Points"} a ${recipient.name} (${recipient.phone})`
+        details: `Transfirió ${amount} ${type === "real_balance" ? "USD" : "Axis Points"} a ${recipient.name} (${recipient.phone})`
       };
 
       setTimeout(() => {
         showToast(
-          `¡Transferencia exitosa de ${amount} ${type === "real_balance" ? "USD" : "K-Points"} a ${recipient.name}!`,
+          `¡Transferencia exitosa de ${amount} ${type === "real_balance" ? "USD" : "Axis Points"} a ${recipient.name}!`,
           "success"
         );
       }, 10);

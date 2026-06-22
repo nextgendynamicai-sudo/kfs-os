@@ -177,7 +177,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
       ...prev,
       products: prev.products.map((p: any) => p.id === productId ? { ...p, priceUSD: parseFloat(newPrice.toFixed(2)) } : p)
     }));
-    showToast("Margen blindado con éxito en el canal POS y Flow Express.", "success");
+    showToast(`Margen blindado con éxito en el canal POS y ${KFS_BRAND.modules.marketplace}.`, "success");
   };
 
   const handleBarcodeSearch = async (barcode: string) => {
@@ -337,7 +337,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
           <p className="text-gray-600 mb-8 font-bold relative z-10 text-lg">
             {isPendingVerification
               ? "Tu comprobante de pago ha sido enviado al equipo Kreatek Core y está siendo auditado. Tu tienda se reactivará en breve."
-              : "Tu membresía mensual a {KFS_BRAND.productAcronym} OS ($6) se encuentra vencida. Tu tienda está pausada."}
+              : `Tu membresía mensual a ${KFS_BRAND.productAcronym} OS ($6) se encuentra vencida. Tu tienda está pausada.`}
           </p>
 
           {!isPendingVerification && (
@@ -365,7 +365,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
           )}
 
           <div className="bg-gradient-to-r from-amber-400 to-orange-500 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-sm border border-orange-300/50">
-              <span className="text-[10px] font-black uppercase tracking-wider text-orange-900">K-Pts</span>
+              <span className="text-[10px] font-black uppercase tracking-wider text-orange-900">Axis Pts</span>
               <span className="font-black text-white text-sm">{currentUser?.kfsPoints || 0}</span>
             </div>
             <button onClick={logout} className="text-gray-400 font-bold hover:text-red-500 transition relative z-10 cursor-pointer">
@@ -649,7 +649,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                 </div>
                 <div className="bg-white/20 border border-white/20 rounded-xl p-4 flex gap-4 shadow-sm">
                   <span className="text-2xl">⚡</span>
-                  <p className="text-sm text-white">Tus ventas en horario matutino cayeron un 12%. Te sugiero lanzar un SMS Push "Oferta Mañanera" desde Flow Express.</p>
+                  <p className="text-sm text-white">Tus ventas en horario matutino cayeron un 12%. Te sugiero lanzar un SMS Push "Oferta Mañanera" desde {KFS_BRAND.modules.marketplace}.</p>
                 </div>
               </div>
             </div>
@@ -770,7 +770,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                     onClick={() => {
                       window.open(`https://wa.me/584127740041?text=Hola Kreatek, soy el local *${currentUser.company}*. Adjunto comprobante de pago de BOS diario correspondiente a la deuda de *${formatUSD(currentUser.kfsFeesOwedUSD || 0)}*.`, '_blank');
                       window.dispatchEvent(new CustomEvent('kfs-payment-alert', { detail: { company: currentUser.company, amount: currentUser.kfsFeesOwedUSD } }));
-                      showToast("Abriendo WhatsApp y notificando a {KFS_BRAND.productAcronym} Core...", "success");
+                      showToast(`Abriendo WhatsApp y notificando a ${KFS_BRAND.productAcronym} Core...`, "success");
                     }}
                     className="bg-sky-600 text-white font-black text-xs px-5 py-3 rounded-xl shadow-lg shadow-sky-600/30 hover:scale-105 transition-transform flex items-center gap-1.5 cursor-pointer border-none"
                   >
@@ -1425,7 +1425,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
             )}
 
             <div>
-              <h3 className="font-black text-xl text-sky-950 mb-6 pl-2">Inventario en Flow Express</h3>
+              <h3 className="font-black text-xl text-sky-950 mb-6 pl-2">Inventario en {KFS_BRAND.modules.marketplace}</h3>
               <div className="grid grid-cols-1 min-[400px]:grid-cols-2 md:grid-cols-4 gap-4">
                 {myProducts.map((p: any) => {
                   const hasCost = p.costUSD !== undefined && p.costUSD > 0;
@@ -1642,7 +1642,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                   <div className="space-y-5 text-slate-700 text-sm leading-relaxed">
                     <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
                       <p className="font-black text-sky-950 mb-1">1. ¿Qué es {KFS_BRAND.productAcronym} OS?</p>
-                      <p>Es tu centro de comando. Desde aquí controlas tus ventas físicas, tu E-Commerce (Flow Express {KFS_BRAND.modules.marketplace}), empleados e inventario en un solo lugar.</p>
+                      <p>Es tu centro de comando. Desde aquí controlas tus ventas físicas, tu E-Commerce ({KFS_BRAND.modules.marketplace} {KFS_BRAND.modules.marketplace}), empleados e inventario en un solo lugar.</p>
                     </div>
                     <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
                       <p className="font-black text-sky-950 mb-1">2. Control de Inventario:</p>
@@ -1668,8 +1668,8 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                       <p className="text-sky-700 text-xs">Ahorros masivos al eliminar software de terceros obsoleto.</p>
                     </div>
                     <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
-                      <p className="font-black text-sky-950 mb-1">1. E-Commerce Flow Express Gratuito:</p>
-                      <p>Tu inventario está conectado en tiempo real al marketplace Flow Express. Cualquier cliente puede comprar online con pago móvil, Zinli, AirTM, Ubbi, Wally o Binance Pay sin comisiones adicionales.</p>
+                      <p className="font-black text-sky-950 mb-1">1. E-Commerce {KFS_BRAND.modules.marketplace} Gratuito:</p>
+                      <p>Tu inventario está conectado en tiempo real al marketplace {KFS_BRAND.modules.marketplace}. Cualquier cliente puede comprar online con pago móvil, Zinli, AirTM, Ubbi, Wally o Binance Pay sin comisiones adicionales.</p>
                     </div>
                     <div className="bg-slate-50 p-4 rounded-xl border border-slate-200">
                       <p className="font-black text-sky-950 mb-1">2. Sincro-Shield Fiscal Gratuito:</p>

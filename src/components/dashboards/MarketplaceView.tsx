@@ -116,7 +116,7 @@ export const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, curr
 
   return (
     <div className={`min-h-screen bg-[#EEF2F5] pb-20 ${activeStore ? typography : "font-sans"}`}>
-      <Navbar title={activeStore ? `Mall: ${activeStore.company}` : "Flow Express"} showBack={true} onBack={logout} />
+      <Navbar title={activeStore ? `Mall: ${activeStore.company}` : `${KFS_BRAND.modules.marketplace}`} showBack={true} onBack={logout} />
 
       <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
         {activeStore && settings.coverPhotoUrl ? (
@@ -155,7 +155,7 @@ export const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, curr
                 <img src={profilePicUrl} alt="Store Logo" className="w-16 h-16 rounded-full object-cover border-2 shadow-sm" style={{ borderColor: themeColor }} />
               )}
               <div>
-                <h2 className="text-2xl font-black text-violet-900">{activeStore ? activeStore.company : "Centros Comerciales {KFS_BRAND.productAcronym}"}</h2>
+                <h2 className="text-2xl font-black text-violet-900">{activeStore ? activeStore.company : `Centros Comerciales ${KFS_BRAND.productAcronym}`}</h2>
                 <p className="text-xs text-gray-500 mt-1">{activeStore ? (settings.bioText || "Catálogo exclusivo de este negocio.") : "Explora nuestras tiendas destacadas y descubre sus productos."}</p>
               </div>
             </div>

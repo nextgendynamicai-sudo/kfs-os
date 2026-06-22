@@ -55,7 +55,7 @@ export function useMerchantFee() {
     merchantId: string,
     customerPhone: string,
     totalPriceUSD: number,
-    kPointsToUse: number // e.g. 5000 KP (worth $5.00)
+    kPointsToUse: number // e.g. 5000 Axis Points (worth $5.00)
   ) => {
     const kpUSDValue = kPointsToUse / 1000;
     const realUSDNeeded = Math.max(0, totalPriceUSD - kpUSDValue);
@@ -181,7 +181,7 @@ export function useMerchantFee() {
         date: new Date().toISOString(),
         actor: customer.name,
         action: "HYBRID_PURCHASE",
-        details: `Compra híbrida en ${merchant.company} por $${totalPriceUSD}. Pagó $${realUSDNeeded} real + ${kPointsToUse} KP.`
+        details: `Compra híbrida en ${merchant.company} por $${totalPriceUSD}. Pagó $${realUSDNeeded} real + ${kPointsToUse} Axis Points.`
       };
 
       return {

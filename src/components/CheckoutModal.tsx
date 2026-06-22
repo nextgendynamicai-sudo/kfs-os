@@ -314,7 +314,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
                 className="w-full accent-purple-600"
               />
               <div className="flex justify-between text-xs font-bold text-purple-800">
-                <span>{kPointsToBurn} Puntos</span>
+                <span>{kPointsToBurn} {KFS_BRAND.economy.currency}</span>
                 <span>Descuento: -${discountUSD.toFixed(2)}</span>
               </div>
             </div>
