@@ -383,7 +383,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
   return (
     <div className="min-h-screen bg-slate-50 pb-24 font-sans text-sky-950 relative">
       {currentUser?.isImpersonated && (
-        <div className="bg-amber-500 text-sky-950 px-4 py-3 font-bold text-center flex items-center justify-center gap-4 text-sm shadow-md animate-pulse sticky top-[64px] z-50 border-b border-amber-600">
+        <div className="bg-amber-500 text-sky-950 px-4 py-3 font-bold text-center flex items-center justify-center gap-4 text-sm shadow-md animate-pulse sticky top-0 z-50 border-b border-amber-600">
           <span>⚠️ MODO IMPERSONACIÓN ACTIVO: Estás controlando el panel de {currentUser.company}</span>
           <button onClick={stopImpersonating} className="bg-sky-950 text-white px-4 py-1.5 rounded-xl text-xs font-black hover:bg-slate-800 transition-colors shadow cursor-pointer">
             Regresar a Panel Core

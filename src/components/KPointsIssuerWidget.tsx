@@ -43,7 +43,7 @@ export const KPointsIssuerWidget = ({ db, transferKFSPoints }: any) => {
   ).slice(0, 5); // Show only top 5 results to save space
 
   return (
-    <div className="bg-gradient-to-br from-violet-900 to-sky-50 shadow-2xl border-none rounded-[2rem] p-8 animate-fade-in text-white relative overflow-hidden">
+    <div className="bg-gradient-to-br from-violet-950 via-violet-900 to-indigo-950 shadow-2xl border-none rounded-[2rem] p-8 animate-fade-in text-white relative overflow-hidden">
       <Gift size={120} className="absolute -right-10 -bottom-10 text-white/5 pointer-events-none" />
       
       <div className="relative z-10">
@@ -60,7 +60,7 @@ export const KPointsIssuerWidget = ({ db, transferKFSPoints }: any) => {
         <div className="space-y-6">
           {/* Collection Selector */}
           <div>
-            <label className="text-xs font-bold text-violet-300 uppercase tracking-widest mb-2 block">1. Entidad Destino</label>
+            <label className="text-xs font-bold text-violet-200 uppercase tracking-widest mb-2 block">1. Entidad Destino</label>
             <div className="flex flex-wrap gap-2">
               {collections.map(col => {
                 const Icon = col.icon;
@@ -76,7 +76,7 @@ export const KPointsIssuerWidget = ({ db, transferKFSPoints }: any) => {
                     className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-bold transition-all cursor-pointer border-none text-xs ${
                       isActive 
                       ? 'bg-violet-500 text-white shadow-[0_5px_15px_rgba(139,92,246,0.3)]' 
-                      : 'bg-white/10 text-violet-200 hover:bg-white/20'
+                      : 'bg-white/10 text-white/90 hover:bg-white/20'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
@@ -89,17 +89,17 @@ export const KPointsIssuerWidget = ({ db, transferKFSPoints }: any) => {
 
           {/* User Search */}
           <div>
-            <label className="text-xs font-bold text-violet-300 uppercase tracking-widest mb-2 block">2. Seleccionar Usuario</label>
+            <label className="text-xs font-bold text-violet-200 uppercase tracking-widest mb-2 block">2. Seleccionar Usuario</label>
             {!selectedUser ? (
               <div className="space-y-2">
                 <div className="relative">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-violet-300" size={18} />
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-violet-200" size={18} />
                   <input
                     type="text"
                     placeholder="Buscar por nombre, empresa o teléfono..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder:text-violet-400 focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all font-bold"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl pl-12 pr-4 py-3 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all font-bold"
                   />
                 </div>
                 {searchTerm.length > 1 && (

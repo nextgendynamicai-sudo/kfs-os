@@ -175,7 +175,7 @@ export const FiscalPrinterSetupWidget = () => {
           <button
             type="button"
             onClick={downloadProxyScript}
-            className="w-full mt-2 py-2 bg-violet-600 hover:bg-[#b08e72] text-violet-900 font-black rounded-lg text-xs transition-colors cursor-pointer text-center"
+            className="w-full mt-2 py-2 bg-violet-600 hover:bg-[#b08e72] text-white font-black rounded-lg text-xs transition-colors cursor-pointer text-center"
           >
             Descargar fiscal-proxy.js
           </button>
