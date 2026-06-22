@@ -336,11 +336,37 @@ export default function Home() {
 
   if (isBooting || !isClient) {
     return (
-      <div className="min-h-screen bg-violet-900 flex flex-col items-center justify-center text-white">
-        <div className="relative flex flex-col items-center">
-          <img src="/kfs-loading.png" className="h-28 sm:h-32 w-auto animate-pulse mb-8 object-contain" alt="KFS OS" />
-          <div className="w-12 h-12 border-4 border-violet-600/20 border-t-violet-600 rounded-full animate-spin" />
-          <p className="text-xs text-gray-500 font-mono mt-6">Loading core vectors...</p>
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-violet-950 to-indigo-950 flex flex-col items-center justify-center text-white relative overflow-hidden">
+        {/* Soft background glow circles */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div className="relative flex flex-col items-center z-10 scale-95 md:scale-100 transition-all duration-500">
+          {/* Logo container with rotation and transparent background */}
+          <div className="relative w-40 h-40 flex items-center justify-center mb-8">
+            {/* Rotating Outer Rings */}
+            <div className="absolute inset-0 border-2 border-dashed border-violet-500/30 rounded-full animate-[spin_20s_linear_infinite]" />
+            <div className="absolute -inset-1 border-t-2 border-violet-400 rounded-full animate-[spin_2s_linear_infinite]" />
+            <div className="absolute -inset-3 border-r-2 border-indigo-400/40 rounded-full animate-[spin_6s_linear_infinite_reverse]" />
+            
+            {/* Main Logo Image (Rotating slowly with transparent background) */}
+            <div className="w-28 h-28 flex items-center justify-center rounded-full bg-violet-950/40 backdrop-blur-md shadow-xl border border-violet-500/20 p-2 overflow-hidden hover:scale-105 transition-transform duration-300">
+              <img src="/kfs-logo.png" className="w-full h-full object-contain animate-[spin_8s_linear_infinite]" alt="Kreatek Flow Systems Logo" />
+            </div>
+          </div>
+          
+          {/* Beautiful text & spinner */}
+          <div className="text-center space-y-3">
+            <h2 className="text-xl font-black tracking-widest uppercase bg-gradient-to-r from-violet-200 via-white to-indigo-200 bg-clip-text text-transparent">
+              {KFS_BRAND.productAcronym} OS
+            </h2>
+            <div className="flex items-center justify-center gap-2">
+              <span className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
+              <span className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
+              <span className="w-1.5 h-1.5 bg-violet-400 rounded-full animate-bounce" />
+            </div>
+            <p className="text-[10px] text-violet-300/60 font-mono tracking-widest uppercase">Iniciando vectores del ecosistema...</p>
+          </div>
         </div>
       </div>
     );
