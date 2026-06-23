@@ -1246,6 +1246,24 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       if (role === "rider") userProfile = db.riders?.find((r: any) => r.email === safeEmail);
       
       if (userProfile) {
+        const authUserId = data?.user?.id;
+        if (authUserId) {
+          userProfile.auth_user_id = authUserId;
+          setDb((prev: any) => {
+            const key = role === "dueño" ? "clients" : (role === "promotora" ? "promotoras" : (role === "vendedor" ? "vendedores" : (role === "rider" ? "riders" : null)));
+            if (key) {
+              const updatedArray = prev[key].map((item: any) => {
+                if (item.email === safeEmail) {
+                  return { ...item, auth_user_id: authUserId };
+                }
+                return item;
+              });
+              return { ...prev, [key]: updatedArray };
+            }
+            return prev;
+          });
+        }
+        
         setCurrentUser({ ...userProfile, role });
         setView(role === "dueño" ? "client" : role);
         showToast(`Sesión segura iniciada: ${userProfile.name || userProfile.company}`);
@@ -1918,6 +1936,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     nextMonth.setMonth(nextMonth.getMonth() + 1);
 
     // Supabase Auth Integration
+    let authUserId = null;
     try {
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: clientData.email,
@@ -1931,6 +1950,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       });
       if (authError) {
         showToast("Error en registro Supabase (Nube): " + authError.message, "error");
+      } else {
+        authUserId = authData?.user?.id || null;
       }
     } catch (e: any) {
       showToast("Supabase no configurado o sin conexión: " + e.message, "error");
@@ -1938,6 +1959,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
     const newClient = { 
       ...clientData, 
+      auth_user_id: authUserId,
       avatar: avatarUrl,
       password: hashPassword(clientData.password),
       id: `c${Date.now()}`, 

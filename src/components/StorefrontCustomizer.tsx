@@ -68,6 +68,22 @@ const KREATEK_COLORS = {
 
 
 
+const resolveThemeColor = (color: string) => {
+  if (!color) return "#7c3aed";
+  if (color.startsWith("#") || color.startsWith("rgb") || color.startsWith("hsl")) {
+    return color;
+  }
+  const tailwindColors: { [key: string]: string } = {
+    "violet-900": "#4c1d95",
+    "violet-600": "#7c3aed",
+    "indigo-600": "#4f46e5",
+    "emerald-500": "#10b981",
+    "amber-500": "#f59e0b",
+    "red-500": "#ef4444",
+  };
+  return tailwindColors[color] || "#7c3aed";
+};
+
 export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, updateStoreSettings: any }) => {
   const [settings, setSettings] = useState(client.storeSettings || {
     profilePicUrl: "",
@@ -165,7 +181,7 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
               <input type="color" value={settings.themeColor} onChange={e => setSettings({ ...settings, themeColor: e.target.value })} className="h-10 w-10 rounded-full cursor-pointer border-none shadow-sm p-0 overflow-hidden" title="Elegir color personalizado" />
               <div className="flex gap-1 border-l pl-2 border-gray-200">
                 {["violet-900", "#4F46E5", "#10B981", "#F59E0B", "#EF4444", "violet-600"].map(c => (
-                  <button key={c} onClick={() => setSettings({ ...settings, themeColor: c })} className={`w-8 h-8 rounded-full border-2 ${settings.themeColor === c ? 'border-gray-900 shadow-md' : 'border-transparent'}`} style={{ backgroundColor: c }} />
+                  <button key={c} onClick={() => setSettings({ ...settings, themeColor: c })} className={`w-8 h-8 rounded-full border-2 ${settings.themeColor === c ? 'border-gray-900 shadow-md' : 'border-transparent'}`} style={{ backgroundColor: resolveThemeColor(c) }} />
                 ))}
               </div>
             </div>

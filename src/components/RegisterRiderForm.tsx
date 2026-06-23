@@ -66,6 +66,8 @@ const KREATEK_COLORS = {
 
 
 
+
+
 // ==========================================
 // SUBCOMPONENTS (DEFINED OUTSIDE PARENT TO PREVENT UNMOUNT RESETS)
 // ==========================================
@@ -80,6 +82,32 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
     pagoMovil: { banco: "", telefono: "", cedula: "" }
   });
   const [uploading, setUploading] = useState({ cedula: false, med: false, license: false });
+
+  const validatePhone = (phone: string) => {
+    if (!phone) return false;
+    const clean = phone.replace(/[^0-9]/g, "");
+    let rawBody = clean;
+    if (rawBody.startsWith('0')) {
+      rawBody = rawBody.slice(1);
+    }
+    return /^(412|414|424|416|426|415|425)\d{7}$/.test(rawBody) || (rawBody.length >= 7 && rawBody.length <= 12);
+  };
+
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const isPhoneValid = validatePhone(formData.phone);
+  const isPmPhoneValid = validatePhone(formData.pagoMovil.telefono);
+  const isEmailValid = validateEmail(formData.email);
+  const isNameValid = formData.name.trim().length >= 3;
+  const isPasswordValid = formData.password.length >= 6;
+  const isPmCedulaValid = formData.pagoMovil.cedula.trim().length >= 5;
+  const isPmBancoValid = !!formData.pagoMovil.banco;
+
+  const isFormValid = isNameValid && isPhoneValid && isEmailValid && isPasswordValid &&
+    !!formData.cedulaImg && !!formData.medCertImg && !!formData.licenseImg &&
+    isPmBancoValid && isPmPhoneValid && isPmCedulaValid;
 
   const handleDocUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: "cedulaImg" | "medCertImg" | "licenseImg", key: "cedula" | "med" | "license") => {
     const file = e.target.files?.[0];
@@ -96,24 +124,30 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.cedulaImg) { showToast("Debes subir tu Cédula de Identidad.", "error"); return; }
-    if (!formData.medCertImg) { showToast("Debes subir tu Certificado Médico.", "error"); return; }
-    if (!formData.licenseImg) { showToast("Debes subir tu Licencia de Conducir.", "error"); return; }
-    if (!formData.pagoMovil.banco || !formData.pagoMovil.telefono || !formData.pagoMovil.cedula) {
-      showToast("Completa todos los datos de Pago Móvil.", "error"); return;
-    }
+    if (!isFormValid) return;
     registerRider({ ...formData, referredBy: defaultReferralCode });
   };
 
   const DocUploadField = ({ label, icon, field, fileKey, uploaded }: { label: string; icon: string; field: "cedulaImg" | "medCertImg" | "licenseImg"; fileKey: "cedula" | "med" | "license"; uploaded: boolean }) => (
-    <label className={`relative flex flex-col items-center justify-center gap-2 p-4 border-2 border-dashed rounded-2xl cursor-pointer transition-all group ${uploaded ? "border-green-400 bg-green-50" : "border-sky-200 bg-sky-50/50 hover:bg-sky-100"}`}>
-      <input type="file" accept="image/*,application/pdf" className="hidden" onChange={(e) => handleDocUpload(e, field, fileKey)} />
-      <span className="text-3xl">{uploaded ? "✅" : icon}</span>
-      <span className={`text-[11px] font-bold text-center ${uploaded ? "text-green-600" : "text-sky-700 group-hover:text-sky-800"}`}>
-        {uploading[fileKey] ? "Subiendo..." : uploaded ? "¡Cargado!" : label}
-      </span>
-      {uploaded && <span className="text-[8px] text-green-500 font-mono">Toca para cambiar</span>}
-    </label>
+    <div className="relative">
+      <label className={`relative flex flex-col items-center justify-center gap-2 p-4 border-2 border-dashed rounded-2xl cursor-pointer transition-all group block ${uploaded ? "border-green-400 bg-green-50" : "border-sky-200 bg-sky-50/50 hover:bg-sky-100"}`}>
+        <input type="file" accept="image/*,application/pdf" className="hidden" onChange={(e) => handleDocUpload(e, field, fileKey)} />
+        {uploaded && formData[field] ? (
+          <img src={formData[field]} className="w-full h-12 object-cover rounded-md" alt={label} />
+        ) : (
+          <span className="text-3xl">{uploaded ? "✅" : icon}</span>
+        )}
+        <span className={`text-[11px] font-bold text-center ${uploaded ? "text-green-600" : "text-sky-700 group-hover:text-sky-800"}`}>
+          {uploading[fileKey] ? "Subiendo..." : uploaded ? "¡Cargado!" : label}
+        </span>
+        {uploaded && <span className="text-[8px] text-green-500 font-mono">Toca para cambiar</span>}
+      </label>
+      {uploaded && (
+        <button type="button" onClick={() => setFormData(prev => ({ ...prev, [field]: "" }))} className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors z-10">
+          <Trash2 size={10} />
+        </button>
+      )}
+    </div>
   );
 
   return (
@@ -128,10 +162,36 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
 
       {/* Personal Data */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <input required placeholder="Nombre Completo" value={formData.name} onChange={e => setFormData(p => ({ ...p, name: e.target.value }))} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl px-4 py-3 text-sky-950 text-sm focus:outline-none focus:border-sky-400 transition-all placeholder:text-slate-400" />
-        <input required type="tel" placeholder="Teléfono (Ej: 04141234567)" value={formData.phone} onChange={e => setFormData(p => ({ ...p, phone: e.target.value }))} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl px-4 py-3 text-sky-950 text-sm focus:outline-none focus:border-sky-400 transition-all placeholder:text-slate-400" />
-        <input required type="email" placeholder="Correo Electrónico" value={formData.email} onChange={e => setFormData(p => ({ ...p, email: e.target.value }))} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl px-4 py-3 text-sky-950 text-sm focus:outline-none focus:border-sky-400 transition-all placeholder:text-slate-400" />
-        <input required type="password" placeholder="Crear Contraseña" value={formData.password} onChange={e => setFormData(p => ({ ...p, password: e.target.value }))} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl px-4 py-3 text-sky-950 text-sm focus:outline-none focus:border-sky-400 transition-all placeholder:text-slate-400" />
+        <div>
+          <label className="block text-[10px] font-black text-sky-700 uppercase tracking-widest mb-1 ml-1">Nombre Completo</label>
+          <input required placeholder="Nombre Completo" value={formData.name} onChange={e => setFormData(p => ({ ...p, name: e.target.value }))} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl px-4 py-3 text-sky-950 text-sm focus:outline-none focus:border-sky-400 transition-all placeholder:text-slate-400" />
+        </div>
+        <div>
+          <div className="flex justify-between items-center mb-1 ml-1">
+            <label className="block text-[10px] font-black text-sky-700 uppercase tracking-widest">Teléfono Móvil</label>
+            {formData.phone && (
+              <span className={`text-[8px] font-black px-2 py-0.5 rounded-full ${isPhoneValid ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
+                {isPhoneValid ? "✓ Válido" : "✗ Inválido"}
+              </span>
+            )}
+          </div>
+          <input required type="tel" placeholder="Ej: 04141234567" value={formData.phone} onChange={e => setFormData(p => ({ ...p, phone: e.target.value }))} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl px-4 py-3 text-sky-950 text-sm focus:outline-none focus:border-sky-400 transition-all placeholder:text-slate-400" />
+        </div>
+        <div>
+          <div className="flex justify-between items-center mb-1 ml-1">
+            <label className="block text-[10px] font-black text-sky-700 uppercase tracking-widest">Correo Electrónico</label>
+            {formData.email && (
+              <span className={`text-[8px] font-black px-2 py-0.5 rounded-full ${isEmailValid ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
+                {isEmailValid ? "✓ Válido" : "✗ Inválido"}
+              </span>
+            )}
+          </div>
+          <input required type="email" placeholder="Correo Electrónico" value={formData.email} onChange={e => setFormData(p => ({ ...p, email: e.target.value }))} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl px-4 py-3 text-sky-950 text-sm focus:outline-none focus:border-sky-400 transition-all placeholder:text-slate-400" />
+        </div>
+        <div>
+          <label className="block text-[10px] font-black text-sky-700 uppercase tracking-widest mb-1 ml-1">Contraseña</label>
+          <input required type="password" placeholder="Crear Contraseña" value={formData.password} onChange={e => setFormData(p => ({ ...p, password: e.target.value }))} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl px-4 py-3 text-sky-950 text-sm focus:outline-none focus:border-sky-400 transition-all placeholder:text-slate-400" />
+        </div>
       </div>
 
       {/* Document Uploads */}
@@ -155,8 +215,21 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
         {["Banesco", "Mercantil", "Banco de Venezuela", "Provincial", "BOD", "Bancaribe", "Bicentenario", "BNC", "Exterior", "Tesoro"].map(b => <option key={b} value={b}>{b}</option>)}
       </select>
       <div className="grid grid-cols-2 gap-2">
-        <input required type="tel" placeholder="Teléfono PM (04xx...)" value={formData.pagoMovil.telefono} onChange={e => setFormData(p => ({ ...p, pagoMovil: { ...p.pagoMovil, telefono: e.target.value } }))} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl px-3 py-3 text-sky-950 text-sm focus:outline-none focus:border-sky-400 transition-all placeholder:text-slate-400" />
-        <input required placeholder="Cédula Titular" value={formData.pagoMovil.cedula} onChange={e => setFormData(p => ({ ...p, pagoMovil: { ...p.pagoMovil, cedula: e.target.value } }))} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl px-3 py-3 text-sky-950 text-sm focus:outline-none focus:border-sky-400 transition-all placeholder:text-slate-400" />
+        <div>
+          <div className="flex justify-between items-center mb-1 ml-1">
+            <label className="block text-[8px] font-black text-sky-700 uppercase tracking-widest">Teléfono PM</label>
+            {formData.pagoMovil.telefono && (
+              <span className={`text-[8px] font-black px-1.5 py-0.5 rounded-full ${isPmPhoneValid ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
+                {isPmPhoneValid ? "✓" : "✗"}
+              </span>
+            )}
+          </div>
+          <input required type="tel" placeholder="Teléfono PM (04xx...)" value={formData.pagoMovil.telefono} onChange={e => setFormData(p => ({ ...p, pagoMovil: { ...p.pagoMovil, telefono: e.target.value } }))} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl px-3 py-3 text-sky-950 text-sm focus:outline-none focus:border-sky-400 transition-all placeholder:text-slate-400" />
+        </div>
+        <div>
+          <label className="block text-[8px] font-black text-sky-700 uppercase tracking-widest mb-1 ml-1">Cédula Titular</label>
+          <input required placeholder="Cédula Titular" value={formData.pagoMovil.cedula} onChange={e => setFormData(p => ({ ...p, pagoMovil: { ...p.pagoMovil, cedula: e.target.value } }))} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl px-3 py-3 text-sky-950 text-sm focus:outline-none focus:border-sky-400 transition-all placeholder:text-slate-400" />
+        </div>
       </div>
 
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-3">
@@ -164,9 +237,14 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
       </div>
 
       <div className="flex gap-3 pt-2">
-        <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl border border-sky-200 text-slate-500 font-bold hover:bg-sky-50 transition-all text-sm cursor-pointer">Atrás</button>
-        <button type="submit" className="w-2/3 py-3 rounded-xl bg-sky-600 text-white font-black hover:scale-[1.02] active:scale-95 transition-all text-sm cursor-pointer flex items-center justify-center gap-2 border-none shadow-md shadow-sky-600/30">
-          <Truck size={16} /> Enviar Solicitud
+        <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl border border-sky-200 text-slate-500 font-bold hover:bg-sky-50 transition-all text-sm cursor-pointer bg-transparent">Atrás</button>
+        <button 
+          type="submit" 
+          disabled={!isFormValid}
+          className="w-2/3 py-3 rounded-xl bg-sky-600 text-white font-black hover:scale-[1.02] active:scale-95 transition-all text-sm cursor-pointer flex items-center justify-center gap-2 border-none shadow-md shadow-sky-600/30 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100"
+          title={isFormValid ? "Enviar solicitud de Rider" : "Por favor, completa todos los campos requeridos y sube tus documentos KYC"}
+        >
+          <Truck size={16} /> {isFormValid ? "Enviar Solicitud" : "Faltan Campos / KYC"}
         </button>
       </div>
     </form>

@@ -283,7 +283,7 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
             {/* Manuals Section */}
             <div className="bg-gradient-to-r from-sky-950 to-sky-900 text-white p-8 md:p-10 rounded-[2rem] shadow-xl shadow-sky-900/20 relative overflow-hidden border border-sky-800">
               <h3 className="text-xl font-black mb-6">Centro de Aprendizaje y Manuales</h3>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
                 <button onClick={() => setActiveManual('sales')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
                   <BookOpen size={32} className="text-sky-400" />
                   <span className="font-bold text-sm">Manual de Ventas</span>
@@ -296,6 +296,10 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
                   <DownloadCloud size={32} className="text-sky-400" />
                   <span className="font-bold text-sm">Setup Fiscal Proxy</span>
                 </button>
+                <a href="/presentacion_kan_cgos.pdf" download="presentacion_kan_cgos.pdf" className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10 no-underline text-white text-center">
+                  <FileText size={32} className="text-emerald-400" />
+                  <span className="font-bold text-sm">Presentación KAN CGOS (PDF)</span>
+                </a>
               </div>
             </div>
           </div>

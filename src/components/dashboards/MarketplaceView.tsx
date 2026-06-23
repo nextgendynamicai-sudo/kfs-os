@@ -79,6 +79,22 @@ const KREATEK_COLORS = {
 
 // Toast Component
 
+export const resolveThemeColor = (color: string) => {
+  if (!color) return "#7c3aed";
+  if (color.startsWith("#") || color.startsWith("rgb") || color.startsWith("hsl")) {
+    return color;
+  }
+  const tailwindColors: { [key: string]: string } = {
+    "violet-900": "#4c1d95",
+    "violet-600": "#7c3aed",
+    "indigo-600": "#4f46e5",
+    "emerald-500": "#10b981",
+    "amber-500": "#f59e0b",
+    "red-500": "#ef4444",
+  };
+  return tailwindColors[color] || "#7c3aed";
+};
+
 export const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser }: any) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [checkoutProduct, setCheckoutProduct] = useState<any>(null);
@@ -86,6 +102,17 @@ export const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, curr
   const { rates, triggerGhostTrap, showToast } = useKFS();
   const [activeStoreId, setActiveStoreId] = useState<string | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [isLoadingStore, setIsLoadingStore] = useState(false);
+
+  useEffect(() => {
+    if (activeStoreId) {
+      setIsLoadingStore(true);
+      const timer = setTimeout(() => {
+        setIsLoadingStore(false);
+      }, 700);
+      return () => clearTimeout(timer);
+    }
+  }, [activeStoreId]);
 
   const handleConfirmCheckout = (paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone: string, customerName: string, customerRif: string, paymentScreenshot?: string, kPointsToBurn: number = 0) => {
     submitOnlineOrder(checkoutProduct, paymentMethod, applyIva, paymentReference, customerPhone, customerName, customerRif, paymentScreenshot, kPointsToBurn);
@@ -109,13 +136,17 @@ export const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, curr
   const categories = ["All", "Alimentos", "Ropa y Calzado", "Tecnología", "Salud y Belleza", "Hogar", "Servicios"];
 
   const settings = activeStore?.storeSettings || {};
-  const themeColor = settings.themeColor || "violet-600";
+  const themeColorRaw = settings.themeColor || "violet-600";
+  const themeColor = resolveThemeColor(themeColorRaw);
   const typography = settings.typography || "font-sans";
   const layoutType = settings.layoutType || "grid";
   const profilePicUrl = settings.profilePicUrl || "";
 
   return (
-    <div className={`min-h-screen bg-[#EEF2F5] pb-20 ${activeStore ? typography : "font-sans"}`}>
+    <div 
+      className={`min-h-screen bg-[#EEF2F5] pb-20 ${activeStore ? typography : "font-sans"}`}
+      style={{ "--store-theme-color": themeColor } as React.CSSProperties}
+    >
       <Navbar title={activeStore ? `Mall: ${activeStore.company}` : `${KFS_BRAND.modules.marketplace}`} showBack={true} onBack={logout} />
 
       <div className="p-4 md:p-8 max-w-6xl mx-auto space-y-6">
@@ -228,20 +259,80 @@ export const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, curr
               ))}
             </div>
 
-            {featuredProducts.length > 0 && selectedCategory === "All" && searchQuery === "" && (
-              <div className="mb-8">
-                <h3 className="text-lg font-black text-violet-900 mb-4 flex items-center gap-2">
-                  <Star className="text-yellow-500 fill-yellow-500" /> Productos Estrella
-                </h3>
+            {isLoadingStore ? (
+              <div className="space-y-6 pt-4">
+                <div className="h-6 w-48 bg-slate-200 rounded-[0.5rem] animate-shimmer" />
                 <div className={`grid gap-6 ${layoutType === 'list' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 min-[400px]:grid-cols-2 md:grid-cols-4'}`}>
-                  {featuredProducts.map((p: any) => (
-                    <div key={p.id} className={`bg-gradient-to-br from-yellow-50 to-white rounded-[1.5rem] shadow-sm overflow-hidden border border-yellow-200 flex ${layoutType === 'list' ? 'flex-row items-center h-32' : 'flex-col justify-between'} transition-transform duration-200 hover:-translate-y-1 relative`}>
-                      <div className="absolute top-0 right-0 w-16 h-16 bg-yellow-400/20 rounded-bl-[100%] z-0 pointer-events-none"></div>
-                      <div className={`relative z-10 ${layoutType === 'list' ? 'flex flex-row w-full h-full' : 'w-full'}`}>
+                  {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
+                    <div key={i} className={`bg-white rounded-[1.5rem] shadow-sm overflow-hidden border border-gray-100 flex ${layoutType === 'list' ? 'flex-row items-center h-32' : 'flex-col justify-between'}`}>
+                      <div className={layoutType === 'list' ? 'flex flex-row w-full h-full' : 'w-full'}>
+                        <div className={`${layoutType === 'list' ? 'w-32 h-full' : 'h-44 w-full'} bg-slate-200/50 animate-shimmer shrink-0`} />
+                        <div className="p-4 flex flex-col justify-between w-full min-w-0">
+                          <div className="space-y-2 flex-grow">
+                            <div className="h-4 w-3/4 bg-slate-200/50 rounded animate-shimmer" />
+                            <div className="h-3 w-1/2 bg-slate-200/30 rounded animate-shimmer" />
+                          </div>
+                          <div className="flex justify-between items-center mt-4">
+                            <div className="h-4 w-12 bg-slate-200/50 rounded animate-shimmer" />
+                            <div className="h-3 w-10 bg-slate-200/30 rounded animate-shimmer" />
+                          </div>
+                          <div className="mt-4 h-8 w-full bg-slate-200/50 rounded-xl animate-shimmer" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <>
+                {featuredProducts.length > 0 && selectedCategory === "All" && searchQuery === "" && (
+                  <div className="mb-8">
+                    <h3 className="text-lg font-black text-violet-900 mb-4 flex items-center gap-2">
+                      <Star className="text-yellow-500 fill-yellow-500" /> Productos Estrella
+                    </h3>
+                    <div className={`grid gap-6 ${layoutType === 'list' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 min-[400px]:grid-cols-2 md:grid-cols-4'}`}>
+                      {featuredProducts.map((p: any) => (
+                        <div key={p.id} className={`bg-gradient-to-br from-yellow-50 to-white rounded-[1.5rem] shadow-sm overflow-hidden border border-yellow-200 flex ${layoutType === 'list' ? 'flex-row items-center h-32' : 'flex-col justify-between'} transition-transform duration-200 hover:-translate-y-1 relative`}>
+                          <div className="absolute top-0 right-0 w-16 h-16 bg-yellow-400/20 rounded-bl-[100%] z-0 pointer-events-none"></div>
+                          <div className={`relative z-10 ${layoutType === 'list' ? 'flex flex-row w-full h-full' : 'w-full'}`}>
+                            <div className={`${layoutType === 'list' ? 'w-32 h-full' : 'h-44 w-full'} bg-gray-100 overflow-hidden relative shrink-0`}>
+                              <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
+                              <span className="absolute bottom-2 left-2 text-[8px] bg-yellow-500 text-white font-black uppercase tracking-wider px-2 py-0.5 rounded-full shadow-md">
+                                Destacado
+                              </span>
+                            </div>
+                            <div className={`p-4 flex flex-col justify-between ${layoutType === 'list' ? 'w-full' : ''}`}>
+                              <div>
+                                <h4 className="font-bold text-sm text-violet-900 truncate mb-1">{p.name}</h4>
+                                {p.description && <p className="text-[10px] text-gray-500 line-clamp-2 mt-0.5 leading-relaxed">{p.description}</p>}
+                                <div className="flex justify-between items-center mt-2">
+                                  <div>
+                                    <p className="font-black text-sm" style={{ color: themeColor }}>{formatUSD(p.priceUSD)}</p>
+                                    <p className="text-[10px] font-bold text-gray-500">Bs. {(p.priceUSD * (rates?.USD || 36.45)).toFixed(2)}</p>
+                                  </div>
+                                </div>
+                              </div>
+                              <div className={layoutType === 'list' ? 'mt-2' : 'mt-4'}>
+                                <button disabled={p.stock !== undefined && p.stock <= 0} onClick={() => setCheckoutProduct(p)} style={p.stock > 0 ? { backgroundColor: themeColor } : {}} className="w-full py-2 disabled:bg-gray-400 text-white font-black rounded-xl text-xs flex items-center justify-center gap-1 cursor-pointer disabled:cursor-not-allowed shadow-md hover:brightness-90 transition-all">
+                                  <ShoppingCart size={14} /> {p.stock !== undefined && p.stock <= 0 ? "Agotado" : "Comprar"}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className={`grid gap-6 ${layoutType === 'list' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 min-[400px]:grid-cols-2 md:grid-cols-4'}`}>
+                  {filteredProducts.map((p: any) => (
+                    <div key={p.id} className={`bg-white rounded-[1.5rem] shadow-sm overflow-hidden border border-gray-100 flex ${layoutType === 'list' ? 'flex-row items-center h-32' : 'flex-col justify-between'} transition-transform duration-200 hover:-translate-y-1`}>
+                      <div className={layoutType === 'list' ? 'flex flex-row w-full h-full' : 'w-full'}>
                         <div className={`${layoutType === 'list' ? 'w-32 h-full' : 'h-44 w-full'} bg-gray-100 overflow-hidden relative shrink-0`}>
                           <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
-                          <span className="absolute bottom-2 left-2 text-[8px] bg-yellow-500 text-white font-black uppercase tracking-wider px-2 py-0.5 rounded-full shadow-md">
-                            Destacado
+                          <span className="absolute bottom-2 left-2 text-[8px] bg-violet-900/80 text-white font-black uppercase tracking-wider px-2 py-0.5 rounded-full border border-white/20 backdrop-blur-sm">
+                            {p.category || "General"}
                           </span>
                         </div>
                         <div className={`p-4 flex flex-col justify-between ${layoutType === 'list' ? 'w-full' : ''}`}>
@@ -253,6 +344,9 @@ export const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, curr
                                 <p className="font-black text-sm" style={{ color: themeColor }}>{formatUSD(p.priceUSD)}</p>
                                 <p className="text-[10px] font-bold text-gray-500">Bs. {(p.priceUSD * (rates?.USD || 36.45)).toFixed(2)}</p>
                               </div>
+                              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${p.stock && p.stock > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
+                                {p.stock && p.stock > 0 ? `${p.stock} disp.` : "Agotado"}
+                              </span>
                             </div>
                           </div>
                           <div className={layoutType === 'list' ? 'mt-2' : 'mt-4'}>
@@ -264,50 +358,15 @@ export const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, curr
                       </div>
                     </div>
                   ))}
+
+                  {filteredProducts.length === 0 && (
+                    <div className="col-span-full bg-white rounded-3xl p-12 text-center text-gray-400 font-bold border border-gray-100 shadow-sm">
+                      Esta tienda no tiene productos en esta categoría.
+                    </div>
+                  )}
                 </div>
-              </div>
+              </>
             )}
-
-            <div className={`grid gap-6 ${layoutType === 'list' ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 min-[400px]:grid-cols-2 md:grid-cols-4'}`}>
-              {filteredProducts.map((p: any) => (
-                <div key={p.id} className={`bg-white rounded-[1.5rem] shadow-sm overflow-hidden border border-gray-100 flex ${layoutType === 'list' ? 'flex-row items-center h-32' : 'flex-col justify-between'} transition-transform duration-200 hover:-translate-y-1`}>
-                  <div className={layoutType === 'list' ? 'flex flex-row w-full h-full' : 'w-full'}>
-                    <div className={`${layoutType === 'list' ? 'w-32 h-full' : 'h-44 w-full'} bg-gray-100 overflow-hidden relative shrink-0`}>
-                      <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
-                      <span className="absolute bottom-2 left-2 text-[8px] bg-violet-900/80 text-white font-black uppercase tracking-wider px-2 py-0.5 rounded-full border border-white/20 backdrop-blur-sm">
-                        {p.category || "General"}
-                      </span>
-                    </div>
-                    <div className={`p-4 flex flex-col justify-between ${layoutType === 'list' ? 'w-full' : ''}`}>
-                      <div>
-                        <h4 className="font-bold text-sm text-violet-900 truncate mb-1">{p.name}</h4>
-                        {p.description && <p className="text-[10px] text-gray-500 line-clamp-2 mt-0.5 leading-relaxed">{p.description}</p>}
-                        <div className="flex justify-between items-center mt-2">
-                          <div>
-                            <p className="font-black text-sm" style={{ color: themeColor }}>{formatUSD(p.priceUSD)}</p>
-                            <p className="text-[10px] font-bold text-gray-500">Bs. {(p.priceUSD * (rates?.USD || 36.45)).toFixed(2)}</p>
-                          </div>
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${p.stock && p.stock > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"}`}>
-                            {p.stock && p.stock > 0 ? `${p.stock} disp.` : "Agotado"}
-                          </span>
-                        </div>
-                      </div>
-                      <div className={layoutType === 'list' ? 'mt-2' : 'mt-4'}>
-                        <button disabled={p.stock !== undefined && p.stock <= 0} onClick={() => setCheckoutProduct(p)} style={p.stock > 0 ? { backgroundColor: themeColor } : {}} className="w-full py-2 disabled:bg-gray-400 text-white font-black rounded-xl text-xs flex items-center justify-center gap-1 cursor-pointer disabled:cursor-not-allowed shadow-md hover:brightness-90 transition-all">
-                          <ShoppingCart size={14} /> {p.stock !== undefined && p.stock <= 0 ? "Agotado" : "Comprar"}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-
-              {filteredProducts.length === 0 && (
-                <div className="col-span-full bg-white rounded-3xl p-12 text-center text-gray-400 font-bold border border-gray-100 shadow-sm">
-                  Esta tienda no tiene productos en esta categoría.
-                </div>
-              )}
-            </div>
           </>
         )}
       </div>

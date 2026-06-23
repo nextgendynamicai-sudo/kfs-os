@@ -268,6 +268,21 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
       <div className="p-4 md:p-8 max-w-5xl mx-auto -mt-6 relative z-20 flex flex-col gap-8 animate-fade-in">
         {activeTab === "panel" && (
           <div className="space-y-8 flex flex-col">
+            {/* PDF Presentation Banner */}
+            <div className="bg-gradient-to-r from-violet-900 to-indigo-900 rounded-[2rem] p-6 text-white shadow-xl shadow-indigo-950/20 border border-indigo-500/30 flex flex-col md:flex-row justify-between items-center gap-4 animate-fade-in">
+              <div>
+                <h3 className="font-black text-lg text-white">Presentación Ejecutiva KAN CGOS</h3>
+                <p className="text-indigo-200 text-xs mt-1">Descarga el PDF maestro de la presentación comercial listo para editar o compartir.</p>
+              </div>
+              <a 
+                href="/presentacion_kan_cgos.pdf" 
+                download="presentacion_kan_cgos.pdf" 
+                className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-black text-xs hover:scale-105 transition-all cursor-pointer shadow-lg shadow-emerald-500/20 flex items-center gap-2 no-underline"
+              >
+                <FileText size={16} /> Descargar PDF
+              </a>
+            </div>
+
             <ReferralLinksWidget userId={currentUser.id} showToast={showToast} />
             <KPointsIssuerWidget db={db} transferKFSPoints={transferKFSPoints} />
             <OracleControlSlider merchantId={db.clients?.[0]?.id} merchantName={db.clients?.[0]?.company || "N/A"} currentFee={db.clients?.[0]?.oracle_fee_percentage} setDb={setDb} />

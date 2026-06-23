@@ -25,7 +25,7 @@ import {
   ChevronRight, CheckCircle, CreditCard, Bell, X, Info,
   Store, Star, ChevronLeft, Clock, UserCheck, Palette,
   Zap, BookOpen, Printer, Smartphone, Settings, DownloadCloud, Terminal, Truck,
-  Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database, Trash2
+  Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database, Trash2, Layers, Sparkles, Cpu
 } from "lucide-react";
 import { useKFS } from "../../context/KFSContext";
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from "recharts";
@@ -339,6 +339,121 @@ export const LandingPageView = ({ setView }: any) => {
             <p className="text-sm text-slate-500 leading-relaxed">
               Un scraper inteligente conectado a Gemini rastrea menciones públicas en tu ciudad de usuarios buscando recomendaciones de compra en redes sociales. La IA pre-califica el lead y te muestra la oportunidad directamente en el panel de control.
             </p>
+          </div>
+        </div>
+      </section>
+
+      {/* Axis Nitro Hubs & Points Section */}
+      <section className="py-20 px-6 sm:px-10 max-w-7xl mx-auto border-t border-sky-100">
+        <div className="text-center mb-16 space-y-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-100 border border-violet-200 text-xs font-black text-violet-600 uppercase tracking-widest">
+            <span className="w-2 h-2 rounded-full bg-violet-600 animate-pulse"></span>
+            Programa de Fidelización y Red Transaccional
+          </div>
+          <h2 className="text-3xl md:text-5xl font-black tracking-tight text-sky-950">
+            Axis Nitro System: Puntos de Fidelidad Universales
+          </h2>
+          <p className="text-slate-500 max-w-2xl mx-auto">
+            Afilia tu comercio a la red transaccional de Kreatek y permite a tus clientes acumular y canjear **Axis Points (AP)** en tiempo real con conversión directa a descuentos.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Visual Showcase (Features & Metrics) */}
+          <div className="bg-slate-950 text-white p-8 rounded-[2.5rem] border border-violet-900/50 shadow-2xl relative overflow-hidden space-y-6">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div className="flex items-center justify-between border-b border-violet-900/30 pb-4">
+              <div className="flex items-center gap-2">
+                <Gift className="text-violet-400" size={20} />
+                <span className="text-sm font-black uppercase tracking-wider text-slate-200">Simulación Axis Nitro Core</span>
+              </div>
+              <span className="text-[9px] text-violet-400 font-mono font-bold bg-violet-900/30 px-2 py-0.5 rounded border border-violet-800/50">1000 AP = $1.00 USD</span>
+            </div>
+
+            <div className="space-y-4">
+              <div className="bg-slate-900/80 border border-violet-900/20 p-4 rounded-xl flex justify-between items-center">
+                <div>
+                  <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Balance de Cliente</p>
+                  <p className="text-lg font-black text-white">15,000 Axis Points</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-[10px] text-slate-500 uppercase tracking-wider font-bold">Valor Canjeable</p>
+                  <p className="text-xl font-black text-emerald-400">$15.00 USD</p>
+                </div>
+              </div>
+
+              <div className="bg-slate-900/80 border border-violet-900/20 p-4 rounded-xl space-y-3">
+                <div className="flex justify-between text-xs font-bold font-mono">
+                  <span className="text-violet-300">Descuento Aplicado:</span>
+                  <span className="text-emerald-400 font-mono">-$5.00 USD (5,000 AP)</span>
+                </div>
+                <div className="w-full bg-slate-950 h-2 rounded-full overflow-hidden">
+                  <div className="bg-violet-500 h-full w-1/3"></div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-violet-950/20 border border-violet-900/50 rounded-2xl p-4 text-xs space-y-2">
+              <p className="font-bold text-violet-300 flex items-center gap-1">
+                <Sparkles size={12} /> Protocolo Ghost Trap (Pago Mixto)
+              </p>
+              <p className="text-slate-400 leading-relaxed text-[11px]">
+                Permite a los usuarios pagar parte de su factura usando su balance de puntos y el resto en efectivo o Pago Móvil, resolviendo el cobro financiero de forma transparente.
+              </p>
+            </div>
+          </div>
+
+          {/* Description list */}
+          <div className="space-y-8">
+            <div className="space-y-2">
+              <h3 className="text-2xl font-black text-sky-950">¿Qué son los Axis Points y cómo benefician a tu negocio?</h3>
+              <p className="text-sm text-slate-600 leading-relaxed">
+                Es una red de lealtad interconectada. Los clientes acumulan puntos por comprar en cualquier establecimiento de la red Kreatek, y pueden usarlos para obtener descuentos instantáneos en sus próximas compras en tu local.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <div className="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center">
+                  <Layers className="text-violet-600" size={20} />
+                </div>
+                <h4 className="font-bold text-sky-950 text-base">Axis Nitro Hubs</h4>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Crea tu espacio de venta digital bajo un enlace directo `/nitro/[slug]`. Configura catálogos especiales listos para interactuar con la red transaccional.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center">
+                  <Cpu className="text-violet-600" size={20} />
+                </div>
+                <h4 className="font-bold text-sky-950 text-base">Tecnología Sin Comisiones</h4>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Toda la lógica de acumulación y canje de puntos se ejecuta sin intermediarios bancarios, optimizando el margen neto de ganancia de tu comercio.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center">
+                  <Sparkles className="text-violet-600" size={20} />
+                </div>
+                <h4 className="font-bold text-sky-950 text-base">Fidelización Instantánea</h4>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Premia de forma autónoma a tus clientes recurrentes incrementando la retención diaria sin necesidad de tarjetas plásticas ni registros complejos.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <div className="w-10 h-10 bg-violet-50 rounded-xl flex items-center justify-center">
+                  <CheckCircle className="text-violet-600" size={20} />
+                </div>
+                <h4 className="font-bold text-sky-950 text-base">Conciliación Directa</h4>
+                <p className="text-xs text-slate-500 leading-relaxed">
+                  Los puntos canjeados se descuentan directamente en la pantalla de la caja POS física y se registran en los reportes de cierre Z de tu negocio.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>

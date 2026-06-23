@@ -66,6 +66,8 @@ const KREATEK_COLORS = {
 
 
 
+
+
 // ==========================================
 // SUBCOMPONENTS (DEFINED OUTSIDE PARENT TO PREVENT UNMOUNT RESETS)
 // ==========================================
@@ -77,6 +79,29 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
   const [avatar, setAvatar] = useState<string>("");
   const [kycCedula, setKycCedula] = useState<string>("");
   const [acceptedToS, setAcceptedToS] = useState(false);
+
+  const validatePhone = (phone: string) => {
+    if (!phone) return false;
+    const clean = phone.replace(/[^0-9]/g, "");
+    let rawBody = clean;
+    if (rawBody.startsWith('0')) {
+      rawBody = rawBody.slice(1);
+    }
+    return /^(412|414|424|416|426|415|425)\d{7}$/.test(rawBody) || (rawBody.length >= 7 && rawBody.length <= 12);
+  };
+
+  const validateEmail = (email: string) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const isPhoneValid = validatePhone(formData.phone);
+  const isEmailValid = validateEmail(formData.email);
+  const isNameValid = formData.name.trim().length >= 3;
+  const isIdCardValid = formData.idCard.trim().length >= 5;
+  const isCompanyValid = formData.company.trim().length >= 3;
+  const isAddressValid = formData.address.trim().length >= 5;
+  const isPasswordValid = formData.password.length >= 6;
+  const isFormValid = isNameValid && isIdCardValid && isCompanyValid && isAddressValid && isPhoneValid && isEmailValid && isPasswordValid && !!avatar && !!kycCedula && acceptedToS;
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -97,51 +122,75 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
   };
 
   return (
-    <form onSubmit={(e) => { e.preventDefault(); if (acceptedToS) onRegister(formData, defaultReferralCode, 0.03); else alert("Debes aceptar los Términos de Servicio y Privacidad."); }} className={`space-y-3 ${standalone ? "text-sky-950 animate-fade-in" : "text-sky-950"}`}>
+    <form onSubmit={(e) => { e.preventDefault(); if (isFormValid) onRegister(formData, defaultReferralCode, 0.03); }} className={`space-y-3 ${standalone ? "text-sky-950 animate-fade-in" : "text-sky-950"}`}>
       <h3 className={`text-lg font-black mb-4 border-b pb-2 ${standalone ? "text-sky-700 border-sky-100" : "text-sky-900 border-sky-100"}`}>Setup de Nuevo Comercio</h3>
 
-      <div className="flex flex-col items-center gap-2 mb-4">
-        <label className="relative w-20 h-20 rounded-full border-2 border-dashed border-sky-200 cursor-pointer overflow-hidden flex items-center justify-center bg-sky-50 hover:bg-sky-100 transition-colors group">
-          <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
-          {avatar ? (
-            <img src={avatar} className="w-full h-full object-cover" alt="Avatar" />
-          ) : (
-            <div className="text-center text-sky-400 group-hover:text-sky-600 transition-colors">
-              <Camera size={24} className="mx-auto" />
-              <span className="text-[8px] font-bold block mt-1 text-slate-500">Foto</span>
-            </div>
+      <div className="flex flex-col items-center gap-2 mb-4 relative">
+        <div className="relative w-20 h-20">
+          <label className="relative w-full h-full rounded-full border-2 border-dashed border-sky-200 cursor-pointer overflow-hidden flex items-center justify-center bg-sky-50 hover:bg-sky-100 transition-colors group block">
+            <input type="file" accept="image/*" className="hidden" onChange={handleFileChange} />
+            {avatar ? (
+              <img src={avatar} className="w-full h-full object-cover" alt="Avatar" />
+            ) : (
+              <div className="text-center text-sky-400 group-hover:text-sky-600 transition-colors">
+                <Camera size={24} className="mx-auto" />
+                <span className="text-[8px] font-bold block mt-1 text-slate-500">Foto</span>
+              </div>
+            )}
+          </label>
+          {avatar && (
+            <button type="button" onClick={() => { setAvatar(""); setFormData(p => ({ ...p, avatar: "" })); }} className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors z-10">
+              <Trash2 size={10} />
+            </button>
           )}
-        </label>
+        </div>
         <span className={`text-[10px] font-bold uppercase tracking-wider ${standalone ? "text-slate-400" : "text-slate-500"}`}>Logo / Foto Comercio</span>
       </div>
 
-      <div className="flex flex-col items-center gap-2 mb-4">
-        <label className={`relative w-full h-20 rounded-xl border-2 border-dashed border-sky-200 cursor-pointer overflow-hidden flex items-center justify-center transition-colors group ${standalone ? "bg-sky-50 hover:bg-sky-100" : "bg-sky-50/50 hover:bg-sky-100"}`}>
-          <input type="file" accept="image/*" className="hidden" onChange={handleCedulaChange} required />
-          {kycCedula ? (
-            <img src={kycCedula} className="w-full h-full object-cover opacity-80" alt="Cédula" />
-          ) : (
-            <div className={`text-center transition-colors ${standalone ? "text-sky-400 group-hover:text-sky-600" : "text-sky-500 group-hover:text-sky-700"}`}>
-              <Camera size={24} className="mx-auto" />
-              <span className="text-[10px] font-bold block mt-1 text-slate-500">Subir Cédula del Representante (KYC)</span>
-            </div>
+      <div className="flex flex-col items-center gap-2 mb-4 relative">
+        <div className="relative w-full h-20">
+          <label className={`relative w-full h-full rounded-xl border-2 border-dashed border-sky-200 cursor-pointer overflow-hidden flex items-center justify-center transition-colors group block ${standalone ? "bg-sky-50 hover:bg-sky-100" : "bg-sky-50/50 hover:bg-sky-100"}`}>
+            <input type="file" accept="image/*" className="hidden" onChange={handleCedulaChange} />
+            {kycCedula ? (
+              <img src={kycCedula} className="w-full h-full object-cover opacity-80" alt="Cédula" />
+            ) : (
+              <div className={`text-center transition-colors ${standalone ? "text-sky-400 group-hover:text-sky-600" : "text-sky-500 group-hover:text-sky-700"}`}>
+                <Camera size={24} className="mx-auto" />
+                <span className="text-[10px] font-bold block mt-1 text-slate-500">Subir Cédula del Representante (KYC)</span>
+              </div>
+            )}
+          </label>
+          {kycCedula && (
+            <>
+              <span className="absolute top-1.5 left-1.5 text-[8px] bg-emerald-500 text-white font-black px-1.5 py-0.5 rounded-full shadow-md">✓ Cédula Lista</span>
+              <button type="button" onClick={() => { setKycCedula(""); setFormData(p => ({ ...p, kycCedula: "" })); }} className="absolute top-1.5 right-1.5 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-650 transition-colors">
+                <Trash2 size={10} />
+              </button>
+            </>
           )}
-        </label>
+        </div>
       </div>
 
       <div className="relative">
         <label className={`block text-xs font-black uppercase tracking-widest mb-1 ml-1 ${standalone ? "text-sky-700" : "text-sky-800"}`}>Nombre Completo</label>
         <div className="relative">
           <UserCheck className="absolute left-4 top-3.5 text-sky-400" size={20} />
-          <input required placeholder="Ej: Juan Pérez" className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, name: e.target.value })} />
+          <input required placeholder="Ej: Juan Pérez" value={formData.name} className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, name: e.target.value })} />
         </div>
       </div>
 
       <div className="relative">
-        <label className={`block text-xs font-black uppercase tracking-widest mb-1 ml-1 ${standalone ? "text-sky-700" : "text-sky-800"}`}>Cédula / RIF</label>
+        <div className="flex justify-between items-center mb-1 ml-1">
+          <label className={`block text-xs font-black uppercase tracking-widest ${standalone ? "text-sky-700" : "text-sky-800"}`}>Cédula / RIF</label>
+          {formData.idCard && (
+            <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${isIdCardValid ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
+              {isIdCardValid ? "✓ Formato Válido" : "✗ Mínimo 5 caracteres"}
+            </span>
+          )}
+        </div>
         <div className="relative">
           <FileText className="absolute left-4 top-3.5 text-sky-400" size={20} />
-          <input required placeholder="Ej: V-12345678 o J-12345678" className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, idCard: e.target.value })} />
+          <input required placeholder="Ej: V-12345678 o J-12345678" value={formData.idCard} className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, idCard: e.target.value })} />
         </div>
       </div>
 
@@ -149,7 +198,7 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
         <label className={`block text-xs font-black uppercase tracking-widest mb-1 ml-1 ${standalone ? "text-sky-700" : "text-sky-800"}`}>Nombre de la Empresa / Comercio</label>
         <div className="relative">
           <Store className="absolute left-4 top-3.5 text-sky-400" size={20} />
-          <input required placeholder="Ej: Inversiones El Sol C.A." className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, company: e.target.value })} />
+          <input required placeholder="Ej: Inversiones El Sol C.A." value={formData.company} className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, company: e.target.value })} />
         </div>
       </div>
 
@@ -157,7 +206,7 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
         <label className={`block text-xs font-black uppercase tracking-widest mb-1 ml-1 ${standalone ? "text-sky-700" : "text-sky-800"}`}>Dirección Comercial Exacta</label>
         <div className="relative">
           <MapPin className="absolute left-4 top-4 text-sky-400" size={20} />
-          <textarea required placeholder="Calle, Avenida, Centro Comercial, Local..." className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all h-20 resize-none ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, address: e.target.value })} />
+          <textarea required placeholder="Calle, Avenida, Centro Comercial, Local..." value={formData.address} className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all h-20 resize-none ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, address: e.target.value })} />
         </div>
       </div>
 
@@ -165,7 +214,7 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
         <label className={`block text-xs font-black uppercase tracking-widest mb-1 ml-1 ${standalone ? "text-sky-700" : "text-sky-800"}`}>Facturación Promedio Diaria ($)</label>
         <div className="relative">
           <DollarSign className="absolute left-4 top-3.5 text-sky-400" size={20} />
-          <input required type="number" placeholder="Ej: 500" className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, avgBilling: e.target.value })} />
+          <input required type="number" placeholder="Ej: 500" value={formData.avgBilling} className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, avgBilling: e.target.value })} />
         </div>
       </div>
 
@@ -179,18 +228,32 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
       </div>
 
       <div className="relative">
-        <label className={`block text-xs font-black uppercase tracking-widest mb-1 ml-1 ${standalone ? "text-sky-700" : "text-sky-800"}`}>Teléfono Personal</label>
+        <div className="flex justify-between items-center mb-1 ml-1">
+          <label className={`block text-xs font-black uppercase tracking-widest ${standalone ? "text-sky-700" : "text-sky-800"}`}>Teléfono Personal</label>
+          {formData.phone && (
+            <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${isPhoneValid ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
+              {isPhoneValid ? "✓ Teléfono Válido" : "✗ Formato Inválido"}
+            </span>
+          )}
+        </div>
         <div className="relative">
           <Smartphone className="absolute left-4 top-3.5 text-sky-400" size={20} />
-          <input required placeholder="Ej: 04141234567" className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
+          <input required placeholder="Ej: 04141234567" value={formData.phone} className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
         </div>
       </div>
       
       <div className="relative">
-        <label className={`block text-xs font-black uppercase tracking-widest mb-1 ml-1 ${standalone ? "text-sky-700" : "text-sky-800"}`}>Correo Electrónico</label>
+        <div className="flex justify-between items-center mb-1 ml-1">
+          <label className={`block text-xs font-black uppercase tracking-widest ${standalone ? "text-sky-700" : "text-sky-800"}`}>Correo Electrónico</label>
+          {formData.email && (
+            <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${isEmailValid ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
+              {isEmailValid ? "✓ Correo Válido" : "✗ Email Inválido"}
+            </span>
+          )}
+        </div>
         <div className="relative">
           <Info className="absolute left-4 top-3.5 text-sky-400" size={20} />
-          <input required type="email" placeholder="ejemplo@correo.com" className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, email: e.target.value })} />
+          <input required type="email" placeholder="ejemplo@correo.com" value={formData.email} className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, email: e.target.value })} />
         </div>
       </div>
       
@@ -198,7 +261,7 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
         <label className={`block text-xs font-black uppercase tracking-widest mb-1 ml-1 ${standalone ? "text-sky-700" : "text-sky-800"}`}>Crear Clave de Acceso</label>
         <div className="relative">
           <Lock className="absolute left-4 top-3.5 text-sky-400" size={20} />
-          <input required type="password" placeholder="Mínimo 6 caracteres" className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, password: e.target.value })} />
+          <input required type="password" placeholder="Mínimo 6 caracteres" value={formData.password} className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, password: e.target.value })} />
         </div>
       </div>
 
@@ -211,7 +274,14 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
 
       <div className="flex gap-3 pt-4">
         <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl border border-sky-200 text-slate-500 font-bold hover:bg-sky-50 transition-all text-sm cursor-pointer">Cancelar</button>
-        <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-white text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-md shadow-sky-600/30 cursor-pointer border-none bg-sky-600">Aprobar Setup</button>
+        <button 
+          type="submit" 
+          disabled={!isFormValid}
+          className="w-2/3 py-3 rounded-xl font-black text-white text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-md shadow-sky-600/30 border-none cursor-pointer bg-sky-600 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100"
+          title={isFormValid ? "Aprobar Setup y registrar comercio" : "Por favor, completa todos los campos requeridos y acepta los términos"}
+        >
+          {isFormValid ? "Aprobar Setup" : "Faltan Campos / KYC"}
+        </button>
       </div>
     </form>
   );

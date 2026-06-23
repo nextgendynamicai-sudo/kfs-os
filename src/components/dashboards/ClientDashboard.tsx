@@ -559,7 +559,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
         {activeTab === 'resumen' && (
           <div className="bg-gradient-to-r from-sky-950 to-sky-900 text-white p-6 md:p-8 rounded-[2rem] shadow-xl shadow-sky-900/20 relative overflow-hidden border border-sky-800">
             <h3 className="text-xl font-black mb-6">Centro de Aprendizaje (Dueño de Negocio)</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <button onClick={() => setActiveManual('owner')} className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10">
                 <BookOpen size={32} className="text-sky-300" />
                 <span className="font-bold text-sm">Manual de Uso del Sistema</span>
@@ -568,6 +568,10 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                 <Star size={32} className="text-amber-400" />
                 <span className="font-bold text-sm">Whitepaper de Beneficios {KFS_BRAND.productAcronym}</span>
               </button>
+              <a href="/presentacion_kan_cgos.pdf" download="presentacion_kan_cgos.pdf" className="bg-white/10 hover:bg-white/20 p-5 rounded-2xl flex flex-col items-center justify-center gap-3 transition-colors cursor-pointer border border-white/10 no-underline text-white text-center">
+                <FileText size={32} className="text-emerald-400" />
+                <span className="font-bold text-sm">Presentación KAN CGOS (PDF)</span>
+              </a>
             </div>
           </div>
         )}

@@ -752,9 +752,22 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                             <button
                               type="button"
                               onClick={() => window.open(cvFile, '_blank')}
-                              className="text-[10px] text-sky-400 underline cursor-pointer hover:text-sky-700"
+                              className="text-[10px] text-sky-400 underline cursor-pointer hover:text-sky-700 bg-transparent border-none p-0"
                             >
                               (Ver actual)
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setCvFile("");
+                                setCvFileName("");
+                                setCvFileType("");
+                                showToast("Currículum eliminado.", "success");
+                              }}
+                              className="p-1 rounded-md bg-red-50 hover:bg-red-500 hover:text-white text-red-500 transition-colors border border-red-200 cursor-pointer flex items-center justify-center"
+                              title="Eliminar archivo"
+                            >
+                              <Trash2 size={10} />
                             </button>
                           </div>
                         )}

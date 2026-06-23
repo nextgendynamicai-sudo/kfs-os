@@ -25,6 +25,59 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
   const [isProcessingPos, setIsProcessingPos] = useState(false);
   const [posStep, setPosStep] = useState(0);
 
+  // Real-time validations
+  const validatePhone = (phone: string, prefix: string) => {
+    if (!phone) return false;
+    const clean = phone.replace(/[^0-9]/g, "");
+    let rawBody = clean;
+    if (rawBody.startsWith('0')) {
+      rawBody = rawBody.slice(1);
+    }
+    if (prefix === "+58") {
+      return /^(412|414|424|416|426|415|425)\d{7}$/.test(rawBody);
+    }
+    return rawBody.length >= 7 && rawBody.length <= 12;
+  };
+
+  const validateRif = (rif: string) => {
+    if (!rif) return false;
+    return /^[VJGvjgEep]-[0-9]{8}-[0-9]$/.test(rif);
+  };
+
+  const handleRifChange = (val: string) => {
+    let clean = val.toUpperCase().replace(/[^VGEJP0-9-]/g, "");
+    let stripped = clean.replace(/-/g, "");
+    if (stripped.length > 0) {
+      let letter = stripped[0];
+      if (/[VGEJP]/.test(letter)) {
+        let body = stripped.slice(1, 9).replace(/[^0-9]/g, "");
+        let verifier = stripped.slice(9, 10).replace(/[^0-9]/g, "");
+        let formatted = letter;
+        if (body.length > 0) formatted += "-" + body;
+        if (verifier.length > 0) formatted += "-" + verifier;
+        setCustomerRif(formatted);
+      } else {
+        setCustomerRif(clean);
+      }
+    } else {
+      setCustomerRif("");
+    }
+  };
+
+  const getLoadingMessage = (method: string) => {
+    switch (method) {
+      case "cash_usd":
+      case "cash_eur":
+        return "Registrando efectivo en caja de seguridad...";
+      case "vale_credit":
+        return "Validando y quemando código de vale...";
+      case "split_currency":
+        return "Conciliando desglose de pago mixto...";
+      default:
+        return "Enviando transacción al KFS SMS Conciliator...";
+    }
+  };
+
   const isForeign = ['zinli', 'wally_tech', 'airtm', 'ubbi_app', 'cash_usd', 'cash_eur', 'binance', 'nfc_web'].includes(paymentMethod);
   const price = product.priceUSD;
   const iva = applyIva ? price * 0.16 : 0;
@@ -76,7 +129,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
             setPosStep(4);
             setTimeout(() => {
               onConfirm(paymentMethod, applyIva, `NFC-${Math.floor(100000 + Math.random() * 900000)}`, customerPhone, customerName, customerRif);
-            }, 1500);
+            }, 2000);
           };
           ndef.onerror = (err: any) => {
             showToast("Error de lectura NFC. Acerque la tarjeta nuevamente.", "error");
@@ -102,53 +155,105 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
         setPosStep(4);
         setTimeout(() => {
           onConfirm(paymentMethod, applyIva, `POS-${Math.floor(100000 + Math.random() * 900000)}`, customerPhone, customerName, customerRif);
-        }, 1000);
+        }, 2000);
       }, 3600);
       return;
     }
 
-    onConfirm(paymentMethod, applyIva, paymentReference, customerPhone, customerName, customerRif, paymentScreenshot, kPointsToBurn);
+    // Unified loading transition for standard checkouts
+    setIsProcessingPos(true);
+    setPosStep(1);
+    setTimeout(() => {
+      setPosStep(4); // Trigger success checkmark
+      setTimeout(() => {
+        onConfirm(paymentMethod, applyIva, paymentReference, customerPhone, customerName, customerRif, paymentScreenshot, kPointsToBurn);
+      }, 2000);
+    }, 1500);
   };
 
   if (isProcessingPos) {
     return (
-      <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-fade-in">
-        <div className="bg-white/90 backdrop-blur-xl text-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl border border-white/10 relative overflow-hidden text-center space-y-6">
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#C5A184] via-amber-200 to-[#C5A184] animate-pulse"></div>
+      <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-fade-in font-sans">
+        <div className="bg-white/95 backdrop-blur-xl text-sky-950 rounded-[2rem] w-full max-w-md p-8 shadow-2xl border border-sky-100 relative overflow-hidden text-center space-y-6">
+          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-violet-600 via-indigo-400 to-violet-600 animate-pulse"></div>
           
           <div className="flex justify-center">
-            <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center animate-spin border-4 border-[#C5A184]/10 border-t-[#C5A184]">
-              {paymentMethod === "nfc_web" ? <CreditCard size={32} className="text-[#C5A184] animate-pulse" /> : <QrCode size={32} className="text-[#C5A184] animate-pulse" />}
-            </div>
+            {posStep === 4 ? (
+              <div className="flex justify-center my-2">
+                <motion.svg
+                  width="80"
+                  height="80"
+                  viewBox="0 0 100 100"
+                  initial="hidden"
+                  animate="visible"
+                  className="text-emerald-500"
+                >
+                  <motion.circle
+                    cx="50"
+                    cy="50"
+                    r="42"
+                    stroke="currentColor"
+                    strokeWidth="6"
+                    fill="transparent"
+                    variants={{
+                      hidden: { pathLength: 0 },
+                      visible: { pathLength: 1, transition: { duration: 0.8 } }
+                    }}
+                  />
+                  <motion.path
+                    d="M32 50 L45 63 L68 36"
+                    stroke="currentColor"
+                    strokeWidth="7"
+                    strokeLinecap="round"
+                    fill="transparent"
+                    variants={{
+                      hidden: { pathLength: 0 },
+                      visible: { pathLength: 1, transition: { delay: 0.4, duration: 0.4 } }
+                    }}
+                  />
+                </motion.svg>
+              </div>
+            ) : (
+              <div className="w-20 h-20 bg-violet-100 rounded-full flex items-center justify-center animate-spin border-4 border-violet-100 border-t-violet-600">
+                {paymentMethod === "nfc_web" ? <CreditCard size={32} className="text-violet-600 animate-pulse" /> : <QrCode size={32} className="text-violet-600 animate-pulse" />}
+              </div>
+            )}
           </div>
 
-          <h3 className="text-xl font-black uppercase tracking-widest text-[#C5A184]">
-            {paymentMethod === "nfc_web" ? "Acerca tu Tarjeta (NFC)" : "Enlace Pinpad POS"}
+          <h3 className="text-xl font-black uppercase tracking-widest text-violet-900">
+            {posStep === 4 ? "¡Procesado!" : paymentMethod === "nfc_web" ? "Acerca tu Tarjeta (NFC)" : paymentMethod === "pos_integrated" ? "Enlace Pinpad POS" : "Procesando Pago"}
           </h3>
 
-          <div className="bg-black/60 p-5 rounded-2xl border border-white/5 text-left font-mono text-[10px] text-gray-400 space-y-2 leading-relaxed">
-            {paymentMethod !== "nfc_web" && (
+          <div className="bg-slate-50 p-5 rounded-2xl border border-slate-100 text-left font-mono text-[10px] text-slate-600 space-y-2 leading-relaxed shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff]">
+            {paymentMethod === "pos_integrated" ? (
               <>
-                <p className={`${posStep >= 1 ? "text-green-400 font-bold" : "opacity-30"}`}>
+                <p className={`${posStep >= 1 ? "text-emerald-600 font-bold" : "opacity-35"}`}>
                   &gt; [IoT Edge] Abriendo socket local con puerto POS...
                 </p>
-                <p className={`${posStep >= 2 ? "text-green-400 font-bold" : "opacity-30"}`}>
+                <p className={`${posStep >= 2 ? "text-emerald-600 font-bold" : "opacity-35"}`}>
                   &gt; [COM-RS232] Transmitiendo cobro SPDH por {formatUSD(total)} (Bs. {totalBs.toFixed(2)})
                 </p>
               </>
+            ) : paymentMethod === "nfc_web" ? (
+              <>
+                <p className={`${posStep >= 3 ? "text-amber-600 font-bold animate-pulse" : "opacity-35"}`}>
+                  &gt; [WebNFC] Escaneando frecuencia 13.56 MHz (Contactless)...
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="text-emerald-600 font-bold">&gt; {getLoadingMessage(paymentMethod)}</p>
+              </>
             )}
-            <p className={`${posStep >= 3 ? "text-amber-400 font-bold animate-pulse" : "opacity-30"}`}>
-              &gt; {paymentMethod === "nfc_web" ? "[WebNFC] Escaneando frecuencia 13.56 MHz (Contactless)..." : "[Pinpad] Esperando tarjeta y clave bancaria del cliente..."}
-            </p>
             {posStep >= 4 && (
-              <p className="text-green-400 font-black animate-bounce pt-1">
-                &gt; [Banco] ¡Cobro aprobado con éxito! Código: {paymentMethod === "nfc_web" ? "NFC-" : "POS-"}{Math.floor(100000 + Math.random() * 900000)}
+              <p className="text-emerald-600 font-black animate-bounce pt-1">
+                &gt; [Ledger] ¡Transacción aprobada y firmada! Código: {paymentMethod === "nfc_web" ? "NFC-" : paymentMethod === "pos_integrated" ? "POS-" : "TX-"}{Math.floor(100000 + Math.random() * 900000)}
               </p>
             )}
           </div>
 
-          <p className="text-xs text-gray-500 font-bold">
-            No desconecte el terminal. Sincronización criptográfica directa en curso.
+          <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+            {posStep === 4 ? "Sincronizando ledger..." : "No desconecte el terminal. Enlace criptográfico activo."}
           </p>
         </div>
       </div>
@@ -156,7 +261,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-fade-in">
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-fade-in font-sans">
       <motion.div 
         initial={{ y: 50, opacity: 0, scale: 0.95 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
@@ -169,7 +274,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
         <div className="space-y-4">
           <div>
             <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 block">Método de Pago</label>
-            <select value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C5A184]">
+            <select value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C5A184] cursor-pointer">
               <option value="cash_bs">Pago Móvil / Transferencia (Bs)</option>
               <option value="zinli">Zinli</option>
               <option value="wally_tech">Wally Tech</option>
@@ -291,9 +396,16 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
           </div>
 
           <div>
-            <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 block">
-              {isOnline ? "Tu Teléfono de Contacto" : "Teléfono del Cliente (WhatsApp)"}
-            </label>
+            <div className="flex justify-between items-center mb-1.5">
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-widest block">
+                {isOnline ? "Tu Teléfono de Contacto" : "Teléfono del Cliente (WhatsApp)"}
+              </label>
+              {customerPhone && (
+                <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${validatePhone(customerPhone, "+58") ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
+                  {validatePhone(customerPhone, "+58") ? "✓ Teléfono Válido" : "✗ Formato Inválido"}
+                </span>
+              )}
+            </div>
             <input type="text" placeholder="Ej: 04141234567" value={customerPhone} onChange={e => { setCustomerPhone(e.target.value); setKPointsToBurn(0); }} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C5A184]" />
             <p className="text-[10px] text-gray-400 mt-1">Opcional. {isOnline ? "Para que el comercio te contacte." : "Para enviar el recibo electrónico por WhatsApp."}</p>
           </div>
@@ -327,13 +439,20 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
 
           {applyIva && (
             <div className="bg-amber-50/50 p-4 rounded-xl border border-amber-100 space-y-4 animate-fade-in">
-              <label className="text-[10px] font-black text-amber-900 uppercase tracking-widest block flex items-center gap-2">
-                <Shield size={12} className="text-amber-600" />
-                Datos Fiscales Obligatorios (SENIAT)
-              </label>
+              <div className="flex justify-between items-center mb-1">
+                <label className="text-[10px] font-black text-amber-900 uppercase tracking-widest block flex items-center gap-1.5">
+                  <Shield size={12} className="text-amber-600" />
+                  Datos Fiscales Obligatorios (SENIAT)
+                </label>
+                {customerRif && (
+                  <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${validateRif(customerRif) ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
+                    {validateRif(customerRif) ? "✓ Formato RIF Válido" : "✗ Formato: V-12345678-9"}
+                  </span>
+                )}
+              </div>
               <div>
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1 block">RIF / Cédula</label>
-                <input required type="text" placeholder="Ej: V-12345678, J-98765432-1" value={customerRif} onChange={e => setCustomerRif(e.target.value.toUpperCase())} className="w-full bg-white border border-amber-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
+                <input required type="text" placeholder="Ej: V-12345678-9" value={customerRif} onChange={e => handleRifChange(e.target.value)} className="w-full bg-white border border-amber-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-amber-500" />
               </div>
             </div>
           )}
@@ -349,7 +468,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
           <div className="flex flex-col sm:flex-row gap-3 pt-4">
             <button type="button" onClick={onCancel} className="w-full sm:w-1/3 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 cursor-pointer">Cancelar</button>
             <button 
-              disabled={(paymentMethod === 'split_currency' && ((parseFloat(splitAmount1) || 0) <= 0 || (parseFloat(splitAmount1) || 0) > total)) || (applyIva && !customerRif)}
+              disabled={(paymentMethod === 'split_currency' && ((parseFloat(splitAmount1) || 0) <= 0 || (parseFloat(splitAmount1) || 0) > total)) || (applyIva && !validateRif(customerRif))}
               onClick={handleConfirm} 
               className="w-full sm:w-2/3 py-3 rounded-xl font-black text-[#0A1128] bg-[#C5A184] shadow-lg hover:shadow-[0_0_20px_rgba(197,161,132,0.6)] hover:scale-[1.02] active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:bg-gray-400 disabled:cursor-not-allowed">
               {isOnline ? "Enviar Pago a Revisión" : applyIva ? "Emitir Factura Fiscal" : "Cobrar Cliente"}

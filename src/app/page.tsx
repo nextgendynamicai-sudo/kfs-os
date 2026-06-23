@@ -265,7 +265,7 @@ export default function Home() {
   const {
     isClient, isBooting, view, setView, currentUser, setCurrentUser,
     toast, db, setDb, formatUSD, formatEUR, showToast,
-    handleLogin, logout, registerClient, registerFreeUser, upgradeToPremium, registerPromotora, approvePromotora, rejectPromotora, settlePromotoraEarnings, addProduct, addExpense, processPurchase,
+    handleLogin, logout, registerClient, registerFreeUser, upgradeToPremium, registerPromotora, registerVendedor, approvePromotora, rejectPromotora, settlePromotoraEarnings, addProduct, addExpense, processPurchase,
     submitOnlineOrder, approveOrder, rejectOrder, dispatchOrder, generateZReport, registerCrmExpress,
     paySubscription, approveSubscription, requestPayout, requestTopUp,
     ghostTrapLocked, setGhostTrapLocked, triggerGhostTrap, logAction
@@ -504,27 +504,23 @@ export default function Home() {
         </AppEnforcer>
       )}
       
-      {/* Mock function to prevent build failure since it's missing from KFSContext */}
-      {(() => {
-        const registerVendedor = (data: any) => showToast("Función en desarrollo.", "error");
-        return safeView === "promotora" && (
-          <AppEnforcer currentUser={currentUser} updatePwaStatus={updatePwaStatus}>
-            <PromotoraDashboard
-              db={db}
-              setDb={setDb}
-              currentUser={currentUser}
-              registerClient={registerClient}
-              upgradeToPremium={upgradeToPremium}
-              settlePromotoraEarnings={settlePromotoraEarnings}
-              formatUSD={formatUSD}
-              formatEUR={formatEUR}
-              logout={logout}
-              requestPayout={requestPayout}
-              registerVendedor={registerVendedor}
-            />
-          </AppEnforcer>
-        );
-      })()}
+      {safeView === "promotora" && (
+        <AppEnforcer currentUser={currentUser} updatePwaStatus={updatePwaStatus}>
+          <PromotoraDashboard
+            db={db}
+            setDb={setDb}
+            currentUser={currentUser}
+            registerClient={registerClient}
+            upgradeToPremium={upgradeToPremium}
+            settlePromotoraEarnings={settlePromotoraEarnings}
+            formatUSD={formatUSD}
+            formatEUR={formatEUR}
+            logout={logout}
+            requestPayout={requestPayout}
+            registerVendedor={registerVendedor}
+          />
+        </AppEnforcer>
+      )}
       
       {safeView === "client" && (
         <AppEnforcer currentUser={currentUser} updatePwaStatus={updatePwaStatus}>
