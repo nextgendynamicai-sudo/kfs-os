@@ -25,20 +25,30 @@ export const supabase = isSupabaseConfigured
           const chain = {
             eq: () => chain,
             single: () => Promise.resolve({ data: null, error: null }),
+            maybeSingle: () => Promise.resolve({ data: null, error: null }),
             then: (resolve: any) => resolve({ data: [], count: 0, error: null })
           };
           return chain;
+        },
+        insert: (data: any) => {
+          console.log(`[Supabase Mock Sync] Insertando en tabla ${table}:`, data);
+          return Promise.resolve({ data, error: null });
         },
         upsert: (data: any) => {
           console.log(`[Supabase Mock Sync] Guardando en tabla ${table}:`, data);
           return Promise.resolve({ data, error: null });
         },
-        update: (data: any) => ({
-          eq: (field: string, val: any) => {
-            console.log(`[Supabase Mock Sync] Actualizando en tabla ${table} donde ${field}=${val}:`, data);
-            return Promise.resolve({ data, error: null });
-          }
-        })
+        update: (data: any) => {
+          const chain = {
+            eq: (field: string, val: any) => {
+              console.log(`[Supabase Mock Sync] Filtro eq en ${field}=${val}`);
+              return chain;
+            },
+            select: () => Promise.resolve({ data: [data], error: null }),
+            then: (resolve: any) => resolve({ data: [data], error: null })
+          };
+          return chain;
+        }
       }),
       auth: {
         signInWithPassword: ({ email, password }: any) => {

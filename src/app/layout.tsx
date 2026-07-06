@@ -51,6 +51,13 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{
           __html: `
             try {
+              if (typeof window !== 'undefined') {
+                if (localStorage.getItem("theme") === "dark" || (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
+                  document.documentElement.classList.add("dark");
+                } else {
+                  document.documentElement.classList.remove("dark");
+                }
+              }
               if (typeof window !== 'undefined' && localStorage.getItem("kfs_hard_reset_v3.1") !== "done") {
                 localStorage.removeItem("kfs_os_current_user");
                 localStorage.setItem("kfs_hard_reset_v3.1", "done");
@@ -62,7 +69,7 @@ export default function RootLayout({
                 window.location.reload();
               }
             } catch (e) {
-              console.error("Hard reset failed", e);
+              console.error("Initialization failed", e);
             }
           `
         }} />

@@ -6,7 +6,10 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { sms, secret } = body;
 
-    if (secret !== 'kfs-admin-token') {
+    const webhookSecret = process.env.SMS_WEBHOOK_SECRET || 'kfs-admin-token';
+    if (secret !== webhookSecret) {
+      const ip = req.headers.get('x-forwarded-for') || req.headers.get('x-real-ip') || 'unknown';
+      console.warn(`[SMS Webhook Unauthorized] Suspicious access attempt from IP: ${ip} at ${new Date().toISOString()}`);
       return NextResponse.json({ error: 'Unauthorized. Invalid token.' }, { status: 401 });
     }
 
@@ -35,9 +38,24 @@ export async function POST(req: Request) {
 
     // Connect to DB and apply business logic
     if (isSupabaseConfigured) {
-      const { data: dbData, error: dbError } = await supabase.from('kfs_store_states').select('*').eq('id', 'kfs-general-db-prod').single();
-      
-      if (dbData && dbData.db_state) {
+      let attempts = 0;
+      const maxAttempts = 3;
+      let writeSuccess = false;
+
+      while (attempts < maxAttempts && !writeSuccess) {
+        attempts++;
+
+        const { data: dbData, error: dbError } = await supabase
+          .from('kfs_store_states')
+          .select('*')
+          .eq('id', 'kfs-general-db-prod')
+          .single();
+        
+        if (dbError || !dbData || !dbData.db_state) {
+          return NextResponse.json({ error: 'Database state not found' }, { status: 404 });
+        }
+
+        const oldUpdatedAt = dbData.updated_at;
         let state = dbData.db_state;
         let modified = false;
 
@@ -159,8 +177,39 @@ export async function POST(req: Request) {
         }
 
         if (modified) {
-          await supabase.from('kfs_store_states').upsert({ id: 'kfs-general-db-prod', db_state: state, updated_at: new Date().toISOString() });
+          if (!state.auditLogs) state.auditLogs = [];
+          state.auditLogs.push({
+            id: `log${Date.now()}`,
+            date: new Date().toISOString(),
+            actor: "SMS Webhook",
+            action: "SMS_CONCILIATOR_SUCCESS",
+            details: `Pago conciliado automáticamente por SMS. Ref: ${reference}, Monto: ${amount} Bs`
+          });
+
+          const nextUpdatedAt = new Date().toISOString();
+          const { data: updateData, error: updateError } = await supabase
+            .from('kfs_store_states')
+            .update({
+              db_state: state,
+              updated_at: nextUpdatedAt
+            })
+            .eq('id', 'kfs-general-db-prod')
+            .eq('updated_at', oldUpdatedAt)
+            .select();
+
+          if (!updateError && updateData && updateData.length > 0) {
+            writeSuccess = true;
+          } else {
+            console.warn(`[Collision Detectado] Intento ${attempts}/${maxAttempts} en SMS webhook. Reintentando...`);
+            await new Promise(r => setTimeout(r, 50 + Math.floor(Math.random() * 100)));
+          }
+        } else {
+          writeSuccess = true;
         }
+      }
+
+      if (!writeSuccess) {
+        return NextResponse.json({ error: 'Update conflict. Please try again.' }, { status: 409 });
       }
     }
 

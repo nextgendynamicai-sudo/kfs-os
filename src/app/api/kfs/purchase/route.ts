@@ -14,102 +14,119 @@ export async function POST(req: Request) {
     const { product, paymentMethod, applyIva, customerPhone, clientId, vendedorId } = await req.json();
 
     const syncId = "kfs-general-db-prod";
-    const { data: storeData, error: storeError } = await supabase
-      .from('kfs_store_states')
-      .select('db_state')
-      .eq('id', syncId)
-      .single();
+    let attempts = 0;
+    const maxAttempts = 3;
+    let success = false;
+    let transactionResult = null;
 
-    if (storeError || !storeData) {
-      return NextResponse.json({ error: 'Database state not found' }, { status: 404 });
-    }
+    while (attempts < maxAttempts && !success) {
+      attempts++;
+      
+      const { data: storeData, error: storeError } = await supabase
+        .from('kfs_store_states')
+        .select('db_state, updated_at')
+        .eq('id', syncId)
+        .single();
 
-    let db = storeData.db_state;
-    const client = db.clients.find((c: any) => c.id === clientId);
-    if (!client) return NextResponse.json({ error: 'Client not found' }, { status: 404 });
-
-    // Lógica de cálculo B2B (Mantenemos la regla de gamificación)
-    let kfsFeePercentage = client.kfsFeePercentage || 0.05;
-    if ((client.onboardedUsers || 0) >= 50) {
-      kfsFeePercentage = 0.03;
-    }
-
-    const itemPrice = typeof product.price === 'string' ? parseFloat(product.price) : product.price;
-    const priceUSD = applyIva ? itemPrice * 1.16 : itemPrice;
-    
-    const isDigital = product.category === 'Digital';
-    const isCombo = product.category === 'Combos';
-    const usesLoyalty = false; // Simplified
-
-    let subTotalUSD = priceUSD;
-    let kfsFee = subTotalUSD * kfsFeePercentage;
-
-    let transaction = {
-      id: `tx${Date.now()}`,
-      clientId,
-      vendedorId: vendedorId || "online",
-      productName: product.name,
-      priceUSD: subTotalUSD,
-      kfsFeeUSD: kfsFee,
-      netStoreUSD: subTotalUSD - kfsFee,
-      date: new Date().toISOString(),
-      customerPhone: customerPhone || "",
-      paymentMethod,
-      type: "sale",
-      zReported: false
-    };
-
-    // Agregar comisión de la Promotora (Guardián de Cartera)
-    let updatedPromotoras = [...db.promotoras];
-    if (customerPhone && client.promotoraId) {
-      const pIdx = updatedPromotoras.findIndex((p: any) => p.id === client.promotoraId);
-      if (pIdx !== -1) {
-        const royalty = subTotalUSD * 0.005; // 0.5%
-        updatedPromotoras[pIdx] = { 
-          ...updatedPromotoras[pIdx], 
-          passiveEarningsEUR: (updatedPromotoras[pIdx].passiveEarningsEUR || 0) + royalty
-        };
+      if (storeError || !storeData) {
+        return NextResponse.json({ error: 'Database state not found' }, { status: 404 });
       }
-    }
 
-    let updatedClients = db.clients.map((c: any) => {
-      if (c.id === clientId) {
-        return {
-          ...c,
-          salesUSD: (c.salesUSD || 0) + subTotalUSD,
-          kfsFeesOwedUSD: (c.kfsFeesOwedUSD || 0) + kfsFee
-        };
+      const oldUpdatedAt = storeData.updated_at;
+      let db = storeData.db_state;
+      const client = db.clients.find((c: any) => c.id === clientId);
+      if (!client) return NextResponse.json({ error: 'Client not found' }, { status: 404 });
+
+      // Lógica de cálculo B2B
+      let kfsFeePercentage = client.kfsFeePercentage || 0.05;
+      if ((client.onboardedUsers || 0) >= 50) {
+        kfsFeePercentage = 0.03;
       }
-      return c;
-    });
 
-    const updatedCore = {
-      ...db.kreatekCore,
-      totalTransactions: (db.kreatekCore?.totalTransactions || 0) + 1,
-      netEarningsEUR: (db.kreatekCore?.netEarningsEUR || 0) + kfsFee
-    };
+      const itemPrice = typeof product.price === 'string' ? parseFloat(product.price) : product.price;
+      const priceUSD = applyIva ? itemPrice * 1.16 : itemPrice;
+      
+      let subTotalUSD = priceUSD;
+      let kfsFee = subTotalUSD * kfsFeePercentage;
 
-    const newDb = {
-      ...db,
-      transactions: [...db.transactions, transaction],
-      clients: updatedClients,
-      promotoras: updatedPromotoras,
-      kreatekCore: updatedCore
-    };
+      let transaction = {
+        id: `tx${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+        clientId,
+        vendedorId: vendedorId || "online",
+        productName: product.name,
+        priceUSD: subTotalUSD,
+        kfsFeeUSD: kfsFee,
+        netStoreUSD: subTotalUSD - kfsFee,
+        date: new Date().toISOString(),
+        customerPhone: customerPhone || "",
+        paymentMethod,
+        type: "sale",
+        zReported: false
+      };
 
-    const { error: updateError } = await supabase
-      .from('kfs_store_states')
-      .upsert({
-        id: syncId,
-        db_state: newDb,
-        updated_at: new Date().toISOString()
+      // Agregar comisión de la Promotora (Guardián de Cartera)
+      let updatedPromotoras = [...(db.promotoras || [])];
+      if (customerPhone && client.promotoraId) {
+        const pIdx = updatedPromotoras.findIndex((p: any) => p.id === client.promotoraId);
+        if (pIdx !== -1) {
+          const royalty = subTotalUSD * 0.005; // 0.5%
+          updatedPromotoras[pIdx] = { 
+            ...updatedPromotoras[pIdx], 
+            passiveEarningsEUR: (updatedPromotoras[pIdx].passiveEarningsEUR || 0) + royalty
+          };
+        }
+      }
+
+      let updatedClients = db.clients.map((c: any) => {
+        if (c.id === clientId) {
+          return {
+            ...c,
+            salesUSD: (c.salesUSD || 0) + subTotalUSD,
+            kfsFeesOwedUSD: (c.kfsFeesOwedUSD || 0) + kfsFee
+          };
+        }
+        return c;
       });
 
-    if (updateError) {
-      return NextResponse.json({ error: updateError.message }, { status: 500 });
+      const updatedCore = {
+        ...db.kreatekCore,
+        totalTransactions: (db.kreatekCore?.totalTransactions || 0) + 1,
+        netEarningsEUR: (db.kreatekCore?.netEarningsEUR || 0) + kfsFee
+      };
+
+      const newDb = {
+        ...db,
+        transactions: [...(db.transactions || []), transaction],
+        clients: updatedClients,
+        promotoras: updatedPromotoras,
+        kreatekCore: updatedCore
+      };
+
+      const nextUpdatedAt = new Date().toISOString();
+      const { data: updateData, error: updateError } = await supabase
+        .from('kfs_store_states')
+        .update({
+          db_state: newDb,
+          updated_at: nextUpdatedAt
+        })
+        .eq('id', syncId)
+        .eq('updated_at', oldUpdatedAt)
+        .select();
+
+      if (!updateError && updateData && updateData.length > 0) {
+        success = true;
+        transactionResult = transaction;
+      } else {
+        console.warn(`[Collision Detectado] Intento ${attempts}/${maxAttempts} para guardar compra de ${clientId}. Reintentando...`);
+        await new Promise(r => setTimeout(r, 50 + Math.floor(Math.random() * 100)));
+      }
     }
 
-    return NextResponse.json({ success: true, transaction });
+    if (!success) {
+      return NextResponse.json({ error: 'Update conflict. Please try again.' }, { status: 409 });
+    }
+
+    return NextResponse.json({ success: true, transaction: transactionResult });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

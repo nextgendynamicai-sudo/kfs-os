@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
-import { ChevronLeft, Bell } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { ChevronLeft, Bell, Sun, Moon } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { KreatekLogo } from "./KreatekLogo";
 import { compressImage, playSyncChime } from "../lib/utils";
+import { isSupabaseConfigured } from "../context/supabase";
 
 export const Navbar = ({ title, showBack = false, onBack }: { title?: string, showBack?: boolean, onBack?: () => void }) => {
   const { 
@@ -23,6 +24,28 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
     requestTopUp 
   } = useKFS() as any;
   const [isSyncing, setIsSyncing] = useState(false);
+  const [theme, setTheme] = useState<"light" | "dark">("light");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedTheme = localStorage.getItem("theme");
+      const isDark = savedTheme === "dark" || (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
+      setTheme(isDark ? "dark" : "light");
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === "light" ? "dark" : "light";
+    setTheme(nextTheme);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("theme", nextTheme);
+      if (nextTheme === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+    }
+  };
 
   const handleBack = () => {
     if (onBack && onBack !== logout) {
@@ -115,6 +138,27 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
           </button>
 
           {title && <span className="text-white/80 text-xs sm:text-sm uppercase tracking-wider font-mono bg-white/5 px-3 py-1.5 rounded-full">{title}</span>}
+
+          {/* Supabase Connection Status Badge */}
+          <span 
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] font-black font-mono tracking-wider bg-white/5 ${
+              isSupabaseConfigured 
+                ? "border-emerald-500/30 text-emerald-400" 
+                : "border-white/10 text-gray-400"
+            }`}
+            title={isSupabaseConfigured ? "Supabase Cloud: Conectado" : "Supabase Cloud: Desconectado (Usando Mock Local)"}
+          >
+            {isSupabaseConfigured ? "☁️ CLOUD ACTIVE" : "☁️ MOCK ACTIVE"}
+          </span>
+
+          {/* Theme Toggle Button */}
+          <button
+            onClick={toggleTheme}
+            className="flex items-center justify-center p-2 rounded-xl border border-white/10 hover:bg-white/5 text-gray-300 hover:text-white transition-all cursor-pointer h-8 w-8 bg-white/5"
+            title={theme === "light" ? "Cambiar a Modo Oscuro" : "Cambiar a Modo Claro"}
+          >
+            {theme === "light" ? <Moon size={14} /> : <Sun size={14} />}
+          </button>
 
           {currentUser && currentUser.role !== "marketplace" && (
             <label className="relative w-8 h-8 rounded-full border border-violet-600/50 cursor-pointer overflow-hidden flex items-center justify-center bg-white/10 hover:bg-white/20 transition-all shadow-inner group" title="Toca tu foto para actualizar tu imagen de perfil">

@@ -3,7 +3,7 @@
 import { KFS_BRAND } from "../config/brandConfig";
 import React, { createContext, useContext, useState, useEffect, useRef } from "react";
 import { supabase, isSupabaseConfigured, uploadAsset } from "./supabase";
-import { playScannerBeep, speakText, getStoreCoords, getCustomerCoords, playSyncChime } from "../lib/utils";
+import { playScannerBeep, speakText, getStoreCoords, getCustomerCoords, playSyncChime, comparePasswordSecure, hashPasswordSecure } from "../lib/utils";
 import { getIndexedDBValue, setIndexedDBValue } from "../lib/indexedDB";
 import { syncToRelational } from "../lib/supabaseSync";
 
@@ -1217,11 +1217,16 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         // Fallback a base de datos local JSON (Transición)
         let foundUser = null;
         const hashedPass = hashPassword(safePass);
-        if (role === "promotora") foundUser = db.promotoras.find((p: any) => p.email === safeEmail && (p.password === safePass || p.password === hashedPass));
-        if (role === "dueño") foundUser = db.clients.find((c: any) => c.email === safeEmail && (c.password === safePass || c.password === hashedPass));
-        if (role === "vendedor") foundUser = db.vendedores.find((v: any) => v.email === safeEmail && (v.password === safePass || v.password === hashedPass));
-        if (role === "rider") foundUser = db.riders?.find((r: any) => r.email === safeEmail && (r.password === safePass || r.password === hashedPass));
-        if (role === "customer") foundUser = db.customers?.find((c: any) => c.phone === safeEmail && (c.password === safePass || c.password === hashedPass));
+        
+        const matchesPass = (userPass: string) => {
+          return userPass === safePass || userPass === hashedPass || comparePasswordSecure(safePass, userPass);
+        };
+
+        if (role === "promotora") foundUser = db.promotoras.find((p: any) => p.email === safeEmail && matchesPass(p.password));
+        if (role === "dueño") foundUser = db.clients.find((c: any) => c.email === safeEmail && matchesPass(c.password));
+        if (role === "vendedor") foundUser = db.vendedores.find((v: any) => v.email === safeEmail && matchesPass(v.password));
+        if (role === "rider") foundUser = db.riders?.find((r: any) => r.email === safeEmail && matchesPass(r.password));
+        if (role === "customer") foundUser = db.customers?.find((c: any) => c.phone === safeEmail && matchesPass(c.password));
 
         if (foundUser) {
           setCurrentUser({ ...foundUser, role });
@@ -1281,7 +1286,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   };
 
   const hashPassword = (password: string) => {
-    return btoa(password).split('').reverse().join('');
+    return hashPasswordSecure(password);
   };
 
   const logAction = (actor: string, action: string, details: string) => {
@@ -1957,6 +1962,35 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       showToast("Supabase no configurado o sin conexión: " + e.message, "error");
     }
 
+    const preset = clientData.business_preset || "RETAIL-QUICK";
+    const preset_metadata = preset === "AXIS-ONLY" ? {
+      ui_mode: "digital-loyalty",
+      features: {
+        escandallos: false,
+        serial_tracking: false,
+        room_management: false,
+        weight_scale: false,
+        booking_system: false
+      },
+      custom_labels: {
+        inventory_unit: "Servicio",
+        checkout_btn: "Cobrar Puntos"
+      }
+    } : {
+      ui_mode: "standard",
+      features: {
+        escandallos: false,
+        serial_tracking: false,
+        room_management: false,
+        weight_scale: false,
+        booking_system: false
+      },
+      custom_labels: {
+        inventory_unit: "Item",
+        checkout_btn: "Cobrar"
+      }
+    };
+
     const newClient = { 
       ...clientData, 
       auth_user_id: authUserId,
@@ -1979,6 +2013,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       kyc_address: clientData.kycAddress || "",
       kyc_status: "verified",
       walletBalanceUSD: 0,
+      business_preset: preset,
+      preset_metadata,
       subscription: {
         plan: "kfs_pro",
         costUSD: 6,

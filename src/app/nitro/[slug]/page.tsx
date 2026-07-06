@@ -3,9 +3,10 @@
 
 import { supabase } from '../../../context/supabase';
 
-export default async function NitroStorefront({ params }: { params: { slug: string } }) {
-  // 1. Query a 'axis_nitro_hubs' donde slug == params.slug
-  const { data: hubData } = await supabase.from('axis_nitro_hubs').select('*').eq('slug', params.slug).single();
+export default async function NitroStorefront({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  // 1. Query a 'axis_nitro_hubs' donde slug == slug
+  const { data: hubData } = await supabase.from('axis_nitro_hubs').select('*').eq('slug', slug).single();
   
   // 2. Query a 'axis_nitro_products' y 'kfs_products' de forma interconectada
   let productsData: any[] = [];

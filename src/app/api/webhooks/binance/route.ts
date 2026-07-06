@@ -32,72 +32,94 @@ export async function POST(req: Request) {
     const customerId = data.merchantTradeNo; 
     const amountUSD = parseFloat(data.orderAmount);
 
-    // 3. Obtener estado actual (Híbrido)
+    // 3. Obtener estado actual (Híbrido) con reintentos OCC
     const syncId = "kfs-general-db-prod";
-    const { data: storeData, error: storeError } = await supabase
-      .from('kfs_store_states')
-      .select('db_state')
-      .eq('id', syncId)
-      .single();
+    let attempts = 0;
+    const maxAttempts = 3;
+    let writeSuccess = false;
 
-    if (storeError || !storeData) {
-      return NextResponse.json({ error: 'Database state not found' }, { status: 404 });
+    while (attempts < maxAttempts && !writeSuccess) {
+      attempts++;
+
+      const { data: storeData, error: storeError } = await supabase
+        .from('kfs_store_states')
+        .select('db_state, updated_at')
+        .eq('id', syncId)
+        .single();
+
+      if (storeError || !storeData) {
+        return NextResponse.json({ error: 'Database state not found' }, { status: 404 });
+      }
+
+      const oldUpdatedAt = storeData.updated_at;
+      let db = storeData.db_state;
+      const customerIdx = db.customers?.findIndex((c: any) => c.id === customerId);
+      
+      if (customerIdx === undefined || customerIdx === -1) {
+        return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
+      }
+
+      const customer = db.customers[customerIdx];
+      const isFirstRecharge = !customer.hasRecharged;
+      let kPointsBonus = 0;
+
+      // Bonos Virales de recarga ({KFS_BRAND.productAcronym} Network effect)
+      if (amountUSD >= 5 && amountUSD < 10) kPointsBonus = 100;
+      else if (amountUSD >= 10 && amountUSD < 20) kPointsBonus = 300;
+      else if (amountUSD >= 20) kPointsBonus = 800;
+
+      let updatedCustomers = [...db.customers];
+      updatedCustomers[customerIdx] = {
+        ...customer,
+        real_balance: (customer.real_balance || 0) + amountUSD,
+        k_points_balance: (customer.k_points_balance || 0) + kPointsBonus,
+        hasRecharged: true
+      };
+
+      let updatedClients = [...db.clients];
+      let updatedPromotoras = [...db.promotoras];
+
+      // Bono Viral de Primera Recarga (500 Axis Points o 0.50 EUR)
+      if (isFirstRecharge && customer.referred_by_customer_id) {
+         const refId = customer.referred_by_customer_id;
+         const cIdx = updatedCustomers.findIndex((c: any) => c.id === refId);
+         if (cIdx !== -1) {
+             updatedCustomers[cIdx] = {
+                 ...updatedCustomers[cIdx],
+                 k_points_balance: (updatedCustomers[cIdx].k_points_balance || 0) + 500,
+                 k_points_expiry: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString()
+             };
+         }
+      }
+
+      const newDb = {
+        ...db,
+        customers: updatedCustomers,
+        clients: updatedClients,
+        promotoras: updatedPromotoras
+      };
+
+      const nextUpdatedAt = new Date().toISOString();
+      const { data: updateData, error: updateError } = await supabase
+        .from('kfs_store_states')
+        .update({
+          db_state: newDb,
+          updated_at: nextUpdatedAt
+        })
+        .eq('id', syncId)
+        .eq('updated_at', oldUpdatedAt)
+        .select();
+
+      if (!updateError && updateData && updateData.length > 0) {
+        writeSuccess = true;
+      } else {
+        console.warn(`[Collision Detectado] Intento ${attempts}/${maxAttempts} para binance webhook de ${customerId}. Reintentando...`);
+        await new Promise(r => setTimeout(r, 50 + Math.floor(Math.random() * 100)));
+      }
     }
 
-    let db = storeData.db_state;
-    const customerIdx = db.customers?.findIndex((c: any) => c.id === customerId);
-    
-    if (customerIdx === undefined || customerIdx === -1) {
-      // Registraríamos el error en kfs_wallet_fundings con status 'failed' en esquema relacional
-      return NextResponse.json({ error: 'Customer not found' }, { status: 404 });
-    }
-
-    const customer = db.customers[customerIdx];
-    const isFirstRecharge = !customer.hasRecharged;
-    let kPointsBonus = 0;
-
-    // Bonos Virales de recarga ({KFS_BRAND.productAcronym} Network effect)
-    if (amountUSD >= 5 && amountUSD < 10) kPointsBonus = 100;
-    else if (amountUSD >= 10 && amountUSD < 20) kPointsBonus = 300;
-    else if (amountUSD >= 20) kPointsBonus = 800;
-
-    let updatedCustomers = [...db.customers];
-    updatedCustomers[customerIdx] = {
-      ...customer,
-      real_balance: (customer.real_balance || 0) + amountUSD,
-      k_points_balance: (customer.k_points_balance || 0) + kPointsBonus,
-      hasRecharged: true
-    };
-
-    let updatedClients = [...db.clients];
-    let updatedPromotoras = [...db.promotoras];
-
-    // Bono Viral de Primera Recarga (500 Axis Points o 0.50 EUR)
-    if (isFirstRecharge && customer.referred_by_customer_id) {
-       const refId = customer.referred_by_customer_id;
-       const cIdx = updatedCustomers.findIndex((c: any) => c.id === refId);
-       if (cIdx !== -1) {
-           updatedCustomers[cIdx] = {
-               ...updatedCustomers[cIdx],
-               k_points_balance: (updatedCustomers[cIdx].k_points_balance || 0) + 500,
-               k_points_expiry: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString()
-           };
-       }
-    }
-
-    const newDb = {
-      ...db,
-      customers: updatedCustomers,
-      clients: updatedClients,
-      promotoras: updatedPromotoras
-    };
-
-    const { error: updateError } = await supabase
-      .from('kfs_store_states')
-      .upsert({ id: syncId, db_state: newDb, updated_at: new Date().toISOString() });
-
-    if (updateError) {
-      return NextResponse.json({ error: updateError.message }, { status: 500 });
+    if (!writeSuccess) {
+      return NextResponse.json({ error: 'Update conflict. Please try again.' }, { status: 409 });
     }
 
     // Retorno a Binance: SUCCESS

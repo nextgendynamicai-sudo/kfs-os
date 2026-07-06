@@ -1,81 +1,12 @@
 "use client";
 
+import React, { useState } from "react";
 import { KFS_BRAND } from "../config/brandConfig";
-import React, { useState, useEffect, useRef } from "react";
-import {
-  Camera, Upload, ShoppingCart, TrendingUp, Users, DollarSign,
-  LogOut, Shield, Package, Activity, Search, QrCode, Lock,
-  ChevronRight, CheckCircle, CreditCard, Bell, X, Info,
-  Store, Star, ChevronLeft, Clock, UserCheck, Palette,
-  Zap, BookOpen, Printer, Smartphone, Settings, DownloadCloud, Terminal, Truck,
-  Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database, Trash2
-} from "lucide-react";
-import { useKFS } from "../context/KFSContext";
-import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { CheckoutModal } from "../components/CheckoutModal";
-import { TopUpModal } from "../components/TopUpModal";
-import { PayoutModal } from "../components/PayoutModal";
-import { ReceiptModal } from "../components/ReceiptModal";
-import { UniversalWalletWidget } from "../components/UniversalWalletWidget";
-import { ProfileAvatarEditor } from "../components/ProfileAvatarEditor";
-import { CoreDashboard } from "../components/dashboards/CoreDashboard";
-import { PromotoraDashboard } from "../components/dashboards/PromotoraDashboard";
-import { ClientDashboard } from "../components/dashboards/ClientDashboard";
-import { VendedorDashboard } from "../components/dashboards/VendedorDashboard";
-import { RiderDashboard } from "../components/dashboards/RiderDashboard";
-import { CustomerDashboard } from "../components/dashboards/CustomerDashboard";
-import { LoginView } from "../components/dashboards/LoginView";
-import { MarketplaceView } from "../components/dashboards/MarketplaceView";
-import { LandingPageView } from "../components/dashboards/LandingPageView";
-
-
-import { FlowExpressCatalog } from "../components/FlowExpressCatalog";
-import { B2BSelfOnboarding } from "../components/B2BSelfOnboarding";
-import { DatabaseManagerWidget } from "../components/DatabaseManagerWidget";
-import { ReferralLinksWidget } from "../components/ReferralLinksWidget";
-import { KPointsIssuerWidget } from "../components/KPointsIssuerWidget";
-import { useP2PTransfer } from "../hooks/useP2PTransfer";
-import { compressImage, readAsBase64, playPremiumChime, playSyncChime, playCashDrawerSound, playScannerBeep, getStoreCoords, getCustomerCoords } from "../lib/utils";
-import { AnimatedCounter } from "../components/AnimatedCounter";
-import { AppEnforcer } from "../components/AppEnforcer";
-import { PioneerOfferBanner } from '../components/PioneerOfferBanner';
-import { OracleControlSlider } from '../components/OracleControlSlider';
-import { OracleInsightCard } from '../components/OracleInsightCard';
-import { PushCommandCenter } from "../components/PushCommandCenter";
-import { supabase } from "../context/supabase";
-import { motion, AnimatePresence } from "framer-motion";
-import dynamic from 'next/dynamic';
-
-const LiveMap = dynamic(() => import('../components/LiveMap'), { ssr: false });
-
-// Theme and Global Constants
-const KREATEK_COLORS = {
-  navy: "violet-900",
-  bronze: "violet-600",
-  white: "#F8F9FA"
-};
-
-// ==========================================
-// UTILITIES
-// ==========================================
-
-
-// ==========================================
-// BUSINESS ECOSYSTEM SUBCOMPONENTS
-// ==========================================
-
-
-
-
-
-// ==========================================
-// SUBCOMPONENTS (DEFINED OUTSIDE PARENT TO PREVENT UNMOUNT RESETS)
-// ==========================================
-
-// Toast Component
+import { Camera, DollarSign, Lock, Info, Store, UserCheck, Smartphone, FileText, MapPin, Trash2 } from "lucide-react";
+import { compressImage } from "../lib/utils";
 
 export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, defaultReferralCode = "" }: any) => {
-  const [formData, setFormData] = useState({ name: "", idCard: "", company: "", avgBilling: "", phone: "", email: "", password: "", address: "", kfsFeePercentage: 0.03, avatar: "", kycCedula: "" });
+  const [formData, setFormData] = useState({ name: "", idCard: "", company: "", avgBilling: "", phone: "", email: "", password: "", address: "", kfsFeePercentage: 0.03, avatar: "", kycCedula: "", business_preset: "RETAIL-QUICK" });
   const [avatar, setAvatar] = useState<string>("");
   const [kycCedula, setKycCedula] = useState<string>("");
   const [acceptedToS, setAcceptedToS] = useState(false);
@@ -224,6 +155,14 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
           <option value={0.03}>Plan Base (3%)</option>
           <option value={0.05}>Plan Estándar (5%)</option>
           <option value={0.10}>Plan Premium (10%)</option>
+        </select>
+      </div>
+
+      <div className="flex flex-col mb-2">
+        <label className={`text-xs font-black mb-1 ml-1 uppercase tracking-widest ${standalone ? "text-sky-700" : "text-sky-800"}`}>Tipo de Ecosistema / Preset</label>
+        <select required value={formData.business_preset} onChange={e => setFormData({ ...formData, business_preset: e.target.value })} className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all font-bold cursor-pointer ${standalone ? "bg-sky-50/50 border-sky-100 text-sky-950 placeholder:text-slate-400" : "bg-sky-50/30 border-sky-100 text-sky-950 placeholder:text-slate-400"}`}>
+          <option value="RETAIL-QUICK">Tienda Física POS (Inventario, Balanza, Impresora)</option>
+          <option value="AXIS-ONLY">Sólo Puntos Axis (Fidelización Digital, Sin Local Físico)</option>
         </select>
       </div>
 

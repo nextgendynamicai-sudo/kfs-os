@@ -9,6 +9,7 @@ import { FiscalPrinterSetupWidget } from "../FiscalPrinterSetupWidget";
 import { KFSIoTEdgeConsole } from "../KFSIoTEdgeConsole";
 import { KreatekLogo } from "../KreatekLogo";
 import { Navbar } from "../Navbar";
+import { usePreset } from "../../context/PresetContext";
 import { RegisterClientForm } from "../RegisterClientForm";
 import { RegisterPromotoraForm } from "../RegisterPromotoraForm";
 import { RegisterCustomerForm } from "../RegisterCustomerForm";
@@ -81,6 +82,7 @@ const KREATEK_COLORS = {
 
 export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showToast, formatUSD, formatEUR, logout, approveOrder, rejectOrder, dispatchOrder, paySubscription, requestPayout, requestTopUp }: any) => {
   const { finishOnboarding } = useKFS();
+  const { businessPreset } = usePreset();
   const clientInfo = db.clients?.find((c: any) => c.id === currentUser.id) || currentUser;
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState("resumen"); // resumen | inventario | personal | config
@@ -551,7 +553,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
           </div>
         )}
 
-        {activeTab === 'config' && <FiscalPrinterSetupWidget />}
+        {activeTab === 'config' && businessPreset !== "AXIS-ONLY" && <FiscalPrinterSetupWidget />}
 
         {activeTab === 'personal' && <RecruitmentWidget db={db} currentUser={currentUser} formatUSD={formatUSD} />}
 
@@ -751,7 +753,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
         )}
 
         {/* Widget de Cierre y Publicidad para el Dueño */}
-        {activeTab === 'resumen' && (
+        {activeTab === 'resumen' && businessPreset !== "AXIS-ONLY" && (
           <div className="bg-gradient-to-br from-sky-900 to-slate-900 text-white p-6 md:p-8 rounded-[2rem] shadow-2xl shadow-sky-900/40 relative overflow-hidden border border-sky-800 animate-fade-in w-full">
             <div className="absolute top-0 right-0 w-64 h-64 bg-sky-500/10 rounded-full blur-3xl -z-10"></div>
             <div className="flex flex-col md:flex-row justify-between items-stretch gap-6 relative z-10">
@@ -809,7 +811,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
           </div>
         )}
 
-        {activeTab === 'config' && <KFSIoTEdgeConsole showToast={showToast} />}
+        {activeTab === 'config' && businessPreset !== "AXIS-ONLY" && <KFSIoTEdgeConsole showToast={showToast} />}
 
         {/* Vales & Créditos Widget */}
         {activeTab === 'personal' && (
@@ -1335,32 +1337,41 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
             {/* Módulos Fase 15 */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {/* Low Stock Widget */}
-              <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-sky-200/50 border border-rose-100 bg-rose-50/20">
-                <h3 className="font-black text-xl text-sky-950 mb-6 flex items-center gap-2 text-rose-500">
-                  <Activity className="text-rose-500" /> Alertas de Inventario
-                </h3>
-                <div className="space-y-3">
-                  {lowStockProducts.map((p: any) => (
-                    <div key={p.id} className="flex justify-between items-center p-4 bg-white rounded-2xl border border-rose-100 shadow-sm">
-                      <div className="flex flex-col">
-                        <span className="font-bold text-sky-950">{p.name} <span className="text-[10px] font-black text-white bg-emerald-500 px-2 py-0.5 rounded-full ml-2">Alerta Verde</span></span>
-                        <span className="text-xs text-rose-500 font-black">{p.stock} unidades restantes</span>
+              {businessPreset !== "AXIS-ONLY" ? (
+                <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-sky-200/50 border border-rose-100 bg-rose-50/20">
+                  <h3 className="font-black text-xl text-sky-950 mb-6 flex items-center gap-2 text-rose-500">
+                    <Activity className="text-rose-500" /> Alertas de Inventario
+                  </h3>
+                  <div className="space-y-3">
+                    {lowStockProducts.map((p: any) => (
+                      <div key={p.id} className="flex justify-between items-center p-4 bg-white rounded-2xl border border-rose-100 shadow-sm">
+                        <div className="flex flex-col">
+                          <span className="font-bold text-sky-950">{p.name} <span className="text-[10px] font-black text-white bg-emerald-500 px-2 py-0.5 rounded-full ml-2">Alerta Verde</span></span>
+                          <span className="text-xs text-rose-500 font-black">{p.stock} unidades restantes</span>
+                        </div>
+                        <button onClick={() => window.open(`https://wa.me/?text=Hola,%20necesito%20reabastecer:%20${p.name}`, '_blank')} className="text-xs font-bold bg-emerald-100 text-emerald-700 px-3 py-2 rounded-lg hover:bg-emerald-200 transition-colors cursor-pointer">Reabastecer</button>
                       </div>
-                      <button onClick={() => window.open(`https://wa.me/?text=Hola,%20necesito%20reabastecer:%20${p.name}`, '_blank')} className="text-xs font-bold bg-emerald-100 text-emerald-700 px-3 py-2 rounded-lg hover:bg-emerald-200 transition-colors cursor-pointer">Reabastecer</button>
-                    </div>
-                  ))}
-                  {stagnantProducts.map((p: any) => (
-                    <div key={`stg-${p.id}`} className="flex justify-between items-center p-4 bg-rose-50 rounded-2xl border border-rose-200 shadow-sm">
-                      <div className="flex flex-col">
-                        <span className="font-bold text-sky-950">{p.name} <span className="text-[10px] font-black text-white bg-rose-500 px-2 py-0.5 rounded-full ml-2">Alerta Roja</span></span>
-                        <span className="text-xs text-rose-500 font-black">Estancado (&gt;15 días sin ventas)</span>
+                    ))}
+                    {stagnantProducts.map((p: any) => (
+                      <div key={`stg-${p.id}`} className="flex justify-between items-center p-4 bg-rose-50 rounded-2xl border border-rose-200 shadow-sm">
+                        <div className="flex flex-col">
+                          <span className="font-bold text-sky-950">{p.name} <span className="text-[10px] font-black text-white bg-rose-500 px-2 py-0.5 rounded-full ml-2">Alerta Roja</span></span>
+                          <span className="text-xs text-rose-500 font-black">Estancado (&gt;15 días sin ventas)</span>
+                        </div>
+                        <button onClick={() => showToast(`Iniciando campaña de Retargeting forzado para ${p.name}...`)} className="text-xs font-bold bg-rose-600 text-white px-3 py-2 rounded-lg hover:bg-rose-700 transition-colors cursor-pointer">Forzar Descuento</button>
                       </div>
-                      <button onClick={() => showToast(`Iniciando campaña de Retargeting forzado para ${p.name}...`)} className="text-xs font-bold bg-rose-600 text-white px-3 py-2 rounded-lg hover:bg-rose-700 transition-colors cursor-pointer">Forzar Descuento</button>
-                    </div>
-                  ))}
-                  {lowStockProducts.length === 0 && stagnantProducts.length === 0 && <p className="text-sm text-slate-400 font-bold">El inventario está estable.</p>}
+                    ))}
+                    {lowStockProducts.length === 0 && stagnantProducts.length === 0 && <p className="text-sm text-slate-400 font-bold">El inventario está estable.</p>}
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="bg-gradient-to-r from-violet-900 to-indigo-950 p-8 rounded-[2rem] shadow-xl border border-violet-850 text-white flex flex-col justify-center">
+                  <h3 className="font-black text-xl mb-2 flex items-center gap-1.5">💎 Red de Fidelización Axis</h3>
+                  <p className="text-[11px] text-violet-200/90 leading-relaxed">
+                    Tu comercio está operando bajo el preset digital de Axis Nitro. Tus clientes acumulan puntos y realizan canjes a través de tus enlaces y códigos de referidos sin requerir hardware de POS físico.
+                  </p>
+                </div>
+              )}
 
               {/* CRM Widget */}
               <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-sky-200/50 border border-sky-100">
@@ -1724,10 +1735,10 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
           <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between gap-2 items-center relative">
             {[
               { id: "resumen", icon: Activity, label: "Resumen" },
-              { id: "inventario", icon: Package, label: "Inventario" },
-              { id: "personal", icon: Users, label: "Personal" },
+              businessPreset !== "AXIS-ONLY" && { id: "inventario", icon: Package, label: "Inventario" },
+              businessPreset !== "AXIS-ONLY" && { id: "personal", icon: Users, label: "Personal" },
               { id: "config", icon: Settings, label: "Ajustes" }
-            ].map(tab => {
+            ].filter(Boolean).map(tab => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
               return (
