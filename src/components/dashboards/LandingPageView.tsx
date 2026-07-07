@@ -81,7 +81,7 @@ const KREATEK_COLORS = {
 
 export const LandingPageView = ({ setView }: any) => {
   return (
-    <div className="min-h-screen bg-violet-50 text-violet-950 font-sans overflow-x-hidden selection:bg-violet-600 selection:text-white">
+    <div className="min-h-screen bg-gradient-to-b from-[#fcfaff] via-[#f2e6ff] to-[#d8beff] text-violet-950 font-sans overflow-x-hidden selection:bg-violet-600 selection:text-white">
       {/* Navbar */}
       <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-xl border-b border-violet-100 py-4 px-6 sm:px-10 flex justify-between items-center transition-all duration-300 shadow-sm">
         <div className="flex items-center gap-3">
@@ -290,7 +290,7 @@ export const LandingPageView = ({ setView }: any) => {
       </section>
 
       {/* AI Deep Dive Section */}
-      <section className="py-20 px-6 sm:px-10 max-w-7xl mx-auto border-t border-violet-100 bg-violet-50 rounded-[3rem]">
+      <section className="py-20 px-6 sm:px-10 max-w-7xl mx-auto border-t border-violet-100 bg-white/30 backdrop-blur-md rounded-[3rem]">
         <div className="text-center mb-16 space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-100 border border-violet-200 text-xs font-black text-violet-600 uppercase tracking-widest">
             <span className="w-2 h-2 rounded-full bg-violet-600 animate-pulse"></span>
@@ -522,7 +522,7 @@ export const LandingPageView = ({ setView }: any) => {
       </section>
 
       {/* Why Kreatek / Value Proposition Section */}
-      <section className="py-20 px-6 sm:px-10 max-w-7xl mx-auto border-t border-violet-100 bg-white rounded-[3rem] shadow-xl shadow-violet-100/50 mb-10">
+      <section className="py-20 px-6 sm:px-10 max-w-7xl mx-auto border-t border-violet-100 bg-white/40 backdrop-blur-md rounded-[3rem] shadow-xl shadow-violet-100/30 mb-10">
         <div className="text-center mb-16 space-y-4">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-violet-100 border border-violet-200 text-xs font-black text-violet-600 uppercase tracking-widest">
             ¿Por qué Kreatek Flow Systems?
@@ -537,7 +537,7 @@ export const LandingPageView = ({ setView }: any) => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-stretch">
           {/* Business Value Proposition */}
-          <div className="bg-violet-50 border border-violet-100 rounded-[2.5rem] p-8 sm:p-10 flex flex-col justify-between hover:border-violet-300 transition-all">
+          <div className="bg-white/20 backdrop-blur-sm border border-violet-100 rounded-[2.5rem] p-8 sm:p-10 flex flex-col justify-between hover:border-violet-300 transition-all">
             <div className="space-y-6">
               <span className="text-violet-600 text-xs font-black uppercase tracking-widest block">Para Dueños de Negocio</span>
               <h3 className="text-3xl font-black text-violet-950">Simplifica tu operación y reduce tus gastos al mínimo</h3>
