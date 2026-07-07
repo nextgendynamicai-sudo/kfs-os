@@ -106,23 +106,23 @@ export const LoginView = ({ handleLogin, registerClient, registerPromotora, db, 
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-sky-50 font-sans">
+    <div className="min-h-screen flex flex-col bg-violet-50 font-sans">
       <Navbar />
       <div className="flex-1 flex items-center justify-center p-4">
-        <div className="w-full max-w-md bg-white shadow-2xl shadow-sky-200/50 border border-sky-100 rounded-[2.5rem] p-8 animate-fade-in">
+        <div className="w-full max-w-md bg-white shadow-2xl shadow-violet-200/50 border border-violet-100 rounded-[2.5rem] p-8 animate-fade-in">
           {currentUser ? (
             <div className="space-y-6 text-center py-4">
-              <div className="w-20 h-20 bg-sky-100 rounded-full border-2 border-sky-200 flex items-center justify-center mx-auto shadow-inner overflow-hidden">
+              <div className="w-20 h-20 bg-violet-100 rounded-full border-2 border-violet-200 flex items-center justify-center mx-auto shadow-inner overflow-hidden">
                 {currentUser.avatar ? (
                   <img src={currentUser.avatar} className="w-full h-full object-cover" alt="Perfil" />
                 ) : (
-                  <span className="text-sky-600 font-black text-xl">{currentUser.name ? currentUser.name.slice(0, 2).toUpperCase() : (currentUser.company ? currentUser.company.slice(0, 2).toUpperCase() : "KF")}</span>
+                  <span className="text-violet-600 font-black text-xl">{currentUser.name ? currentUser.name.slice(0, 2).toUpperCase() : (currentUser.company ? currentUser.company.slice(0, 2).toUpperCase() : "KF")}</span>
                 )}
               </div>
               <div className="space-y-2">
-                <h2 className="text-xl font-black text-sky-950">Sesión Activa Detectada</h2>
+                <h2 className="text-xl font-black text-violet-950">Sesión Activa Detectada</h2>
                 <p className="text-sm text-slate-500">
-                  Ya has iniciado sesión como <strong className="text-sky-950">{currentUser.name || currentUser.company}</strong> (<span className="capitalize">{currentUser.role}</span>).
+                  Ya has iniciado sesión como <strong className="text-violet-950">{currentUser.name || currentUser.company}</strong> (<span className="capitalize">{currentUser.role}</span>).
                 </p>
               </div>
               <div className="space-y-3 pt-2">
@@ -137,7 +137,7 @@ export const LoginView = ({ handleLogin, registerClient, registerPromotora, db, 
                     else if (role === "rider") setView("rider");
                     else setView("landing");
                   }}
-                  className="w-full py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-sky-600/30 border-none text-white bg-sky-600 cursor-pointer text-sm"
+                  className="w-full py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-violet-600/30 border-none text-white bg-violet-600 cursor-pointer text-sm"
                 >
                   Ir a mi Panel de Control <ChevronRight size={18} />
                 </button>
@@ -152,25 +152,25 @@ export const LoginView = ({ handleLogin, registerClient, registerPromotora, db, 
           ) : (
             <>
               <div className="text-center mb-8">
-                <div className="w-16 h-16 bg-sky-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-sky-100 shadow-sm">
-                  <Shield className="text-sky-600" size={32} />
+                <div className="w-16 h-16 bg-violet-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-violet-100 shadow-sm">
+                  <Shield className="text-violet-600" size={32} />
                 </div>
-                <h1 className="text-2xl font-black text-sky-950 tracking-tight">{KFS_BRAND.productAcronym} Core <span className="text-sky-600">Access</span></h1>
+                <h1 className="text-2xl font-black text-violet-950 tracking-tight">{KFS_BRAND.productAcronym} Core <span className="text-violet-600">Access</span></h1>
                 <p className="text-sm text-slate-500 mt-2 font-mono">Seleccione su vector de entrada</p>
               </div>
 
               <div className="flex flex-wrap justify-center gap-2 mb-8">
-                <button onClick={() => setActiveTab("marketplace")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "marketplace" ? "bg-sky-600 text-white shadow-md" : "bg-sky-50 text-sky-600 hover:text-sky-800"}`}>Nitro Market</button>
-                <button onClick={() => setActiveTab("customer")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "customer" ? "bg-sky-600 text-white shadow-md" : "bg-sky-50 text-sky-600 hover:text-sky-800"}`}>Cliente</button>
-                <button onClick={() => setActiveTab("dueño")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "dueño" ? "bg-sky-600 text-white shadow-md" : "bg-sky-50 text-sky-600 hover:text-sky-800"}`}>Dueño</button>
-                <button onClick={() => setActiveTab("vendedor")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "vendedor" ? "bg-sky-600 text-white shadow-md" : "bg-sky-50 text-sky-600 hover:text-sky-800"}`}>Vendedor</button>
-                <button onClick={() => setActiveTab("promotora")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "promotora" ? "bg-sky-600 text-white shadow-md" : "bg-sky-50 text-sky-600 hover:text-sky-800"}`}>Promotora</button>
-                <button onClick={() => setActiveTab("rider")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "rider" ? "bg-sky-600 text-white shadow-md" : "bg-sky-50 text-sky-600 hover:text-sky-800"}`}>Delivery</button>
+                <button onClick={() => setActiveTab("marketplace")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "marketplace" ? "bg-violet-600 text-white shadow-md" : "bg-violet-50 text-violet-600 hover:text-violet-800"}`}>Nitro Market</button>
+                <button onClick={() => setActiveTab("customer")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "customer" ? "bg-violet-600 text-white shadow-md" : "bg-violet-50 text-violet-600 hover:text-violet-800"}`}>Cliente</button>
+                <button onClick={() => setActiveTab("dueño")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "dueño" ? "bg-violet-600 text-white shadow-md" : "bg-violet-50 text-violet-600 hover:text-violet-800"}`}>Dueño</button>
+                <button onClick={() => setActiveTab("vendedor")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "vendedor" ? "bg-violet-600 text-white shadow-md" : "bg-violet-50 text-violet-600 hover:text-violet-800"}`}>Vendedor</button>
+                <button onClick={() => setActiveTab("promotora")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "promotora" ? "bg-violet-600 text-white shadow-md" : "bg-violet-50 text-violet-600 hover:text-violet-800"}`}>Promotora</button>
+                <button onClick={() => setActiveTab("rider")} className={`flex-1 min-w-[80px] py-2.5 px-1 text-[10px] font-bold uppercase tracking-wider rounded-xl transition-all cursor-pointer border-none ${activeTab === "rider" ? "bg-violet-600 text-white shadow-md" : "bg-violet-50 text-violet-600 hover:text-violet-800"}`}>Delivery</button>
                 <button onClick={() => setActiveTab("core")} className={`w-full py-2.5 text-[10px] font-black uppercase tracking-widest rounded-xl transition-all border-none cursor-pointer ${activeTab === "core" ? "bg-slate-800 text-white shadow-md" : "bg-slate-100 text-slate-500 hover:text-slate-800"}`}>Arquitecto</button>
               </div>
 
               {activeTab === "marketplace" && (
-                <button onClick={() => handleLogin("marketplace", "")} className="w-full py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-sky-600/30 border-none text-white bg-sky-600 cursor-pointer">
+                <button onClick={() => handleLogin("marketplace", "")} className="w-full py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-violet-600/30 border-none text-white bg-violet-600 cursor-pointer">
                   <ShoppingCart size={20} /> Entrar a Nitro Market
                 </button>
               )}
@@ -179,20 +179,20 @@ export const LoginView = ({ handleLogin, registerClient, registerPromotora, db, 
                 <div className="space-y-4">
                   {(activeTab === "dueño" || activeTab === "vendedor" || activeTab === "promotora" || activeTab === "customer" || activeTab === "rider") && (
                     <div className="relative">
-                      <label className="block text-xs font-black text-sky-700 uppercase tracking-widest mb-1 ml-1">
+                      <label className="block text-xs font-black text-violet-700 uppercase tracking-widest mb-1 ml-1">
                         {activeTab === "customer" ? "Teléfono Móvil Registrado" : "Correo Electrónico de Acceso"}
                       </label>
                       <div className="relative">
-                        {activeTab === "customer" ? <Smartphone className="absolute left-4 top-4 text-sky-400" size={20} /> : <Info className="absolute left-4 top-4 text-sky-400" size={20} />}
-                        <input type="text" placeholder={activeTab === "customer" ? "Ej: +584141234567" : "usuario@correo.com"} value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl pl-12 pr-4 py-4 text-sky-950 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all" />
+                        {activeTab === "customer" ? <Smartphone className="absolute left-4 top-4 text-violet-400" size={20} /> : <Info className="absolute left-4 top-4 text-violet-400" size={20} />}
+                        <input type="text" placeholder={activeTab === "customer" ? "Ej: +584141234567" : "usuario@correo.com"} value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-violet-50/50 border border-violet-100 rounded-xl pl-12 pr-4 py-4 text-violet-950 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all" />
                       </div>
                     </div>
                   )}
                   <div className="relative">
-                    <label className="block text-xs font-black text-sky-700 uppercase tracking-widest mb-1 ml-1">Contraseña de Acceso</label>
+                    <label className="block text-xs font-black text-violet-700 uppercase tracking-widest mb-1 ml-1">Contraseña de Acceso</label>
                     <div className="relative">
-                      <Lock className="absolute left-4 top-4 text-sky-400" size={20} />
-                      <input type="password" placeholder="Ingresa tu clave de seguridad" value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl pl-12 pr-4 py-4 text-sky-950 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all" />
+                      <Lock className="absolute left-4 top-4 text-violet-400" size={20} />
+                      <input type="password" placeholder="Ingresa tu clave de seguridad" value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-violet-50/50 border border-violet-100 rounded-xl pl-12 pr-4 py-4 text-violet-950 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all" />
                     </div>
                     {password === "000" && (
                       <p className="text-[10px] text-amber-600 font-bold mt-2 bg-amber-50 p-2 rounded-lg border border-amber-100">
@@ -200,26 +200,26 @@ export const LoginView = ({ handleLogin, registerClient, registerPromotora, db, 
                       </p>
                     )}
                   </div>
-                  <button onClick={() => handleLogin(activeTab, password, email)} className="w-full py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-sky-600/30 border-none text-white bg-sky-600 cursor-pointer">
+                  <button onClick={() => handleLogin(activeTab, password, email)} className="w-full py-4 rounded-xl font-black flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-violet-600/30 border-none text-white bg-violet-600 cursor-pointer">
                     Entrar a mi Panel <ChevronRight size={20} />
                   </button>
                   {activeTab === "dueño" && (
-                    <button onClick={() => setActiveTab("register")} className="w-full text-center text-sm font-bold text-sky-600 hover:text-sky-800 transition-colors mt-4 cursor-pointer border-none bg-transparent">
+                    <button onClick={() => setActiveTab("register")} className="w-full text-center text-sm font-bold text-violet-600 hover:text-violet-800 transition-colors mt-4 cursor-pointer border-none bg-transparent">
                       ¿Comercio nuevo? Iniciar Setup
                     </button>
                   )}
                   {activeTab === "promotora" && (
-                    <button onClick={() => setActiveTab("registerPromo")} className="w-full text-center text-sm font-bold text-sky-600 hover:text-sky-800 transition-colors mt-4 cursor-pointer border-none bg-transparent">
+                    <button onClick={() => setActiveTab("registerPromo")} className="w-full text-center text-sm font-bold text-violet-600 hover:text-violet-800 transition-colors mt-4 cursor-pointer border-none bg-transparent">
                       ¿Nueva Promotora? Registrarse
                     </button>
                   )}
                   {activeTab === "customer" && (
-                    <button onClick={() => setActiveTab("registerCustomer")} className="w-full text-center text-sm font-bold text-sky-600 hover:text-sky-800 transition-colors mt-4 cursor-pointer border-none bg-transparent">
+                    <button onClick={() => setActiveTab("registerCustomer")} className="w-full text-center text-sm font-bold text-violet-600 hover:text-violet-800 transition-colors mt-4 cursor-pointer border-none bg-transparent">
                       ¿Nuevo Cliente? Crea tu cuenta
                     </button>
                   )}
                   {activeTab === "rider" && (
-                    <button onClick={() => setActiveTab("registerRider")} className="w-full text-center text-sm font-bold text-sky-600 hover:text-sky-800 transition-colors mt-4 cursor-pointer border-none bg-transparent">
+                    <button onClick={() => setActiveTab("registerRider")} className="w-full text-center text-sm font-bold text-violet-600 hover:text-violet-800 transition-colors mt-4 cursor-pointer border-none bg-transparent">
                       ¿Nuevo Rider? Regístrate como Delivery
                     </button>
                   )}
@@ -233,8 +233,8 @@ export const LoginView = ({ handleLogin, registerClient, registerPromotora, db, 
             </>
           )}
 
-          <div className="mt-8 pt-6 border-t border-sky-100 text-center">
-            <button onClick={() => setView("landing")} className="text-sm font-black text-sky-600 hover:text-sky-800 transition-colors cursor-pointer flex items-center justify-center gap-2 mx-auto border-none bg-transparent">
+          <div className="mt-8 pt-6 border-t border-violet-100 text-center">
+            <button onClick={() => setView("landing")} className="text-sm font-black text-violet-600 hover:text-violet-800 transition-colors cursor-pointer flex items-center justify-center gap-2 mx-auto border-none bg-transparent">
               <Star size={16} /> Ver Landing de Ventas - {KFS_BRAND.modules.marketplace} & Axis Points
             </button>
           </div>

@@ -54,7 +54,7 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
       <div className="space-y-4 pt-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="flex flex-col gap-2">
-            <label className="text-[10px] font-black text-sky-950 uppercase tracking-widest block">Logo / Foto de Perfil</label>
+            <label className="text-[10px] font-black text-violet-950 uppercase tracking-widest block">Logo / Foto de Perfil</label>
             <div className="flex items-center gap-4 bg-gray-50 border border-gray-250 p-4 rounded-2xl relative">
               <label className="relative w-16 h-16 rounded-full border-2 border-dashed border-gray-300 cursor-pointer overflow-hidden flex items-center justify-center bg-white hover:bg-gray-100 transition-colors group flex-shrink-0 shadow-sm">
                 <input type="file" accept="image/*" className="hidden" onChange={handleProfilePicUpload} />
@@ -72,7 +72,7 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-[10px] font-black text-sky-950 uppercase tracking-widest block">Banner de Portada</label>
+            <label className="text-[10px] font-black text-violet-950 uppercase tracking-widest block">Banner de Portada</label>
             <div className="flex items-center gap-4 bg-gray-50 border border-gray-250 p-4 rounded-2xl relative">
               <label className="relative w-24 h-16 rounded-xl border-2 border-dashed border-gray-300 cursor-pointer overflow-hidden flex items-center justify-center bg-white hover:bg-gray-100 transition-colors group flex-shrink-0 shadow-sm">
                 <input type="file" accept="image/*" className="hidden" onChange={handleCoverPhotoUpload} />
@@ -91,13 +91,13 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-[10px] font-black text-sky-950 uppercase tracking-widest block">Biografía o Eslogan (Max 150 char)</label>
+          <label className="text-[10px] font-black text-violet-950 uppercase tracking-widest block">Biografía o Eslogan (Max 150 char)</label>
           <textarea maxLength={150} value={settings.bioText} onChange={e => setSettings({ ...settings, bioText: e.target.value })} placeholder="Los mejores productos..." className="w-full h-16 bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-600 resize-none placeholder:text-gray-400" />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="text-[10px] font-black text-sky-950 uppercase tracking-widest block mb-2">Color Principal</label>
+            <label className="text-[10px] font-black text-violet-950 uppercase tracking-widest block mb-2">Color Principal</label>
             <div className="flex flex-wrap items-center gap-2">
               <input type="color" value={settings.themeColor} onChange={e => setSettings({ ...settings, themeColor: e.target.value })} className="h-10 w-10 rounded-full cursor-pointer border-none shadow-sm p-0 overflow-hidden" title="Elegir color personalizado" />
               <div className="flex gap-1 border-l pl-2 border-gray-200">
@@ -108,7 +108,7 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
             </div>
           </div>
           <div>
-            <label className="text-[10px] font-black text-sky-950 uppercase tracking-widest block mb-1">Tipografía</label>
+            <label className="text-[10px] font-black text-violet-950 uppercase tracking-widest block mb-1">Tipografía</label>
             <select value={settings.typography} onChange={e => setSettings({ ...settings, typography: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none placeholder:text-gray-400">
               <option value="font-sans">Moderna (Sans)</option>
               <option value="font-serif">Clásica (Serif)</option>
@@ -118,7 +118,7 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
         </div>
 
         <div>
-          <label className="text-[10px] font-black text-sky-950 uppercase tracking-widest block mb-1">Disposición (Layout)</label>
+          <label className="text-[10px] font-black text-violet-950 uppercase tracking-widest block mb-1">Disposición (Layout)</label>
           <select value={settings.layoutType} onChange={e => setSettings({ ...settings, layoutType: e.target.value })} className="w-full bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] border-none rounded-xl px-4 py-2 text-sm text-gray-900 focus:outline-none placeholder:text-gray-400">
             <option value="grid">Grilla de Tarjetas (Recomendado)</option>
             <option value="list">Lista Compacta</option>
@@ -138,7 +138,7 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
           </div>
           <div className="space-y-3">
             <div>
-              <label className="text-[10px] font-black text-sky-950 uppercase tracking-widest block mb-1">Calle y Número / Local</label>
+              <label className="text-[10px] font-black text-violet-950 uppercase tracking-widest block mb-1">Calle y Número / Local</label>
               <input
                 type="text"
                 value={settings.deliveryAddress || ""}
@@ -148,7 +148,7 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
               />
             </div>
             <div>
-              <label className="text-[10px] font-black text-sky-950 uppercase tracking-widest block mb-1">Ciudad / Municipio</label>
+              <label className="text-[10px] font-black text-violet-950 uppercase tracking-widest block mb-1">Ciudad / Municipio</label>
               <input
                 type="text"
                 value={settings.deliveryCity || ""}
@@ -158,7 +158,7 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
               />
             </div>
             <div>
-              <label className="text-[10px] font-black text-sky-950 uppercase tracking-widest block mb-1">Referencia (para el rider)</label>
+              <label className="text-[10px] font-black text-violet-950 uppercase tracking-widest block mb-1">Referencia (para el rider)</label>
               <input
                 type="text"
                 value={settings.deliveryReference || ""}

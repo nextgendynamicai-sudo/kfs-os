@@ -99,7 +99,7 @@ export function AxisNitroPOS() {
           <span className="text-[10px] font-black uppercase tracking-widest text-violet-400 bg-violet-900/30 px-3 py-1 rounded-full border border-violet-800/50 flex items-center gap-1.5 w-fit mb-2">
             <Sparkles size={10} className="text-violet-400 animate-pulse" /> Axis Nitro Core System
           </span>
-          <h2 className="text-3xl font-black tracking-tight bg-gradient-to-r from-white via-violet-200 to-sky-300 bg-clip-text text-transparent">
+          <h2 className="text-3xl font-black tracking-tight bg-gradient-to-r from-white via-violet-200 to-violet-300 bg-clip-text text-transparent">
             Axis Nitro POS Interface
           </h2>
           <p className="text-xs text-slate-400 mt-1">
@@ -110,7 +110,7 @@ export function AxisNitroPOS() {
           <Cpu className="text-violet-400" size={20} />
           <div className="text-left">
             <span className="text-[9px] text-slate-500 uppercase font-black block">Preset Activo</span>
-            <span className="text-xs font-bold text-sky-400">{businessPreset}</span>
+            <span className="text-xs font-bold text-violet-400">{businessPreset}</span>
           </div>
         </div>
       </div>
@@ -222,13 +222,13 @@ export function AxisNitroPOS() {
                 {demoFeatures.serial_tracking && (
                   <div className="bg-gradient-to-r from-violet-900/30 to-violet-950/20 border border-violet-800/40 p-4 rounded-2xl flex flex-col justify-between gap-2 animate-fade-in">
                     <div className="flex items-center gap-2">
-                      <Binary className="text-sky-400 w-4 h-4" />
+                      <Binary className="text-violet-400 w-4 h-4" />
                       <span className="text-xs font-black text-slate-200">Registro de Lote / Serial</span>
                     </div>
                     <input 
                       type="text" 
                       placeholder="Escriba Serial o Lote..." 
-                      className="bg-black/50 border border-violet-900/50 rounded-lg p-2 text-xs font-mono text-sky-300 placeholder-slate-600 focus:outline-none"
+                      className="bg-black/50 border border-violet-900/50 rounded-lg p-2 text-xs font-mono text-violet-300 placeholder-slate-600 focus:outline-none"
                     />
                   </div>
                 )}

@@ -40,7 +40,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
   };
 
   return (
-    <div className="fixed inset-0 bg-sky-950/60 backdrop-blur-xl z-[99999] flex items-center justify-center p-4 animate-fade-in">
+    <div className="fixed inset-0 bg-violet-950/60 backdrop-blur-xl z-[99999] flex items-center justify-center p-4 animate-fade-in">
       <motion.div 
         initial={{ y: 100, opacity: 0, scale: 0.9 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
@@ -49,7 +49,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
       >
         
         {/* Physical Printer Bezel Box */}
-        <div className="w-full bg-[#1A1F2C] rounded-t-[2.5rem] border border-sky-100 p-5 shadow-2xl relative flex flex-col items-center gap-2">
+        <div className="w-full bg-[#1A1F2C] rounded-t-[2.5rem] border border-violet-100 p-5 shadow-2xl relative flex flex-col items-center gap-2">
           {/* Status Telemetry Light */}
           <div className="absolute left-6 top-6 flex items-center gap-1.5 bg-white px-2 py-1 rounded-full border border-green-500/30">
             <span className="relative flex h-1.5 w-1.5">
@@ -64,7 +64,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
           {/* Printer Output Mouth */}
           <div className="w-full bg-[#0F131E] h-5 rounded-lg border-b border-black flex justify-center items-center shadow-inner relative overflow-hidden">
             <div className="w-48 h-1 bg-red-500/20 animate-pulse relative">
-              <div className="absolute top-0 left-0 h-full bg-sky-600 w-2 animate-bounce"></div>
+              <div className="absolute top-0 left-0 h-full bg-violet-600 w-2 animate-bounce"></div>
             </div>
           </div>
         </div>
@@ -124,8 +124,8 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
               <span className="text-[9px] text-slate-500 font-black uppercase block tracking-widest">Total Cancelado</span>
               <span className="text-3xl font-black text-white block">{formatUSD(tx.amountUSD)}</span>
               {tx.kfsPointsEarned > 0 && (
-                <div className="mt-1 bg-sky-600/10 rounded-lg py-1 px-2 inline-block">
-                  <span className="text-[10px] font-black text-sky-600">+{tx.kfsPointsEarned.toFixed(1)} {KFS_BRAND.economy.currency} Ganados</span>
+                <div className="mt-1 bg-violet-600/10 rounded-lg py-1 px-2 inline-block">
+                  <span className="text-[10px] font-black text-violet-600">+{tx.kfsPointsEarned.toFixed(1)} {KFS_BRAND.economy.currency} Ganados</span>
                 </div>
               )}
             </div>
@@ -139,11 +139,11 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
         </div>
 
         {/* Tactile Hardware Drawer Base */}
-        <div className="w-full bg-[#151924] rounded-b-[2.5rem] border border-sky-100 p-5 shadow-2xl flex flex-col gap-3 z-10 -mt-1">
+        <div className="w-full bg-[#151924] rounded-b-[2.5rem] border border-violet-100 p-5 shadow-2xl flex flex-col gap-3 z-10 -mt-1">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <button 
               onClick={playCashDrawerSound} 
-              className="py-3 rounded-xl font-black text-xs text-sky-600 bg-sky-50 border border-sky-100 hover:bg-sky-100 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md hover:shadow-[0_0_15px_rgba(197,161,132,0.3)] active:scale-95"
+              className="py-3 rounded-xl font-black text-xs text-violet-600 bg-violet-50 border border-violet-100 hover:bg-violet-100 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md hover:shadow-[0_0_15px_rgba(197,161,132,0.3)] active:scale-95"
             >
               💸 Gaveta
             </button>
@@ -152,7 +152,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
                 showToast("Buscando Impresora Térmica vía WebUSB...", "success");
                 setTimeout(() => playCashDrawerSound(), 500);
               }} 
-              className="py-3 rounded-xl font-black text-xs text-sky-600 bg-sky-50 border border-sky-100 hover:bg-sky-100 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md active:scale-95"
+              className="py-3 rounded-xl font-black text-xs text-violet-600 bg-violet-50 border border-violet-100 hover:bg-violet-100 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md active:scale-95"
             >
               🖨️ Imprimir
             </button>
@@ -167,7 +167,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
                 💬 Recibo WhatsApp
               </a>
             ) : (
-              <button disabled className="py-3 rounded-xl font-bold text-xs text-slate-400 bg-sky-50 border border-white/5 flex items-center justify-center gap-1.5 cursor-not-allowed">
+              <button disabled className="py-3 rounded-xl font-bold text-xs text-slate-400 bg-violet-50 border border-white/5 flex items-center justify-center gap-1.5 cursor-not-allowed">
                 Sin Teléfono CRM
               </button>
             )}
@@ -189,7 +189,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
             <button 
               onClick={handleTearPaper}
               disabled={isPrinting}
-              className="w-full sm:w-2/3 py-4 bg-sky-600 hover:bg-[#b08d70] hover:shadow-[0_0_20px_rgba(197,161,132,0.6)] disabled:bg-gray-700 text-white font-black rounded-2xl text-xs hover:scale-[1.01] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full sm:w-2/3 py-4 bg-violet-600 hover:bg-[#b08d70] hover:shadow-[0_0_20px_rgba(197,161,132,0.6)] disabled:bg-gray-700 text-white font-black rounded-2xl text-xs hover:scale-[1.01] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
             ✂️ Rasgar Recibo y Volver
             </button>

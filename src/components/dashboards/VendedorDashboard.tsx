@@ -326,21 +326,21 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
         </div>
       )}
 
-      <nav className="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-sky-800 bg-sky-900 sticky top-0 z-40 backdrop-blur-md gap-3 w-full shadow-lg shadow-sky-900/20">
+      <nav className="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-violet-800 bg-violet-900 sticky top-0 z-40 backdrop-blur-md gap-3 w-full shadow-lg shadow-violet-900/20">
         <div className="flex items-center gap-3 justify-between w-full sm:w-auto">
           <KreatekLogo className="h-8 w-auto text-white" />
           <div className="flex items-center gap-2">
-            <span className="font-bold text-sm tracking-widest uppercase text-sky-300 sm:text-lg">
+            <span className="font-bold text-sm tracking-widest uppercase text-violet-300 sm:text-lg">
               Terminal: {currentUser.company}
             </span>
-            <div className="w-10 h-10 ml-2 rounded-full border-2 border-sky-400 relative z-20">
+            <div className="w-10 h-10 ml-2 rounded-full border-2 border-violet-400 relative z-20">
               <ProfileAvatarEditor currentUser={currentUser} />
             </div>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto justify-end">
           <div className="flex items-center gap-2">
-            <button onClick={requestNotificationPermission} className="flex items-center gap-1.5 bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 px-3 py-1.5 rounded-xl transition-colors text-xs font-bold" title="Activar Alertas Nativas">
+            <button onClick={requestNotificationPermission} className="flex items-center gap-1.5 bg-violet-500/10 text-violet-400 hover:bg-violet-500/20 px-3 py-1.5 rounded-xl transition-colors text-xs font-bold" title="Activar Alertas Nativas">
               <Bell size={14} />
             </button>
             <button onClick={() => showToast("Comando TFHKA Reporte X enviado...", "success")} className="flex items-center gap-1.5 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 px-3 py-1.5 rounded-xl transition-colors text-xs font-bold">
@@ -376,11 +376,11 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
           </div>
         )}
 
-        <div className="bg-gradient-to-br from-sky-900 to-slate-900 text-white p-8 rounded-[2rem] shadow-xl shadow-sky-900/30 relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border border-sky-800">
+        <div className="bg-gradient-to-br from-violet-900 to-slate-900 text-white p-8 rounded-[2rem] shadow-xl shadow-violet-900/30 relative overflow-hidden flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border border-violet-800">
           <div className="relative z-10">
-            <p className="text-sky-400 text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><Activity size={14} className="text-emerald-400" /> Sesión Operativa</p>
+            <p className="text-violet-400 text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><Activity size={14} className="text-emerald-400" /> Sesión Operativa</p>
             <h2 className="text-5xl font-black mb-1 text-white">{currentUser.name}</h2>
-            <p className="text-xs text-sky-200/70 mt-2 flex items-center gap-2">
+            <p className="text-xs text-violet-200/70 mt-2 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse inline-block"></span> Terminal en línea y asegurado.
             </p>
           </div>
@@ -388,7 +388,7 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
           <div className="relative z-10 bg-black/30 border border-emerald-500/30 p-4 rounded-xl flex flex-col items-end backdrop-blur-sm">
             <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Cumplimiento SUNDDE</span>
             <span className="text-2xl font-black text-white mt-1">Tasa BCV: {rates?.USD?.toFixed(2)} Bs</span>
-            <span className="text-[9px] text-sky-300/50 mt-1 uppercase tracking-widest">Gaceta Oficial de Venezuela</span>
+            <span className="text-[9px] text-violet-300/50 mt-1 uppercase tracking-widest">Gaceta Oficial de Venezuela</span>
           </div>
 
           <Activity size={150} className="absolute -right-10 -bottom-10 text-white/5" />
@@ -399,29 +399,29 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
         <KFSIoTEdgeConsole showToast={showToast} />
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <button onClick={() => setShowAddModal(true)} className="bg-white border border-sky-100 p-8 rounded-[2rem] shadow-xl shadow-sky-200/50 flex flex-col items-center justify-center gap-4 hover:border-sky-300 transition-all cursor-pointer">
-            <div className="w-12 h-12 bg-sky-50 rounded-full flex items-center justify-center border border-sky-100">
-              <Upload size={24} className="text-sky-600" />
+          <button onClick={() => setShowAddModal(true)} className="bg-white border border-violet-100 p-8 rounded-[2rem] shadow-xl shadow-violet-200/50 flex flex-col items-center justify-center gap-4 hover:border-violet-300 transition-all cursor-pointer">
+            <div className="w-12 h-12 bg-violet-50 rounded-full flex items-center justify-center border border-violet-100">
+              <Upload size={24} className="text-violet-600" />
             </div>
-            <span className="font-black text-sky-950">Subir Producto</span>
+            <span className="font-black text-violet-950">Subir Producto</span>
           </button>
-          <button onClick={() => { setShowScanner(true); showToast("Cámara de escaneo activada."); }} className="bg-white border border-sky-100 p-8 rounded-[2rem] shadow-xl shadow-sky-200/50 flex flex-col items-center justify-center gap-4 hover:border-sky-300 transition-all cursor-pointer">
-            <div className="w-12 h-12 bg-sky-50 rounded-full flex items-center justify-center border border-sky-100">
-              <QrCode size={24} className="text-sky-600" />
+          <button onClick={() => { setShowScanner(true); showToast("Cámara de escaneo activada."); }} className="bg-white border border-violet-100 p-8 rounded-[2rem] shadow-xl shadow-violet-200/50 flex flex-col items-center justify-center gap-4 hover:border-violet-300 transition-all cursor-pointer">
+            <div className="w-12 h-12 bg-violet-50 rounded-full flex items-center justify-center border border-violet-100">
+              <QrCode size={24} className="text-violet-600" />
             </div>
-            <span className="font-black text-sky-950">Escanear QR / Compra</span>
+            <span className="font-black text-violet-950">Escanear QR / Compra</span>
           </button>
-          <button onClick={() => setActiveManual('operator')} className="bg-gradient-to-br from-sky-900 to-slate-900 border border-sky-800 text-white p-8 rounded-[2rem] shadow-xl shadow-sky-900/30 flex flex-col items-center justify-center gap-4 hover:from-sky-800 hover:to-slate-800 transition-all cursor-pointer">
-            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center border border-sky-700">
-              <BookOpen size={24} className="text-sky-300" />
+          <button onClick={() => setActiveManual('operator')} className="bg-gradient-to-br from-violet-900 to-slate-900 border border-violet-800 text-white p-8 rounded-[2rem] shadow-xl shadow-violet-900/30 flex flex-col items-center justify-center gap-4 hover:from-violet-800 hover:to-slate-800 transition-all cursor-pointer">
+            <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center border border-violet-700">
+              <BookOpen size={24} className="text-violet-300" />
             </div>
             <span className="font-black text-white">Manual de Operación</span>
           </button>
         </div>
 
         {myOrders.length > 0 && (
-          <div className="bg-white p-6 rounded-3xl shadow-xl shadow-sky-200/50 border border-amber-200 bg-amber-50/30">
-            <h3 className="font-black text-xl text-sky-950 mb-4 flex items-center gap-2 text-amber-600">
+          <div className="bg-white p-6 rounded-3xl shadow-xl shadow-violet-200/50 border border-amber-200 bg-amber-50/30">
+            <h3 className="font-black text-xl text-violet-950 mb-4 flex items-center gap-2 text-amber-600">
               <Clock className="text-amber-500" /> Órdenes Online ({myOrders.length})
             </h3>
 
@@ -434,7 +434,7 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
                     <div key={order.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 bg-white rounded-xl border border-amber-100 shadow-sm gap-3 animate-fade-in">
                       <div>
                         <span className="bg-amber-100 text-amber-700 border border-amber-200 text-[9px] font-black px-2 py-1 rounded-full uppercase tracking-wider mb-1 inline-block">Validación Pendiente</span>
-                        <h4 className="font-bold text-sm text-sky-950">{product?.name || "Producto Desconocido"}</h4>
+                        <h4 className="font-bold text-sm text-violet-950">{product?.name || "Producto Desconocido"}</h4>
                         <p className="text-xs text-slate-500 font-mono mt-0.5">Ref: <span className="font-bold text-slate-900">{order.paymentReference}</span> | {order.paymentMethod}</p>
                         {order.customerName && (
                           <p className="text-[10px] text-slate-600 font-bold mt-1">
@@ -444,7 +444,7 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
                         {order.paymentScreenshot && (
                           <button
                             onClick={() => setActiveScreenshot(order.paymentScreenshot)}
-                            className="mt-1.5 text-[10px] bg-sky-50 border border-sky-100 hover:bg-sky-100 text-sky-800 font-black px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
+                            className="mt-1.5 text-[10px] bg-violet-50 border border-violet-100 hover:bg-violet-100 text-violet-800 font-black px-2.5 py-1 rounded-lg transition-colors flex items-center gap-1 cursor-pointer"
                           >
                             🖼️ Ver Capture
                           </button>
@@ -465,11 +465,11 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
               </div>
 
               {/* Columna Derecha: Conciliador SMS Real */}
-              <div className="bg-gradient-to-br from-sky-900 to-slate-900 border border-sky-800 rounded-3xl p-5 text-white relative overflow-hidden shadow-xl shadow-sky-900/20 flex flex-col justify-between text-left">
-                <div className="absolute top-0 right-0 w-24 h-24 bg-sky-500/10 rounded-full blur-2xl pointer-events-none"></div>
+              <div className="bg-gradient-to-br from-violet-900 to-slate-900 border border-violet-800 rounded-3xl p-5 text-white relative overflow-hidden shadow-xl shadow-violet-900/20 flex flex-col justify-between text-left">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-violet-500/10 rounded-full blur-2xl pointer-events-none"></div>
                 <div>
                   <div className="flex items-center gap-2 mb-3">
-                    <div className="p-2 rounded-lg bg-sky-500/20 text-sky-400">
+                    <div className="p-2 rounded-lg bg-violet-500/20 text-violet-400">
                       <Bell size={16} className="animate-pulse" />
                     </div>
                     <div>
@@ -477,7 +477,7 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
                     </div>
                   </div>
 
-                  <p className="text-[10px] text-sky-200/70 mb-3 leading-relaxed">
+                  <p className="text-[10px] text-violet-200/70 mb-3 leading-relaxed">
                     Pega el SMS de notificación del Pago Móvil recibido para conciliar y auto-aprobar la orden del cliente de inmediato.
                   </p>
 
@@ -485,14 +485,14 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
                     placeholder="Pega el SMS recibido..."
                     value={smsInput}
                     onChange={(e) => setSmsInput(e.target.value)}
-                    className="w-full h-20 bg-black/40 border border-sky-800 rounded-xl p-2.5 text-xs font-mono text-sky-100 focus:outline-none focus:border-sky-500 placeholder:text-slate-600 resize-none leading-relaxed"
+                    className="w-full h-20 bg-black/40 border border-violet-800 rounded-xl p-2.5 text-xs font-mono text-violet-100 focus:outline-none focus:border-violet-500 placeholder:text-slate-600 resize-none leading-relaxed"
                   />
                 </div>
 
                 <button
                   type="button"
                   onClick={handleManualSmsConciliation}
-                  className="w-full mt-3 py-2.5 rounded-xl font-black text-xs text-white bg-sky-600 hover:bg-sky-500 transition-all shadow-lg shadow-sky-600/30 active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer border-none"
+                  className="w-full mt-3 py-2.5 rounded-xl font-black text-xs text-white bg-violet-600 hover:bg-violet-500 transition-all shadow-lg shadow-violet-600/30 active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer border-none"
                 >
                   ⚡ Conciliar SMS
                 </button>
@@ -501,25 +501,25 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
           </div>
         )}
 
-        <div className="bg-white p-6 rounded-3xl border border-sky-100 shadow-xl shadow-sky-200/30">
+        <div className="bg-white p-6 rounded-3xl border border-violet-100 shadow-xl shadow-violet-200/30">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-4 gap-4">
-            <h3 className="font-black text-sky-950 text-lg flex items-center gap-2"><Package size={20} className="text-sky-600" /> Catálogo de {currentUser.company}</h3>
+            <h3 className="font-black text-violet-950 text-lg flex items-center gap-2"><Package size={20} className="text-violet-600" /> Catálogo de {currentUser.company}</h3>
             <div className="relative w-full md:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-              <input type="text" placeholder="Buscar producto o barcode..." className="w-full bg-slate-50 border border-sky-100 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-500 placeholder:text-slate-400" value={searchProduct} onChange={e => setSearchProduct(e.target.value)} />
+              <input type="text" placeholder="Buscar producto o barcode..." className="w-full bg-slate-50 border border-violet-100 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 placeholder:text-slate-400" value={searchProduct} onChange={e => setSearchProduct(e.target.value)} />
             </div>
           </div>
           <div className="grid grid-cols-1 min-[400px]:grid-cols-2 sm:grid-cols-3 gap-4">
             {myProducts.filter((p: any) => p.name?.toLowerCase().includes(searchProduct.toLowerCase()) || (p.barcode && p.barcode.includes(searchProduct))).map((p: any) => (
-              <div key={p.id} className="border border-sky-100 rounded-2xl p-3 flex flex-col justify-between bg-sky-50/50 hover:border-sky-200 transition-colors">
+              <div key={p.id} className="border border-violet-100 rounded-2xl p-3 flex flex-col justify-between bg-violet-50/50 hover:border-violet-200 transition-colors">
                 <div className="h-28 bg-slate-200 rounded-lg overflow-hidden mb-2">
                   <img src={p.image} className="w-full h-full object-cover" alt={p.name} />
                 </div>
                 <div>
-                  <h4 className="font-bold text-xs truncate text-sky-950">{p.name}</h4>
+                  <h4 className="font-bold text-xs truncate text-violet-950">{p.name}</h4>
                   <div className="flex justify-between items-center mt-1">
                     <div>
-                      <p className="text-xs font-black text-sky-600">{formatUSD(p.priceUSD)}</p>
+                      <p className="text-xs font-black text-violet-600">{formatUSD(p.priceUSD)}</p>
                       <p className="text-[10px] font-bold text-slate-500">Bs. {(p.priceUSD * (rates?.USD || 36.45)).toFixed(2)}</p>
                     </div>
                     <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${p.stock && p.stock > 0 ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"}`}>
@@ -527,7 +527,7 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
                     </span>
                   </div>
                 </div>
-                <button disabled={p.stock !== undefined && p.stock <= 0} onClick={() => setCheckoutProduct(p)} className="mt-2 w-full py-2 bg-sky-900 disabled:bg-slate-400 hover:bg-sky-800 text-white font-bold rounded-lg text-[10px] cursor-pointer disabled:cursor-not-allowed transition-colors">
+                <button disabled={p.stock !== undefined && p.stock <= 0} onClick={() => setCheckoutProduct(p)} className="mt-2 w-full py-2 bg-violet-900 disabled:bg-slate-400 hover:bg-violet-800 text-white font-bold rounded-lg text-[10px] cursor-pointer disabled:cursor-not-allowed transition-colors">
                   {p.stock !== undefined && p.stock <= 0 ? "Agotado" : "Cargar Venta"}
                 </button>
               </div>
@@ -573,21 +573,21 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
       {/* Modal Agregar Producto */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[99999] flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl border border-sky-100">
-            <h3 className="text-2xl font-black mb-6 text-sky-950">Nuevo Producto</h3>
+          <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl border border-violet-100">
+            <h3 className="text-2xl font-black mb-6 text-violet-950">Nuevo Producto</h3>
             <form onSubmit={submitProduct} className="space-y-4">
               <div className="flex gap-2">
-                <input type="text" placeholder="Código de Barras (Opcional)" value={newProd.barcode} onChange={e => setNewProd({ ...newProd, barcode: e.target.value })} className="w-full bg-slate-50 border border-sky-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-500 font-mono text-sky-950 placeholder:text-slate-400" />
-                <button type="button" onClick={() => handleBarcodeSearch(newProd.barcode)} disabled={isFetchingBarcode} className="bg-sky-900 hover:bg-sky-800 transition-colors text-white px-4 rounded-xl font-bold flex-shrink-0 disabled:opacity-50">
+                <input type="text" placeholder="Código de Barras (Opcional)" value={newProd.barcode} onChange={e => setNewProd({ ...newProd, barcode: e.target.value })} className="w-full bg-slate-50 border border-violet-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-violet-500 font-mono text-violet-950 placeholder:text-slate-400" />
+                <button type="button" onClick={() => handleBarcodeSearch(newProd.barcode)} disabled={isFetchingBarcode} className="bg-violet-900 hover:bg-violet-800 transition-colors text-white px-4 rounded-xl font-bold flex-shrink-0 disabled:opacity-50">
                   <Search size={18} />
                 </button>
               </div>
-              <input required type="text" placeholder="Nombre del Artículo" value={newProd.name} onChange={e => setNewProd({ ...newProd, name: e.target.value })} className="w-full bg-slate-50 border border-sky-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-500 font-bold text-sky-950 placeholder:text-slate-400" />
+              <input required type="text" placeholder="Nombre del Artículo" value={newProd.name} onChange={e => setNewProd({ ...newProd, name: e.target.value })} className="w-full bg-slate-50 border border-violet-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-violet-500 font-bold text-violet-950 placeholder:text-slate-400" />
               <div className="grid grid-cols-2 gap-3">
-                <input required type="number" step="0.01" placeholder="Precio ($)" value={newProd.price} onChange={e => setNewProd({ ...newProd, price: e.target.value })} className="w-full bg-slate-50 border border-sky-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-500 font-black text-lg text-sky-950 placeholder:text-slate-400" />
-                <input required type="number" placeholder="Stock" value={newProd.stock} onChange={e => setNewProd({ ...newProd, stock: e.target.value })} className="w-full bg-slate-50 border border-sky-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-500 font-bold text-sky-950 placeholder:text-slate-400" />
+                <input required type="number" step="0.01" placeholder="Precio ($)" value={newProd.price} onChange={e => setNewProd({ ...newProd, price: e.target.value })} className="w-full bg-slate-50 border border-violet-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-violet-500 font-black text-lg text-violet-950 placeholder:text-slate-400" />
+                <input required type="number" placeholder="Stock" value={newProd.stock} onChange={e => setNewProd({ ...newProd, stock: e.target.value })} className="w-full bg-slate-50 border border-violet-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-violet-500 font-bold text-violet-950 placeholder:text-slate-400" />
               </div>
-              <select value={newProd.category} onChange={e => setNewProd({ ...newProd, category: e.target.value })} className="w-full bg-slate-50 border border-sky-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-500 font-bold text-sky-950 placeholder:text-slate-400">
+              <select value={newProd.category} onChange={e => setNewProd({ ...newProd, category: e.target.value })} className="w-full bg-slate-50 border border-violet-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-violet-500 font-bold text-violet-950 placeholder:text-slate-400">
                 <option value="Alimentos">Alimentos y Bebidas</option>
                 <option value="Ropa y Calzado">Ropa y Calzado</option>
                 <option value="Tecnología">Tecnología y Electrónica</option>
@@ -595,21 +595,21 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
                 <option value="Hogar">Hogar y Muebles</option>
                 <option value="Servicios">Servicios Generales</option>
               </select>
-              <textarea placeholder="Descripción del producto (Opcional)" value={newProd.description} onChange={e => setNewProd({ ...newProd, description: e.target.value })} className="w-full bg-slate-50 border border-sky-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-sky-500 font-medium text-sky-950 text-sm h-20 resize-none placeholder:text-slate-400" />
-              <div className="border-2 border-dashed border-sky-200 rounded-xl p-6 text-center hover:bg-sky-50 cursor-pointer relative transition-colors">
+              <textarea placeholder="Descripción del producto (Opcional)" value={newProd.description} onChange={e => setNewProd({ ...newProd, description: e.target.value })} className="w-full bg-slate-50 border border-violet-100 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-violet-500 font-medium text-violet-950 text-sm h-20 resize-none placeholder:text-slate-400" />
+              <div className="border-2 border-dashed border-violet-200 rounded-xl p-6 text-center hover:bg-violet-50 cursor-pointer relative transition-colors">
                 <input type="file" accept="image/*" onChange={handleImageUpload} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
                 {newProd.imgUrl ? (
                   <img src={newProd.imgUrl} className="mx-auto h-32 object-cover rounded-lg shadow-md" alt="Preview" />
                 ) : (
                   <div className="flex flex-col items-center text-slate-400">
-                    <Camera size={40} className="mb-3 text-sky-300" />
+                    <Camera size={40} className="mb-3 text-violet-300" />
                     <span className="text-sm font-bold">Tocar para seleccionar de Galería</span>
                   </div>
                 )}
               </div>
               <div className="flex gap-3 pt-4">
                 <button type="button" onClick={() => setShowAddModal(false)} className="w-1/3 py-3 rounded-xl bg-slate-100 font-bold text-slate-600 hover:bg-slate-200 transition-colors cursor-pointer">Cancelar</button>
-                <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-white bg-sky-600 hover:bg-sky-500 transition-colors shadow-lg shadow-sky-600/30 cursor-pointer">Publicar</button>
+                <button type="submit" className="w-2/3 py-3 rounded-xl font-black text-white bg-violet-600 hover:bg-violet-500 transition-colors shadow-lg shadow-violet-600/30 cursor-pointer">Publicar</button>
               </div>
             </form>
           </div>
@@ -618,18 +618,18 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
 
       {/* Modal de Producto Detectado en Catálogo Global / Nacional */}
       {scannedGlobalProduct && (
-        <div className="fixed inset-0 bg-sky-950/90 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-fade-in text-left">
-          <div className="bg-gradient-to-br from-sky-900 to-slate-900 border border-sky-700 rounded-[2.5rem] w-full max-w-lg p-8 shadow-2xl relative overflow-hidden">
+        <div className="fixed inset-0 bg-violet-950/90 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-fade-in text-left">
+          <div className="bg-gradient-to-br from-violet-900 to-slate-900 border border-violet-700 rounded-[2.5rem] w-full max-w-lg p-8 shadow-2xl relative overflow-hidden">
             {/* Efecto de brillo de fondo */}
-            <div className="absolute top-0 right-0 w-48 h-48 bg-sky-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div className="absolute top-0 right-0 w-48 h-48 bg-violet-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 rounded-2xl bg-sky-500/20 text-sky-400">
+              <div className="p-3 rounded-2xl bg-violet-500/20 text-violet-400">
                 <Package size={28} />
               </div>
               <div>
                 <h3 className="text-2xl font-black text-white">Producto Detectado</h3>
-                <p className="text-xs text-sky-400 font-bold tracking-widest uppercase animate-pulse">
+                <p className="text-xs text-violet-400 font-bold tracking-widest uppercase animate-pulse">
                   {scannedGlobalProduct.source === "local_venezuela" || scannedGlobalProduct.source === "supabase_cloud"
                     ? "Catálogo Nacional de Venezuela"
                     : "Base de Datos Global (OpenFoodFacts)"}
@@ -637,19 +637,19 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
               </div>
             </div>
 
-            <p className="text-sky-100/80 text-sm mb-6 leading-relaxed">
-              El artículo escaneado está registrado en la base de datos central, pero <span className="text-sky-300 font-bold">no existe aún en tu inventario local</span>. Puedes agregarlo instantáneamente.
+            <p className="text-violet-100/80 text-sm mb-6 leading-relaxed">
+              El artículo escaneado está registrado en la base de datos central, pero <span className="text-violet-300 font-bold">no existe aún en tu inventario local</span>. Puedes agregarlo instantáneamente.
             </p>
 
-            <div className="bg-black/30 border border-sky-800 rounded-2xl p-5 mb-8 flex gap-4 items-center backdrop-blur-sm">
+            <div className="bg-black/30 border border-violet-800 rounded-2xl p-5 mb-8 flex gap-4 items-center backdrop-blur-sm">
               {scannedGlobalProduct.imgUrl ? (
                 <img
                   src={scannedGlobalProduct.imgUrl}
                   alt={scannedGlobalProduct.name}
-                  className="w-20 h-20 object-cover rounded-xl border border-sky-700 shadow-lg flex-shrink-0 bg-black/40 animate-fade-in"
+                  className="w-20 h-20 object-cover rounded-xl border border-violet-700 shadow-lg flex-shrink-0 bg-black/40 animate-fade-in"
                 />
               ) : (
-                <div className="w-20 h-20 rounded-xl bg-black/40 border border-sky-700 flex items-center justify-center flex-shrink-0 text-sky-400">
+                <div className="w-20 h-20 rounded-xl bg-black/40 border border-violet-700 flex items-center justify-center flex-shrink-0 text-violet-400">
                   <Camera size={28} />
                 </div>
               )}
@@ -657,10 +657,10 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
                 <p className="text-white font-black text-lg truncate" title={scannedGlobalProduct.name}>
                   {scannedGlobalProduct.name}
                 </p>
-                <p className="text-sky-200/60 text-xs mt-1">
-                  Marca: <span className="text-sky-100 font-semibold">{scannedGlobalProduct.brand}</span> • Categoría: <span className="text-sky-100 font-semibold">{scannedGlobalProduct.category}</span>
+                <p className="text-violet-200/60 text-xs mt-1">
+                  Marca: <span className="text-violet-100 font-semibold">{scannedGlobalProduct.brand}</span> • Categoría: <span className="text-violet-100 font-semibold">{scannedGlobalProduct.category}</span>
                 </p>
-                <p className="text-sky-300 font-mono text-xs mt-2 bg-sky-500/10 border border-sky-500/30 rounded px-2.5 py-1 inline-block">
+                <p className="text-violet-300 font-mono text-xs mt-2 bg-violet-500/10 border border-violet-500/30 rounded px-2.5 py-1 inline-block">
                   {scannedGlobalProduct.barcode}
                 </p>
               </div>
@@ -670,7 +670,7 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
               <button
                 type="button"
                 onClick={() => setScannedGlobalProduct(null)}
-                className="w-1/3 py-3.5 rounded-xl border border-sky-700 text-sky-200 hover:text-white hover:bg-white/5 font-bold cursor-pointer transition-colors"
+                className="w-1/3 py-3.5 rounded-xl border border-violet-700 text-violet-200 hover:text-white hover:bg-white/5 font-bold cursor-pointer transition-colors"
               >
                 Ignorar
               </button>
@@ -689,7 +689,7 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
                   setScannedGlobalProduct(null);
                   setShowAddModal(true);
                 }}
-                className="w-2/3 py-3.5 rounded-xl font-black text-white bg-sky-600 hover:bg-sky-500 shadow-lg shadow-sky-600/30 cursor-pointer transition-colors flex items-center justify-center gap-2"
+                className="w-2/3 py-3.5 rounded-xl font-black text-white bg-violet-600 hover:bg-violet-500 shadow-lg shadow-violet-600/30 cursor-pointer transition-colors flex items-center justify-center gap-2"
               >
                 <CheckCircle size={18} />
                 Registrar en Inventario
@@ -701,29 +701,29 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
 
       {activeManual && (
         <div className="fixed inset-0 bg-black/80 z-[99999] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
-          <div className="bg-white text-sky-950 rounded-[2rem] w-full max-w-2xl max-h-[85vh] overflow-y-auto relative p-8 shadow-2xl border-4 border-sky-100">
-            <button onClick={() => setActiveManual(null)} className="absolute top-6 right-6 text-slate-400 hover:text-sky-900 transition-colors cursor-pointer bg-slate-100 p-2 rounded-full hover:bg-slate-200">
+          <div className="bg-white text-violet-950 rounded-[2rem] w-full max-w-2xl max-h-[85vh] overflow-y-auto relative p-8 shadow-2xl border-4 border-violet-100">
+            <button onClick={() => setActiveManual(null)} className="absolute top-6 right-6 text-slate-400 hover:text-violet-900 transition-colors cursor-pointer bg-slate-100 p-2 rounded-full hover:bg-slate-200">
               <X size={20} />
             </button>
 
             {activeManual === 'operator' && (
               <div>
-                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><BookOpen className="text-sky-600" size={28} /> Manual del Operador (Caja)</h2>
+                <h2 className="text-2xl font-black mb-6 flex items-center gap-2"><BookOpen className="text-violet-600" size={28} /> Manual del Operador (Caja)</h2>
                 <div className="space-y-5 text-slate-700 text-sm leading-relaxed">
-                  <div className="bg-slate-50 p-4 rounded-xl border border-sky-100">
-                    <p className="font-black text-sky-900 mb-1">1. Registro de Compras Físicas:</p>
+                  <div className="bg-slate-50 p-4 rounded-xl border border-violet-100">
+                    <p className="font-black text-violet-900 mb-1">1. Registro de Compras Físicas:</p>
                     <p>Usa el botón "Escanear QR / Compra" o busca el producto manualmente. Selecciona el método de pago e ingresa el RIF o Cédula del cliente si requiere Factura Fiscal.</p>
                   </div>
-                  <div className="bg-slate-50 p-4 rounded-xl border border-sky-100">
-                    <p className="font-black text-sky-900 mb-1">2. Validar Órdenes Online (E-Commerce):</p>
+                  <div className="bg-slate-50 p-4 rounded-xl border border-violet-100">
+                    <p className="font-black text-violet-900 mb-1">2. Validar Órdenes Online (E-Commerce):</p>
                     <p>Las compras realizadas por clientes en la tienda online aparecerán en el panel "Órdenes Online". Copia el mensaje SMS del banco (Pago Móvil) y pégalo en el "Conciliador SMS" para aprobar la orden automáticamente.</p>
                   </div>
-                  <div className="bg-slate-50 p-4 rounded-xl border border-sky-100">
-                    <p className="font-black text-sky-900 mb-1">3. Cierre de Caja (Reporte Z):</p>
+                  <div className="bg-slate-50 p-4 rounded-xl border border-violet-100">
+                    <p className="font-black text-violet-900 mb-1">3. Cierre de Caja (Reporte Z):</p>
                     <p>Al final del turno, debes presionar "Cerrar Caja (Z)" en el menú superior. Esto enviará la totalización al dueño y cerrará tu sesión operativa.</p>
                   </div>
-                  <div className="bg-slate-50 p-4 rounded-xl border border-sky-100">
-                    <p className="font-black text-sky-900 mb-1">4. Impresión Fiscal:</p>
+                  <div className="bg-slate-50 p-4 rounded-xl border border-violet-100">
+                    <p className="font-black text-violet-900 mb-1">4. Impresión Fiscal:</p>
                     <p>Asegúrate de que la aplicación "Sincro-Shield Proxy" esté corriendo en la PC de caja para que el sistema {KFS_BRAND.productAcronym} pueda emitir los recibos por la impresora conectada.</p>
                   </div>
                 </div>
@@ -734,12 +734,12 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
       )}
       {activeScreenshot && (
         <div className="fixed inset-0 bg-black/80 z-[99999] flex items-center justify-center p-4 backdrop-blur-md animate-fade-in">
-          <div className="bg-gradient-to-br from-sky-900 to-slate-900 border border-sky-800 rounded-[2.5rem] w-full max-w-lg p-6 shadow-2xl relative flex flex-col items-center">
-            <button onClick={() => setActiveScreenshot(null)} className="absolute top-6 right-6 text-sky-200/50 hover:text-white transition-colors cursor-pointer bg-white/10 p-2 rounded-full">
+          <div className="bg-gradient-to-br from-violet-900 to-slate-900 border border-violet-800 rounded-[2.5rem] w-full max-w-lg p-6 shadow-2xl relative flex flex-col items-center">
+            <button onClick={() => setActiveScreenshot(null)} className="absolute top-6 right-6 text-violet-200/50 hover:text-white transition-colors cursor-pointer bg-white/10 p-2 rounded-full">
               <X size={20} />
             </button>
-            <h3 className="text-xl font-black text-sky-400 mb-4 text-center">Capture de Transacción</h3>
-            <div className="w-full max-h-[70vh] overflow-auto rounded-2xl border border-sky-800 bg-black/40 p-2 flex justify-center items-center">
+            <h3 className="text-xl font-black text-violet-400 mb-4 text-center">Capture de Transacción</h3>
+            <div className="w-full max-h-[70vh] overflow-auto rounded-2xl border border-violet-800 bg-black/40 p-2 flex justify-center items-center">
               <img src={activeScreenshot} alt="Transaction Capture" className="max-w-full h-auto rounded-xl object-contain" />
             </div>
           </div>

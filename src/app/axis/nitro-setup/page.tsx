@@ -139,7 +139,7 @@ export default function NitroHubSetup() {
       {/* Background radial glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-40 -left-40 w-96 h-96 bg-violet-600/10 rounded-full blur-[120px]"></div>
-        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-sky-500/10 rounded-full blur-[120px]"></div>
+        <div className="absolute -bottom-40 -right-40 w-96 h-96 bg-violet-500/10 rounded-full blur-[120px]"></div>
       </div>
 
       <motion.div 
@@ -152,7 +152,7 @@ export default function NitroHubSetup() {
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-violet-950/40 border border-violet-800/40 text-[10px] font-black uppercase tracking-widest text-violet-400">
             <Sparkles size={10} className="animate-pulse" /> Activación Hub
           </div>
-          <h1 className="text-3xl font-black bg-gradient-to-r from-white via-slate-100 to-sky-300 bg-clip-text text-transparent tracking-tight">
+          <h1 className="text-3xl font-black bg-gradient-to-r from-white via-slate-100 to-violet-300 bg-clip-text text-transparent tracking-tight">
             Axis Nitro Hub Setup
           </h1>
           <p className="text-xs text-slate-400">
@@ -226,7 +226,7 @@ export default function NitroHubSetup() {
                 value={slug}
                 onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^\w\s-]/g, '').replace(/[\s_-]+/g, '-'))}
                 disabled={(currentUser?.role === 'dueño') || loading}
-                className="flex-1 min-w-0 block px-4 py-3.5 bg-transparent text-sm text-white focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed font-mono text-sky-400"
+                className="flex-1 min-w-0 block px-4 py-3.5 bg-transparent text-sm text-white focus:outline-none disabled:opacity-60 disabled:cursor-not-allowed font-mono text-violet-400"
                 placeholder="burgers-v2"
                 required 
               />
@@ -271,7 +271,7 @@ export default function NitroHubSetup() {
                       href={`/nitro/${slug}`} 
                       target="_blank" 
                       rel="noopener noreferrer" 
-                      className="inline-flex items-center gap-1.5 text-sm font-black text-sky-400 hover:underline break-all"
+                      className="inline-flex items-center gap-1.5 text-sm font-black text-violet-400 hover:underline break-all"
                     >
                       <Link2 size={14} /> kfs-os.vercel.app/nitro/{slug}
                     </a>

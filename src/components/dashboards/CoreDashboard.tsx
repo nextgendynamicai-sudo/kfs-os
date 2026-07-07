@@ -254,12 +254,12 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-white shadow-sm border border-sky-100 rounded-full flex items-center justify-center text-sky-600 font-black text-2xl flex-shrink-0 relative z-20 placeholder:text-slate-400">
+            <div className="w-16 h-16 bg-white shadow-sm border border-violet-100 rounded-full flex items-center justify-center text-violet-600 font-black text-2xl flex-shrink-0 relative z-20 placeholder:text-slate-400">
               <ProfileAvatarEditor currentUser={currentUser} />
             </div>
             <div>
-              <h2 className="text-xl md:text-2xl font-black tracking-tight truncate text-sky-950">Control Matriz {KFS_BRAND.productAcronym}</h2>
-              <p className="text-sky-700 font-mono text-xs mt-1 bg-sky-100 shadow-sm inline-block px-2 py-0.5 rounded-md border border-sky-200">Vista de Dios • Arquitectura de Red</p>
+              <h2 className="text-xl md:text-2xl font-black tracking-tight truncate text-violet-950">Control Matriz {KFS_BRAND.productAcronym}</h2>
+              <p className="text-violet-700 font-mono text-xs mt-1 bg-violet-100 shadow-sm inline-block px-2 py-0.5 rounded-md border border-violet-200">Vista de Dios • Arquitectura de Red</p>
             </div>
           </div>
         </div>
@@ -288,37 +288,37 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             <OracleControlSlider merchantId={db.clients?.[0]?.id} merchantName={db.clients?.[0]?.company || "N/A"} currentFee={db.clients?.[0]?.oracle_fee_percentage} setDb={setDb} />
             {/* Global Metrics Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 text-sky-950 p-6 rounded-[2rem] relative overflow-hidden flex flex-col">
+              <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 text-violet-950 p-6 rounded-[2rem] relative overflow-hidden flex flex-col">
                 <div className="relative z-10">
-                  <span className="text-sky-600 text-[10px] font-black uppercase tracking-widest mb-1 block">Nodos Globales</span>
+                  <span className="text-violet-600 text-[10px] font-black uppercase tracking-widest mb-1 block">Nodos Globales</span>
                   <div className="flex items-baseline gap-2 mt-1">
-                    <h2 className="text-4xl font-black text-sky-950">{totalDueños}</h2>
+                    <h2 className="text-4xl font-black text-violet-950">{totalDueños}</h2>
                     <span className="text-xs text-slate-500 font-bold">comercios</span>
                   </div>
                 </div>
-                <Activity size={80} className="absolute -right-5 -bottom-5 text-sky-100" />
+                <Activity size={80} className="absolute -right-5 -bottom-5 text-violet-100" />
               </div>
-              <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 text-sky-950 p-6 rounded-[2rem] relative overflow-hidden flex flex-col">
+              <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 text-violet-950 p-6 rounded-[2rem] relative overflow-hidden flex flex-col">
                 <div className="relative z-10">
-                  <span className="text-sky-600 text-[10px] font-black uppercase tracking-widest mb-1 block">Fuerza de Ventas</span>
+                  <span className="text-violet-600 text-[10px] font-black uppercase tracking-widest mb-1 block">Fuerza de Ventas</span>
                   <div className="flex items-baseline gap-2 mt-1">
-                    <h2 className="text-4xl font-black text-sky-950">{totalPromotoras}</h2>
+                    <h2 className="text-4xl font-black text-violet-950">{totalPromotoras}</h2>
                     <span className="text-xs text-slate-500 font-bold">promotoras</span>
                   </div>
                   <span className="text-[10px] text-slate-400 font-bold mt-2 block">{totalSetups} setups históricos</span>
                 </div>
-                <Users size={80} className="absolute -right-5 -bottom-5 text-sky-100" />
+                <Users size={80} className="absolute -right-5 -bottom-5 text-violet-100" />
               </div>
-              <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 text-sky-950 p-6 rounded-[2rem] relative overflow-hidden flex flex-col">
+              <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 text-violet-950 p-6 rounded-[2rem] relative overflow-hidden flex flex-col">
                 <div className="relative z-10">
-                  <span className="text-sky-600 text-[10px] font-black uppercase tracking-widest mb-1 block">Facturación Global</span>
+                  <span className="text-violet-600 text-[10px] font-black uppercase tracking-widest mb-1 block">Facturación Global</span>
                   <div className="flex items-baseline gap-2 mt-1">
                     <h2 className="text-4xl font-black text-emerald-500"><AnimatedCounter value={globalSalesUSD} format={formatUSD} /></h2>
                   </div>
                 </div>
-                <TrendingUp size={80} className="absolute -right-5 -bottom-5 text-sky-100" />
+                <TrendingUp size={80} className="absolute -right-5 -bottom-5 text-violet-100" />
               </div>
-              <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 text-sky-950 p-6 rounded-[2rem] relative overflow-hidden flex flex-col">
+              <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 text-violet-950 p-6 rounded-[2rem] relative overflow-hidden flex flex-col">
                 <div className="relative z-10">
                   <span className="text-red-500 text-[10px] font-black uppercase tracking-widest mb-1 block">Deuda Total x Cobrar</span>
                   <div className="flex items-baseline gap-2 mt-1">
@@ -333,9 +333,9 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             <PushCommandCenter currentUser={currentUser} />
 
             {/* Core Approvals Panel */}
-            <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 rounded-[2rem] p-6 space-y-6">
-              <h3 className="font-black text-sky-950 text-xl flex items-center gap-2 border-b border-sky-100 pb-4">
-                <CheckCircle size={24} className="text-sky-600" /> Aprobaciones Pendientes del {KFS_BRAND.productAcronym} Core
+            <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 rounded-[2rem] p-6 space-y-6">
+              <h3 className="font-black text-violet-950 text-xl flex items-center gap-2 border-b border-violet-100 pb-4">
+                <CheckCircle size={24} className="text-violet-600" /> Aprobaciones Pendientes del {KFS_BRAND.productAcronym} Core
               </h3>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -343,16 +343,16 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                 <div className="space-y-4">
                   <h4 className="font-bold text-sm text-slate-500 uppercase tracking-widest flex justify-between">
                     Candidatos RRHH 
-                    <span className="bg-sky-100 text-sky-700 px-2 py-0.5 rounded-full">{pendingCandidates.length}</span>
+                    <span className="bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full">{pendingCandidates.length}</span>
                   </h4>
                   {pendingCandidates.length === 0 ? (
                     <p className="text-xs text-slate-400 italic">No hay candidatos pendientes.</p>
                   ) : (
                     pendingCandidates.map((cand: any) => (
-                      <div key={cand.id} className="bg-sky-50/50 p-4 rounded-xl shadow-sm border border-sky-100 flex flex-col gap-3 hover:border-sky-200 transition-colors">
+                      <div key={cand.id} className="bg-violet-50/50 p-4 rounded-xl shadow-sm border border-violet-100 flex flex-col gap-3 hover:border-violet-200 transition-colors">
                         <div className="flex justify-between items-start">
                           <div>
-                            <p className="font-black text-sm text-sky-950">{cand.name}</p>
+                            <p className="font-black text-sm text-violet-950">{cand.name}</p>
                             <p className="text-xs text-slate-500 font-mono">{cand.phone}</p>
                             <p className="text-[10px] text-slate-400 uppercase mt-1">Ref: {cand.registrationPaymentRef}</p>
                           </div>
@@ -375,16 +375,16 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                 <div className="space-y-4">
                   <h4 className="font-bold text-sm text-slate-500 uppercase tracking-widest flex justify-between">
                     Riders (Logística)
-                    <span className="bg-sky-100 text-sky-700 px-2 py-0.5 rounded-full">{pendingRiders.length}</span>
+                    <span className="bg-violet-100 text-violet-700 px-2 py-0.5 rounded-full">{pendingRiders.length}</span>
                   </h4>
                   {pendingRiders.length === 0 ? (
                     <p className="text-xs text-slate-400 italic">No hay riders pendientes.</p>
                   ) : (
                     pendingRiders.map((rider: any) => (
-                      <div key={rider.id} className="bg-sky-50/50 p-4 rounded-xl shadow-sm border border-sky-100 flex flex-col gap-3 hover:border-sky-200 transition-colors">
+                      <div key={rider.id} className="bg-violet-50/50 p-4 rounded-xl shadow-sm border border-violet-100 flex flex-col gap-3 hover:border-violet-200 transition-colors">
                         <div className="flex justify-between items-start">
                           <div>
-                            <p className="font-black text-sm text-sky-950">{rider.name}</p>
+                            <p className="font-black text-sm text-violet-950">{rider.name}</p>
                             <p className="text-xs text-slate-500 font-mono">{rider.phone}</p>
                             <p className="text-[10px] text-slate-400 uppercase mt-1">Vehículo: {rider.vehicleType}</p>
                           </div>
@@ -405,25 +405,25 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             </div>
 
             {/* BCV Rate Manual Update */}
-            <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 rounded-[2rem] p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 rounded-[2rem] p-6 flex flex-col md:flex-row items-center justify-between gap-4">
               <div>
-                <h3 className="font-black text-sky-950 text-lg">Tasa Oficial Banco Central</h3>
+                <h3 className="font-black text-violet-950 text-lg">Tasa Oficial Banco Central</h3>
                 <p className="text-xs text-slate-500">Actualización manual / forzada en el sistema</p>
               </div>
               <div className="flex items-center gap-4 w-full md:w-auto">
                 <div className="flex-1 md:w-32">
                   <label className="text-[10px] font-bold text-slate-500 uppercase">Tasa USD (Bs)</label>
-                  <input type="number" id="manualUsdRate" placeholder="Tasa USD" defaultValue={rates.USD} step="0.01" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-bold text-sky-950 focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all placeholder:text-slate-400" />
+                  <input type="number" id="manualUsdRate" placeholder="Tasa USD" defaultValue={rates.USD} step="0.01" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-bold text-violet-950 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all placeholder:text-slate-400" />
                 </div>
                 <div className="flex-1 md:w-32">
                   <label className="text-[10px] font-bold text-slate-500 uppercase">Tasa EUR (Bs)</label>
-                  <input type="number" id="manualEurRate" placeholder="Tasa EUR" defaultValue={rates.EUR} step="0.01" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-bold text-sky-950 focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all placeholder:text-slate-400" />
+                  <input type="number" id="manualEurRate" placeholder="Tasa EUR" defaultValue={rates.EUR} step="0.01" className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 font-bold text-violet-950 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all placeholder:text-slate-400" />
                 </div>
                 <button onClick={() => {
                   const usd = parseFloat((document.getElementById('manualUsdRate') as HTMLInputElement).value);
                   const eur = parseFloat((document.getElementById('manualEurRate') as HTMLInputElement).value);
                   if (usd > 0 && eur > 0) updateBcvRates(usd, eur);
-                }} className="bg-sky-600 text-white rounded-xl px-6 py-2 h-10 mt-5 font-black hover:bg-sky-700 transition-colors shadow-md shadow-sky-600/30 border-none">
+                }} className="bg-violet-600 text-white rounded-xl px-6 py-2 h-10 mt-5 font-black hover:bg-violet-700 transition-colors shadow-md shadow-violet-600/30 border-none">
                   Fijar
                 </button>
               </div>
@@ -431,7 +431,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
             {/* Net Earnings and Ad Budget Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 text-sky-950 p-8 rounded-[2rem] relative overflow-hidden">
+              <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 text-violet-950 p-8 rounded-[2rem] relative overflow-hidden">
                 <div className="relative z-10">
                   <p className="text-emerald-600 text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><DollarSign size={14} className="text-emerald-500" /> Ganancia Neta {KFS_BRAND.productAcronym}</p>
                   <h2 className="text-5xl font-black mb-1 text-emerald-500">{formatEUR(db.kreatekCore?.netEarningsEUR || 0)}</h2>
@@ -441,17 +441,17 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
               </div>
 
               {/* Float & Liquidez (Phase E) */}
-              <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 text-sky-950 p-8 rounded-[2rem] relative overflow-hidden">
+              <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 text-violet-950 p-8 rounded-[2rem] relative overflow-hidden">
                 <div className="relative z-10">
-                  <p className="text-sky-600 text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><CheckCircle size={14} className="text-sky-500" /> Float Liquidez (USD)</p>
-                  <h2 className="text-5xl font-black mb-1 text-sky-500">{formatUSD(usdFloat)}</h2>
+                  <p className="text-violet-600 text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><CheckCircle size={14} className="text-violet-500" /> Float Liquidez (USD)</p>
+                  <h2 className="text-5xl font-black mb-1 text-violet-500">{formatUSD(usdFloat)}</h2>
                   <p className="text-xs text-slate-500 mt-2">Dinero real pre-pagado por usuarios, listo para invertir.</p>
                 </div>
-                <Activity size={100} className="absolute -right-10 -bottom-10 text-sky-50" />
+                <Activity size={100} className="absolute -right-10 -bottom-10 text-violet-50" />
               </div>
 
               {/* {KFS_BRAND.economy.currency} Emitidos (Phase E) */}
-              <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 text-sky-950 p-8 rounded-[2rem] relative overflow-hidden">
+              <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 text-violet-950 p-8 rounded-[2rem] relative overflow-hidden">
                 <div className="relative z-10">
                   <p className="text-purple-600 text-xs font-black uppercase tracking-widest mb-2 flex items-center gap-2"><TrendingUp size={14} className="text-purple-500" /> Total {KFS_BRAND.economy.currency} Emitidos</p>
                   <h2 className="text-5xl font-black mb-1 text-purple-500">{totalKPoints} Axis Pts</h2>
@@ -460,10 +460,10 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                 <Activity size={100} className="absolute -right-10 -bottom-10 text-purple-50" />
               </div>
 
-              <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 text-sky-950 p-8 rounded-[2rem] flex flex-col justify-center relative overflow-hidden">
+              <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 text-violet-950 p-8 rounded-[2rem] flex flex-col justify-center relative overflow-hidden">
                 <div className="relative z-10">
-                  <p className="text-sky-600 text-xs font-black uppercase tracking-widest mb-2">Fondo Publicidad {KFS_BRAND.productAcronym}</p>
-                  <h2 className="text-5xl font-black text-sky-950">{formatEUR(db.kreatekCore?.adBudgetEUR || 0)}</h2>
+                  <p className="text-violet-600 text-xs font-black uppercase tracking-widest mb-2">Fondo Publicidad {KFS_BRAND.productAcronym}</p>
+                  <h2 className="text-5xl font-black text-violet-950">{formatEUR(db.kreatekCore?.adBudgetEUR || 0)}</h2>
                   <p className="text-xs text-slate-500 mt-2">Fondo sugerido para inyección días 13-17 y 28-2.</p>
                 </div>
               </div>
@@ -471,8 +471,8 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
             <KFSFinancialSplitCalculator formatUSD={formatUSD} formatEUR={formatEUR} />
 
-            <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 rounded-[2rem] p-8">
-              <h3 className="text-xl font-black mb-6 text-sky-950 flex items-center gap-2"><TrendingUp className="text-sky-600" /> Flujo de Comisiones {KFS_BRAND.productAcronym}</h3>
+            <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 rounded-[2rem] p-8">
+              <h3 className="text-xl font-black mb-6 text-violet-950 flex items-center gap-2"><TrendingUp className="text-violet-600" /> Flujo de Comisiones {KFS_BRAND.productAcronym}</h3>
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={chartData}>
@@ -496,33 +496,33 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
           <div className="space-y-8 flex flex-col">
             {/* Tactical Buttons Row for RED */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <button onClick={() => setActiveModal('store')} className="bg-white shadow-lg shadow-sky-200/40 border border-sky-100 p-6 rounded-[2rem] flex flex-col items-center gap-3 transition-all hover:scale-[0.98] group cursor-pointer hover:border-sky-200 hover:shadow-xl hover:shadow-sky-200/50">
-                <div className="bg-sky-600 text-white p-3 rounded-xl shadow-md shadow-sky-600/30 group-hover:scale-110 transition-transform"><Store size={24} /></div>
-                <span className="font-black text-sky-950 text-sm text-center">Alta de Comercio</span>
+              <button onClick={() => setActiveModal('store')} className="bg-white shadow-lg shadow-violet-200/40 border border-violet-100 p-6 rounded-[2rem] flex flex-col items-center gap-3 transition-all hover:scale-[0.98] group cursor-pointer hover:border-violet-200 hover:shadow-xl hover:shadow-violet-200/50">
+                <div className="bg-violet-600 text-white p-3 rounded-xl shadow-md shadow-violet-600/30 group-hover:scale-110 transition-transform"><Store size={24} /></div>
+                <span className="font-black text-violet-950 text-sm text-center">Alta de Comercio</span>
               </button>
-              <button onClick={() => setActiveModal('assign')} className="bg-white shadow-lg shadow-sky-200/40 border border-sky-100 p-6 rounded-[2rem] flex flex-col items-center gap-3 transition-all hover:scale-[0.98] group cursor-pointer hover:border-sky-200 hover:shadow-xl hover:shadow-sky-200/50">
-                <div className="bg-sky-900 text-white p-3 rounded-xl shadow-md shadow-sky-900/30 group-hover:scale-110 transition-transform"><Users size={24} /></div>
-                <span className="font-black text-sky-950 text-sm text-center">Asignar Promotora</span>
+              <button onClick={() => setActiveModal('assign')} className="bg-white shadow-lg shadow-violet-200/40 border border-violet-100 p-6 rounded-[2rem] flex flex-col items-center gap-3 transition-all hover:scale-[0.98] group cursor-pointer hover:border-violet-200 hover:shadow-xl hover:shadow-violet-200/50">
+                <div className="bg-violet-900 text-white p-3 rounded-xl shadow-md shadow-violet-900/30 group-hover:scale-110 transition-transform"><Users size={24} /></div>
+                <span className="font-black text-violet-950 text-sm text-center">Asignar Promotora</span>
               </button>
-              <button onClick={() => setAssignRiderModal({ riderId: "", riderName: "" })} className="bg-white shadow-lg shadow-sky-200/40 border border-sky-100 p-6 rounded-[2rem] flex flex-col items-center gap-3 transition-all hover:scale-[0.98] group cursor-pointer hover:border-sky-200 hover:shadow-xl hover:shadow-sky-200/50">
+              <button onClick={() => setAssignRiderModal({ riderId: "", riderName: "" })} className="bg-white shadow-lg shadow-violet-200/40 border border-violet-100 p-6 rounded-[2rem] flex flex-col items-center gap-3 transition-all hover:scale-[0.98] group cursor-pointer hover:border-violet-200 hover:shadow-xl hover:shadow-violet-200/50">
                 <div className="bg-amber-500 text-white p-3 rounded-xl shadow-md shadow-amber-500/30 group-hover:scale-110 transition-transform"><Truck size={24} /></div>
-                <span className="font-black text-sky-950 text-sm text-center">Asignar Rider a Negocio</span>
+                <span className="font-black text-violet-950 text-sm text-center">Asignar Rider a Negocio</span>
               </button>
             </div>
 
             {/* Control y Gobernanza de Promotoras */}
-            <div className="bg-white rounded-[2rem] shadow-xl shadow-sky-200/50 border border-sky-100 p-8">
+            <div className="bg-white rounded-[2rem] shadow-xl shadow-violet-200/50 border border-violet-100 p-8">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-black text-sky-950 flex items-center gap-2"><Shield className="text-sky-600" /> Control y Gobernanza de Promotoras</h3>
+                <h3 className="text-xl font-black text-violet-950 flex items-center gap-2"><Shield className="text-violet-600" /> Control y Gobernanza de Promotoras</h3>
                 <div className="relative w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                  <input type="text" placeholder="Buscar promotora..." className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all text-sky-950 placeholder:text-slate-400" value={searchPromotora} onChange={e => setSearchPromotora(e.target.value)} />
+                  <input type="text" placeholder="Buscar promotora..." className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all text-violet-950 placeholder:text-slate-400" value={searchPromotora} onChange={e => setSearchPromotora(e.target.value)} />
                 </div>
               </div>
 
-              <div className="overflow-x-auto rounded-xl border border-sky-100">
+              <div className="overflow-x-auto rounded-xl border border-violet-100">
                 <table className="w-full text-sm text-left">
-                  <thead className="bg-sky-50 text-sky-700 uppercase text-xs font-black">
+                  <thead className="bg-violet-50 text-violet-700 uppercase text-xs font-black">
                     <tr>
                       <th className="py-4 px-4 rounded-tl-xl">Promotora</th>
                       <th className="py-4 px-4">Accesos</th>
@@ -533,8 +533,8 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                   </thead>
                   <tbody className="bg-white">
                     {db.promotoras.filter((p: any) => p.name.toLowerCase().includes(searchPromotora.toLowerCase()) || p.email.toLowerCase().includes(searchPromotora.toLowerCase())).map((p: any) => (
-                      <tr key={p.id} className="border-b border-sky-100 hover:bg-sky-50/50 transition-colors">
-                        <td className="py-4 px-4 font-bold text-sky-950">{p.name}</td>
+                      <tr key={p.id} className="border-b border-violet-100 hover:bg-violet-50/50 transition-colors">
+                        <td className="py-4 px-4 font-bold text-violet-950">{p.name}</td>
                         <td className="py-4 px-4 text-slate-500"><span className="text-xs font-mono block">{p.email}</span><span className="text-xs font-mono">P: {p.password}</span></td>
                         <td className="py-4 px-4 text-slate-500"><span className="text-xs font-mono block">BIN: {p.binanceId || "N/A"}</span><span className="text-xs font-mono block">PM: {p.pagoMovil || "N/A"}</span></td>
                         <td className="py-4 px-4 text-center">
@@ -542,7 +542,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                             <span className="bg-yellow-100 text-yellow-700 text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-wider">Pendiente</span>
                           ) : (
                             <div>
-                              <span className="font-black text-sky-950 block">{p.setups || 0} Setups</span>
+                              <span className="font-black text-violet-950 block">{p.setups || 0} Setups</span>
                               <span className="font-black text-emerald-500 block">{formatEUR(p.earningsEUR || 0)}</span>
                             </div>
                           )}
@@ -557,7 +557,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                             <div className="flex justify-end gap-2">
                               <span className="bg-slate-100 text-slate-500 text-[10px] font-black px-2 py-2 rounded-lg uppercase tracking-wider flex items-center">Habilitada</span>
                               {(p.passiveEarningsEUR || 0) > 0 && (
-                                <button onClick={() => settlePromotoraEarnings(p.id)} className="bg-sky-600 text-white px-3 py-1.5 rounded-lg font-bold text-xs shadow-md shadow-sky-600/30 hover:bg-sky-700 border-none cursor-pointer inline-flex items-center gap-1">
+                                <button onClick={() => settlePromotoraEarnings(p.id)} className="bg-violet-600 text-white px-3 py-1.5 rounded-lg font-bold text-xs shadow-md shadow-violet-600/30 hover:bg-violet-700 border-none cursor-pointer inline-flex items-center gap-1">
                                   <CheckCircle size={14} /> Liquidar Regalías
                                 </button>
                               )}
@@ -573,17 +573,17 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             </div>
 
             {/* Estado de Cobranza Diaria (BOS) */}
-            <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 rounded-[2rem] p-8">
+            <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 rounded-[2rem] p-8">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-black text-sky-950 flex items-center gap-2"><DollarSign className="text-red-500" /> Estado de Cobranza Diaria (BOS)</h3>
+                <h3 className="text-xl font-black text-violet-950 flex items-center gap-2"><DollarSign className="text-red-500" /> Estado de Cobranza Diaria (BOS)</h3>
                 <div className="relative w-64">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                  <input type="text" placeholder="Buscar comercio..." className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all text-sky-950 placeholder:text-slate-400" value={searchClient} onChange={e => setSearchClient(e.target.value)} />
+                  <input type="text" placeholder="Buscar comercio..." className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all text-violet-950 placeholder:text-slate-400" value={searchClient} onChange={e => setSearchClient(e.target.value)} />
                 </div>
               </div>
-              <div className="overflow-x-auto rounded-xl border border-sky-100">
+              <div className="overflow-x-auto rounded-xl border border-violet-100">
                 <table className="w-full text-sm text-left">
-                  <thead className="bg-sky-50 text-sky-700 uppercase text-xs font-black">
+                  <thead className="bg-violet-50 text-violet-700 uppercase text-xs font-black">
                     <tr>
                       <th className="py-4 px-4 rounded-tl-xl">Comercio</th>
                       <th className="py-4 px-4">Teléfono (WhatsApp)</th>
@@ -596,9 +596,9 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                     {db.clients.filter((c: any) => c.company.toLowerCase().includes(searchClient.toLowerCase()) || c.name.toLowerCase().includes(searchClient.toLowerCase())).map((c: any) => {
                       const isBlocked = c.subscription?.status === 'past_due';
                       return (
-                        <tr key={c.id} className="border-b border-sky-100 hover:bg-sky-50/50 transition-colors">
+                        <tr key={c.id} className="border-b border-violet-100 hover:bg-violet-50/50 transition-colors">
                           <td className="py-4 px-4">
-                            <span className="font-bold text-sky-950 block">{c.company}</span>
+                            <span className="font-bold text-violet-950 block">{c.company}</span>
                             <span className={`inline-block text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full mt-1 ${isBlocked ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-emerald-50 text-emerald-600 border border-emerald-200'}`}>
                               {isBlocked ? '🔴 Bloqueado' : '🟢 Activo'}
                             </span>
@@ -613,7 +613,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                           <td className="py-4 px-4 font-black text-red-500">{formatUSD(c.kfsFeesOwedUSD || 0)}</td>
                           <td className="py-4 px-4 text-right">
                             <div className="flex flex-wrap justify-end gap-1.5">
-                              <button onClick={() => impersonateClient(c)} className="bg-blue-500 text-white px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-blue-600 transition-colors cursor-pointer inline-flex items-center gap-1 shadow-sm">
+                              <button onClick={() => impersonateClient(c)} className="bg-violet-500 text-white px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-fuchsia-600 transition-colors cursor-pointer inline-flex items-center gap-1 shadow-sm">
                                 👁️ Ver Panel
                               </button>
 
@@ -666,17 +666,17 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             </div>
 
             {/* Fuerza Laboral (Vendedores) */}
-            <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 rounded-[2rem] p-8">
+            <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 rounded-[2rem] p-8">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-black text-sky-950 flex items-center gap-2"><UserCheck className="text-sky-600" /> Fuerza Laboral (Vendedores)</h3>
+                <h3 className="text-xl font-black text-violet-950 flex items-center gap-2"><UserCheck className="text-violet-600" /> Fuerza Laboral (Vendedores)</h3>
                 <div className="relative w-48">
                   <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
-                  <input type="text" placeholder="Buscar vendedor..." className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-sky-400 text-sky-950 transition-all placeholder:text-slate-400" value={searchVendedor} onChange={e => setSearchVendedor(e.target.value)} />
+                  <input type="text" placeholder="Buscar vendedor..." className="w-full bg-slate-50 border border-slate-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 text-violet-950 transition-all placeholder:text-slate-400" value={searchVendedor} onChange={e => setSearchVendedor(e.target.value)} />
                 </div>
               </div>
-              <div className="overflow-x-auto max-h-96 rounded-xl border border-sky-100">
+              <div className="overflow-x-auto max-h-96 rounded-xl border border-violet-100">
                 <table className="w-full text-sm text-left">
-                  <thead className="bg-sky-50 text-sky-700 uppercase text-xs font-black sticky top-0">
+                  <thead className="bg-violet-50 text-violet-700 uppercase text-xs font-black sticky top-0">
                     <tr>
                       <th className="py-4 px-4 rounded-tl-xl">Vendedor</th>
                       <th className="py-4 px-4">Comercio</th>
@@ -687,8 +687,8 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                     {(db.vendedores || []).filter((v: any) => v.name.toLowerCase().includes(searchVendedor.toLowerCase()) || v.email.toLowerCase().includes(searchVendedor.toLowerCase())).map((vend: any) => {
                       const client = db.clients.find((c: any) => c.id === vend.clientId);
                       return (
-                        <tr key={vend.id} className="border-b border-sky-100 hover:bg-sky-50/50 transition-colors">
-                          <td className="py-4 px-4 font-bold text-sky-950">{vend.name}</td>
+                        <tr key={vend.id} className="border-b border-violet-100 hover:bg-violet-50/50 transition-colors">
+                          <td className="py-4 px-4 font-bold text-violet-950">{vend.name}</td>
                           <td className="py-4 px-4 text-slate-500 text-xs">{client?.company || "N/A"}</td>
                           <td className="py-4 px-4 text-right text-slate-500">
                             <span className="text-[10px] font-mono block">{vend.email}</span>
@@ -704,11 +704,11 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             </div>
 
             {/* Riders de Delivery */}
-            <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 rounded-[2rem] overflow-hidden">
-              <div className="flex items-center justify-between p-6 border-b border-sky-100">
+            <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 rounded-[2rem] overflow-hidden">
+              <div className="flex items-center justify-between p-6 border-b border-violet-100">
                 <div>
-                  <h2 className="text-xl font-black text-sky-950 flex items-center gap-2">
-                    <Truck size={20} className="text-sky-600" /> Riders de Delivery
+                  <h2 className="text-xl font-black text-violet-950 flex items-center gap-2">
+                    <Truck size={20} className="text-violet-600" /> Riders de Delivery
                   </h2>
                   <p className="text-xs text-slate-500 mt-0.5">Aprobación, revisión de documentos y gestión de riders</p>
                 </div>
@@ -718,24 +718,24 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                       {(db.riders?.filter((r: any) => r.status === "pending") || []).length} pendientes
                     </span>
                   )}
-                  <span className="bg-sky-600 text-white text-[10px] font-black px-3 py-1.5 rounded-full shadow-sm border-none">
+                  <span className="bg-violet-600 text-white text-[10px] font-black px-3 py-1.5 rounded-full shadow-sm border-none">
                     {(db.riders || []).length} total
                   </span>
                 </div>
               </div>
 
               {/* Metrics Banner */}
-              <div className="bg-sky-50/50 border-b border-sky-100 p-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="bg-white border border-sky-100 p-4 rounded-xl flex items-center justify-between placeholder:text-slate-400">
+              <div className="bg-violet-50/50 border-b border-violet-100 p-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="bg-white border border-violet-100 p-4 rounded-xl flex items-center justify-between placeholder:text-slate-400">
                   <div>
                     <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Total Entregas</p>
-                    <p className="text-xl font-black text-sky-950">
+                    <p className="text-xl font-black text-violet-950">
                       {(db.riders || []).reduce((acc: number, r: any) => acc + (r.deliveriesCompleted || 0), 0)}
                     </p>
                   </div>
                   <div className="bg-orange-100 text-orange-600 p-2 rounded-lg"><Truck size={20} /></div>
                 </div>
-                <div className="bg-white border border-sky-100 p-4 rounded-xl flex items-center justify-between placeholder:text-slate-400">
+                <div className="bg-white border border-violet-100 p-4 rounded-xl flex items-center justify-between placeholder:text-slate-400">
                   <div>
                     <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Ganancias Generadas</p>
                     <p className="text-xl font-black text-emerald-500">
@@ -744,14 +744,14 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                   </div>
                   <div className="bg-emerald-100 text-emerald-600 p-2 rounded-lg"><DollarSign size={20} /></div>
                 </div>
-                <div className="bg-white border border-sky-100 p-4 rounded-xl flex items-center justify-between placeholder:text-slate-400">
+                <div className="bg-white border border-violet-100 p-4 rounded-xl flex items-center justify-between placeholder:text-slate-400">
                   <div>
                     <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Riders Activos</p>
-                    <p className="text-xl font-black text-sky-950">
+                    <p className="text-xl font-black text-violet-950">
                       {(db.riders || []).filter((r: any) => r.status === "approved").length}
                     </p>
                   </div>
-                  <div className="bg-sky-100 text-sky-600 p-2 rounded-lg"><Users size={20} /></div>
+                  <div className="bg-violet-100 text-violet-600 p-2 rounded-lg"><Users size={20} /></div>
                 </div>
               </div>
 
@@ -762,7 +762,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                   <p className="text-xs text-slate-300 mt-1">Los riders se registran desde el panel de login.</p>
                 </div>
               ) : (
-                <div className="divide-y divide-sky-50 bg-white">
+                <div className="divide-y divide-violet-50 bg-white">
                   {(db.riders || []).map((rider: any) => {
                     const businessNames = (rider.associatedBusinesses || []).map((bId: string) =>
                       db.clients?.find((c: any) => c.id === bId)?.company
@@ -775,7 +775,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <h3 className="font-black text-sky-950">{rider.name}</h3>
+                              <h3 className="font-black text-violet-950">{rider.name}</h3>
                               <span className={`px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${rider.status === "approved" ? "bg-emerald-100 text-emerald-700" : rider.status === "rejected" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}`}>
                                 {rider.status === "approved" ? "✅ Aprobado" : rider.status === "rejected" ? "❌ Rechazado" : "⏳ Pendiente"}
                               </span>
@@ -868,8 +868,8 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
         {activeTab === "soporte" && (
           <div className="space-y-8 flex flex-col">
             {/* Help Desk */}
-            <div className="bg-sky-950 rounded-[2rem] shadow-xl shadow-sky-200/50 border border-sky-800 p-8 text-white mt-8">
-              <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-sky-400"><Bell className="text-sky-400" /> Help Desk (Tickets de Soporte Global)</h3>
+            <div className="bg-violet-950 rounded-[2rem] shadow-xl shadow-violet-200/50 border border-violet-800 p-8 text-white mt-8">
+              <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-violet-400"><Bell className="text-violet-400" /> Help Desk (Tickets de Soporte Global)</h3>
               <div className="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
                 {(db.supportTickets || []).slice().reverse().map((ticket: any) => {
                   const client = db.clients.find((c: any) => c.id === ticket.clientId);
@@ -879,23 +879,23 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                         <p className="text-sm font-bold text-slate-200">[{ticket.status === 'open' ? '🔴 ABIERTO' : '🟢 CERRADO'}] {client?.company || "Comercio"} - {ticket.subject}</p>
                         <span className="text-[10px] text-slate-400 font-mono">{new Date(ticket.createdAt).toLocaleString()}</span>
                       </div>
-                      <div className="space-y-2 mt-2 pl-4 border-l-2 border-sky-500/30">
+                      <div className="space-y-2 mt-2 pl-4 border-l-2 border-violet-500/30">
                         {ticket.messages.map((m: any, i: number) => (
                           <div key={i} className="text-xs">
-                            <span className="font-bold text-sky-400">{m.author}:</span> <span className="text-slate-300">{m.text}</span>
+                            <span className="font-bold text-violet-400">{m.author}:</span> <span className="text-slate-300">{m.text}</span>
                           </div>
                         ))}
                       </div>
                       {ticket.status === 'open' && (
                         <div className="flex gap-2 mt-2">
-                          <input type="text" id={`reply-${ticket.id}`} placeholder="Respuesta Kreatek..." className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-sky-500" />
+                          <input type="text" id={`reply-${ticket.id}`} placeholder="Respuesta Kreatek..." className="flex-1 bg-black/40 border border-white/10 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-violet-500" />
                           <button onClick={() => {
                             const input = document.getElementById(`reply-${ticket.id}`) as HTMLInputElement;
                             if (input && input.value) {
                               replyTicket(ticket.id, "Kreatek Core", input.value);
                               input.value = "";
                             }
-                          }} className="bg-sky-600 text-white px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer hover:bg-sky-700 shadow-md shadow-sky-600/30">Responder</button>
+                          }} className="bg-violet-600 text-white px-3 py-1.5 rounded-lg text-xs font-black cursor-pointer hover:bg-violet-700 shadow-md shadow-violet-600/30">Responder</button>
                           <button onClick={() => {
                             closeTicket(ticket.id);
                           }} className="bg-white/10 text-white px-3 py-1.5 rounded-lg text-xs font-bold hover:bg-white/20 cursor-pointer">Cerrar Ticket</button>
@@ -912,13 +912,13 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
             {/* Suscripciones Pendientes */}
             {db.clients.filter((c: any) => c.subscription?.status === 'pending_verification').length > 0 && (
-              <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 rounded-[2rem] p-8 mb-8">
-                <h3 className="text-xl font-black mb-6 text-sky-950 flex items-center gap-2"><CreditCard className="text-emerald-500" /> Suscripciones por Aprobar ($6)</h3>
+              <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 rounded-[2rem] p-8 mb-8">
+                <h3 className="text-xl font-black mb-6 text-violet-950 flex items-center gap-2"><CreditCard className="text-emerald-500" /> Suscripciones por Aprobar ($6)</h3>
                 <div className="space-y-4">
                   {db.clients.filter((c: any) => c.subscription?.status === 'pending_verification').map((c: any) => (
                     <div key={c.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-emerald-50/50 rounded-2xl border border-emerald-100 shadow-sm gap-4">
                       <div>
-                        <h4 className="font-bold text-sky-950">{c.company}</h4>
+                        <h4 className="font-bold text-violet-950">{c.company}</h4>
                         <p className="text-sm text-slate-500 font-mono mt-1">Ref Bancaria Enviada: <span className="font-black text-emerald-600">{c.subscription.lastPaymentRef}</span></p>
                       </div>
                       <button onClick={() => approveSubscription(c.id)} className="w-full md:w-auto px-6 py-2 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md shadow-emerald-500/30">
@@ -932,15 +932,15 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
             {/* Registros de Candidatos Pendientes ($1) */}
             {db.candidates?.filter((c: any) => c.registrationPaymentStatus === 'pending_approval').length > 0 && (
-              <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 rounded-[2rem] p-8 mb-8 animate-fade-in">
-                <h3 className="text-xl font-black mb-6 text-sky-950 flex items-center gap-2">
+              <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 rounded-[2rem] p-8 mb-8 animate-fade-in">
+                <h3 className="text-xl font-black mb-6 text-violet-950 flex items-center gap-2">
                   <Briefcase className="text-emerald-500" /> Registraciones de Bolsa de Empleo por Aprobar ($1)
                 </h3>
                 <div className="space-y-4">
                   {db.candidates.filter((c: any) => c.registrationPaymentStatus === 'pending_approval').map((cand: any) => (
                     <div key={cand.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-emerald-50/50 rounded-2xl border border-emerald-100 shadow-sm gap-4">
                       <div>
-                        <h4 className="font-black text-sky-950">Candidato: {cand.name}</h4>
+                        <h4 className="font-black text-violet-950">Candidato: {cand.name}</h4>
                         <p className="text-xs text-slate-500 mt-1">
                           Cargo: <strong>{cand.role}</strong> | Teléfono: <strong>{cand.phone}</strong>
                         </p>
@@ -957,7 +957,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                                   window.open(cand.cvFile, '_blank');
                                 }
                               }}
-                              className="text-[10px] font-black text-sky-600 underline cursor-pointer flex items-center gap-1 hover:text-sky-700 transition-colors"
+                              className="text-[10px] font-black text-violet-600 underline cursor-pointer flex items-center gap-1 hover:text-violet-700 transition-colors"
                             >
                               👁️ {cand.useKfsCvBuilder ? `Ver CV Digital ${KFS_BRAND.productAcronym}` : `Abrir Currículum (${cand.cvFileType?.includes('pdf') ? 'PDF' : 'Imagen'})`}
                             </button>
@@ -994,8 +994,8 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
             {/* Desbloqueos de Contactos Pendientes ($10) */}
             {db.unlockedContacts?.filter((u: any) => u.status === 'pending_approval').length > 0 && (
-              <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 rounded-[2rem] p-8 mb-8 animate-fade-in">
-                <h3 className="text-xl font-black mb-6 text-sky-950 flex items-center gap-2">
+              <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 rounded-[2rem] p-8 mb-8 animate-fade-in">
+                <h3 className="text-xl font-black mb-6 text-violet-950 flex items-center gap-2">
                   <CreditCard className="text-emerald-500" /> Desbloqueos de Bolsa de Empleo por Aprobar ($10)
                 </h3>
                 <div className="space-y-4">
@@ -1005,7 +1005,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                     return (
                       <div key={u.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-emerald-50/50 rounded-2xl border border-emerald-100 shadow-sm gap-4">
                         <div>
-                          <h4 className="font-black text-sky-950">Comercio: {client?.company || "Desconocido"}</h4>
+                          <h4 className="font-black text-violet-950">Comercio: {client?.company || "Desconocido"}</h4>
                           <p className="text-xs text-slate-500 mt-1">
                             Candidato Target: <strong>{candidate?.name || "Desconocido"}</strong> ({candidate?.role})
                           </p>
@@ -1045,13 +1045,13 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             )}
 
             {/* Verificaciones y Respaldo de Candidatos */}
-            <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 rounded-[2rem] p-8 mb-8 animate-fade-in">
-              <h3 className="text-xl font-black mb-6 text-sky-950 flex items-center gap-2">
+            <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 rounded-[2rem] p-8 mb-8 animate-fade-in">
+              <h3 className="text-xl font-black mb-6 text-violet-950 flex items-center gap-2">
                 <Award className="text-amber-500" /> Verificaciones de Bolsa de Empleo
               </h3>
-              <div className="overflow-x-auto rounded-xl border border-sky-100">
+              <div className="overflow-x-auto rounded-xl border border-violet-100">
                 <table className="w-full text-sm text-left">
-                  <thead className="bg-sky-50 text-sky-700 uppercase text-xs font-black">
+                  <thead className="bg-violet-50 text-violet-700 uppercase text-xs font-black">
                     <tr>
                       <th className="py-4 px-4 rounded-tl-xl">Candidato</th>
                       <th className="py-4 px-4">Cargo & Habilidades</th>
@@ -1062,13 +1062,13 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                   </thead>
                   <tbody className="bg-white">
                     {db.candidates?.map((cand: any) => (
-                      <tr key={cand.id} className="border-b border-sky-100 hover:bg-sky-50/50 transition-colors">
+                      <tr key={cand.id} className="border-b border-violet-100 hover:bg-violet-50/50 transition-colors">
                         <td className="py-4 px-4">
-                          <p className="font-bold text-sky-950">{cand.name}</p>
+                          <p className="font-bold text-violet-950">{cand.name}</p>
                           <p className="text-[10px] text-slate-400 font-mono mt-0.5">ID: {cand.id}</p>
                         </td>
                         <td className="py-4 px-4">
-                          <span className="text-xs font-black text-sky-950 block">{cand.role}</span>
+                          <span className="text-xs font-black text-violet-950 block">{cand.role}</span>
                           <div className="flex flex-wrap gap-1 mt-1">
                             {cand.skills?.map((s: string) => (
                               <span key={s} className="text-[8px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded">
@@ -1089,7 +1089,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                                   window.open(cand.cvFile, '_blank');
                                 }
                               }}
-                              className="text-[9px] font-black text-sky-600 hover:text-sky-700 transition-colors underline cursor-pointer block mt-1 text-left"
+                              className="text-[9px] font-black text-violet-600 hover:text-violet-700 transition-colors underline cursor-pointer block mt-1 text-left"
                             >
                               👁️ {cand.useKfsCvBuilder ? "Ver CV Digital" : "Ver CV Adjunto"}
                             </button>
@@ -1101,7 +1101,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                               🏆 Respaldado
                             </span>
                           ) : (
-                            <span className="bg-sky-100 text-sky-700 border border-sky-200 text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-wider">
+                            <span className="bg-violet-100 text-violet-700 border border-violet-200 text-[10px] font-black px-2 py-1 rounded-full uppercase tracking-wider">
                               Pendiente
                             </span>
                           )}
@@ -1134,9 +1134,9 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
           <div className="space-y-8 flex flex-col">
             {/* Tactical Buttons Row for Auditoría & Control */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 font-sans">
-              <button onClick={() => setActiveModal('product')} className="bg-sky-50 border border-sky-100 hover:bg-sky-100 hover:border-sky-200 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group cursor-pointer">
-                <div className="bg-sky-600 text-white p-3 rounded-xl group-hover:scale-110 transition-transform shadow-md shadow-sky-600/30"><Package size={24} /></div>
-                <span className="font-black text-sky-950 text-sm text-center font-bold">Catálogo Global {KFS_BRAND.productAcronym}</span>
+              <button onClick={() => setActiveModal('product')} className="bg-violet-50 border border-violet-100 hover:bg-violet-100 hover:border-violet-200 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group cursor-pointer">
+                <div className="bg-violet-600 text-white p-3 rounded-xl group-hover:scale-110 transition-transform shadow-md shadow-violet-600/30"><Package size={24} /></div>
+                <span className="font-black text-violet-950 text-sm text-center font-bold">Catálogo Global {KFS_BRAND.productAcronym}</span>
               </button>
               <button onClick={() => setActiveModal('push')} className="bg-red-50 border border-red-100 hover:bg-red-100 p-6 rounded-2xl flex flex-col items-center gap-3 transition-colors group cursor-pointer hover:border-red-200">
                 <div className="bg-red-500 text-white p-3 rounded-xl group-hover:scale-110 transition-transform shadow-md shadow-red-500/30"><Bell size={24} /></div>
@@ -1237,21 +1237,21 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             </div>
 
             {/* Auditoría de Cierre */}
-            <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 rounded-[2rem] p-8">
+            <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 rounded-[2rem] p-8">
               <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-black text-sky-950 flex items-center gap-2"><Lock className="text-sky-600" /> Auditoría de Cierre (Reportes Z Globales)</h3>
+                <h3 className="text-xl font-black text-violet-950 flex items-center gap-2"><Lock className="text-violet-600" /> Auditoría de Cierre (Reportes Z Globales)</h3>
                 <div className="flex gap-2">
                   <button onClick={() => showToast("Comando TFHKA Z (SENIAT) enviado al Spooler...", "success")} className="bg-amber-100 text-amber-900 px-4 py-2 rounded-xl font-bold text-sm hover:bg-amber-200 transition-colors cursor-pointer flex items-center gap-2 border border-amber-300">
                     Emitir Z Fiscal
                   </button>
-                  <button onClick={() => window.print()} className="bg-sky-900 text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-sky-950 transition-colors cursor-pointer flex items-center gap-2 shadow-md">
+                  <button onClick={() => window.print()} className="bg-violet-900 text-white px-4 py-2 rounded-xl font-bold text-sm hover:bg-violet-950 transition-colors cursor-pointer flex items-center gap-2 shadow-md">
                     Imprimir Listado
                   </button>
                 </div>
               </div>
-              <div className="overflow-x-auto rounded-xl border border-sky-100">
+              <div className="overflow-x-auto rounded-xl border border-violet-100">
                 <table className="w-full text-sm text-left">
-                  <thead className="bg-sky-50 text-sky-700 uppercase text-xs font-black">
+                  <thead className="bg-violet-50 text-violet-700 uppercase text-xs font-black">
                     <tr>
                       <th className="py-4 px-4 rounded-tl-xl">Comercio</th>
                       <th className="py-4 px-4">Fecha / Vendedor</th>
@@ -1264,11 +1264,11 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                       const client = db.clients.find((c: any) => c.id === z.clientId);
                       const vendedor = db.vendedores?.find((v: any) => v.id === z.vendedorId);
                       return (
-                        <tr key={z.id} className="border-b border-sky-100 hover:bg-sky-50/50 transition-colors">
-                          <td className="py-4 px-4 font-bold text-sky-950">{client?.company || "N/A"}</td>
+                        <tr key={z.id} className="border-b border-violet-100 hover:bg-violet-50/50 transition-colors">
+                          <td className="py-4 px-4 font-bold text-violet-950">{client?.company || "N/A"}</td>
                           <td className="py-4 px-4 text-slate-500">
                             <span className="block font-mono text-xs">{new Date(z.timestamp).toLocaleString()}</span>
-                            <span className="block font-bold text-sky-950 text-xs">Operador: {vendedor?.name || "N/A"}</span>
+                            <span className="block font-bold text-violet-950 text-xs">Operador: {vendedor?.name || "N/A"}</span>
                           </td>
                           <td className="py-4 px-4 font-mono text-slate-500">{z.txCount} TXs</td>
                           <td className="py-4 px-4 text-right font-black text-emerald-600">{formatUSD(z.totalUSD)}</td>
@@ -1282,12 +1282,12 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             </div>
 
             {/* Registro Inmutable de Auditoría */}
-            <div className="bg-sky-950 rounded-[2rem] shadow-xl shadow-sky-200/50 border border-sky-800 p-8 text-white mt-8">
-              <h3 className="text-xl font-black mb-6 flex items-center gap-2"><Shield className="text-sky-400" /> Registro Inmutable de Auditoría (Logs)</h3>
+            <div className="bg-violet-950 rounded-[2rem] shadow-xl shadow-violet-200/50 border border-violet-800 p-8 text-white mt-8">
+              <h3 className="text-xl font-black mb-6 flex items-center gap-2"><Shield className="text-violet-400" /> Registro Inmutable de Auditoría (Logs)</h3>
               <div className="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
                 {(db.auditLogs || []).slice().reverse().map((log: any) => (
                   <div key={log.id} className="bg-white/5 border border-white/10 p-4 rounded-xl flex items-start gap-4">
-                    <div className="bg-sky-600/20 text-sky-400 p-2 rounded-lg border border-sky-500/30">
+                    <div className="bg-violet-600/20 text-violet-400 p-2 rounded-lg border border-violet-500/30">
                       <Terminal size={20} />
                     </div>
                     <div>
@@ -1304,11 +1304,11 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             </div>
 
             {/* Catálogo Global de Productos */}
-            <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 rounded-[2rem] p-8">
-              <h3 className="text-xl font-black mb-6 text-sky-950 flex items-center gap-2"><Store className="text-sky-600" /> Catálogo Global de Productos</h3>
-              <div className="overflow-x-auto max-h-96 rounded-xl border border-sky-100">
+            <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 rounded-[2rem] p-8">
+              <h3 className="text-xl font-black mb-6 text-violet-950 flex items-center gap-2"><Store className="text-violet-600" /> Catálogo Global de Productos</h3>
+              <div className="overflow-x-auto max-h-96 rounded-xl border border-violet-100">
                 <table className="w-full text-sm text-left">
-                  <thead className="bg-sky-50 text-sky-700 uppercase text-xs font-black sticky top-0">
+                  <thead className="bg-violet-50 text-violet-700 uppercase text-xs font-black sticky top-0">
                     <tr>
                       <th className="py-4 px-4 rounded-tl-xl">Producto</th>
                       <th className="py-4 px-4">Comercio</th>
@@ -1320,8 +1320,8 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                     {db.products.map((prod: any) => {
                       const client = db.clients.find((c: any) => c.id === prod.clientId);
                       return (
-                        <tr key={prod.id} className="border-b border-sky-100 hover:bg-sky-50/50 transition-colors">
-                          <td className="py-4 px-4 font-bold text-sky-950">{prod.name}</td>
+                        <tr key={prod.id} className="border-b border-violet-100 hover:bg-violet-50/50 transition-colors">
+                          <td className="py-4 px-4 font-bold text-violet-950">{prod.name}</td>
                           <td className="py-4 px-4 text-slate-500 text-xs">{client?.company || "N/A"}</td>
                           <td className="py-4 px-4 text-slate-500 font-mono">{prod.stock}</td>
                           <td className="py-4 px-4 text-right font-black text-emerald-600">{formatUSD(prod.price)}</td>
@@ -1338,11 +1338,11 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
         {activeTab === "kyc" && (
           <div className="space-y-8 flex flex-col">
-            <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 rounded-[2rem] p-8">
-              <h3 className="text-xl font-black mb-6 text-sky-950 flex items-center gap-2"><FileText className="text-sky-600" /> Bóveda KYC (Know Your Customer)</h3>
-              <div className="overflow-x-auto rounded-xl border border-sky-100">
+            <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 rounded-[2rem] p-8">
+              <h3 className="text-xl font-black mb-6 text-violet-950 flex items-center gap-2"><FileText className="text-violet-600" /> Bóveda KYC (Know Your Customer)</h3>
+              <div className="overflow-x-auto rounded-xl border border-violet-100">
                 <table className="w-full text-sm text-left">
-                  <thead className="bg-sky-50 text-sky-700 uppercase text-xs font-black">
+                  <thead className="bg-violet-50 text-violet-700 uppercase text-xs font-black">
                     <tr>
                       <th className="py-4 px-4 rounded-tl-xl">Usuario / Entidad</th>
                       <th className="py-4 px-4">Rol</th>
@@ -1354,9 +1354,9 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                   <tbody className="bg-white">
                     {/* Clientes */}
                     {db.clients?.map((client: any) => (
-                      <tr key={client.id} className="border-b border-sky-100 hover:bg-sky-50/50 transition-colors">
-                        <td className="py-4 px-4 font-bold text-sky-950">{client.name} <span className="text-xs text-slate-500 font-normal block">{client.company}</span></td>
-                        <td className="py-4 px-4 text-xs font-bold text-sky-600">Dueño</td>
+                      <tr key={client.id} className="border-b border-violet-100 hover:bg-violet-50/50 transition-colors">
+                        <td className="py-4 px-4 font-bold text-violet-950">{client.name} <span className="text-xs text-slate-500 font-normal block">{client.company}</span></td>
+                        <td className="py-4 px-4 text-xs font-bold text-violet-600">Dueño</td>
                         <td className="py-4 px-4 text-xs text-slate-600 max-w-xs truncate" title={client.kyc_address || client.address}>{client.kyc_address || client.address || "N/A"}</td>
                         <td className="py-4 px-4 text-center">
                           <div className="flex justify-center gap-2">
@@ -1371,9 +1371,9 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                     ))}
                     {/* Promotoras */}
                     {db.promotoras?.map((promo: any) => (
-                      <tr key={promo.id} className="border-b border-sky-100 hover:bg-sky-50/50 transition-colors">
-                        <td className="py-4 px-4 font-bold text-sky-950">{promo.name}</td>
-                        <td className="py-4 px-4 text-xs font-bold text-sky-600">Promotora</td>
+                      <tr key={promo.id} className="border-b border-violet-100 hover:bg-violet-50/50 transition-colors">
+                        <td className="py-4 px-4 font-bold text-violet-950">{promo.name}</td>
+                        <td className="py-4 px-4 text-xs font-bold text-violet-600">Promotora</td>
                         <td className="py-4 px-4 text-xs text-slate-600 max-w-xs truncate" title={promo.kyc_address}>{promo.kyc_address || "N/A"}</td>
                         <td className="py-4 px-4 text-center">
                           <div className="flex justify-center gap-2">
@@ -1388,8 +1388,8 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                     ))}
                     {/* Customers */}
                     {db.customers?.map((cust: any) => (
-                      <tr key={cust.id} className="border-b border-sky-100 hover:bg-sky-50/50 transition-colors">
-                        <td className="py-4 px-4 font-bold text-sky-950">{cust.name} <span className="text-xs text-slate-500 font-normal block">{cust.phone}</span></td>
+                      <tr key={cust.id} className="border-b border-violet-100 hover:bg-violet-50/50 transition-colors">
+                        <td className="py-4 px-4 font-bold text-violet-950">{cust.name} <span className="text-xs text-slate-500 font-normal block">{cust.phone}</span></td>
                         <td className="py-4 px-4 text-xs font-bold text-slate-600">Usuario</td>
                         <td className="py-4 px-4 text-xs text-slate-600 max-w-xs truncate" title={cust.kyc_address}>{cust.kyc_address || "N/A"}</td>
                         <td className="py-4 px-4 text-center">
@@ -1412,8 +1412,8 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
         {activeTab === "nodos" && (
           <div className="space-y-8 flex flex-col">
-            <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 rounded-[2rem] p-8 animate-fade-in">
-              <h3 className="text-xl font-black mb-6 text-sky-950 flex items-center gap-2"><QrCode className="text-sky-600" /> Creador de Nodos {KFS_BRAND.productAcronym} (Invitaciones)</h3>
+            <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 rounded-[2rem] p-8 animate-fade-in">
+              <h3 className="text-xl font-black mb-6 text-violet-950 flex items-center gap-2"><QrCode className="text-violet-600" /> Creador de Nodos {KFS_BRAND.productAcronym} (Invitaciones)</h3>
               <p className="text-sm text-slate-500 mb-6">Genera enlaces QR oficiales para registrar nuevos actores en la economía {KFS_BRAND.productAcronym} como tus referidos.</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
@@ -1428,16 +1428,16 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                   }
                   const url = `${host}?role=${invite.role}&ref=arquitecto`;
                   return (
-                    <div key={idx} className="bg-sky-50/50 border border-sky-100 p-6 rounded-2xl flex flex-col items-center text-center shadow-sm placeholder:text-slate-400">
-                      <h4 className="font-black text-sky-950 mb-4">{invite.title}</h4>
-                      <div className="w-full h-16 bg-sky-100 flex items-center justify-center rounded-xl mb-4 text-sky-600 shadow-sm border border-sky-200">
+                    <div key={idx} className="bg-violet-50/50 border border-violet-100 p-6 rounded-2xl flex flex-col items-center text-center shadow-sm placeholder:text-slate-400">
+                      <h4 className="font-black text-violet-950 mb-4">{invite.title}</h4>
+                      <div className="w-full h-16 bg-violet-100 flex items-center justify-center rounded-xl mb-4 text-violet-600 shadow-sm border border-violet-200">
                         <Users size={32} />
                       </div>
-                      <div className="bg-white p-2 rounded-xl border border-sky-100 shadow-sm mb-4">
+                      <div className="bg-white p-2 rounded-xl border border-violet-100 shadow-sm mb-4">
                         <QRCodeSVG value={url} size={128} bgColor="#ffffff" fgColor="#0c4a6e" level="Q" />
                       </div>
-                      <input type="text" readOnly value={url} className="w-full text-[10px] bg-white border border-sky-200 rounded p-2 text-slate-500 mb-2 focus:outline-none focus:border-sky-400 focus:ring-2 focus:ring-sky-200" />
-                      <button onClick={() => { navigator.clipboard.writeText(url); showToast('Enlace copiado', 'success'); }} className="w-full py-2 bg-sky-600 text-white font-bold text-xs rounded hover:bg-sky-700 transition-colors shadow-md shadow-sky-600/30 cursor-pointer">Copiar Enlace</button>
+                      <input type="text" readOnly value={url} className="w-full text-[10px] bg-white border border-violet-200 rounded p-2 text-slate-500 mb-2 focus:outline-none focus:border-violet-400 focus:ring-2 focus:ring-violet-200" />
+                      <button onClick={() => { navigator.clipboard.writeText(url); showToast('Enlace copiado', 'success'); }} className="w-full py-2 bg-violet-600 text-white font-bold text-xs rounded hover:bg-violet-700 transition-colors shadow-md shadow-violet-600/30 cursor-pointer">Copiar Enlace</button>
                     </div>
                   );
                 })}
@@ -1458,28 +1458,28 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
         {activeModal === 'assign' && (
           <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-            <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6 border border-sky-100">
-              <div className="flex justify-between items-center border-b border-sky-100 pb-4">
-                <h3 className="text-xl font-black text-sky-950">Asignar Promotora</h3>
-                <button onClick={() => setActiveModal(null)} className="cursor-pointer text-slate-400 hover:text-sky-950 transition-colors"><X size={24} /></button>
+            <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6 border border-violet-100">
+              <div className="flex justify-between items-center border-b border-violet-100 pb-4">
+                <h3 className="text-xl font-black text-violet-950">Asignar Promotora</h3>
+                <button onClick={() => setActiveModal(null)} className="cursor-pointer text-slate-400 hover:text-violet-950 transition-colors"><X size={24} /></button>
               </div>
               <div className="space-y-4">
                 <div>
                   <label className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 block">Comercio (Target)</label>
-                  <select value={targetClientId} onChange={e => setTargetClientId(e.target.value)} className="w-full bg-white border border-sky-200 rounded-xl p-3 font-bold text-sky-950 focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-400 transition-all placeholder:text-slate-400">
+                  <select value={targetClientId} onChange={e => setTargetClientId(e.target.value)} className="w-full bg-white border border-violet-200 rounded-xl p-3 font-bold text-violet-950 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 transition-all placeholder:text-slate-400">
                     <option value="">Seleccione Comercio...</option>
                     {db.clients.map((c: any) => <option key={c.id} value={c.id}>{c.company}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 block">Nueva Promotora</label>
-                  <select value={targetPromotoraId} onChange={e => setTargetPromotoraId(e.target.value)} className="w-full bg-white border border-sky-200 rounded-xl p-3 font-bold text-sky-950 focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-400 transition-all placeholder:text-slate-400">
+                  <select value={targetPromotoraId} onChange={e => setTargetPromotoraId(e.target.value)} className="w-full bg-white border border-violet-200 rounded-xl p-3 font-bold text-violet-950 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 transition-all placeholder:text-slate-400">
                     <option value="">Seleccione Promotora...</option>
                     <option value="none">Sin Promotora (100% {KFS_BRAND.productAcronym})</option>
                     {db.promotoras.filter((p: any) => p.status !== 'pending').map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
                   </select>
                 </div>
-                <button onClick={() => { if (targetClientId && targetPromotoraId) { assignPromotoraToClient(targetClientId, targetPromotoraId === 'none' ? '' : targetPromotoraId); setActiveModal(null); } }} className="w-full bg-sky-600 hover:bg-sky-700 text-white py-4 rounded-xl font-black shadow-lg shadow-sky-600/30 transition-colors cursor-pointer">Aplicar Reasignación</button>
+                <button onClick={() => { if (targetClientId && targetPromotoraId) { assignPromotoraToClient(targetClientId, targetPromotoraId === 'none' ? '' : targetPromotoraId); setActiveModal(null); } }} className="w-full bg-violet-600 hover:bg-violet-700 text-white py-4 rounded-xl font-black shadow-lg shadow-violet-600/30 transition-colors cursor-pointer">Aplicar Reasignación</button>
               </div>
             </div>
           </div>
@@ -1506,17 +1506,17 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
       {activeModal === 'product' && (
           <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-            <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6 border border-sky-100">
-              <div className="flex justify-between items-center border-b border-sky-100 pb-4">
-                <h3 className="text-xl font-black text-sky-950">Catálogo Global</h3>
-                <button onClick={() => setActiveModal(null)} className="cursor-pointer text-slate-400 hover:text-sky-950 transition-colors"><X size={24} /></button>
+            <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6 border border-violet-100">
+              <div className="flex justify-between items-center border-b border-violet-100 pb-4">
+                <h3 className="text-xl font-black text-violet-950">Catálogo Global</h3>
+                <button onClick={() => setActiveModal(null)} className="cursor-pointer text-slate-400 hover:text-violet-950 transition-colors"><X size={24} /></button>
               </div>
               <div className="space-y-4">
-                <input type="text" placeholder="Nombre del Producto" value={globalProdName} onChange={e => setGlobalProdName(e.target.value)} className="w-full bg-white border border-sky-200 rounded-xl p-3 font-bold text-sky-950 focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-400 transition-all placeholder:text-slate-400" />
-                <input type="number" placeholder="Precio ($ USD)" value={globalProdPrice} onChange={e => setGlobalProdPrice(e.target.value)} className="w-full bg-white border border-sky-200 rounded-xl p-3 font-bold text-sky-950 focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-400 transition-all placeholder:text-slate-400" />
-                <input type="text" placeholder="Categoría" value={globalProdCategory} onChange={e => setGlobalProdCategory(e.target.value)} className="w-full bg-white border border-sky-200 rounded-xl p-3 font-bold text-sky-950 focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-400 transition-all placeholder:text-slate-400" />
-                <label className="flex items-center gap-2 text-sm font-bold text-slate-700 cursor-pointer p-3 border border-sky-200 rounded-xl bg-sky-50">
-                  <input type="checkbox" id="globalKPoints" className="w-5 h-5 accent-sky-600 rounded" defaultChecked={true} />
+                <input type="text" placeholder="Nombre del Producto" value={globalProdName} onChange={e => setGlobalProdName(e.target.value)} className="w-full bg-white border border-violet-200 rounded-xl p-3 font-bold text-violet-950 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 transition-all placeholder:text-slate-400" />
+                <input type="number" placeholder="Precio ($ USD)" value={globalProdPrice} onChange={e => setGlobalProdPrice(e.target.value)} className="w-full bg-white border border-violet-200 rounded-xl p-3 font-bold text-violet-950 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 transition-all placeholder:text-slate-400" />
+                <input type="text" placeholder="Categoría" value={globalProdCategory} onChange={e => setGlobalProdCategory(e.target.value)} className="w-full bg-white border border-violet-200 rounded-xl p-3 font-bold text-violet-950 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 transition-all placeholder:text-slate-400" />
+                <label className="flex items-center gap-2 text-sm font-bold text-slate-700 cursor-pointer p-3 border border-violet-200 rounded-xl bg-violet-50">
+                  <input type="checkbox" id="globalKPoints" className="w-5 h-5 accent-violet-600 rounded" defaultChecked={true} />
                   Permitir pago mixto con {KFS_BRAND.economy.currency} (Lealtad)
                 </label>
                 <button onClick={() => { 
@@ -1525,7 +1525,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                     addGlobalProduct({ name: globalProdName, priceUSD: parseFloat(globalProdPrice), category: globalProdCategory, allowKPoints }); 
                     setActiveModal(null); 
                   } 
-                }} className="w-full bg-sky-600 hover:bg-sky-700 text-white py-4 rounded-xl font-black shadow-lg shadow-sky-600/30 transition-colors cursor-pointer">
+                }} className="w-full bg-violet-600 hover:bg-violet-700 text-white py-4 rounded-xl font-black shadow-lg shadow-violet-600/30 transition-colors cursor-pointer">
                   Inyectar a la Red {KFS_BRAND.productAcronym}
                 </button>
               </div>
@@ -1535,15 +1535,15 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
         {activeModal === 'push' && (
           <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-            <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6 border border-sky-100">
-              <div className="flex justify-between items-center border-b border-sky-100 pb-4">
+            <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6 border border-violet-100">
+              <div className="flex justify-between items-center border-b border-violet-100 pb-4">
                 <h3 className="text-xl font-black text-red-600">Alerta Push Network</h3>
                 <button onClick={() => setActiveModal(null)} className="cursor-pointer text-slate-400 hover:text-red-600 transition-colors"><X size={24} /></button>
               </div>
               <div className="space-y-4">
                 <div>
                   <label className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 block">Audiencia Destino</label>
-                  <select value={notifTarget} onChange={e => setNotifTarget(e.target.value)} className="w-full bg-white border border-sky-200 rounded-xl p-3 font-bold text-sky-950 focus:outline-none focus:ring-2 focus:ring-sky-300 focus:border-sky-400 transition-all placeholder:text-slate-400">
+                  <select value={notifTarget} onChange={e => setNotifTarget(e.target.value)} className="w-full bg-white border border-violet-200 rounded-xl p-3 font-bold text-violet-950 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 transition-all placeholder:text-slate-400">
                     <option value="all">Toda la Red {KFS_BRAND.productAcronym}</option>
                     <option value="dueño">Comercios Afiliados</option>
                     <option value="promotora">Fuerza de Promotoras</option>
@@ -1565,7 +1565,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
               <img src={viewingKycPhoto} alt="Visor KYC" className="w-full max-h-[80vh] object-contain rounded-2xl shadow-2xl bg-white/5" />
               <div className="mt-6 flex gap-4 w-full max-w-sm">
                 {currentUser?.role === 'core' && (
-                  <a href={viewingKycPhoto} download="kfs_kyc_document.jpg" className="flex-1 bg-sky-600 text-white py-3 rounded-xl font-black text-center shadow-md shadow-sky-600/30 hover:scale-105 transition-transform flex items-center justify-center gap-2 cursor-pointer hover:bg-sky-700">
+                  <a href={viewingKycPhoto} download="kfs_kyc_document.jpg" className="flex-1 bg-violet-600 text-white py-3 rounded-xl font-black text-center shadow-md shadow-violet-600/30 hover:scale-105 transition-transform flex items-center justify-center gap-2 cursor-pointer hover:bg-violet-700">
                     <DownloadCloud size={20} /> Descargar Documento
                   </a>
                 )}
@@ -1576,13 +1576,13 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
         {assignRiderModal !== null && (
           <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-            <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6 border border-sky-100">
-              <div className="flex justify-between items-center border-b border-sky-100 pb-4">
+            <div className="bg-white rounded-[2rem] w-full max-w-md p-8 shadow-2xl space-y-6 border border-violet-100">
+              <div className="flex justify-between items-center border-b border-violet-100 pb-4">
                 <div>
-                  <h3 className="text-xl font-black text-sky-950 flex items-center gap-2"><Truck className="text-orange-500" size={22} /> Asignar Rider a Negocio</h3>
+                  <h3 className="text-xl font-black text-violet-950 flex items-center gap-2"><Truck className="text-orange-500" size={22} /> Asignar Rider a Negocio</h3>
                   <p className="text-xs text-slate-400 mt-0.5">Máx. 2 negocios por rider • Máx. 2 riders por negocio</p>
                 </div>
-                <button onClick={() => { setAssignRiderModal(null); setAssignRiderBusinessId(""); }}><X size={24} className="text-slate-400 hover:text-sky-950 cursor-pointer transition-colors" /></button>
+                <button onClick={() => { setAssignRiderModal(null); setAssignRiderBusinessId(""); }}><X size={24} className="text-slate-400 hover:text-violet-950 cursor-pointer transition-colors" /></button>
               </div>
               <div className="space-y-4">
                 <div>
@@ -1593,7 +1593,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                       const r = db.riders?.find((r: any) => r.id === e.target.value);
                       setAssignRiderModal({ riderId: e.target.value, riderName: r?.name || "" });
                     }}
-                    className="w-full bg-white border border-sky-200 rounded-xl p-3 font-bold text-sky-950 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 transition-all placeholder:text-slate-400"
+                    className="w-full bg-white border border-violet-200 rounded-xl p-3 font-bold text-violet-950 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 transition-all placeholder:text-slate-400"
                   >
                     <option value="">Seleccione un Rider...</option>
                     {(db.riders || []).filter((r: any) => r.status === "approved").map((r: any) => (
@@ -1611,7 +1611,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                   <select
                     value={assignRiderBusinessId}
                     onChange={e => setAssignRiderBusinessId(e.target.value)}
-                    className="w-full bg-white border border-sky-200 rounded-xl p-3 font-bold text-sky-950 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 transition-all placeholder:text-slate-400"
+                    className="w-full bg-white border border-violet-200 rounded-xl p-3 font-bold text-violet-950 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 transition-all placeholder:text-slate-400"
                   >
                     <option value="">Seleccione un Comercio...</option>
                     {db.clients.map((c: any) => {
@@ -1660,14 +1660,14 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
         {activeTab === "vista_dios" && (
           <div className="space-y-8 flex flex-col animate-fade-in">
-            <div className="bg-gradient-to-r from-slate-900 to-sky-950 rounded-[2rem] p-8 shadow-2xl text-white border border-sky-800">
-              <h3 className="text-2xl font-black mb-4 flex items-center gap-2 text-white"><Eye className="text-sky-400" /> Vista de Dios (Read-Only)</h3>
-              <p className="text-sm text-sky-200 mb-8">Acceso directo a la capa de datos. Todo el ecosistema unificado.</p>
+            <div className="bg-gradient-to-r from-slate-900 to-violet-950 rounded-[2rem] p-8 shadow-2xl text-white border border-violet-800">
+              <h3 className="text-2xl font-black mb-4 flex items-center gap-2 text-white"><Eye className="text-violet-400" /> Vista de Dios (Read-Only)</h3>
+              <p className="text-sm text-violet-200 mb-8">Acceso directo a la capa de datos. Todo el ecosistema unificado.</p>
               
               <div className="space-y-8">
                 {/* Tabla de Z-Reports (Flujos de Caja) */}
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                  <h4 className="text-sky-400 font-black uppercase tracking-widest text-sm mb-4">Flujos de Caja Consolidados (Z-Reports)</h4>
+                  <h4 className="text-violet-400 font-black uppercase tracking-widest text-sm mb-4">Flujos de Caja Consolidados (Z-Reports)</h4>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs font-mono">
                       <thead className="text-slate-400 border-b border-white/10">
@@ -1684,7 +1684,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                             <td className="py-3 text-slate-300">{new Date(z.timestamp).toLocaleDateString()}</td>
                             <td className="py-3 text-white font-bold">{z.clientName}</td>
                             <td className="py-3 text-emerald-400 font-bold">{formatUSD(z.totalSalesUSD)}</td>
-                            <td className="py-3 text-sky-300 font-bold">{formatUSD(z.kfsFeesOwedUSD)}</td>
+                            <td className="py-3 text-violet-300 font-bold">{formatUSD(z.kfsFeesOwedUSD)}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -1694,7 +1694,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
                 {/* Tabla de Usuarios Activos */}
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                  <h4 className="text-sky-400 font-black uppercase tracking-widest text-sm mb-4">Usuarios Activos en Red</h4>
+                  <h4 className="text-violet-400 font-black uppercase tracking-widest text-sm mb-4">Usuarios Activos en Red</h4>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="bg-black/50 p-4 rounded-xl border border-white/5">
                       <span className="text-[10px] text-slate-400 block uppercase">Dueños</span>
@@ -1717,7 +1717,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
                 {/* Tabla de Últimas Transacciones */}
                 <div className="bg-white/5 border border-white/10 rounded-2xl p-6">
-                  <h4 className="text-sky-400 font-black uppercase tracking-widest text-sm mb-4">Pipeline de Transacciones</h4>
+                  <h4 className="text-violet-400 font-black uppercase tracking-widest text-sm mb-4">Pipeline de Transacciones</h4>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left text-xs font-mono">
                       <thead className="text-slate-400 border-b border-white/10">
@@ -1778,11 +1778,11 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
         {activeTab === "tienda_oficial" && (
           <div className="space-y-8 flex flex-col animate-fade-in relative">
-              <div className="bg-white shadow-xl shadow-sky-200/50 border border-sky-100 rounded-[2rem] p-8 text-center flex flex-col items-center">
-              <div className="w-24 h-24 bg-gradient-to-tr from-sky-600 to-sky-400 rounded-[2rem] shadow-lg shadow-sky-600/30 flex items-center justify-center mb-6">
+              <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 rounded-[2rem] p-8 text-center flex flex-col items-center">
+              <div className="w-24 h-24 bg-gradient-to-tr from-violet-600 to-violet-400 rounded-[2rem] shadow-lg shadow-violet-600/30 flex items-center justify-center mb-6">
                 <Store className="w-12 h-12 text-white" />
               </div>
-              <h2 className="text-3xl font-black text-sky-950 mb-2">{KFS_BRAND.modules.marketplace} Oficial {KFS_BRAND.productAcronym}</h2>
+              <h2 className="text-3xl font-black text-violet-950 mb-2">{KFS_BRAND.modules.marketplace} Oficial {KFS_BRAND.productAcronym}</h2>
               <p className="text-slate-500 font-bold mb-8 max-w-md">
                 Administra el inventario del {KFS_BRAND.modules.marketplace} Global ({KFS_BRAND.modules.marketplace}). Los productos aquí subidos forzarán el consumo de {KFS_BRAND.economy.currency}.
               </p>
@@ -1824,9 +1824,9 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                   }
                   impersonateClient(oficialStore);
                 }}
-                className="bg-sky-950 text-white px-8 py-4 rounded-2xl font-black text-lg flex items-center gap-3 hover:bg-black transition-all cursor-pointer shadow-xl hover:-translate-y-1 border-none"
+                className="bg-violet-950 text-white px-8 py-4 rounded-2xl font-black text-lg flex items-center gap-3 hover:bg-black transition-all cursor-pointer shadow-xl hover:-translate-y-1 border-none"
               >
-                <Database className="w-6 h-6 text-sky-400" />
+                <Database className="w-6 h-6 text-violet-400" />
                 Acceder como Dueño de {KFS_BRAND.modules.marketplace}
               </button>
             </div>
@@ -1836,7 +1836,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
 
       {/* FIXED BOTTOM NAVIGATION */}
-      <div className="fixed bottom-0 inset-x-0 z-50 bg-white/90 backdrop-blur-xl border-t border-sky-100 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pb-safe">
+      <div className="fixed bottom-0 inset-x-0 z-50 bg-white/90 backdrop-blur-xl border-t border-violet-100 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pb-safe">
         <div className="max-w-5xl mx-auto px-6 py-4 flex justify-around items-center relative">
           {[
             { id: "panel", icon: Activity, label: "Panel" },
@@ -1858,8 +1858,8 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                 onClick={() => setActiveTab(tab.id)}
                 className="relative flex flex-col items-center justify-center w-20 h-12 cursor-pointer group"
               >
-                {isActive && <span className="absolute -top-4 w-12 h-1 bg-sky-600 rounded-b-full shadow-[0_4px_10px_rgba(2,132,199,0.5)]" />}
-                <div className={`relative transition-all duration-300 ${isActive ? '-translate-y-2 text-sky-600' : 'text-slate-400 group-hover:text-sky-500'}`}>
+                {isActive && <span className="absolute -top-4 w-12 h-1 bg-violet-600 rounded-b-full shadow-[0_4px_10px_rgba(2,132,199,0.5)]" />}
+                <div className={`relative transition-all duration-300 ${isActive ? '-translate-y-2 text-violet-600' : 'text-slate-400 group-hover:text-violet-500'}`}>
                   <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
                   {tab.badge ? (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full border-2 border-white animate-pulse shadow-sm">
@@ -1867,7 +1867,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                     </span>
                   ) : null}
                 </div>
-                <span className={`text-[9px] font-bold mt-1 transition-all duration-300 ${isActive ? 'opacity-100 text-sky-950' : 'opacity-0 translate-y-2'}`}>{tab.label}</span>
+                <span className={`text-[9px] font-bold mt-1 transition-all duration-300 ${isActive ? 'opacity-100 text-violet-950' : 'opacity-0 translate-y-2'}`}>{tab.label}</span>
               </button>
             )
           })}

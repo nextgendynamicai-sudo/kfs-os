@@ -47,21 +47,21 @@ export const TopUpModal = ({ isOpen, onClose, amount: initialAmount, onSubmit, u
 
   return (
     <AnimatePresence>
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[99999] bg-sky-950/60 backdrop-blur-md flex items-center justify-center p-4">
-        <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} className="bg-white text-sky-950 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-sky-100 flex flex-col max-h-[90vh]">
-          <div className="flex justify-between items-center p-6 border-b border-sky-100 bg-sky-50 shrink-0">
+      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[99999] bg-violet-950/60 backdrop-blur-md flex items-center justify-center p-4">
+        <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} className="bg-white text-violet-950 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-violet-100 flex flex-col max-h-[90vh]">
+          <div className="flex justify-between items-center p-6 border-b border-violet-100 bg-violet-50 shrink-0">
             <h2 className="font-black text-xl flex items-center gap-2"><DollarSign className="text-green-400" /> Recargar Saldo</h2>
-            <button onClick={onClose} className="p-2 bg-sky-100 rounded-full hover:bg-white/20 transition-colors text-sky-950 cursor-pointer">
+            <button onClick={onClose} className="p-2 bg-violet-100 rounded-full hover:bg-white/20 transition-colors text-violet-950 cursor-pointer">
               <X size={20} />
             </button>
           </div>
           
           <div className="p-6 overflow-y-auto flex-1 space-y-6">
-            <div className="bg-sky-50 border border-sky-100 rounded-2xl p-5">
-              <h3 className="font-bold text-sky-600 mb-3 flex items-center gap-2"><CreditCard size={18}/> Datos para Transferencia</h3>
+            <div className="bg-violet-50 border border-violet-100 rounded-2xl p-5">
+              <h3 className="font-bold text-violet-600 mb-3 flex items-center gap-2"><CreditCard size={18}/> Datos para Transferencia</h3>
               <p className="text-xs text-slate-600 leading-relaxed">Transfiere el monto deseado a la siguiente cuenta. Luego, adjunta el comprobante para validar tu saldo.</p>
               
-              <div className="mt-4 space-y-2 text-sm font-mono bg-sky-50 p-4 rounded-xl border border-sky-100">
+              <div className="mt-4 space-y-2 text-sm font-mono bg-violet-50 p-4 rounded-xl border border-violet-100">
                 <p><span className="text-slate-400">Banco:</span> Banco Nacional de Crédito (BNC)</p>
                 <p><span className="text-slate-400">Cuenta:</span> 0104-XXXX-XXXX-XXXX-XXXX</p>
                 <p><span className="text-slate-400">Titular:</span> Javier Castillo ({KFS_BRAND.productAcronym} OS)</p>
@@ -74,26 +74,26 @@ export const TopUpModal = ({ isOpen, onClose, amount: initialAmount, onSubmit, u
                 <label className="text-xs font-bold text-slate-500 block mb-1">Monto a Recargar (USD)</label>
                 <div className="relative">
                   <DollarSign size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500" />
-                  <input type="number" step="any" min="1" required value={localAmount} onChange={(e) => setLocalAmount(e.target.value)} className="w-full bg-sky-50 border border-sky-100 rounded-xl pl-10 pr-4 py-3 text-sky-950 font-black text-lg focus:outline-none focus:border-sky-300 transition-colors" placeholder="0.00" />
+                  <input type="number" step="any" min="1" required value={localAmount} onChange={(e) => setLocalAmount(e.target.value)} className="w-full bg-violet-50 border border-violet-100 rounded-xl pl-10 pr-4 py-3 text-violet-950 font-black text-lg focus:outline-none focus:border-violet-300 transition-colors" placeholder="0.00" />
                 </div>
               </div>
 
               <div>
                 <label className="text-xs font-bold text-slate-500 block mb-1">Referencia Bancaria</label>
-                <input type="text" required value={reference} onChange={(e) => setReference(e.target.value)} className="w-full bg-sky-50 border border-sky-100 rounded-xl px-4 py-3 text-sky-950 focus:outline-none focus:border-sky-300 transition-colors" placeholder="Ej: 12345678" />
+                <input type="text" required value={reference} onChange={(e) => setReference(e.target.value)} className="w-full bg-violet-50 border border-violet-100 rounded-xl px-4 py-3 text-violet-950 focus:outline-none focus:border-violet-300 transition-colors" placeholder="Ej: 12345678" />
               </div>
 
               <div>
                 <label className="text-xs font-bold text-slate-500 block mb-1">Captura del Comprobante</label>
                 {screenshot ? (
-                  <div className="relative group rounded-xl overflow-hidden border border-sky-100 aspect-video">
+                  <div className="relative group rounded-xl overflow-hidden border border-violet-100 aspect-video">
                     <img src={screenshot} alt="Comprobante" className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-sky-950/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute inset-0 bg-violet-950/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                       <button type="button" onClick={() => setScreenshot("")} className="bg-rose-500 hover:bg-rose-600 text-white text-xs font-black py-2 px-4 rounded-lg cursor-pointer">Borrar Imagen</button>
                     </div>
                   </div>
                 ) : (
-                  <label className="border-2 border-dashed border-white/20 hover:border-sky-300 rounded-xl flex flex-col items-center justify-center py-8 cursor-pointer transition-colors bg-sky-50">
+                  <label className="border-2 border-dashed border-white/20 hover:border-violet-300 rounded-xl flex flex-col items-center justify-center py-8 cursor-pointer transition-colors bg-violet-50">
                     <Camera size={24} className="text-slate-500 mb-2" />
                     <span className="text-sm font-bold text-slate-600">Subir Captura</span>
                     <span className="text-[10px] text-slate-400 mt-1">PNG, JPG (Máx. 5MB)</span>
@@ -102,7 +102,7 @@ export const TopUpModal = ({ isOpen, onClose, amount: initialAmount, onSubmit, u
                 )}
               </div>
 
-              <button type="submit" className="w-full py-4 bg-green-500 hover:bg-green-600 active:scale-95 text-sky-950 font-black rounded-xl transition-all shadow-lg shadow-green-500/20 text-lg flex items-center justify-center gap-2 mt-4 cursor-pointer">
+              <button type="submit" className="w-full py-4 bg-green-500 hover:bg-green-600 active:scale-95 text-violet-950 font-black rounded-xl transition-all shadow-lg shadow-green-500/20 text-lg flex items-center justify-center gap-2 mt-4 cursor-pointer">
                 <Upload size={20} /> Enviar Validación
               </button>
             </form>

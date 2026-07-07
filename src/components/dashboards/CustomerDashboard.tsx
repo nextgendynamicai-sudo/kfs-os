@@ -226,9 +226,9 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
   };
 
   return (
-    <div className="min-h-screen bg-sky-50 text-sky-950 font-sans pb-24 relative">
+    <div className="min-h-screen bg-violet-50 text-violet-950 font-sans pb-24 relative">
       {/* Wavy Header */}
-      <div className="bg-sky-600 rounded-b-[3rem] shadow-lg shadow-sky-600/20 pt-6 pb-12 px-6 text-white relative z-10 border-b border-sky-400">
+      <div className="bg-violet-600 rounded-b-[3rem] shadow-lg shadow-violet-600/20 pt-6 pb-12 px-6 text-white relative z-10 border-b border-violet-400">
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
             <span className="bg-white/20 p-2 rounded-xl text-white"><UserCheck size={20} /></span>
@@ -236,7 +236,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
           </div>
           <div className="flex items-center gap-2">
               <div className="bg-white/20 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-sm border border-white/30 backdrop-blur-md" title="Billetera Axis Points">
-                <span className="text-[10px] font-black uppercase tracking-wider text-sky-100">Axis Pts</span>
+                <span className="text-[10px] font-black uppercase tracking-wider text-violet-100">Axis Pts</span>
                 <span className="font-black text-white text-sm">{currentUser?.kfsPoints || 0}</span>
               </div>
               <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
@@ -246,12 +246,12 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
         </div>
 
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-sky-600 font-black text-2xl flex-shrink-0 shadow-md border-4 border-sky-100 relative z-20">
+          <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-violet-600 font-black text-2xl flex-shrink-0 shadow-md border-4 border-violet-100 relative z-20">
             <ProfileAvatarEditor currentUser={currentUser} />
           </div>
           <div>
             <h2 className="text-xl md:text-2xl font-black tracking-tight truncate">{currentUser.name}</h2>
-            <p className="text-sky-100 font-mono text-xs mt-1 bg-sky-700 inline-block px-2 py-0.5 rounded-md">{currentUser.phone}</p>
+            <p className="text-violet-100 font-mono text-xs mt-1 bg-violet-700 inline-block px-2 py-0.5 rounded-md">{currentUser.phone}</p>
           </div>
         </div>
       </div>
@@ -279,31 +279,31 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
             </UniversalWalletWidget>
 
             {/* FlowMaster Gamification Tracker */}
-            <div className="bg-white border border-sky-100 rounded-[2.5rem] p-5 shadow-2xl shadow-sky-200/50 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-sky-100 rounded-full blur-3xl"></div>
+            <div className="bg-white border border-violet-100 rounded-[2.5rem] p-5 shadow-2xl shadow-violet-200/50 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-violet-100 rounded-full blur-3xl"></div>
               <div className="flex items-center gap-3 mb-4 relative z-10">
-                <div className="w-10 h-10 rounded-full bg-sky-50 flex items-center justify-center border border-sky-200 shadow-sm">
-                  <Star className={currentUser.isFlowMaster ? "text-yellow-400" : "text-sky-300"} size={20} />
+                <div className="w-10 h-10 rounded-full bg-violet-50 flex items-center justify-center border border-violet-200 shadow-sm">
+                  <Star className={currentUser.isFlowMaster ? "text-yellow-400" : "text-violet-300"} size={20} />
                 </div>
                 <div>
-                  <h4 className="text-sky-950 font-black text-sm">Rango FlowMaster</h4>
+                  <h4 className="text-violet-950 font-black text-sm">Rango FlowMaster</h4>
                   <p className="text-slate-500 text-[10px] mt-0.5">{currentUser.isFlowMaster ? "¡Eres FlowMaster! AOF exento." : "Completa los hitos para exentar el AOF y subir de rango."}</p>
                 </div>
               </div>
 
               {!currentUser.isFlowMaster && (
                 <div className="space-y-3 mb-4 relative z-10">
-                  <div className="bg-sky-50/50 rounded-lg p-2.5 flex justify-between items-center border border-sky-100">
+                  <div className="bg-violet-50/50 rounded-lg p-2.5 flex justify-between items-center border border-violet-100">
                     <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">10 Transacciones</span>
-                    <span className={`text-xs font-black ${txCount >= 10 ? 'text-sky-600' : 'text-slate-400'}`}>{txCount}/10</span>
+                    <span className={`text-xs font-black ${txCount >= 10 ? 'text-violet-600' : 'text-slate-400'}`}>{txCount}/10</span>
                   </div>
-                  <div className="bg-sky-50/50 rounded-lg p-2.5 flex justify-between items-center border border-sky-100">
+                  <div className="bg-violet-50/50 rounded-lg p-2.5 flex justify-between items-center border border-violet-100">
                     <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">4 Comercios Distintos</span>
-                    <span className={`text-xs font-black ${uniqueMerchants >= 4 ? 'text-sky-600' : 'text-slate-400'}`}>{uniqueMerchants}/4</span>
+                    <span className={`text-xs font-black ${uniqueMerchants >= 4 ? 'text-violet-600' : 'text-slate-400'}`}>{uniqueMerchants}/4</span>
                   </div>
-                  <div className="bg-sky-50/50 rounded-lg p-2.5 flex justify-between items-center border border-sky-100">
+                  <div className="bg-violet-50/50 rounded-lg p-2.5 flex justify-between items-center border border-violet-100">
                     <span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">50K Puntos ($50) Movidos</span>
-                    <span className={`text-xs font-black ${volumeKPoints >= 50000 ? 'text-sky-600' : 'text-slate-400'}`}>{volumeKPoints.toLocaleString()}/50,000 Axis Points</span>
+                    <span className={`text-xs font-black ${volumeKPoints >= 50000 ? 'text-violet-600' : 'text-slate-400'}`}>{volumeKPoints.toLocaleString()}/50,000 Axis Points</span>
                   </div>
                 </div>
               )}
@@ -330,9 +330,9 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
             />
 
             {/* P2P Transfer Form */}
-            <div className="bg-white border border-sky-100 rounded-[2.5rem] p-6 sm:p-8 shadow-2xl shadow-sky-200/50 space-y-5">
+            <div className="bg-white border border-violet-100 rounded-[2.5rem] p-6 sm:p-8 shadow-2xl shadow-violet-200/50 space-y-5">
               <div>
-                <h3 className="text-xl font-black text-sky-700 flex items-center gap-2">
+                <h3 className="text-xl font-black text-violet-700 flex items-center gap-2">
                   <Users size={24} /> Transferencias P2P Instantáneas
                 </h3>
                 <p className="text-xs text-slate-500 mt-1">
@@ -341,8 +341,8 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
               </div>
 
               {/* Bono Viral Embajador — QR Real Escaneable */}
-              <div className="bg-sky-50 border border-sky-100 p-5 rounded-[1.5rem] flex flex-col sm:flex-row items-center gap-5">
-                <div className="w-28 h-28 bg-white rounded-xl p-1.5 border border-sky-200 shadow-sm flex-shrink-0">
+              <div className="bg-violet-50 border border-violet-100 p-5 rounded-[1.5rem] flex flex-col sm:flex-row items-center gap-5">
+                <div className="w-28 h-28 bg-white rounded-xl p-1.5 border border-violet-200 shadow-sm flex-shrink-0">
                   <img
                     src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent('https://kfs-os.vercel.app?role=customer&ref=' + currentUser.id)}`}
                     alt="QR Referido"
@@ -352,14 +352,14 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                 </div>
                 <div className="flex-1 text-center sm:text-left">
                   <div className="flex items-center justify-center sm:justify-start gap-2 mb-1">
-                    <Gift size={18} className="text-sky-600" />
-                    <h4 className="font-black text-sky-950 text-base">Bono Viral Embajador</h4>
+                    <Gift size={18} className="text-violet-600" />
+                    <h4 className="font-black text-violet-950 text-base">Bono Viral Embajador</h4>
                   </div>
                   <p className="text-xs text-slate-500 leading-relaxed mb-3">
-                    Escanea o comparte tu QR. Cuando tu referido haga su primera recarga de <strong className="text-sky-600">$5.00+</strong>, recibirás <strong className="text-sky-600">+500 {KFS_BRAND.economy.currency} ($0.50)</strong> automáticos.
+                    Escanea o comparte tu QR. Cuando tu referido haga su primera recarga de <strong className="text-violet-600">$5.00+</strong>, recibirás <strong className="text-violet-600">+500 {KFS_BRAND.economy.currency} ($0.50)</strong> automáticos.
                   </p>
                   <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
-                    <span className="font-mono bg-white border border-sky-200 px-2 py-1 rounded-lg text-sky-700 text-xs">ID: {currentUser.id}</span>
+                    <span className="font-mono bg-white border border-violet-200 px-2 py-1 rounded-lg text-violet-700 text-xs">ID: {currentUser.id}</span>
                     <button
                       onClick={() => { navigator.clipboard.writeText('https://kfs-os.vercel.app?role=customer&ref=' + currentUser.id); showToast('📋 Enlace copiado.', 'success'); }}
                       className="text-[10px] font-black text-white bg-emerald-600 hover:bg-emerald-500 px-3 py-1.5 rounded-lg cursor-pointer transition-colors"
@@ -379,7 +379,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                       placeholder="Ej: 04121234567 o Nombre"
                       value={p2pRecipient}
                       onChange={(e) => setP2pRecipient(e.target.value)}
-                      className="w-full bg-sky-50/50 border border-sky-100 rounded-xl px-4 py-3 text-xs text-sky-950 placeholder-slate-400 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition-colors"
+                      className="w-full bg-violet-50/50 border border-violet-100 rounded-xl px-4 py-3 text-xs text-violet-950 placeholder-slate-400 focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-400 transition-colors"
                     />
                   </div>
                   <div>
@@ -390,7 +390,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                       placeholder="Ej: 5.00 o 500"
                       value={p2pAmount}
                       onChange={(e) => setP2pAmount(e.target.value)}
-                      className="w-full bg-sky-50/50 border border-sky-100 rounded-xl px-4 py-3 text-xs text-sky-950 placeholder-slate-400 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition-colors"
+                      className="w-full bg-violet-50/50 border border-violet-100 rounded-xl px-4 py-3 text-xs text-violet-950 placeholder-slate-400 focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-400 transition-colors"
                     />
                   </div>
                 </div>
@@ -400,21 +400,21 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                     <button
                       type="button"
                       onClick={() => setP2pType("real_balance")}
-                      className={`py-2 px-4 rounded-xl text-xs font-bold border transition-all cursor-pointer ${p2pType === "real_balance" ? "bg-sky-600 text-white border-sky-600 shadow-md shadow-sky-600/30" : "bg-sky-50 border-sky-100 text-slate-500 hover:border-sky-200"}`}
+                      className={`py-2 px-4 rounded-xl text-xs font-bold border transition-all cursor-pointer ${p2pType === "real_balance" ? "bg-violet-600 text-white border-violet-600 shadow-md shadow-violet-600/30" : "bg-violet-50 border-violet-100 text-slate-500 hover:border-violet-200"}`}
                     >
                       Saldo Real (USD)
                     </button>
                     <button
                       type="button"
                       onClick={() => setP2pType("k_points_balance")}
-                      className={`py-2 px-4 rounded-xl text-xs font-bold border transition-all cursor-pointer ${p2pType === "k_points_balance" ? "bg-sky-600 text-white border-sky-600 shadow-md shadow-sky-600/30" : "bg-sky-50 border-sky-100 text-slate-500 hover:border-sky-200"}`}
+                      className={`py-2 px-4 rounded-xl text-xs font-bold border transition-all cursor-pointer ${p2pType === "k_points_balance" ? "bg-violet-600 text-white border-violet-600 shadow-md shadow-violet-600/30" : "bg-violet-50 border-violet-100 text-slate-500 hover:border-violet-200"}`}
                     >
                       {KFS_BRAND.economy.currency}
                     </button>
                   </div>
                   <button
                     type="submit"
-                    className="bg-sky-50 hover:bg-sky-600 hover:text-white border border-sky-100 text-sky-600 rounded-xl px-6 py-2.5 text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm self-end sm:self-auto font-sans"
+                    className="bg-violet-50 hover:bg-violet-600 hover:text-white border border-violet-100 text-violet-600 rounded-xl px-6 py-2.5 text-xs font-black transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-sm self-end sm:self-auto font-sans"
                   >
                     Transferir Balance <ArrowUpRight size={14} />
                   </button>
@@ -427,8 +427,8 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
 
             {/* Logistics Tracking */}
             {(activeOrders.length > 0 || logisticsTxs.length > 0) && (
-              <div className="bg-white border border-sky-100 rounded-[2rem] p-6 md:p-8 shadow-xl shadow-sky-200/50">
-                <h3 className="text-xl font-black mb-6 text-sky-700 flex items-center gap-2"><Truck size={24} /> Rastreo de Envíos Activos</h3>
+              <div className="bg-white border border-violet-100 rounded-[2rem] p-6 md:p-8 shadow-xl shadow-violet-200/50">
+                <h3 className="text-xl font-black mb-6 text-violet-700 flex items-center gap-2"><Truck size={24} /> Rastreo de Envíos Activos</h3>
                 <div className="space-y-4">
                   {activeOrders.map((o: any) => {
                     const p = db.products.find((prod: any) => prod.id === o.productId);
@@ -448,15 +448,15 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                     const isPickedUp = tx.shippingStatus === 'picked_up';
                     const isDelivered = tx.shippingStatus === 'delivered';
                     return (
-                      <div key={tx.id} className={`${isDelivered ? 'bg-slate-50 border-slate-200' : isPickedUp ? 'bg-purple-50 border-purple-100' : isDispatched ? 'bg-emerald-50 border-emerald-100' : 'bg-sky-50 border-sky-100'} border p-5 rounded-2xl space-y-4 relative overflow-hidden`}>
+                      <div key={tx.id} className={`${isDelivered ? 'bg-slate-50 border-slate-200' : isPickedUp ? 'bg-purple-50 border-purple-100' : isDispatched ? 'bg-emerald-50 border-emerald-100' : 'bg-violet-50 border-violet-100'} border p-5 rounded-2xl space-y-4 relative overflow-hidden`}>
                         <div className="flex justify-between items-start relative z-10">
                           <div>
-                            <h4 className={`font-bold ${isDelivered ? 'text-slate-600' : isPickedUp ? 'text-purple-600' : isDispatched ? 'text-emerald-600' : 'text-sky-600'}`}>{p?.name || "Producto Online"}</h4>
-                            <p className={`text-xs mt-1 ${isDelivered ? 'text-slate-500' : isPickedUp ? 'text-purple-500/70' : isDispatched ? 'text-emerald-500/70' : 'text-sky-500/70'}`}>
+                            <h4 className={`font-bold ${isDelivered ? 'text-slate-600' : isPickedUp ? 'text-purple-600' : isDispatched ? 'text-emerald-600' : 'text-violet-600'}`}>{p?.name || "Producto Online"}</h4>
+                            <p className={`text-xs mt-1 ${isDelivered ? 'text-slate-500' : isPickedUp ? 'text-purple-500/70' : isDispatched ? 'text-emerald-500/70' : 'text-violet-500/70'}`}>
                               {isDelivered ? '✅ Entregado' : isPickedUp ? '🛵 Tu Rider recogió el pedido y va en camino.' : isDispatched ? '📦 Tu paquete fue asignado a un Rider y está esperando recolección.' : '⏳ Pago Aprobado. Vendedor empacando'}
                             </p>
                           </div>
-                          {isDelivered ? <CheckCircle className="text-slate-400" /> : isPickedUp ? <MapPin className="text-purple-500 animate-bounce" /> : isDispatched ? <Truck className="text-emerald-500 animate-pulse" /> : <Package className="text-sky-500 animate-pulse" />}
+                          {isDelivered ? <CheckCircle className="text-slate-400" /> : isPickedUp ? <MapPin className="text-purple-500 animate-bounce" /> : isDispatched ? <Truck className="text-emerald-500 animate-pulse" /> : <Package className="text-violet-500 animate-pulse" />}
                         </div>
 
                         {/* Live Map */}
@@ -523,12 +523,12 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
             )}
 
             {/* Purchase History */}
-            <div className="bg-white border border-sky-100 rounded-[2rem] p-6 md:p-8 shadow-xl shadow-sky-200/50">
-              <h3 className="text-xl font-black mb-6 text-sky-700 flex items-center gap-2"><Activity size={24} /> Historial de Tiendas Visitadas</h3>
+            <div className="bg-white border border-violet-100 rounded-[2rem] p-6 md:p-8 shadow-xl shadow-violet-200/50">
+              <h3 className="text-xl font-black mb-6 text-violet-700 flex items-center gap-2"><Activity size={24} /> Historial de Tiendas Visitadas</h3>
               {historyEntries.length === 0 ? (
                 <div className="text-center py-10 opacity-70">
-                  <Package size={48} className="mx-auto mb-4 text-sky-300" />
-                  <p className="font-bold text-sky-900">Aún no tienes historial de compras.</p>
+                  <Package size={48} className="mx-auto mb-4 text-violet-300" />
+                  <p className="font-bold text-violet-900">Aún no tienes historial de compras.</p>
                   <p className="text-xs text-slate-500 mt-1">Visita tiendas {KFS_BRAND.productAcronym} o compra en {KFS_BRAND.modules.marketplace}.</p>
                 </div>
               ) : (
@@ -536,19 +536,19 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                   {historyEntries.map((c: any, i: number) => {
                     const store = db.clients.find((cl: any) => cl.id === c.clientId);
                     return (
-                      <div key={i} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-5 bg-sky-50/50 rounded-xl border border-sky-100 hover:border-sky-300 transition-colors gap-4">
+                      <div key={i} className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-5 bg-violet-50/50 rounded-xl border border-violet-100 hover:border-violet-300 transition-colors gap-4">
                         <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-sky-600 shadow-sm border border-sky-100">
+                          <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-violet-600 shadow-sm border border-violet-100">
                             <Store size={18} />
                           </div>
                           <div>
-                            <p className="font-black text-sky-950 text-lg">{store?.company || `${KFS_BRAND.modules.marketplace} Desconocida`}</p>
+                            <p className="font-black text-violet-950 text-lg">{store?.company || `${KFS_BRAND.modules.marketplace} Desconocida`}</p>
                             <p className="text-[10px] uppercase tracking-widest text-slate-500 mt-1 font-bold">{c.purchasesCount} Compras Registradas</p>
                           </div>
                         </div>
-                        <div className="text-left sm:text-right w-full sm:w-auto bg-white sm:bg-transparent p-3 sm:p-0 rounded-lg shadow-sm sm:shadow-none border border-sky-100 sm:border-none">
+                        <div className="text-left sm:text-right w-full sm:w-auto bg-white sm:bg-transparent p-3 sm:p-0 rounded-lg shadow-sm sm:shadow-none border border-violet-100 sm:border-none">
                           <p className="text-[10px] text-slate-400 font-mono">Volumen Gastado</p>
-                          <p className="text-sky-600 font-black text-xl">{formatUSD(c.totalSpent)}</p>
+                          <p className="text-violet-600 font-black text-xl">{formatUSD(c.totalSpent)}</p>
                         </div>
                       </div>
                     )
@@ -562,16 +562,16 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
           <div className="space-y-6">
             {/* Candidate Notifications Section */}
             {currentCandidate?.notifications && currentCandidate.notifications.length > 0 && (
-              <div className="bg-white border border-sky-100 rounded-[2rem] p-6 space-y-4 animate-fade-in shadow-xl shadow-sky-200/50">
-                <div className="flex justify-between items-center border-b border-sky-100 pb-3">
-                  <h4 className="text-sm font-black text-sky-700 uppercase tracking-wider flex items-center gap-2">
+              <div className="bg-white border border-violet-100 rounded-[2rem] p-6 space-y-4 animate-fade-in shadow-xl shadow-violet-200/50">
+                <div className="flex justify-between items-center border-b border-violet-100 pb-3">
+                  <h4 className="text-sm font-black text-violet-700 uppercase tracking-wider flex items-center gap-2">
                     <Bell size={16} /> Notificaciones de Empleo
                   </h4>
                   {unreadNotifsCount > 0 && (
                     <button
                       type="button"
                       onClick={() => markNotificationsAsRead(currentCandidate.id)}
-                      className="text-[10px] text-slate-500 hover:text-sky-600 underline cursor-pointer"
+                      className="text-[10px] text-slate-500 hover:text-violet-600 underline cursor-pointer"
                     >
                       Marcar todas como leídas
                     </button>
@@ -579,12 +579,12 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                 </div>
                 <div className="space-y-3 max-h-48 overflow-y-auto pr-2">
                   {[...currentCandidate.notifications].reverse().map((n: any) => (
-                    <div key={n.id} className={`p-4 rounded-xl border transition-all text-xs ${n.read ? 'bg-sky-50 border-sky-100 text-slate-500' : 'bg-sky-100/50 border-sky-300 text-sky-950 font-bold shadow-sm'}`}>
+                    <div key={n.id} className={`p-4 rounded-xl border transition-all text-xs ${n.read ? 'bg-violet-50 border-violet-100 text-slate-500' : 'bg-violet-100/50 border-violet-300 text-violet-950 font-bold shadow-sm'}`}>
                       <div className="flex justify-between items-start gap-2">
-                        <span className="uppercase tracking-wider font-black text-sky-700">{n.title}</span>
+                        <span className="uppercase tracking-wider font-black text-violet-700">{n.title}</span>
                         <span className="text-[9px] text-slate-400 font-mono shrink-0">{new Date(n.timestamp).toLocaleDateString()}</span>
                       </div>
-                      <p className={`mt-1 font-normal leading-relaxed ${n.read ? 'text-slate-500' : 'text-sky-900'}`}>{n.message}</p>
+                      <p className={`mt-1 font-normal leading-relaxed ${n.read ? 'text-slate-500' : 'text-violet-900'}`}>{n.message}</p>
                     </div>
                   ))}
                 </div>
@@ -597,24 +597,24 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                   <Clock size={36} className="text-yellow-500 animate-pulse" />
                 </div>
                 <div className="space-y-2">
-                  <h3 className="text-xl font-black text-sky-950">Postulación en Espera de Verificación</h3>
+                  <h3 className="text-xl font-black text-violet-950">Postulación en Espera de Verificación</h3>
                   <p className="text-sm text-slate-600 leading-relaxed">
                     Hemos recibido tu postulación laboral y tu reporte de pago de **$1.00 USD**. Nuestro equipo de soporte técnico de {KFS_BRAND.productAcronym} OS está verificando la transferencia y auditando tu CV.
                   </p>
-                  <p className="text-xs text-sky-700 font-mono mt-1">
+                  <p className="text-xs text-violet-700 font-mono mt-1">
                     Referencia de pago de activación: <span className="font-bold">{currentCandidate.registrationPaymentRef}</span>
                   </p>
                 </div>
-                <div className="pt-2 border-t border-sky-100 text-xs text-slate-500">
+                <div className="pt-2 border-t border-violet-100 text-xs text-slate-500">
                   Tu perfil se activará en la bolsa de trabajo tan pronto como el pago sea conciliado.
                 </div>
               </div>
             ) : (
               /* Jobs Tab Form Container */
-              <div className="bg-white border border-sky-100 rounded-[2rem] p-6 md:p-8 shadow-xl shadow-sky-200/50 space-y-6">
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-sky-100 pb-6">
+              <div className="bg-white border border-violet-100 rounded-[2rem] p-6 md:p-8 shadow-xl shadow-violet-200/50 space-y-6">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-violet-100 pb-6">
                   <div>
-                    <h3 className="text-2xl font-black text-sky-700 flex items-center gap-2">
+                    <h3 className="text-2xl font-black text-violet-700 flex items-center gap-2">
                       <Briefcase size={26} /> Mi Perfil Laboral
                     </h3>
                     <p className="text-xs text-slate-500 mt-1">Configura tu perfil profesional para ser visible ante dueños de comercios {KFS_BRAND.productAcronym} OS.</p>
@@ -627,7 +627,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                         <span>Perfil Respaldado por {KFS_BRAND.productAcronym} OS</span>
                       </div>
                     ) : (
-                      <div className="bg-sky-50 border border-sky-200 text-sky-600 px-4 py-2 rounded-2xl flex items-center gap-2 text-xs font-bold">
+                      <div className="bg-violet-50 border border-violet-200 text-violet-600 px-4 py-2 rounded-2xl flex items-center gap-2 text-xs font-bold">
                         <Clock size={16} className="animate-spin" />
                         <span>Perfil en Evaluación {KFS_BRAND.productAcronym}</span>
                       </div>
@@ -640,7 +640,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                 <form onSubmit={handleSaveCandidate} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="text-xs font-bold text-sky-700 uppercase tracking-wider mb-2 block">Nombre Completo</label>
+                      <label className="text-xs font-bold text-violet-700 uppercase tracking-wider mb-2 block">Nombre Completo</label>
                       <input
                         type="text"
                         disabled
@@ -649,7 +649,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-sky-700 uppercase tracking-wider mb-2 block">Teléfono (WhatsApp)</label>
+                      <label className="text-xs font-bold text-violet-700 uppercase tracking-wider mb-2 block">Teléfono (WhatsApp)</label>
                       <input
                         type="text"
                         disabled
@@ -661,22 +661,22 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="text-xs font-bold text-sky-700 uppercase tracking-wider mb-2 block">Correo Electrónico (Obligatorio)</label>
+                      <label className="text-xs font-bold text-violet-700 uppercase tracking-wider mb-2 block">Correo Electrónico (Obligatorio)</label>
                       <input
                         type="email"
                         required
                         placeholder="ejemplo@correo.com"
                         value={email}
                         onChange={e => setEmail(e.target.value)}
-                        className="w-full bg-sky-50/50 border border-sky-100 rounded-xl px-4 py-3 text-sm text-sky-950 placeholder:text-slate-400 focus:border-sky-400 focus:ring-1 focus:ring-sky-400 focus:outline-none transition-colors"
+                        className="w-full bg-violet-50/50 border border-violet-100 rounded-xl px-4 py-3 text-sm text-violet-950 placeholder:text-slate-400 focus:border-violet-400 focus:ring-1 focus:ring-violet-400 focus:outline-none transition-colors"
                       />
                     </div>
                     <div>
-                      <label className="text-xs font-bold text-sky-700 uppercase tracking-wider mb-2 block">Cargo de Interés</label>
+                      <label className="text-xs font-bold text-violet-700 uppercase tracking-wider mb-2 block">Cargo de Interés</label>
                       <select
                         value={selectedRole}
                         onChange={e => setSelectedRole(e.target.value)}
-                        className="w-full bg-sky-50/50 border border-sky-100 rounded-xl px-4 py-3 text-sm text-sky-950 focus:border-sky-400 focus:ring-1 focus:ring-sky-400 focus:outline-none transition-colors cursor-pointer"
+                        className="w-full bg-violet-50/50 border border-violet-100 rounded-xl px-4 py-3 text-sm text-violet-950 focus:border-violet-400 focus:ring-1 focus:ring-violet-400 focus:outline-none transition-colors cursor-pointer"
                       >
                         <option value="Cajero">Cajero / Cajera</option>
                         <option value="Vendedor">Vendedor de {KFS_BRAND.modules.marketplace}</option>
@@ -688,45 +688,45 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-sky-700 uppercase tracking-wider mb-2 block">Presentación y Experiencia Laboral (Obligatorio)</label>
+                    <label className="text-xs font-bold text-violet-700 uppercase tracking-wider mb-2 block">Presentación y Experiencia Laboral (Obligatorio)</label>
                     <textarea
                       required
                       rows={4}
                       placeholder="Describe detalladamente tu experiencia, referencias y por qué eres un excelente candidato..."
                       value={bio}
                       onChange={e => setBio(e.target.value)}
-                      className="w-full bg-sky-50/50 border border-sky-100 rounded-xl px-4 py-3 text-sm text-sky-950 placeholder:text-slate-400 focus:border-sky-400 focus:ring-1 focus:ring-sky-400 focus:outline-none transition-colors"
+                      className="w-full bg-violet-50/50 border border-violet-100 rounded-xl px-4 py-3 text-sm text-violet-950 placeholder:text-slate-400 focus:border-violet-400 focus:ring-1 focus:ring-violet-400 focus:outline-none transition-colors"
                     />
                   </div>
 
                   <div>
                     <div className="flex justify-between items-center mb-2">
-                      <label className="text-xs font-bold text-sky-700 uppercase tracking-wider block">Currículum Vitae (Obligatorio)</label>
+                      <label className="text-xs font-bold text-violet-700 uppercase tracking-wider block">Currículum Vitae (Obligatorio)</label>
                       <button
                         type="button"
                         onClick={() => setUseKfsCvBuilder(!useKfsCvBuilder)}
-                        className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${useKfsCvBuilder ? "bg-sky-600 text-white shadow-md shadow-sky-600/30" : "bg-sky-50 border border-sky-100 text-slate-500 hover:text-sky-700 hover:bg-sky-100"}`}
+                        className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${useKfsCvBuilder ? "bg-violet-600 text-white shadow-md shadow-violet-600/30" : "bg-violet-50 border border-violet-100 text-slate-500 hover:text-violet-700 hover:bg-violet-100"}`}
                       >
                         {useKfsCvBuilder ? `⚡ Usando CV Digital ${KFS_BRAND.productAcronym}` : `📄 Usar CV Digital ${KFS_BRAND.productAcronym}`}
                       </button>
                     </div>
 
                     {useKfsCvBuilder ? (
-                      <div className="bg-sky-50 border border-sky-100 p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4">
+                      <div className="bg-violet-50 border border-violet-100 p-5 rounded-2xl flex flex-col sm:flex-row justify-between items-center gap-4">
                         <div>
-                          <p className="text-xs text-sky-700 font-bold">✨ CV Digital Autogenerado {KFS_BRAND.productAcronym} OS</p>
+                          <p className="text-xs text-violet-700 font-bold">✨ CV Digital Autogenerado {KFS_BRAND.productAcronym} OS</p>
                           <p className="text-[10px] text-slate-500 mt-0.5">Se generará un currículum formateado profesionalmente con tu Bio, Habilidades y Respuestas.</p>
                         </div>
                         <button
                           type="button"
                           onClick={() => setShowCvModal(true)}
-                          className="px-4 py-2 rounded-xl bg-sky-600 text-white font-bold text-xs hover:bg-sky-700 transition-all cursor-pointer shadow-md shadow-sky-600/30 border-none"
+                          className="px-4 py-2 rounded-xl bg-violet-600 text-white font-bold text-xs hover:bg-violet-700 transition-all cursor-pointer shadow-md shadow-violet-600/30 border-none"
                         >
                           Previsualizar / Imprimir CV
                         </button>
                       </div>
                     ) : (
-                      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-sky-50 border border-sky-100 p-5 rounded-2xl">
+                      <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-violet-50 border border-violet-100 p-5 rounded-2xl">
                         <input
                           type="file"
                           accept="application/pdf,image/*"
@@ -744,15 +744,15 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                               }
                             }
                           }}
-                          className="text-xs text-slate-500 block w-full sm:w-auto file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-sky-100 file:text-sky-700 hover:file:bg-sky-200 cursor-pointer"
+                          className="text-xs text-slate-500 block w-full sm:w-auto file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-100 file:text-violet-700 hover:file:bg-violet-200 cursor-pointer"
                         />
                         {cvFileName && (
-                          <div className="flex items-center gap-2 text-xs font-bold text-sky-600">
+                          <div className="flex items-center gap-2 text-xs font-bold text-violet-600">
                             <span>📄 {cvFileName}</span>
                             <button
                               type="button"
                               onClick={() => window.open(cvFile, '_blank')}
-                              className="text-[10px] text-sky-400 underline cursor-pointer hover:text-sky-700 bg-transparent border-none p-0"
+                              className="text-[10px] text-violet-400 underline cursor-pointer hover:text-violet-700 bg-transparent border-none p-0"
                             >
                               (Ver actual)
                             </button>
@@ -792,7 +792,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                   </div>
 
                   <div>
-                    <label className="text-xs font-bold text-sky-700 uppercase tracking-wider mb-3 block">Habilidades Técnicas</label>
+                    <label className="text-xs font-bold text-violet-700 uppercase tracking-wider mb-3 block">Habilidades Técnicas</label>
                     <div className="flex flex-wrap gap-2">
                       {availableSkills.map(skill => {
                         const isSelected = selectedSkills.includes(skill);
@@ -801,7 +801,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                             key={skill}
                             type="button"
                             onClick={() => handleToggleSkill(skill)}
-                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${isSelected ? "bg-sky-600 text-white shadow-md shadow-sky-600/30" : "bg-sky-50 border border-sky-100 text-slate-500 hover:text-sky-700 hover:bg-sky-100"}`}
+                            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${isSelected ? "bg-violet-600 text-white shadow-md shadow-violet-600/30" : "bg-violet-50 border border-violet-100 text-slate-500 hover:text-violet-700 hover:bg-violet-100"}`}
                           >
                             {isSelected && <Check size={12} />}
                             {skill}
@@ -811,8 +811,8 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                     </div>
                   </div>
 
-                  <div className="bg-sky-50 border border-sky-100 p-6 rounded-2xl space-y-4">
-                    <h4 className="text-sky-700 text-xs font-black uppercase tracking-widest flex items-center gap-1.5">
+                  <div className="bg-violet-50 border border-violet-100 p-6 rounded-2xl space-y-4">
+                    <h4 className="text-violet-700 text-xs font-black uppercase tracking-widest flex items-center gap-1.5">
                       <Shield size={14} /> Micro-Encuesta de Compatibilidad
                     </h4>
 
@@ -822,7 +822,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                         <select
                           value={answers.availability}
                           onChange={e => setAnswers(prev => ({ ...prev, availability: e.target.value }))}
-                          className="w-full bg-white border border-sky-200 rounded-xl px-3 py-2 text-xs text-sky-950 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 cursor-pointer"
+                          className="w-full bg-white border border-violet-200 rounded-xl px-3 py-2 text-xs text-violet-950 focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-400 cursor-pointer"
                         >
                           <option value="full-time">Tiempo Completo (Full-time)</option>
                           <option value="part-time">Medio Tiempo (Part-time)</option>
@@ -835,7 +835,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                         <select
                           value={answers.location}
                           onChange={e => setAnswers(prev => ({ ...prev, location: e.target.value }))}
-                          className="w-full bg-white border border-sky-200 rounded-xl px-3 py-2 text-xs text-sky-950 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 cursor-pointer"
+                          className="w-full bg-white border border-violet-200 rounded-xl px-3 py-2 text-xs text-violet-950 focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-400 cursor-pointer"
                         >
                           <option value="Caracas - Este">Caracas - Este</option>
                           <option value="Caracas - Oeste">Caracas - Oeste</option>
@@ -849,7 +849,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                         <select
                           value={answers.experienceYears}
                           onChange={e => setAnswers(prev => ({ ...prev, experienceYears: e.target.value }))}
-                          className="w-full bg-white border border-sky-200 rounded-xl px-3 py-2 text-xs text-sky-950 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 cursor-pointer"
+                          className="w-full bg-white border border-violet-200 rounded-xl px-3 py-2 text-xs text-violet-950 focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-400 cursor-pointer"
                         >
                           <option value="0-1">Menos de 1 año</option>
                           <option value="1-3">1 a 3 años</option>
@@ -862,7 +862,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                         <select
                           value={answers.hasVehicle}
                           onChange={e => setAnswers(prev => ({ ...prev, hasVehicle: e.target.value }))}
-                          className="w-full bg-white border border-sky-200 rounded-xl px-3 py-2 text-xs text-sky-950 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 cursor-pointer"
+                          className="w-full bg-white border border-violet-200 rounded-xl px-3 py-2 text-xs text-violet-950 focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-400 cursor-pointer"
                         >
                           <option value="no">No posee</option>
                           <option value="moto">Moto propia</option>
@@ -873,45 +873,45 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                   </div>
 
                   {currentCandidate?.registrationPaymentStatus !== "approved" && (
-                    <div className="bg-sky-50 border border-sky-100 p-6 rounded-[2rem] space-y-4 shadow-sm">
-                      <h4 className="text-sm font-black text-sky-700 uppercase tracking-wider border-b border-sky-200 pb-2">
+                    <div className="bg-violet-50 border border-violet-100 p-6 rounded-[2rem] space-y-4 shadow-sm">
+                      <h4 className="text-sm font-black text-violet-700 uppercase tracking-wider border-b border-violet-200 pb-2">
                         Pago de Activación de Perfil ($1.00 USD)
                       </h4>
                       <p className="text-xs text-slate-600 leading-relaxed">
-                        Para activar tu perfil en la Bolsa de Trabajo de {KFS_BRAND.productAcronym} OS y ser visible ante dueños de locales, debes realizar un pago único de <strong className="text-sky-900">$1.00 USD</strong>.
+                        Para activar tu perfil en la Bolsa de Trabajo de {KFS_BRAND.productAcronym} OS y ser visible ante dueños de locales, debes realizar un pago único de <strong className="text-violet-900">$1.00 USD</strong>.
                       </p>
 
-                      <div className="bg-white border border-sky-200 p-4 rounded-xl space-y-2 font-mono text-xs text-slate-600">
-                        <p><strong className="text-sky-700">Banco:</strong> Banco Nacional de Crédito (BNC)</p>
-                        <p><strong className="text-sky-700">Teléfono:</strong> 0414-0000000</p>
-                        <p><strong className="text-sky-700">Cédula:</strong> V-25.218.648</p>
+                      <div className="bg-white border border-violet-200 p-4 rounded-xl space-y-2 font-mono text-xs text-slate-600">
+                        <p><strong className="text-violet-700">Banco:</strong> Banco Nacional de Crédito (BNC)</p>
+                        <p><strong className="text-violet-700">Teléfono:</strong> 0414-0000000</p>
+                        <p><strong className="text-violet-700">Cédula:</strong> V-25.218.648</p>
                       </div>
 
                       <div className="space-y-4">
                         <div>
-                          <label className="text-xs font-bold text-sky-700 uppercase tracking-wider block mb-1">Referencia de Pago Móvil</label>
+                          <label className="text-xs font-bold text-violet-700 uppercase tracking-wider block mb-1">Referencia de Pago Móvil</label>
                           <input
                             type="text"
                             required
                             placeholder="Ej: 12345678"
                             value={regRefNum}
                             onChange={(e) => setRegRefNum(e.target.value)}
-                            className="w-full bg-white border border-sky-200 rounded-xl px-4 py-3 text-sky-950 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition-colors"
+                            className="w-full bg-white border border-violet-200 rounded-xl px-4 py-3 text-violet-950 focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-400 transition-colors"
                           />
                         </div>
                         <div>
-                          <label className="text-xs font-bold text-sky-700 uppercase tracking-wider block mb-1">Comprobante de Pago</label>
+                          <label className="text-xs font-bold text-violet-700 uppercase tracking-wider block mb-1">Comprobante de Pago</label>
                           {regScreenshot ? (
-                            <div className="relative group rounded-xl overflow-hidden border border-sky-200 aspect-video">
+                            <div className="relative group rounded-xl overflow-hidden border border-violet-200 aspect-video">
                               <img src={regScreenshot} alt="Comprobante" className="w-full h-full object-cover" />
                               <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                                 <button type="button" onClick={() => setRegScreenshot("")} className="bg-rose-500 hover:bg-rose-600 text-white text-xs font-black py-2 px-4 rounded-lg cursor-pointer">Borrar Imagen</button>
                               </div>
                             </div>
                           ) : (
-                            <label className="border-2 border-dashed border-sky-200 hover:border-sky-400 rounded-xl flex flex-col items-center justify-center py-8 cursor-pointer transition-colors bg-white">
-                              <Camera size={24} className="text-sky-400 mb-2" />
-                              <span className="text-sm font-bold text-sky-700">Subir Captura</span>
+                            <label className="border-2 border-dashed border-violet-200 hover:border-violet-400 rounded-xl flex flex-col items-center justify-center py-8 cursor-pointer transition-colors bg-white">
+                              <Camera size={24} className="text-violet-400 mb-2" />
+                              <span className="text-sm font-bold text-violet-700">Subir Captura</span>
                               <span className="text-[10px] text-slate-500 mt-1">PNG, JPG (Máx. 5MB)</span>
                               <input type="file" required accept="image/*" className="hidden" onChange={async (e) => {
                                 const file = e.target.files?.[0];
@@ -938,9 +938,9 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                     </div>
                   )}
 
-                  <div className="flex flex-col sm:flex-row justify-between items-center bg-sky-50 border border-sky-100 p-5 rounded-2xl gap-4">
+                  <div className="flex flex-col sm:flex-row justify-between items-center bg-violet-50 border border-violet-100 p-5 rounded-2xl gap-4">
                     <div>
-                      <h4 className="text-sm font-black text-sky-950">Estado de Búsqueda Activa</h4>
+                      <h4 className="text-sm font-black text-violet-950">Estado de Búsqueda Activa</h4>
                       <p className="text-xs text-slate-500">Si lo desactivas, los comercios no verán tu perfil en las búsquedas hasta que decidas reactivarlo.</p>
                     </div>
                     <button
@@ -955,7 +955,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                   <div className="flex justify-end pt-4">
                     <button
                       type="submit"
-                      className="bg-sky-600 text-white border-none px-8 py-4 rounded-xl font-black hover:scale-[1.02] active:scale-95 transition-transform flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-sky-600/30"
+                      className="bg-violet-600 text-white border-none px-8 py-4 rounded-xl font-black hover:scale-[1.02] active:scale-95 transition-transform flex items-center justify-center gap-2 cursor-pointer shadow-lg shadow-violet-600/30"
                     >
                       <FileText size={18} /> {currentCandidate ? "Actualizar Perfil Laboral" : "Publicar Perfil Profesional"}
                     </button>
@@ -969,7 +969,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
       </div>
 
       {/* FIXED BOTTOM NAVIGATION */}
-      <div className="fixed bottom-0 inset-x-0 z-50 bg-white/90 backdrop-blur-xl border-t border-sky-100 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(14,165,233,0.05)] pb-safe">
+      <div className="fixed bottom-0 inset-x-0 z-50 bg-white/90 backdrop-blur-xl border-t border-violet-100 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(14,165,233,0.05)] pb-safe">
         <div className="max-w-4xl mx-auto px-6 py-4 flex justify-center gap-10 items-center relative">
           {[
             { id: "profile", icon: Activity, label: "Mi Cuenta" },
@@ -983,8 +983,8 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                 onClick={() => setSubTab(tab.id)}
                 className="relative flex flex-col items-center justify-center w-20 h-12 cursor-pointer group border-none bg-transparent"
               >
-                {isActive && <span className="absolute -top-4 w-12 h-1 bg-sky-500 rounded-b-full shadow-[0_4px_10px_rgba(14,165,233,0.5)]" />}
-                <div className={`relative transition-all duration-300 ${isActive ? '-translate-y-2 text-sky-600' : 'text-slate-400 group-hover:text-slate-600'}`}>
+                {isActive && <span className="absolute -top-4 w-12 h-1 bg-violet-500 rounded-b-full shadow-[0_4px_10px_rgba(14,165,233,0.5)]" />}
+                <div className={`relative transition-all duration-300 ${isActive ? '-translate-y-2 text-violet-600' : 'text-slate-400 group-hover:text-slate-600'}`}>
                   <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
                   {tab.badge ? (
                     <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full border-2 border-white animate-pulse">
@@ -992,7 +992,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                     </span>
                   ) : null}
                 </div>
-                <span className={`text-[9px] font-bold mt-1 transition-all duration-300 ${isActive ? 'opacity-100 text-sky-900' : 'opacity-0 translate-y-2'}`}>{tab.label}</span>
+                <span className={`text-[9px] font-bold mt-1 transition-all duration-300 ${isActive ? 'opacity-100 text-violet-900' : 'opacity-0 translate-y-2'}`}>{tab.label}</span>
               </button>
             )
           })}

@@ -70,11 +70,11 @@ export const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }
 
   return (
     <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[99999] flex flex-col items-center justify-center p-4 animate-fade-in">
-      <div className="w-full max-w-md bg-gradient-to-br from-sky-900 to-slate-900 border border-sky-800 rounded-[2.5rem] p-6 shadow-2xl relative">
-        <button onClick={onClose} className="absolute right-6 top-6 text-sky-200 hover:text-white cursor-pointer">
+      <div className="w-full max-w-md bg-gradient-to-br from-violet-900 to-slate-900 border border-violet-800 rounded-[2.5rem] p-6 shadow-2xl relative">
+        <button onClick={onClose} className="absolute right-6 top-6 text-violet-200 hover:text-white cursor-pointer">
           <X size={24} />
         </button>
-        <h3 className="text-xl font-black text-sky-400 mb-4 flex items-center gap-2"><QrCode /> Terminal de Escaneo {KFS_BRAND.productAcronym}</h3>
+        <h3 className="text-xl font-black text-violet-400 mb-4 flex items-center gap-2"><QrCode /> Terminal de Escaneo {KFS_BRAND.productAcronym}</h3>
 
         {/* Scan Frame */}
         <div id="kfs-reader" className="relative w-full aspect-square bg-black/40 rounded-2xl overflow-hidden border border-white/5 flex flex-col items-center justify-center mb-6">
@@ -82,25 +82,25 @@ export const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }
           <div className="absolute top-0 left-0 right-0 h-1 bg-red-500 animate-pulse border-b-2 border-red-400 z-10 pointer-events-none" style={{ animationDuration: "1.5s", animationIterationCount: "infinite" }} />
 
           <div className="absolute bottom-4 left-4 right-4 bg-black/60 backdrop-blur-sm p-3 rounded-lg text-center z-10 pointer-events-none">
-            <span className="text-[10px] text-sky-200 font-mono flex items-center justify-center gap-1"><Info size={12} /> Buscando QR o Código de Barras...</span>
+            <span className="text-[10px] text-violet-200 font-mono flex items-center justify-center gap-1"><Info size={12} /> Buscando QR o Código de Barras...</span>
           </div>
         </div>
 
         {/* Manual Fallback Entry Section */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3">
-          <span className="text-[10px] font-black text-sky-400 uppercase tracking-widest block font-mono">Entrada Manual de Emergencia</span>
+          <span className="text-[10px] font-black text-violet-400 uppercase tracking-widest block font-mono">Entrada Manual de Emergencia</span>
           <div className="flex gap-2 mb-2 border-b border-white/5 pb-2">
             <button
               type="button"
               onClick={() => setSelectedScanType("product")}
-              className={`flex-1 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${selectedScanType === "product" ? "bg-sky-600 text-white shadow-md shadow-sky-600/30" : "bg-white/5 text-slate-400 hover:text-white hover:bg-white/10"}`}
+              className={`flex-1 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${selectedScanType === "product" ? "bg-violet-600 text-white shadow-md shadow-violet-600/30" : "bg-white/5 text-slate-400 hover:text-white hover:bg-white/10"}`}
             >
               📦 Producto
             </button>
             <button
               type="button"
               onClick={() => setSelectedScanType("cedula")}
-              className={`flex-1 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${selectedScanType === "cedula" ? "bg-sky-600 text-white shadow-md shadow-sky-600/30" : "bg-white/5 text-slate-400 hover:text-white hover:bg-white/10"}`}
+              className={`flex-1 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all cursor-pointer ${selectedScanType === "cedula" ? "bg-violet-600 text-white shadow-md shadow-violet-600/30" : "bg-white/5 text-slate-400 hover:text-white hover:bg-white/10"}`}
             >
               🪪 Cédula PDF417
             </button>
@@ -108,7 +108,7 @@ export const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }
 
           {selectedScanType === "product" ? (
             <select
-              className="w-full bg-slate-900/50 text-white border border-sky-800 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-sky-500"
+              className="w-full bg-slate-900/50 text-white border border-violet-800 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-violet-500"
               value={selectedProductToSimulate}
               onChange={(e) => setSelectedProductToSimulate(e.target.value)}
             >
@@ -119,7 +119,7 @@ export const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }
             </select>
           ) : (
             <select
-              className="w-full bg-slate-900/50 text-white border border-sky-800 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-sky-500 font-mono"
+              className="w-full bg-slate-900/50 text-white border border-violet-800 rounded-xl px-3 py-2.5 text-xs focus:outline-none focus:border-violet-500 font-mono"
               value={selectedCedula}
               onChange={(e) => setSelectedCedula(e.target.value)}
             >
@@ -132,14 +132,14 @@ export const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }
           <button
             type="button"
             onClick={handleSimulatedScan}
-            className="w-full py-3 bg-sky-600 hover:bg-sky-500 text-white font-black rounded-xl text-xs hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-sky-600/30 border-none cursor-pointer"
+            className="w-full py-3 bg-violet-600 hover:bg-violet-500 text-white font-black rounded-xl text-xs hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-violet-600/30 border-none cursor-pointer"
           >
             ✓ Confirmar e Ingresar Manualmente
           </button>
         </div>
 
         <div className="mt-4 flex justify-center">
-          <button onClick={onClose} className="px-6 py-2 border border-white/15 text-xs text-sky-200/70 hover:text-white font-bold rounded-lg transition-colors cursor-pointer">
+          <button onClick={onClose} className="px-6 py-2 border border-white/15 text-xs text-violet-200/70 hover:text-white font-bold rounded-lg transition-colors cursor-pointer">
             Cerrar Escáner
           </button>
         </div>

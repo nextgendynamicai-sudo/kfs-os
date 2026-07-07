@@ -49,7 +49,7 @@ export function UniversalWalletWidget({ currentUser, formatUSD, children }: Univ
   }, [expiry, kPointsBalance]);
 
   return (
-    <div className="bg-white border border-[#3B82F6]/25 rounded-[2.5rem] p-6 md:p-8 shadow-[0_15px_50px_rgba(10,17,40,0.4)] text-sky-950 relative overflow-hidden space-y-6 animate-fade-in">
+    <div className="bg-white border border-[#3B82F6]/25 rounded-[2.5rem] p-6 md:p-8 shadow-[0_15px_50px_rgba(10,17,40,0.4)] text-violet-950 relative overflow-hidden space-y-6 animate-fade-in">
       {/* Background Decorative Rings */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-[#3B82F6]/5 rounded-full blur-[80px] -z-10 pointer-events-none"></div>
       <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-violet-500/5 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
@@ -68,7 +68,7 @@ export function UniversalWalletWidget({ currentUser, formatUSD, children }: Univ
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         
         {/* Reserva Central (USD) */}
-        <div className="bg-sky-50 border border-sky-100 rounded-2xl p-5 flex flex-col justify-between hover:border-emerald-500/20 transition-all">
+        <div className="bg-violet-50 border border-violet-100 rounded-2xl p-5 flex flex-col justify-between hover:border-emerald-500/20 transition-all">
           <div className="flex justify-between items-start">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-1">
               <DollarSign size={10} className="text-emerald-500" /> Reserva Central (USD)
@@ -78,13 +78,13 @@ export function UniversalWalletWidget({ currentUser, formatUSD, children }: Univ
             </div>
           </div>
           <div className="mt-4">
-            <p className="text-3xl font-black tracking-tight text-sky-950">{formatUSD(realBalance)}</p>
+            <p className="text-3xl font-black tracking-tight text-violet-950">{formatUSD(realBalance)}</p>
             <p className="text-[9px] text-slate-500 mt-1">Inamovible a bancos.</p>
           </div>
         </div>
 
         {/* Axis Cash (Dinero Pro) */}
-        <div className="bg-sky-50 border border-sky-100 rounded-2xl p-5 flex flex-col justify-between hover:border-[#3B82F6]/20 transition-all relative overflow-hidden">
+        <div className="bg-violet-50 border border-violet-100 rounded-2xl p-5 flex flex-col justify-between hover:border-[#3B82F6]/20 transition-all relative overflow-hidden">
           <div className="flex justify-between items-start">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-1">
               <CircleDollarSign size={10} className="text-[#3B82F6]" /> Axis Cash
@@ -94,13 +94,13 @@ export function UniversalWalletWidget({ currentUser, formatUSD, children }: Univ
             </div>
           </div>
           <div className="mt-4">
-            <p className="text-3xl font-black tracking-tight text-sky-950">{kPointCashBalance.toLocaleString()}</p>
+            <p className="text-3xl font-black tracking-tight text-violet-950">{kPointCashBalance.toLocaleString()}</p>
             <p className="text-[9px] text-slate-500 mt-1">Alta liquidez. Transferible.</p>
           </div>
         </div>
 
         {/* {KFS_BRAND.economy.currency} (Normal) */}
-        <div className="bg-sky-50 border border-sky-100 rounded-2xl p-5 flex flex-col justify-between hover:border-[#8B5CF6]/20 transition-all">
+        <div className="bg-violet-50 border border-violet-100 rounded-2xl p-5 flex flex-col justify-between hover:border-[#8B5CF6]/20 transition-all">
           <div className="flex justify-between items-start">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-1">
               <Gift size={10} className="text-[#8B5CF6]" /> {KFS_BRAND.economy.currency}
@@ -120,7 +120,7 @@ export function UniversalWalletWidget({ currentUser, formatUSD, children }: Univ
         </div>
 
         {/* Axis Bonus */}
-        <div className="bg-sky-50 border border-sky-100 rounded-2xl p-5 flex flex-col justify-between hover:border-[#F59E0B]/20 transition-all">
+        <div className="bg-violet-50 border border-violet-100 rounded-2xl p-5 flex flex-col justify-between hover:border-[#F59E0B]/20 transition-all">
           <div className="flex justify-between items-start">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-1">
               <Zap size={10} className="text-[#F59E0B]" /> Axis Bonus

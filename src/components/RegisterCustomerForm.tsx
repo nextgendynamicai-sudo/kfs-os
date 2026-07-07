@@ -56,16 +56,16 @@ export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCanc
   return (
     <form onSubmit={handleSubmit} className="space-y-4 animate-fade-in">
       <div className="relative">
-        <label className="block text-xs font-black text-sky-700 uppercase tracking-widest mb-1 ml-1">Nombre Completo</label>
+        <label className="block text-xs font-black text-violet-700 uppercase tracking-widest mb-1 ml-1">Nombre Completo</label>
         <div className="relative">
-          <UserCheck className="absolute left-4 top-3.5 text-sky-400" size={20} />
-          <input required type="text" placeholder="Ej: Juan Pérez" value={name} onChange={e => setName(e.target.value)} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl pl-12 pr-4 py-3 text-sky-950 placeholder:text-slate-400 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400 transition-all" />
+          <UserCheck className="absolute left-4 top-3.5 text-violet-400" size={20} />
+          <input required type="text" placeholder="Ej: Juan Pérez" value={name} onChange={e => setName(e.target.value)} className="w-full bg-violet-50/50 border border-violet-100 rounded-xl pl-12 pr-4 py-3 text-violet-950 placeholder:text-slate-400 focus:outline-none focus:border-violet-400 focus:ring-1 focus:ring-violet-400 transition-all" />
         </div>
       </div>
 
       <div className="relative">
         <div className="flex justify-between items-center mb-1 ml-1">
-          <label className="block text-xs font-black text-sky-700 uppercase tracking-widest">Teléfono Móvil</label>
+          <label className="block text-xs font-black text-violet-700 uppercase tracking-widest">Teléfono Móvil</label>
           {phoneBody && (
             <span className={`text-[9px] font-black px-2 py-0.5 rounded-full ${isPhoneValid ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
               {isPhoneValid ? "✓ Teléfono Válido" : "✗ Formato Inválido"}
@@ -76,7 +76,7 @@ export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCanc
           <select
             value={phonePrefix}
             onChange={e => setPhonePrefix(e.target.value)}
-            className="bg-sky-50/50 border border-sky-100 rounded-xl px-3 py-3 text-sky-950 focus:outline-none focus:border-sky-400 text-sm cursor-pointer"
+            className="bg-violet-50/50 border border-violet-100 rounded-xl px-3 py-3 text-violet-950 focus:outline-none focus:border-violet-400 text-sm cursor-pointer"
           >
             <option value="+58">VE (+58)</option>
             <option value="+57">CO (+57)</option>
@@ -90,20 +90,20 @@ export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCanc
             <option value="+1809">DO (+1-809)</option>
           </select>
           <div className="relative flex-1">
-            <Smartphone className="absolute left-4 top-3.5 text-sky-400" size={20} />
-            <input required type="text" placeholder="Ej: 4141234567" value={phoneBody} onChange={e => setPhoneBody(e.target.value)} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl pl-12 pr-4 py-3 text-sky-950 placeholder:text-slate-400 focus:outline-none focus:border-sky-400 transition-all" />
+            <Smartphone className="absolute left-4 top-3.5 text-violet-400" size={20} />
+            <input required type="text" placeholder="Ej: 4141234567" value={phoneBody} onChange={e => setPhoneBody(e.target.value)} className="w-full bg-violet-50/50 border border-violet-100 rounded-xl pl-12 pr-4 py-3 text-violet-950 placeholder:text-slate-400 focus:outline-none focus:border-violet-400 transition-all" />
           </div>
         </div>
       </div>
 
       <div className="flex gap-4 mb-2">
         <div className="flex-1 relative">
-          <label className="relative h-24 rounded-xl border-2 border-dashed border-sky-200 cursor-pointer overflow-hidden flex items-center justify-center bg-sky-50/50 hover:bg-sky-100 transition-colors group block">
+          <label className="relative h-24 rounded-xl border-2 border-dashed border-violet-200 cursor-pointer overflow-hidden flex items-center justify-center bg-violet-50/50 hover:bg-violet-100 transition-colors group block">
             <input type="file" accept="image/*" className="hidden" onChange={e => handlePhotoUpload(e, setKycPhoto)} />
             {kycPhoto ? (
               <img src={kycPhoto} className="w-full h-full object-cover" alt="Selfie" />
             ) : (
-              <div className="text-center text-sky-400 group-hover:text-sky-600 transition-colors">
+              <div className="text-center text-violet-400 group-hover:text-violet-600 transition-colors">
                 <Camera size={20} className="mx-auto" />
                 <span className="text-[10px] font-bold block mt-1 text-slate-500">Selfie (Obligatorio)</span>
               </div>
@@ -120,12 +120,12 @@ export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCanc
         </div>
         
         <div className="flex-1 relative">
-          <label className="relative h-24 rounded-xl border-2 border-dashed border-sky-200 cursor-pointer overflow-hidden flex items-center justify-center bg-sky-50/50 hover:bg-sky-100 transition-colors group block">
+          <label className="relative h-24 rounded-xl border-2 border-dashed border-violet-200 cursor-pointer overflow-hidden flex items-center justify-center bg-violet-50/50 hover:bg-violet-100 transition-colors group block">
             <input type="file" accept="image/*" className="hidden" onChange={e => handlePhotoUpload(e, setKycCedula)} />
             {kycCedula ? (
               <img src={kycCedula} className="w-full h-full object-cover" alt="Cédula" />
             ) : (
-              <div className="text-center text-sky-400 group-hover:text-sky-600 transition-colors">
+              <div className="text-center text-violet-400 group-hover:text-violet-600 transition-colors">
                 <FileText size={20} className="mx-auto" />
                 <span className="text-[10px] font-bold block mt-1 text-slate-500">Cédula (Obligatorio)</span>
               </div>
@@ -143,27 +143,27 @@ export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCanc
       </div>
 
       <div className="relative">
-        <label className="block text-xs font-black text-sky-700 uppercase tracking-widest mb-1 ml-1">Dirección Exacta</label>
+        <label className="block text-xs font-black text-violet-700 uppercase tracking-widest mb-1 ml-1">Dirección Exacta</label>
         <div className="relative">
-          <MapPin className="absolute left-4 top-4 text-sky-400" size={20} />
-          <textarea required placeholder="Calle, Av, Edificio, Casa..." value={kycAddress} onChange={e => setKycAddress(e.target.value)} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl pl-12 pr-4 py-3 text-sky-950 placeholder:text-slate-400 focus:outline-none focus:border-sky-400 transition-all text-sm h-20 resize-none" />
+          <MapPin className="absolute left-4 top-4 text-violet-400" size={20} />
+          <textarea required placeholder="Calle, Av, Edificio, Casa..." value={kycAddress} onChange={e => setKycAddress(e.target.value)} className="w-full bg-violet-50/50 border border-violet-100 rounded-xl pl-12 pr-4 py-3 text-violet-950 placeholder:text-slate-400 focus:outline-none focus:border-violet-400 transition-all text-sm h-20 resize-none" />
         </div>
       </div>
 
       <div className="relative">
-        <label className="block text-xs font-black text-sky-700 uppercase tracking-widest mb-1 ml-1">Contraseña de Acceso</label>
+        <label className="block text-xs font-black text-violet-700 uppercase tracking-widest mb-1 ml-1">Contraseña de Acceso</label>
         <div className="relative">
-          <Lock className="absolute left-4 top-3.5 text-sky-400" size={20} />
-          <input required type="password" placeholder="Mínimo 6 caracteres" value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-sky-50/50 border border-sky-100 rounded-xl pl-12 pr-4 py-3 text-sky-950 placeholder:text-slate-400 focus:outline-none focus:border-sky-400 transition-all" />
+          <Lock className="absolute left-4 top-3.5 text-violet-400" size={20} />
+          <input required type="password" placeholder="Mínimo 6 caracteres" value={password} onChange={e => setPassword(e.target.value)} className="w-full bg-violet-50/50 border border-violet-100 rounded-xl pl-12 pr-4 py-3 text-violet-950 placeholder:text-slate-400 focus:outline-none focus:border-violet-400 transition-all" />
         </div>
       </div>
 
       <div className="flex gap-2 pt-2">
-        <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl border border-sky-200 text-slate-500 font-bold hover:bg-sky-50 transition-all cursor-pointer">Atrás</button>
+        <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl border border-violet-200 text-slate-500 font-bold hover:bg-violet-50 transition-all cursor-pointer">Atrás</button>
         <button 
           type="submit" 
           disabled={!isFormValid}
-          className="w-2/3 py-3 rounded-xl bg-sky-600 text-white font-black hover:scale-[1.02] active:scale-95 transition-all shadow-md shadow-sky-600/30 border-none cursor-pointer disabled:bg-gray-300 disabled:text-gray-550 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100"
+          className="w-2/3 py-3 rounded-xl bg-violet-600 text-white font-black hover:scale-[1.02] active:scale-95 transition-all shadow-md shadow-violet-600/30 border-none cursor-pointer disabled:bg-gray-300 disabled:text-gray-550 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100"
           title={isFormValid ? "Registrar nueva cuenta" : "Por favor, completa todos los campos requeridos y sube tus documentos KYC"}
         >
           {isFormValid ? "Crear Cuenta" : "Faltan Campos / KYC"}
