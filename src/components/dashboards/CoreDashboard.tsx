@@ -89,6 +89,17 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
   const [viewingCandidateCv, setViewingCandidateCv] = useState<any | null>(null);
   const [viewingKycPhoto, setViewingKycPhoto] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("panel"); // panel | red | soporte | auditoria
+  const [newMemberName, setNewMemberName] = useState("");
+  const [newMemberPass, setNewMemberPass] = useState("");
+  const [newMemberPermissions, setNewMemberPermissions] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (currentUser.isTeamMember && currentUser.permissions?.length > 0) {
+      if (!currentUser.permissions.includes(activeTab)) {
+        setActiveTab(currentUser.permissions[0]);
+      }
+    }
+  }, [currentUser, activeTab]);
   const { isSupabaseConfigured } = useKFS() as any;
   const pendingTopUps = db.topups?.filter((t: any) => t.status === 'pending') || [];
   const pendingCandidates = db.candidates?.filter((c: any) => c.status === 'pending') || [];
@@ -1832,6 +1843,167 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             </div>
           </div>
         )}
+
+        {activeTab === "equipo" && (
+          <div className="space-y-8 flex flex-col animate-fade-in pb-20">
+            <div className="bg-gradient-to-r from-slate-900 to-violet-950 rounded-[2rem] p-8 shadow-2xl text-white border border-violet-800">
+              <h3 className="text-2xl font-black mb-4 flex items-center gap-2 text-white"><Users className="text-violet-400" /> Gestión de Equipo (Modo Dios)</h3>
+              <p className="text-sm text-violet-200 mb-8">Administra el personal que tiene acceso a las herramientas administrativas y define sus permisos específicos.</p>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Formulario Agregar Miembro */}
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
+                  <h4 className="text-violet-400 font-black uppercase tracking-widest text-sm mb-2">Registrar Miembro de Equipo</h4>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Nombre del Miembro</label>
+                      <input
+                        type="text"
+                        placeholder="Ej: Juan Pérez"
+                        value={newMemberName}
+                        onChange={e => setNewMemberName(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Clave de Acceso</label>
+                      <input
+                        type="password"
+                        placeholder="Ej: 123456"
+                        value={newMemberPass}
+                        onChange={e => setNewMemberPass(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-2">Permisos Autorizados</label>
+                      <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto bg-black/30 p-3 rounded-xl border border-white/5">
+                        {[
+                          { id: "panel", label: "Panel Principal" },
+                          { id: "red", label: `Red ${KFS_BRAND.productAcronym}` },
+                          { id: "soporte", label: "Soporte Técnico" },
+                          { id: "auditoria", label: "Auditoría de Red" },
+                          { id: "kyc", label: "Bóveda KYC" },
+                          { id: "nodos", label: `Nodos ${KFS_BRAND.productAcronym}` },
+                          { id: "vista_dios", label: "Vista Dios (DB Read)" },
+                          { id: "axis_nitro_pos", label: "POS Demo" },
+                          { id: "db_manager", label: "Gestión DB" },
+                          { id: "equipo", label: "Gestión de Equipo" },
+                          { id: "tienda_oficial", label: "Tienda Oficial" }
+                        ].map(perm => (
+                          <label key={perm.id} className="flex items-center gap-2 text-[11px] text-slate-300 hover:text-white cursor-pointer select-none">
+                            <input
+                              type="checkbox"
+                              checked={newMemberPermissions.includes(perm.id)}
+                              onChange={() => {
+                                if (newMemberPermissions.includes(perm.id)) {
+                                  setNewMemberPermissions(newMemberPermissions.filter(p => p !== perm.id));
+                                } else {
+                                  setNewMemberPermissions([...newMemberPermissions, perm.id]);
+                                }
+                              }}
+                              className="rounded border-white/10 text-violet-600 focus:ring-0 focus:ring-offset-0 bg-transparent cursor-pointer"
+                            />
+                            {perm.label}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                    
+                    <button
+                      onClick={() => {
+                        if (!newMemberName.trim() || !newMemberPass.trim()) {
+                          showToast("Por favor completa el nombre y la clave de acceso.", "error");
+                          return;
+                        }
+                        const exists = (db.kreatekCore?.team || []).some((m: any) => m.name.toLowerCase() === newMemberName.trim().toLowerCase());
+                        if (exists) {
+                          showToast("Ya existe un miembro de equipo con ese nombre.", "error");
+                          return;
+                        }
+                        const member = {
+                          name: newMemberName.trim(),
+                          password: newMemberPass.trim(),
+                          permissions: newMemberPermissions
+                        };
+                        setDb((prev: any) => {
+                          const currentCore = prev.kreatekCore || {};
+                          const currentTeam = currentCore.team || [];
+                          return {
+                            ...prev,
+                            kreatekCore: {
+                              ...currentCore,
+                              team: [...currentTeam, member]
+                            }
+                          };
+                        });
+                        showToast(`Miembro de equipo '${newMemberName}' registrado con éxito.`, "success");
+                        setNewMemberName("");
+                        setNewMemberPass("");
+                        setNewMemberPermissions([]);
+                      }}
+                      className="w-full py-3 bg-violet-600 hover:bg-violet-700 text-white text-xs font-black rounded-xl transition-all shadow-md active:scale-95 border-none cursor-pointer"
+                    >
+                      Añadir al Equipo
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Lista de Miembros */}
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
+                  <h4 className="text-violet-400 font-black uppercase tracking-widest text-sm mb-2">Miembros de Equipo Activos</h4>
+                  
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {!(db.kreatekCore?.team?.length > 0) ? (
+                      <p className="text-xs text-slate-400 italic">No hay miembros registrados todavía. Usa el formulario de la izquierda.</p>
+                    ) : (
+                      db.kreatekCore.team.map((m: any, idx: number) => (
+                        <div key={idx} className="bg-black/40 border border-white/5 p-4 rounded-xl flex justify-between items-center">
+                          <div className="space-y-1.5 flex-1 pr-4">
+                            <p className="text-xs font-black text-white">{m.name}</p>
+                            <p className="text-[9px] font-mono text-slate-500">Clave: {m.password}</p>
+                            <div className="flex flex-wrap gap-1">
+                              {(m.permissions || []).map((p: string) => (
+                                <span key={p} className="text-[8px] font-black uppercase tracking-wide px-2 py-0.5 bg-violet-950/50 text-violet-400 rounded-md border border-violet-800/30">
+                                  {p}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          <button
+                            onClick={() => {
+                              if (confirm(`¿Eliminar al miembro de equipo '${m.name}'?`)) {
+                                setDb((prev: any) => {
+                                  const currentCore = prev.kreatekCore || {};
+                                  const currentTeam = currentCore.team || [];
+                                  return {
+                                    ...prev,
+                                    kreatekCore: {
+                                      ...currentCore,
+                                      team: currentTeam.filter((x: any) => x.name !== m.name)
+                                    }
+                                  };
+                                });
+                                showToast(`Miembro de equipo '${m.name}' eliminado.`, "success");
+                              }
+                            }}
+                            className="p-2 text-red-400 hover:text-red-600 hover:bg-red-500/10 rounded-lg transition-colors border-none bg-transparent cursor-pointer"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
 
@@ -1841,15 +2013,21 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
           {[
             { id: "panel", icon: Activity, label: "Panel" },
             { id: "red", icon: Store, label: `Red ${KFS_BRAND.productAcronym}`, badge: (db.riders?.filter((r: any) => r.status === "pending") || []).length },
-            { id: "soporte", icon: Bell, label: "Soporte", badge: (db.clients.filter((c: any) => c.subscription?.status === 'pending_verification').length + (db.candidates?.filter((c: any) => c.registrationPaymentStatus === 'pending_approval').length || 0) + (db.unlockedContacts?.filter((u: any) => u.status === 'pending_approval').length || 0) + (db.supportTickets || []).filter((t: any) => t.status === 'open').length) },
+            { id: "soporte", icon: Bell, label: "Soporte", badge: (db.clients?.filter((c: any) => c.subscription?.status === 'pending_verification').length + (db.candidates?.filter((c: any) => c.registrationPaymentStatus === 'pending_approval').length || 0) + (db.unlockedContacts?.filter((u: any) => u.status === 'pending_approval').length || 0) + (db.supportTickets || []).filter((t: any) => t.status === 'open').length) },
             { id: "auditoria", icon: Shield, label: "Auditoría" },
             { id: "kyc", icon: FileText, label: "Bóveda KYC" },
             { id: "nodos", icon: QrCode, label: `Nodos ${KFS_BRAND.productAcronym}` },
             { id: "vista_dios", icon: Eye, label: "Vista Dios" },
             { id: "axis_nitro_pos", icon: Zap, label: "POS Demo" },
             { id: "db_manager", icon: Database, label: "Gestión DB" },
+            { id: "equipo", icon: Users, label: "Equipo" },
             { id: "tienda_oficial", icon: Store, label: `${KFS_BRAND.modules.marketplace} ${KFS_BRAND.productAcronym}` }
-          ].map(tab => {
+          ].filter(tab => {
+            if (currentUser.isTeamMember) {
+              return currentUser.permissions?.includes(tab.id);
+            }
+            return true;
+          }).map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
             return (

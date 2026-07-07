@@ -471,7 +471,8 @@ const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
     adBudgetEUR: Math.max(localCore.adBudgetEUR || 0, remoteCore.adBudgetEUR || 0),
     avatar: localCore.avatar || remoteCore.avatar,
     wipeVersion: localCore.wipeVersion || remoteCore.wipeVersion || CURRENT_WIPE_VERSION,
-    deletedKeys: Array.from(deletedKeys)
+    deletedKeys: Array.from(deletedKeys),
+    team: localCore.team || remoteCore.team || []
   };
 
   if (deletedKeys.size > 0) {
@@ -1197,6 +1198,35 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    if (role === "core") {
+      const corePass = process.env.NEXT_PUBLIC_CORE_PASSWORD || "199521.";
+      if (safePass === corePass) {
+        setCurrentUser({ role: "core", name: "El Arquitecto", avatar: db.kreatekCore?.avatar || "" });
+        setView("core");
+        showToast(`${KFS_BRAND.productAcronym} OS Accesado. Bienvenido, Arquitecto.`);
+        return;
+      }
+      
+      const teamMember = db.kreatekCore?.team?.find(
+        (m: any) => m.name.toLowerCase() === safeEmail.toLowerCase() && m.password === safePass
+      );
+      if (teamMember) {
+        setCurrentUser({
+          role: "core",
+          name: teamMember.name,
+          isTeamMember: true,
+          permissions: teamMember.permissions || [],
+          avatar: ""
+        });
+        setView("core");
+        showToast(`Acceso de Equipo Concedido: ${teamMember.name}`);
+        return;
+      }
+      
+      showToast("Credenciales de Arquitecto/Equipo incorrectas.", "error");
+      return;
+    }
+
     // Auth Real con Supabase
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -1205,15 +1235,6 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       });
 
       if (error) {
-        // Fallback local for Core Architect only if Auth is not fully set up
-        const corePass = process.env.NEXT_PUBLIC_CORE_PASSWORD || "199521.";
-        if (role === "core" && safePass === corePass) {
-          setCurrentUser({ role: "core", name: "El Arquitecto", avatar: db.kreatekCore?.avatar || "" });
-          setView("core");
-          showToast(`${KFS_BRAND.productAcronym} OS Accesado. Bienvenido, Arquitecto.`);
-          return;
-        }
-        
         // Fallback a base de datos local JSON (Transición)
         let foundUser = null;
         const hashedPass = hashPassword(safePass);

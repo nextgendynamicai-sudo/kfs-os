@@ -177,14 +177,14 @@ export const LoginView = ({ handleLogin, registerClient, registerPromotora, db, 
 
               {(activeTab === "core" || activeTab === "promotora" || activeTab === "dueño" || activeTab === "vendedor" || activeTab === "customer" || activeTab === "rider") && (
                 <div className="space-y-4">
-                  {(activeTab === "dueño" || activeTab === "vendedor" || activeTab === "promotora" || activeTab === "customer" || activeTab === "rider") && (
+                  {(activeTab === "dueño" || activeTab === "vendedor" || activeTab === "promotora" || activeTab === "customer" || activeTab === "rider" || activeTab === "core") && (
                     <div className="relative">
                       <label className="block text-xs font-black text-violet-700 uppercase tracking-widest mb-1 ml-1">
-                        {activeTab === "customer" ? "Teléfono Móvil Registrado" : "Correo Electrónico de Acceso"}
+                        {activeTab === "core" ? "Nombre de Equipo (opcional si usa Clave Maestra)" : (activeTab === "customer" ? "Teléfono Móvil Registrado" : "Correo Electrónico de Acceso")}
                       </label>
                       <div className="relative">
                         {activeTab === "customer" ? <Smartphone className="absolute left-4 top-4 text-violet-400" size={20} /> : <Info className="absolute left-4 top-4 text-violet-400" size={20} />}
-                        <input type="text" placeholder={activeTab === "customer" ? "Ej: +584141234567" : "usuario@correo.com"} value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-violet-50/50 border border-violet-100 rounded-xl pl-12 pr-4 py-4 text-violet-950 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all" />
+                        <input type="text" placeholder={activeTab === "core" ? "Ej: Juan (Miembro de Equipo)" : (activeTab === "customer" ? "Ej: +584141234567" : "usuario@correo.com")} value={email} onChange={e => setEmail(e.target.value)} className="w-full bg-violet-50/50 border border-violet-100 rounded-xl pl-12 pr-4 py-4 text-violet-950 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all" />
                       </div>
                     </div>
                   )}
