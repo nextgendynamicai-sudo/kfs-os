@@ -472,7 +472,17 @@ const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
     avatar: localCore.avatar || remoteCore.avatar,
     wipeVersion: localCore.wipeVersion || remoteCore.wipeVersion || CURRENT_WIPE_VERSION,
     deletedKeys: Array.from(deletedKeys),
-    team: localCore.team || remoteCore.team || []
+    team: (() => {
+      const merged: any[] = [];
+      const names = new Set();
+      for (const m of [...(localCore.team || []), ...(remoteCore.team || [])]) {
+        if (m && m.name && !names.has(m.name.toLowerCase())) {
+          names.add(m.name.toLowerCase());
+          merged.push(m);
+        }
+      }
+      return merged;
+    })()
   };
 
   if (deletedKeys.size > 0) {

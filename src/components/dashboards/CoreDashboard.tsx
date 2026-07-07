@@ -126,7 +126,8 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
           earningsEUR: 0,
           netEarningsEUR: 0,
           adBudgetEUR: 0,
-          wipeVersion: 4
+          wipeVersion: 4,
+          team: []
         },
         ghostLogs: [],
         notifications: [],
