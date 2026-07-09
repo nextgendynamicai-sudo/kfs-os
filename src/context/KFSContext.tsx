@@ -1190,12 +1190,54 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     // MODO DEMOSTRACIÓN: Clave universal "000" para ingresos de prueba
     if (safePass === "000") {
       let demoUser = null;
-      if (role === "core") demoUser = { role: "core", name: "El Arquitecto", avatar: db.kreatekCore?.avatar || "" };
-      if (role === "promotora") demoUser = db.promotoras.find((p: any) => p.email === safeEmail) || db.promotoras[0];
-      if (role === "dueño") demoUser = db.clients.find((c: any) => c.email === safeEmail) || db.clients[0];
-      if (role === "vendedor") demoUser = db.vendedores.find((v: any) => v.email === safeEmail) || db.vendedores[0];
-      if (role === "rider") demoUser = db.riders?.find((r: any) => r.email === safeEmail) || db.riders?.[0];
-      if (role === "customer") demoUser = db.customers?.find((c: any) => c.phone === safeEmail) || db.customers?.[0];
+      if (role === "core") {
+        demoUser = { role: "core", name: "El Arquitecto", avatar: db.kreatekCore?.avatar || "" };
+      }
+      if (role === "promotora") {
+        let list = db.promotoras || [];
+        if (list.length === 0) {
+          const newUser = { id: "demo-promotora", name: "Promotora Demo", email: safeEmail || "promotora@demo.com", password: "000", status: "active", walletBalanceUSD: 250 };
+          setDb((prev: any) => ({ ...prev, promotoras: [newUser] }));
+          list = [newUser];
+        }
+        demoUser = list.find((p: any) => p.email === safeEmail) || list[0];
+      }
+      if (role === "dueño") {
+        let list = db.clients || [];
+        if (list.length === 0) {
+          const newUser = { id: "demo-client", company: "Comercio Demo S.A.", email: safeEmail || "comercio@demo.com", password: "000", isOnboarded: true, walletBalanceUSD: 1000, salesUSD: 0 };
+          setDb((prev: any) => ({ ...prev, clients: [newUser] }));
+          list = [newUser];
+        }
+        demoUser = list.find((c: any) => c.email === safeEmail) || list[0];
+      }
+      if (role === "vendedor") {
+        let list = db.vendedores || [];
+        if (list.length === 0) {
+          const newUser = { id: "demo-vendedor", name: "Vendedor Demo", email: safeEmail || "vendedor@demo.com", password: "000" };
+          setDb((prev: any) => ({ ...prev, vendedores: [newUser] }));
+          list = [newUser];
+        }
+        demoUser = list.find((v: any) => v.email === safeEmail) || list[0];
+      }
+      if (role === "rider") {
+        let list = db.riders || [];
+        if (list.length === 0) {
+          const newUser = { id: "demo-rider", name: "Delivery Demo", email: safeEmail || "rider@demo.com", password: "000", status: "approved" };
+          setDb((prev: any) => ({ ...prev, riders: [newUser] }));
+          list = [newUser];
+        }
+        demoUser = list.find((r: any) => r.email === safeEmail) || list[0];
+      }
+      if (role === "customer") {
+        let list = db.customers || [];
+        if (list.length === 0) {
+          const newUser = { id: "demo-customer", name: "Cliente Demo", phone: safeEmail || "+584141234567", password: "000" };
+          setDb((prev: any) => ({ ...prev, customers: [newUser] }));
+          list = [newUser];
+        }
+        demoUser = list.find((c: any) => c.phone === safeEmail) || list[0];
+      }
 
       if (demoUser) {
         setCurrentUser({ ...demoUser, role });
