@@ -50,8 +50,8 @@ export const TopUpModal = ({ isOpen, onClose, amount: initialAmount, onSubmit, u
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[99999] bg-violet-950/60 backdrop-blur-md flex items-center justify-center p-4">
         <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} className="bg-white text-violet-950 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-violet-100 flex flex-col max-h-[90vh]">
           <div className="flex justify-between items-center p-6 border-b border-violet-100 bg-violet-50 shrink-0">
-            <h2 className="font-black text-xl flex items-center gap-2"><DollarSign className="text-green-400" /> Recargar Saldo</h2>
-            <button onClick={onClose} className="p-2 bg-violet-100 rounded-full hover:bg-white/20 transition-colors text-violet-950 cursor-pointer">
+            <h2 className="font-black text-xl flex items-center gap-2"><DollarSign className="text-violet-600" /> Recargar Saldo</h2>
+            <button onClick={onClose} className="p-2 bg-violet-100 rounded-full hover:bg-violet-200 transition-colors text-violet-950 cursor-pointer border-none">
               <X size={20} />
             </button>
           </div>
@@ -59,13 +59,13 @@ export const TopUpModal = ({ isOpen, onClose, amount: initialAmount, onSubmit, u
           <div className="p-6 overflow-y-auto flex-1 space-y-6">
             <div className="bg-violet-50 border border-violet-100 rounded-2xl p-5">
               <h3 className="font-bold text-violet-600 mb-3 flex items-center gap-2"><CreditCard size={18}/> Datos para Transferencia</h3>
-              <p className="text-xs text-slate-600 leading-relaxed">Transfiere el monto deseado a la siguiente cuenta. Luego, adjunta el comprobante para validar tu saldo.</p>
+              <p className="text-xs text-slate-600 leading-relaxed font-semibold">Transfiere el monto deseado a la siguiente cuenta. Luego, adjunta el comprobante para validar tu saldo.</p>
               
-              <div className="mt-4 space-y-2 text-sm font-mono bg-violet-50 p-4 rounded-xl border border-violet-100">
-                <p><span className="text-slate-400">Banco:</span> Banco Nacional de Crédito (BNC)</p>
-                <p><span className="text-slate-400">Cuenta:</span> 0104-XXXX-XXXX-XXXX-XXXX</p>
-                <p><span className="text-slate-400">Titular:</span> Javier Castillo ({KFS_BRAND.productAcronym} OS)</p>
-                <p><span className="text-slate-400">RIF/CI:</span> V-25.218.648</p>
+              <div className="mt-4 space-y-2 text-sm font-mono bg-white p-4 rounded-xl border border-violet-100 text-slate-700">
+                <p><span className="text-slate-400 font-bold">Banco:</span> Banco Nacional de Crédito (BNC)</p>
+                <p><span className="text-slate-400 font-bold">Cuenta:</span> 0104-XXXX-XXXX-XXXX-XXXX</p>
+                <p><span className="text-slate-400 font-bold">Titular:</span> Javier Castillo ({KFS_BRAND.productAcronym} OS)</p>
+                <p><span className="text-slate-400 font-bold">RIF/CI:</span> V-25.218.648</p>
               </div>
             </div>
 
@@ -89,20 +89,20 @@ export const TopUpModal = ({ isOpen, onClose, amount: initialAmount, onSubmit, u
                   <div className="relative group rounded-xl overflow-hidden border border-violet-100 aspect-video">
                     <img src={screenshot} alt="Comprobante" className="w-full h-full object-cover" />
                     <div className="absolute inset-0 bg-violet-950/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button type="button" onClick={() => setScreenshot("")} className="bg-rose-500 hover:bg-rose-600 text-white text-xs font-black py-2 px-4 rounded-lg cursor-pointer">Borrar Imagen</button>
+                      <button type="button" onClick={() => setScreenshot("")} className="bg-rose-500 hover:bg-rose-600 text-white text-xs font-black py-2 px-4 rounded-lg cursor-pointer border-none">Borrar Imagen</button>
                     </div>
                   </div>
                 ) : (
-                  <label className="border-2 border-dashed border-white/20 hover:border-violet-300 rounded-xl flex flex-col items-center justify-center py-8 cursor-pointer transition-colors bg-violet-50">
-                    <Camera size={24} className="text-slate-500 mb-2" />
-                    <span className="text-sm font-bold text-slate-600">Subir Captura</span>
+                  <label className="border-2 border-dashed border-violet-300 hover:border-violet-400 rounded-xl flex flex-col items-center justify-center py-8 cursor-pointer transition-colors bg-violet-50">
+                    <Camera size={24} className="text-violet-400 mb-2" />
+                    <span className="text-sm font-bold text-violet-600">Subir Captura</span>
                     <span className="text-[10px] text-slate-400 mt-1">PNG, JPG (Máx. 5MB)</span>
                     <input type="file" accept="image/*" className="hidden" onChange={handleImageUpload} />
                   </label>
                 )}
               </div>
 
-              <button type="submit" className="w-full py-4 bg-green-500 hover:bg-green-600 active:scale-95 text-violet-950 font-black rounded-xl transition-all shadow-lg shadow-green-500/20 text-lg flex items-center justify-center gap-2 mt-4 cursor-pointer">
+              <button type="submit" className="w-full py-4 bg-violet-600 hover:bg-violet-700 active:scale-95 text-white font-black rounded-xl transition-all shadow-lg shadow-violet-500/20 text-lg flex items-center justify-center gap-2 mt-4 cursor-pointer border-none">
                 <Upload size={20} /> Enviar Validación
               </button>
             </form>

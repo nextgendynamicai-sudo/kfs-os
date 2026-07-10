@@ -7,7 +7,7 @@ import { useKFS } from "../context/KFSContext";
 import { playPremiumChime } from "../lib/utils";
 
 export const SMSConciliatorSimulator = () => {
-  const { smsConciliator, showToast, db } = useKFS();
+  const { smsConciliator, showToast, db } = useKFS() as any;
   const [isOpen, setIsOpen] = useState(false);
   const [bank, setBank] = useState("Mercantil");
   const [amount, setAmount] = useState("450,00");
@@ -81,7 +81,7 @@ export const SMSConciliatorSimulator = () => {
         flash.className = "fixed inset-0 pointer-events-none z-[99999] flex items-center justify-center animate-fade-in";
         flash.innerHTML = `
           <div class="absolute inset-0 bg-violet-600/20 backdrop-blur-sm transition-all duration-1000"></div>
-          <div class="bg-violet-900 border-2 border-violet-600 p-10 rounded-[3rem] shadow-2xl flex flex-col items-center justify-center max-w-sm text-center transform scale-95 animate-scale-up animate-pulse" style="box-shadow: 0 0 50px rgba(197, 161, 132, 0.4)">
+          <div class="bg-violet-900 border-2 border-violet-600 p-10 rounded-[3rem] shadow-2xl flex flex-col items-center justify-center max-w-sm text-center transform scale-95 animate-scale-up animate-pulse" style="box-shadow: 0 0 50px rgba(109, 40, 217, 0.4)">
             <div class="w-16 h-16 bg-violet-600/20 rounded-full flex items-center justify-center mb-4">
               <span class="text-3xl">🛎️</span>
             </div>
@@ -114,7 +114,7 @@ export const SMSConciliatorSimulator = () => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 left-6 z-[80] w-14 h-14 bg-gradient-to-br from-violet-600 to-[#a38063] rounded-full shadow-[0_4px_20px_rgba(197,161,132,0.4)] flex items-center justify-center text-violet-900 hover:scale-110 active:scale-95 transition-all cursor-pointer group animate-bounce"
+        className="fixed bottom-6 left-6 z-[80] w-14 h-14 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-full shadow-[0_4px_20px_rgba(109,40,217,0.4)] flex items-center justify-center text-violet-900 hover:scale-110 active:scale-95 transition-all cursor-pointer group animate-bounce border-none"
         style={{ animationDuration: '3s' }}
       >
         <span className="text-2xl group-hover:rotate-12 transition-transform">🛎️</span>
@@ -134,7 +134,7 @@ export const SMSConciliatorSimulator = () => {
                   <p className="text-[9px] text-gray-400 font-mono">Simulador de Telemetría SMS</p>
                 </div>
               </div>
-              <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white cursor-pointer"><X size={20} /></button>
+              <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white cursor-pointer border-none bg-transparent"><X size={20} /></button>
             </div>
 
             <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3">
@@ -148,7 +148,7 @@ export const SMSConciliatorSimulator = () => {
                       key={o.id}
                       type="button"
                       onClick={() => handleAutofillReference(o.paymentReference, o.amountUSD, o.customerPhone)}
-                      className="w-full text-left bg-white/5 hover:bg-violet-600/15 border border-white/10 p-2.5 rounded-xl transition-all flex justify-between items-center group cursor-pointer"
+                      className="w-full text-left bg-white/5 hover:bg-violet-600/15 border border-white/10 p-2.5 rounded-xl transition-all flex justify-between items-center group cursor-pointer border-none"
                     >
                       <div>
                         <span className="text-[9px] font-mono block text-gray-400 group-hover:text-white">Ref: {o.paymentReference}</span>
@@ -220,7 +220,7 @@ export const SMSConciliatorSimulator = () => {
             <button
               type="button"
               onClick={handleSimulateSync}
-              className="w-full py-4 bg-gradient-to-br from-violet-600 to-[#a38063] text-violet-900 font-black rounded-xl text-xs hover:scale-[1.02] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer"
+              className="w-full py-4 bg-gradient-to-br from-violet-600 to-indigo-600 text-white font-black rounded-xl text-xs hover:scale-[1.02] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer border-none"
             >
               🚀 Detonar Conciliación Zero-Clic
             </button>

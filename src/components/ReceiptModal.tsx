@@ -143,7 +143,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <button 
               onClick={playCashDrawerSound} 
-              className="py-3 rounded-xl font-black text-xs text-violet-600 bg-violet-50 border border-violet-100 hover:bg-violet-100 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md hover:shadow-[0_0_15px_rgba(197,161,132,0.3)] active:scale-95"
+              className="py-3 rounded-xl font-black text-xs text-violet-600 bg-violet-50 border border-violet-100 hover:bg-violet-100 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md hover:shadow-violet-600/20 active:scale-95 border-none"
             >
               💸 Gaveta
             </button>
@@ -152,7 +152,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
                 showToast("Buscando Impresora Térmica vía WebUSB...", "success");
                 setTimeout(() => playCashDrawerSound(), 500);
               }} 
-              className="py-3 rounded-xl font-black text-xs text-violet-600 bg-violet-50 border border-violet-100 hover:bg-violet-100 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md active:scale-95"
+              className="py-3 rounded-xl font-black text-xs text-violet-600 bg-violet-50 border border-violet-100 hover:bg-violet-100 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md active:scale-95 border-none"
             >
               🖨️ Imprimir
             </button>
@@ -162,7 +162,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
                 href={`https://wa.me/58${tx.customerPhone.replace(/^0+/, '').replace(/[^0-9]/g, '')}?text=Hola ${tx.customerName || 'Cliente'}, ¡Gracias por tu compra en ${product?.clientName || 'KFS ECOSISTEMA'}!%0A%0A*Recibo KFS: ${tx.receiptNumber}*${tx.isFiscal ? `%0A*Factura Fiscal / Control: 00-${Math.floor(10000 + Math.random() * 89999)}*` : ''}%0AProducto: ${product?.name} ${tx.isFiscal ? '(G)' : '(E)'}%0A${tx.isFiscal ? `Base Imponible: ${formatUSD(tx.baseUSD)}%0A` : ''}IVA: ${formatUSD(tx.ivaUSD)}%0AIGTF: ${formatUSD(tx.igtfUSD)}%0A%0ATasa Oficial BCV: ${tx.exchangeRateBCV?.toFixed(2)} Bs%0A*Total Pagado (USD): ${formatUSD(tx.amountUSD)}*%0A*Total Pagado (Bs): ${(tx.amountUSD * (tx.exchangeRateBCV || 36.5)).toFixed(2)} Bs*${tx.kfsPointsEarned > 0 ? `%0A%0A🎁 ¡Felicidades! Acumulaste +${tx.kfsPointsEarned.toFixed(1)} ${KFS_BRAND.economy.currency} con esta compra.` : ''}%0A%0ARecibo Digital Oficial ${KFS_BRAND.productAcronym}.`}
                 target="_blank"
                 rel="noreferrer"
-                className="py-3 rounded-xl font-black text-xs text-white bg-green-500 hover:bg-green-600 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
+                className="py-3 rounded-xl font-black text-xs text-white bg-green-500 hover:bg-green-600 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md border-none"
               >
                 💬 Recibo WhatsApp
               </a>
@@ -189,7 +189,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
             <button 
               onClick={handleTearPaper}
               disabled={isPrinting}
-              className="w-full sm:w-2/3 py-4 bg-violet-600 hover:bg-[#b08d70] hover:shadow-[0_0_20px_rgba(197,161,132,0.6)] disabled:bg-gray-700 text-white font-black rounded-2xl text-xs hover:scale-[1.01] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full sm:w-2/3 py-4 bg-violet-600 hover:bg-violet-700 hover:shadow-violet-600/30 disabled:bg-gray-700 text-white font-black rounded-2xl text-xs hover:scale-[1.01] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed border-none"
             >
             ✂️ Rasgar Recibo y Volver
             </button>

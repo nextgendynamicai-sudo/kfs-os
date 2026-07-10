@@ -19,9 +19,8 @@ export function ProfileAvatarEditor({ currentUser }: ProfileAvatarEditorProps) {
     setMounted(true);
   }, []);
 
-  // Intentamos obtener el avatar de diferentes fuentes dependiendo del rol
   const currentAvatar = currentUser?.avatar || currentUser?.profilePicUrl || "https://cdn-icons-png.flaticon.com/512/3063/3063822.png";
-  
+
   const handleSaveAvatar = async (base64: string) => {
     setIsUploading(true);
     try {
@@ -37,11 +36,14 @@ export function ProfileAvatarEditor({ currentUser }: ProfileAvatarEditorProps) {
 
   return (
     <div className="relative group">
-      <div className="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden border-4 border-white/20 shadow-lg relative bg-[#141E3A]">
+      <div 
+        onClick={() => setIsEditing(true)}
+        className="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden border-4 border-white/20 shadow-lg relative bg-[#141E3A] cursor-pointer"
+      >
         {isUploading ? (
           <div className="absolute inset-0 bg-violet-950/60 flex flex-col items-center justify-center">
-            <Loader2 className="animate-spin text-violet-950 mb-1" size={24} />
-            <span className="text-[8px] text-violet-950 font-bold uppercase tracking-widest">Subiendo</span>
+            <Loader2 className="animate-spin text-white mb-1" size={24} />
+            <span className="text-[8px] text-white font-bold uppercase tracking-widest">Subiendo</span>
           </div>
         ) : (
           <>
@@ -51,12 +53,9 @@ export function ProfileAvatarEditor({ currentUser }: ProfileAvatarEditorProps) {
               className="w-full h-full object-cover"
               onError={(e) => { (e.target as HTMLImageElement).src = "https://cdn-icons-png.flaticon.com/512/3063/3063822.png"; }}
             />
-            <div 
-              onClick={() => setIsEditing(true)}
-              className="absolute inset-0 bg-violet-50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center cursor-pointer backdrop-blur-sm"
-            >
-              <Camera className="text-violet-950 mb-1" size={24} />
-              <span className="text-[10px] text-violet-950 font-bold uppercase tracking-widest text-center px-2">Editar Foto</span>
+            <div className="absolute inset-0 bg-violet-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center backdrop-blur-sm">
+              <Camera className="text-white mb-1" size={24} />
+              <span className="text-[10px] text-white font-bold uppercase tracking-widest text-center px-2">Editar Foto</span>
             </div>
           </>
         )}

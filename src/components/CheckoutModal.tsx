@@ -322,8 +322,8 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
           {isOnline && (
             <div className="space-y-4">
               {(['zinli', 'wally_tech', 'airtm', 'ubbi_app', 'cash_bs', 'binance'].includes(paymentMethod)) && (
-                <div className="bg-[#C5A184]/10 p-4 rounded-xl border border-[#C5A184]/30">
-                  <h4 className="text-[10px] font-black uppercase text-[#C5A184] mb-2 tracking-widest">Datos Exactos para el Pago</h4>
+                <div className="bg-violet-600/10 p-4 rounded-xl border border-violet-500/30">
+                  <h4 className="text-[10px] font-black uppercase text-violet-600 mb-2 tracking-widest">Datos Exactos para el Pago</h4>
                   {paymentMethod === "zinli" && (
                     <p className="text-sm font-mono text-gray-800">Email Zinli: <strong>{resolvedStoreOwner?.paymentMethods?.zinli || "No configurado (Pregunte al vendedor)"}</strong></p>
                   )}
@@ -350,7 +350,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
               )}
               <div>
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 block">Número de Referencia Bancaria</label>
-                <input type="text" placeholder="Ej: 034199..." value={paymentReference} onChange={e => setPaymentReference(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C5A184]" />
+                <input type="text" placeholder="Ej: 034199..." value={paymentReference} onChange={e => setPaymentReference(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-400" />
                 <p className="text-[10px] text-gray-400 mt-1">Obligatorio. Nuestro {KFS_BRAND.productAcronym} SMS Conciliator leerá esto para aprobar tu envío.</p>
               </div>
 
@@ -371,7 +371,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
                         }
                       }
                     }} 
-                    className="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-[#C5A184]/10 file:text-[#0A1128] hover:file:bg-[#C5A184]/20 cursor-pointer"
+                    className="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-violet-600/10 file:text-violet-700 hover:file:bg-violet-600/20 cursor-pointer"
                   />
                   {paymentScreenshot && (
                     <div className="relative inline-block w-24">
@@ -392,7 +392,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
 
           <div>
             <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 block">Nombre del Cliente</label>
-            <input type="text" placeholder="Ej: Juan Pérez" value={customerName} onChange={e => setCustomerName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C5A184]" />
+            <input type="text" placeholder="Ej: Juan Pérez" value={customerName} onChange={e => setCustomerName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-400" />
           </div>
 
           <div>
@@ -406,7 +406,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
                 </span>
               )}
             </div>
-            <input type="text" placeholder="Ej: 04141234567" value={customerPhone} onChange={e => { setCustomerPhone(e.target.value); setKPointsToBurn(0); }} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C5A184]" />
+            <input type="text" placeholder="Ej: 04141234567" value={customerPhone} onChange={e => { setCustomerPhone(e.target.value); setKPointsToBurn(0); }} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-400" />
             <p className="text-[10px] text-gray-400 mt-1">Opcional. {isOnline ? "Para que el comercio te contacte." : "Para enviar el recibo electrónico por WhatsApp."}</p>
           </div>
 
@@ -433,7 +433,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
           )}
           
           <label className="flex items-center gap-3 p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
-            <input type="checkbox" checked={applyIva} onChange={e => setApplyIva(e.target.checked)} className="w-5 h-5 text-[#C5A184] rounded focus:ring-[#C5A184]" />
+            <input type="checkbox" checked={applyIva} onChange={e => setApplyIva(e.target.checked)} className="w-5 h-5 text-violet-600 rounded focus:ring-violet-500 accent-violet-600" />
             <span className="font-bold text-[#0A1128]">Generar Factura Fiscal (IVA 16%)</span>
           </label>
 
@@ -466,11 +466,11 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
           </div>
 
           <div className="flex flex-col sm:flex-row gap-3 pt-4">
-            <button type="button" onClick={onCancel} className="w-full sm:w-1/3 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 cursor-pointer">Cancelar</button>
+            <button type="button" onClick={onCancel} className="w-full sm:w-1/3 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 cursor-pointer border-none">Cancelar</button>
             <button 
               disabled={(paymentMethod === 'split_currency' && ((parseFloat(splitAmount1) || 0) <= 0 || (parseFloat(splitAmount1) || 0) > total)) || (applyIva && !validateRif(customerRif))}
               onClick={handleConfirm} 
-              className="w-full sm:w-2/3 py-3 rounded-xl font-black text-[#0A1128] bg-[#C5A184] shadow-lg hover:shadow-[0_0_20px_rgba(197,161,132,0.6)] hover:scale-[1.02] active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:bg-gray-400 disabled:cursor-not-allowed">
+              className="w-full sm:w-2/3 py-3 rounded-xl font-black text-white bg-violet-600 hover:bg-violet-700 shadow-lg shadow-violet-600/30 hover:shadow-xl hover:shadow-violet-600/40 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:bg-gray-400 disabled:cursor-not-allowed border-none">
               {isOnline ? "Enviar Pago a Revisión" : applyIva ? "Emitir Factura Fiscal" : "Cobrar Cliente"}
             </button>
           </div>

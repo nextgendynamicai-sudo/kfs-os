@@ -29,7 +29,7 @@ export const PayoutModal = ({ maxAmount, currency, onConfirm, onCancel, formatMo
 
         <button 
           onClick={onCancel}
-          className="absolute top-6 right-6 text-violet-950/50 hover:text-violet-950 transition-colors"
+          className="absolute top-6 right-6 text-violet-950/50 hover:text-violet-950 transition-colors cursor-pointer border-none bg-transparent"
         >
           <X size={24} />
         </button>
@@ -47,7 +47,7 @@ export const PayoutModal = ({ maxAmount, currency, onConfirm, onCancel, formatMo
         <div className="space-y-6 relative z-10">
           <div className="bg-violet-50 p-4 rounded-2xl border border-violet-100 flex justify-between items-center">
             <span className="text-xs font-bold text-slate-500 uppercase tracking-widest">Disponible:</span>
-            <span className="text-xl font-black text-green-400">{formatMoney(maxAmount)}</span>
+            <span className="text-xl font-black text-green-500">{formatMoney(maxAmount)}</span>
           </div>
 
           <div className="space-y-2">
@@ -59,7 +59,7 @@ export const PayoutModal = ({ maxAmount, currency, onConfirm, onCancel, formatMo
               placeholder={`Monto a recibir`} 
               value={amount} 
               onChange={e => setAmount(e.target.value)} 
-              className="w-full bg-white border border-violet-200 rounded-xl px-5 py-4 font-black text-violet-950 text-2xl focus:outline-none focus:ring-2 focus:ring-[#C5A184] transition-all"
+              className="w-full bg-white border border-violet-200 rounded-xl px-5 py-4 font-black text-violet-950 text-2xl focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all"
             />
             {parsedAmount > 0 && (
               <div className="flex justify-between items-center text-[10px] text-slate-500 mt-1 px-1 font-mono">
@@ -77,7 +77,7 @@ export const PayoutModal = ({ maxAmount, currency, onConfirm, onCancel, formatMo
             <select 
               value={banco} 
               onChange={e => setBanco(e.target.value)} 
-              className="w-full bg-white border border-violet-100 rounded-xl px-4 py-3 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#C5A184]"
+              className="w-full bg-white border border-violet-100 rounded-xl px-4 py-3 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-400"
             >
               <option value="">— Selecciona Banco —</option>
               {["Banesco", "Mercantil", "Banco de Venezuela", "Provincial", "BOD", "Bancaribe", "Bicentenario", "BNC", "Exterior", "Tesoro"].map(b => <option key={b} value={b}>{b}</option>)}
@@ -85,11 +85,11 @@ export const PayoutModal = ({ maxAmount, currency, onConfirm, onCancel, formatMo
             <div className="grid grid-cols-2 gap-3">
               <input 
                 type="tel" placeholder="Teléfono (Ej: 0414...)" value={telefono} onChange={e => setTelefono(e.target.value)} 
-                className="w-full bg-white border border-violet-100 rounded-xl px-4 py-3 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#C5A184]" 
+                className="w-full bg-white border border-violet-100 rounded-xl px-4 py-3 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-400" 
               />
               <input 
                 type="text" placeholder="Cédula Titular" value={cedula} onChange={e => setCedula(e.target.value)} 
-                className="w-full bg-white border border-violet-100 rounded-xl px-4 py-3 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-[#C5A184]" 
+                className="w-full bg-white border border-violet-100 rounded-xl px-4 py-3 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-400" 
               />
             </div>
           </div>
@@ -104,7 +104,7 @@ export const PayoutModal = ({ maxAmount, currency, onConfirm, onCancel, formatMo
           <button 
             disabled={!isAmountValid || !banco || !telefono || !cedula}
             onClick={() => onConfirm(parsedAmount, JSON.stringify({ banco, telefono, cedula }))} 
-            className="w-full py-4 rounded-xl font-black text-white bg-violet-600 hover:bg-[#d8b59a] shadow-[0_0_20px_rgba(197,161,132,0.3)] hover:shadow-[0_0_30px_rgba(197,161,132,0.6)] hover:scale-[1.02] active:scale-95 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:bg-gray-600 disabled:text-slate-500 disabled:cursor-not-allowed disabled:shadow-none"
+            className="w-full py-4 rounded-xl font-black text-white bg-violet-600 hover:bg-violet-700 shadow-lg shadow-violet-600/30 hover:shadow-xl hover:shadow-violet-600/40 hover:scale-[1.02] active:scale-95 transition-all flex justify-center items-center gap-2 disabled:opacity-50 disabled:bg-gray-600 disabled:text-slate-500 disabled:cursor-not-allowed disabled:shadow-none cursor-pointer border-none"
           >
             <CheckCircle size={20} /> Solicitar Retiro
           </button>

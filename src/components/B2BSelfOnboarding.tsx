@@ -65,11 +65,11 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-[#0A1128] font-sans flex flex-col justify-between selection:bg-[#C5A184] selection:text-[#0A1128]">
+    <div className="min-h-screen bg-slate-50 text-[#1e1b4b] font-sans flex flex-col justify-between selection:bg-[#7c3aed] selection:text-[#1e1b4b]">
       {/* Header navbar */}
       <nav className="border-b border-white/5 py-4 px-6 sm:px-10 flex justify-between items-center bg-white/90 backdrop-blur-xl border-b border-[#e2e8f0] sticky top-0 z-50">
         <div className="flex items-center gap-3">
-          <Store className="text-[#C5A184] h-6 w-auto" />
+          <Store className="text-[#7c3aed] h-6 w-auto" />
           <span className="font-black tracking-tight text-lg">{KFS_BRAND.productAcronym} B2B Portal</span>
         </div>
         <button
@@ -93,7 +93,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all ${
                   step >= s.num
-                    ? "bg-[#C5A184] text-[#0A1128] shadow-[0_0_15px_rgba(197,161,132,0.4)]"
+                    ? "bg-[#7c3aed] text-white hover:bg-violet-700 shadow-lg shadow-violet-600/20 shadow-[0_0_15px_rgba(124,58,237,0.4)]"
                     : "bg-[#e2e8f0] text-[#64748b]"
                 }`}
               >
@@ -110,7 +110,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
         {step === 1 && (
           <div className="bg-white border border-[#e2e8f0] rounded-[2.5rem] p-6 sm:p-8 space-y-6 shadow-2xl">
             <div className="space-y-2">
-              <h1 className="text-2xl sm:text-3xl font-black text-[#0A1128] flex items-center gap-2">
+              <h1 className="text-2xl sm:text-3xl font-black text-[#1e1b4b] flex items-center gap-2">
                 Afiliación Comercial Nacional
               </h1>
               <p className="text-xs text-[#64748b] leading-relaxed">
@@ -126,7 +126,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                   placeholder="Ej: Bodegón Chacao, C.A."
                   value={formData.company}
                   onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                  className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors"
+                  className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7c3aed] transition-colors"
                 />
               </div>
 
@@ -138,7 +138,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                     placeholder="empresa@kfs.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors"
+                    className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7c3aed] transition-colors"
                   />
                 </div>
                 <div>
@@ -148,7 +148,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                     placeholder="••••••••"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors"
+                    className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7c3aed] transition-colors"
                   />
                 </div>
               </div>
@@ -161,7 +161,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                     placeholder="Ej: 04121234567"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors"
+                    className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7c3aed] transition-colors"
                   />
                 </div>
                 <div>
@@ -171,7 +171,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                     placeholder="Ej: J-12345678-9"
                     value={formData.rif}
                     onChange={(e) => setFormData({ ...formData, rif: e.target.value })}
-                    className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors"
+                    className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7c3aed] transition-colors"
                   />
                 </div>
               </div>
@@ -183,7 +183,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                   placeholder="Calle, Edificio, Local, Chacao, Caracas"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors resize-none"
+                  className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7c3aed] transition-colors resize-none"
                 />
               </div>
 
@@ -194,14 +194,14 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                   placeholder="Ej: p1 (dejar vacío si no aplica)"
                   value={promoterId}
                   onChange={(e) => setPromoterId(e.target.value)}
-                  className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors"
+                  className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7c3aed] transition-colors"
                 />
               </div>
             </div>
 
             <button
               onClick={handleNextStep}
-              className="w-full bg-[#C5A184] text-[#0A1128] font-black py-4 rounded-xl mt-6 cursor-pointer hover:scale-[1.02] active:scale-95 transition-transform flex items-center justify-center gap-2"
+              className="w-full bg-[#7c3aed] text-white hover:bg-violet-700 shadow-lg shadow-violet-600/20 font-black py-4 rounded-xl mt-6 cursor-pointer hover:scale-[1.02] active:scale-95 transition-transform flex items-center justify-center gap-2"
             >
               Continuar al Contrato <ArrowRight size={16} />
             </button>
@@ -215,7 +215,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
             className="bg-white border border-[#e2e8f0] rounded-[2.5rem] p-6 sm:p-8 space-y-6 shadow-2xl"
           >
             <div className="space-y-2">
-              <h2 className="text-2xl font-black text-[#0A1128] flex items-center gap-2">
+              <h2 className="text-2xl font-black text-[#1e1b4b] flex items-center gap-2">
                 Acuerdo Comercial & Setup Fee
               </h2>
               <p className="text-xs text-[#64748b]">
@@ -225,20 +225,20 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
 
             {/* Contract terms card */}
             <div className="bg-slate-50 border border-[#e2e8f0] rounded-2xl p-5 space-y-3">
-              <h3 className="text-sm font-black text-[#C5A184] flex items-center gap-1.5">
+              <h3 className="text-sm font-black text-[#7c3aed] flex items-center gap-1.5">
                 <ShieldCheck size={16} /> Términos del Peaje Gamificado
               </h3>
               <ul className="space-y-2 text-xs text-[#334155]">
                 <li className="flex items-start gap-2">
-                  <span className="text-[#C5A184] font-black">•</span>
+                  <span className="text-[#7c3aed] font-black">•</span>
                   <span><strong>Regalía Base:</strong> {KFS_BRAND.productAcronym} OS cobra una comisión estándar del 5% sobre la facturación procesada.</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-[#C5A184] font-black">•</span>
+                  <span className="text-[#7c3aed] font-black">•</span>
                   <span><strong>Reducción de Comisión:</strong> Si el comercio afilia clientes directamente desde el mostrador (descarga y recarga de $5), la regalía bajará permanentemente al <strong>3%</strong>.</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-[#C5A184] font-black">•</span>
+                  <span className="text-[#7c3aed] font-black">•</span>
                   <span><strong>Setup Inicial:</strong> Cobro único de <strong>$75.00 USD</strong> por inicialización del software, proxy fiscal virtual, y generación de QR de comercio.</span>
                 </li>
               </ul>
@@ -248,7 +248,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                   type="checkbox"
                   checked={agreedToContract}
                   onChange={(e) => setAgreedToContract(e.target.checked)}
-                  className="rounded border-white/10 bg-black/40 text-[#C5A184] focus:ring-0 cursor-pointer h-4 w-4"
+                  className="rounded border-white/10 bg-black/40 text-[#7c3aed] focus:ring-0 cursor-pointer h-4 w-4"
                 />
                 <span className="text-xs text-[#1e293b] font-bold select-none">
                   Acepto el contrato de regalías base (5%) y setup.
@@ -273,7 +273,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                     onClick={() => setPaymentMethod(m)}
                     className={`py-2 px-1 text-center font-bold text-xs rounded-xl border transition-all cursor-pointer ${
                       paymentMethod === m
-                        ? "bg-[#C5A184]/15 border-[#C5A184] text-white"
+                        ? "bg-[#7c3aed]/15 border-[#7c3aed] text-white"
                         : "bg-white/5 border-white/5 text-[#64748b] hover:border-white/20"
                     }`}
                   >
@@ -296,7 +296,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                   placeholder="Ingresa los últimos 6 u 8 dígitos"
                   value={paymentRef}
                   onChange={(e) => setPaymentRef(e.target.value)}
-                  className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C5A184] transition-colors"
+                  className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7c3aed] transition-colors"
                 />
               </div>
             </div>
@@ -311,7 +311,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
               </button>
               <button
                 type="submit"
-                className="w-2/3 bg-[#C5A184] text-[#0A1128] font-black py-4 rounded-xl cursor-pointer hover:scale-[1.02] active:scale-95 transition-transform flex items-center justify-center gap-1.5"
+                className="w-2/3 bg-[#7c3aed] text-white hover:bg-violet-700 shadow-lg shadow-violet-600/20 font-black py-4 rounded-xl cursor-pointer hover:scale-[1.02] active:scale-95 transition-transform flex items-center justify-center gap-1.5"
               >
                 Pagar y Activar Comercio
               </button>
@@ -327,15 +327,15 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
             </div>
 
             <div className="space-y-2">
-              <h2 className="text-2xl font-black text-[#0A1128]">¡Comercio Activado Exitosamente!</h2>
+              <h2 className="text-2xl font-black text-[#1e1b4b]">¡Comercio Activado Exitosamente!</h2>
               <p className="text-xs text-[#64748b] max-w-sm mx-auto">
                 Tu pago ha sido validado y tu terminal de {KFS_BRAND.productAcronym} OS está listo para operar bajo la licencia base del 5%.
               </p>
             </div>
 
             {/* Virtual QR Code Card */}
-            <div className="bg-white border border-[#C5A184]/30 rounded-3xl p-6 max-w-sm mx-auto space-y-4 shadow-xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-[#C5A184]/5 rounded-full blur-xl -z-1"></div>
+            <div className="bg-white border border-[#7c3aed]/30 rounded-3xl p-6 max-w-sm mx-auto space-y-4 shadow-xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-[#7c3aed]/5 rounded-full blur-xl -z-1"></div>
               
               <div className="flex justify-between items-center text-left border-b border-white/5 pb-3">
                 <div>
@@ -344,7 +344,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                   </h4>
                   <p className="text-[8px] text-[#64748b] font-mono">RIF: {formData.rif}</p>
                 </div>
-                <span className="bg-[#C5A184]/10 border border-[#C5A184]/35 text-[#C5A184] text-[8px] font-mono px-2 py-0.5 rounded">
+                <span className="bg-[#7c3aed]/10 border border-[#7c3aed]/35 text-[#7c3aed] text-[8px] font-mono px-2 py-0.5 rounded">
                   ID: {newMerchantId}
                 </span>
               </div>
@@ -371,7 +371,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                 </div>
                 {/* Logo in center */}
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-1 rounded-md border border-gray-200">
-                  <Store size={14} className="text-[#0A1128]" />
+                  <Store size={14} className="text-[#1e1b4b]" />
                 </div>
               </div>
 
@@ -388,7 +388,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                 </button>
                 <button
                   onClick={() => showToast("Guardando imagen de QR...", "success")}
-                  className="flex-1 bg-[#C5A184]/15 hover:bg-[#C5A184]/25 text-[#C5A184] text-[10px] font-bold py-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
+                  className="flex-1 bg-[#7c3aed]/15 hover:bg-[#7c3aed]/25 text-[#7c3aed] text-[10px] font-bold py-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-1"
                 >
                   <Download size={12} /> Descargar QR
                 </button>
@@ -398,7 +398,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
             <div className="pt-4 border-t border-[#e2e8f0] flex flex-col gap-2">
               <button
                 onClick={() => setView("login")}
-                className="w-full bg-[#C5A184] text-[#0A1128] font-black text-sm py-4 rounded-xl cursor-pointer hover:scale-[1.02] active:scale-95 transition-transform"
+                className="w-full bg-[#7c3aed] text-white hover:bg-violet-700 shadow-lg shadow-violet-600/20 font-black text-sm py-4 rounded-xl cursor-pointer hover:scale-[1.02] active:scale-95 transition-transform"
               >
                 Ir a Terminal de Venta / POS
               </button>
