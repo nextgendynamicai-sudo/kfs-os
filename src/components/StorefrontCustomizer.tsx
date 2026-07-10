@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { KFS_BRAND } from "../config/brandConfig";
 import { Camera, Palette, Truck } from "lucide-react";
-import { compressImage } from "../lib/utils";
+import { compressImage, resolveThemeColor } from "../lib/utils";
 
 export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, updateStoreSettings: any }) => {
   const [settings, setSettings] = useState(client.storeSettings || {

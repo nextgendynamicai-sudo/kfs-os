@@ -309,4 +309,20 @@ export function comparePasswordSecure(password: string, hash: string): boolean {
   return hashPasswordSecure(password) === hash;
 }
 
+export const resolveThemeColor = (color: string) => {
+  if (!color) return "#7c3aed";
+  if (color.startsWith("#") || color.startsWith("rgb") || color.startsWith("hsl")) {
+    return color;
+  }
+  const tailwindColors: { [key: string]: string } = {
+    "violet-900": "#4c1d95",
+    "violet-600": "#7c3aed",
+    "indigo-600": "#4f46e5",
+    "emerald-500": "#10b981",
+    "amber-500": "#f59e0b",
+    "red-500": "#ef4444",
+  };
+  return tailwindColors[color] || "#7c3aed";
+};
+
 

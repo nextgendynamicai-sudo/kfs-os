@@ -42,7 +42,7 @@ import { DatabaseManagerWidget } from "../DatabaseManagerWidget";
 import { ReferralLinksWidget } from "../ReferralLinksWidget";
 import { KPointsIssuerWidget } from "../KPointsIssuerWidget";
 import { useP2PTransfer } from "../../hooks/useP2PTransfer";
-import { compressImage, readAsBase64, playPremiumChime, playSyncChime, playCashDrawerSound, playScannerBeep, getStoreCoords, getCustomerCoords } from "../../lib/utils";
+import { compressImage, readAsBase64, playPremiumChime, playSyncChime, playCashDrawerSound, playScannerBeep, getStoreCoords, getCustomerCoords, resolveThemeColor } from "../../lib/utils";
 import { AnimatedCounter } from "../AnimatedCounter";
 import { AppEnforcer } from "../AppEnforcer";
 import { PioneerOfferBanner } from "../PioneerOfferBanner";
@@ -78,22 +78,6 @@ const KREATEK_COLORS = {
 // ==========================================
 
 // Toast Component
-
-export const resolveThemeColor = (color: string) => {
-  if (!color) return "#7c3aed";
-  if (color.startsWith("#") || color.startsWith("rgb") || color.startsWith("hsl")) {
-    return color;
-  }
-  const tailwindColors: { [key: string]: string } = {
-    "violet-900": "#4c1d95",
-    "violet-600": "#7c3aed",
-    "indigo-600": "#4f46e5",
-    "emerald-500": "#10b981",
-    "amber-500": "#f59e0b",
-    "red-500": "#ef4444",
-  };
-  return tailwindColors[color] || "#7c3aed";
-};
 
 export const MarketplaceView = ({ db, submitOnlineOrder, formatUSD, logout, currentUser }: any) => {
   const [searchQuery, setSearchQuery] = useState("");
