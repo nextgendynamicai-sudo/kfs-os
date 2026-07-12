@@ -1057,6 +1057,72 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  // Keep currentUser in sync with the database records
+  useEffect(() => {
+    if (!currentUser || !isDataLoaded) return;
+
+    let latestUser = null;
+    const id = currentUser.id;
+    const role = currentUser.role;
+
+    if (role === "dueño" || role === "client") {
+      latestUser = db.clients?.find((c: any) => c.id === id);
+    } else if (role === "vendedor") {
+      latestUser = db.vendedores?.find((v: any) => v.id === id);
+    } else if (role === "promotora") {
+      latestUser = db.promotoras?.find((p: any) => p.id === id);
+    } else if (role === "rider") {
+      latestUser = db.riders?.find((r: any) => r.id === id);
+    } else if (role === "customer") {
+      latestUser = db.customers?.find((c: any) => c.id === id);
+    } else if (role === "core") {
+      if (currentUser.isTeamMember) {
+        latestUser = db.kreatekCore?.team?.find((m: any) => m.name.toLowerCase() === currentUser.name.toLowerCase());
+      } else {
+        // Main Architect: sync core avatar if updated in settings/database safely
+        const dbAvatar = db.kreatekCore?.avatar || "";
+        const userAvatar = currentUser.avatar || "";
+        if (userAvatar !== dbAvatar) {
+          setCurrentUser((prev: any) => prev ? { ...prev, avatar: dbAvatar } : prev);
+        }
+      }
+    }
+
+    if (latestUser) {
+      // Compare critical data fields to avoid infinite rendering loop on local state changes
+      const hasDiff = 
+        JSON.stringify(currentUser.paymentMethods) !== JSON.stringify(latestUser.paymentMethods) ||
+        JSON.stringify(currentUser.storeSettings) !== JSON.stringify(latestUser.storeSettings) ||
+        JSON.stringify(currentUser.subscription) !== JSON.stringify(latestUser.subscription) ||
+        currentUser.salesUSD !== latestUser.salesUSD ||
+        currentUser.walletBalanceUSD !== latestUser.walletBalanceUSD ||
+        currentUser.kfsFeesOwedUSD !== latestUser.kfsFeesOwedUSD ||
+        currentUser.loyaltyProgramActive !== latestUser.loyaltyProgramActive ||
+        currentUser.isOnboarded !== latestUser.isOnboarded ||
+        currentUser.kycDocumentUrl !== latestUser.kycDocumentUrl ||
+        currentUser.company !== latestUser.company ||
+        currentUser.name !== latestUser.name ||
+        currentUser.email !== latestUser.email ||
+        currentUser.phone !== latestUser.phone ||
+        currentUser.avatar !== latestUser.avatar ||
+        currentUser.status !== latestUser.status;
+
+      if (hasDiff) {
+        setCurrentUser((prev: any) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            ...latestUser,
+            role: prev.role, // preserve runtime-only session fields
+            isImpersonated: prev.isImpersonated,
+            isTeamMember: prev.isTeamMember,
+            permissions: prev.permissions
+          };
+        });
+      }
+    }
+  }, [db, isDataLoaded, currentUser]);
+
 
   // Save DB to LocalStorage & Supabase Cloud
   const compressDbForCloud = (database: any) => {
@@ -3271,6 +3337,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   };
 
   const registerPosTerminal = (posData: any) => {
+    if (!posData || !posData.name || !posData.connectionInfo) {
+      showToast("Error: Nombre y Datos de Conexión del POS son obligatorios", "error");
+      return;
+    }
     const newPos = {
       ...posData,
       id: `POS-${Date.now().toString().slice(-4)}`,
@@ -3397,6 +3467,15 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       ...prev,
       clients: prev.clients.map((c: any) => c.id === clientId ? { ...c, paymentMethods: methods } : c)
     }));
+    setCurrentUser((prev: any) => {
+      if (prev && prev.id === clientId) {
+        return {
+          ...prev,
+          paymentMethods: methods
+        };
+      }
+      return prev;
+    });
     showToast("Métodos de pago guardados exitosamente en la bóveda", "success");
     logAction("Dueño", "UPDATE_PAYMENT_METHODS", "Se actualizaron los métodos de pago.");
   };
