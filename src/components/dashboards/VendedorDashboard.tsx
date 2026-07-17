@@ -745,6 +745,26 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
           </div>
         </div>
       )}
+
+      {/* Mobile TabBar Navigation */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-violet-950 border-t border-violet-800 flex justify-around items-center p-4 z-50 shadow-[0_-10px_40px_rgba(46,16,101,0.5)]">
+        <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex flex-col items-center gap-1 text-violet-400 hover:text-white transition-colors cursor-pointer">
+          <Store size={22} />
+          <span className="text-[10px] font-bold uppercase tracking-wider">Inicio</span>
+        </button>
+        <button onClick={() => { setShowScanner(true); showToast("Cámara activada"); }} className="flex flex-col items-center justify-center text-white bg-violet-600 w-14 h-14 rounded-full -mt-10 shadow-lg shadow-violet-600/50 border-4 border-slate-50 transition-transform active:scale-95 cursor-pointer">
+          <QrCode size={26} />
+        </button>
+        <button onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })} className="flex flex-col items-center gap-1 text-violet-400 hover:text-white transition-colors relative cursor-pointer">
+          <Package size={22} />
+          <span className="text-[10px] font-bold uppercase tracking-wider">Vender</span>
+          {myOrders.length > 0 && (
+            <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-md animate-pulse">
+              {myOrders.length}
+            </span>
+          )}
+        </button>
+      </div>
     </div>
   );
 }

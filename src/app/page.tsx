@@ -35,15 +35,15 @@ export { OnboardingWizard } from "../components/OnboardingWizard";
 export { RecruitmentWidget } from "../components/RecruitmentWidget";
 export { ScannerView } from "../components/ScannerView";
 
-import { CoreDashboard } from "../components/dashboards/CoreDashboard";
-import { PromotoraDashboard } from "../components/dashboards/PromotoraDashboard";
-import { ClientDashboard } from "../components/dashboards/ClientDashboard";
-import { VendedorDashboard } from "../components/dashboards/VendedorDashboard";
-import { RiderDashboard } from "../components/dashboards/RiderDashboard";
-import { CustomerDashboard } from "../components/dashboards/CustomerDashboard";
-import { LoginView } from "../components/dashboards/LoginView";
-import { MarketplaceView } from "../components/dashboards/MarketplaceView";
-import { LandingPageView } from "../components/dashboards/LandingPageView";
+const CoreDashboard = dynamic(() => import("../components/dashboards/CoreDashboard").then(mod => mod.CoreDashboard), { ssr: false });
+const PromotoraDashboard = dynamic(() => import("../components/dashboards/PromotoraDashboard").then(mod => mod.PromotoraDashboard), { ssr: false });
+const ClientDashboard = dynamic(() => import("../components/dashboards/ClientDashboard").then(mod => mod.ClientDashboard), { ssr: false });
+const VendedorDashboard = dynamic(() => import("../components/dashboards/VendedorDashboard").then(mod => mod.VendedorDashboard), { ssr: false });
+const RiderDashboard = dynamic(() => import("../components/dashboards/RiderDashboard").then(mod => mod.RiderDashboard), { ssr: false });
+const CustomerDashboard = dynamic(() => import("../components/dashboards/CustomerDashboard").then(mod => mod.CustomerDashboard), { ssr: false });
+const LoginView = dynamic(() => import("../components/dashboards/LoginView").then(mod => mod.LoginView), { ssr: false });
+const MarketplaceView = dynamic(() => import("../components/dashboards/MarketplaceView").then(mod => mod.MarketplaceView), { ssr: false });
+const LandingPageView = dynamic(() => import("../components/dashboards/LandingPageView").then(mod => mod.LandingPageView), { ssr: false });
 import { AxisNitroPOS } from "../components/AxisNitroPOS";
 
 
@@ -452,125 +452,136 @@ export default function Home() {
         </div>
       )}
 
-      {safeView === "landing" && <LandingPageView setView={setView} />}
-      {safeView === "axis_nitro_pos" && <AxisNitroPOS />}
-      {safeView === "b2b-onboarding" && <B2BSelfOnboarding setView={setView} />}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={safeView}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.3 }}
+          className="flex-1 flex flex-col"
+        >
+          {safeView === "landing" && <LandingPageView setView={setView} />}
+          {safeView === "axis_nitro_pos" && <AxisNitroPOS />}
+          {safeView === "b2b-onboarding" && <B2BSelfOnboarding setView={setView} />}
 
-      {safeView === "login" && (
-        <LoginView
-          handleLogin={handleLogin}
-          registerClient={registerClient}
-          registerPromotora={registerPromotora}
-          db={db}
-          setView={setView}
-          currentUser={currentUser}
-          logout={logout}
-        />
-      )}
-      {safeView === "marketplace" && (
-        <MarketplaceView
-          db={db}
-          submitOnlineOrder={submitOnlineOrder}
-          formatUSD={formatUSD}
-          logout={logout}
-          currentUser={currentUser}
-        />
-      )}
-      {safeView === "customer" && (
-        <AppEnforcer currentUser={currentUser} updatePwaStatus={updatePwaStatus}>
-          <CustomerDashboard
-            db={db}
-            currentUser={currentUser}
-            logout={logout}
-            setView={setView}
-          />
-        </AppEnforcer>
-      )}
-      {safeView === "core" && (
-        <AppEnforcer currentUser={currentUser} updatePwaStatus={updatePwaStatus}>
-          <CoreDashboard
-            db={db}
-            setDb={setDb}
-            approvePromotora={approvePromotora}
-            rejectPromotora={rejectPromotora}
-            settlePromotoraEarnings={settlePromotoraEarnings}
-            showToast={showToast}
-            formatUSD={formatUSD}
-            formatEUR={formatEUR}
-            currentUser={currentUser}
-            logout={logout}
-            approveSubscription={approveSubscription}
-          />
-        </AppEnforcer>
-      )}
-      
-      {safeView === "promotora" && (
-        <AppEnforcer currentUser={currentUser} updatePwaStatus={updatePwaStatus}>
-          <PromotoraDashboard
-            db={db}
-            setDb={setDb}
-            currentUser={currentUser}
-            registerClient={registerClient}
-            upgradeToPremium={upgradeToPremium}
-            settlePromotoraEarnings={settlePromotoraEarnings}
-            formatUSD={formatUSD}
-            formatEUR={formatEUR}
-            logout={logout}
-            requestPayout={requestPayout}
-            registerVendedor={registerVendedor}
-          />
-        </AppEnforcer>
-      )}
-      
-      {safeView === "client" && (
-        <AppEnforcer currentUser={currentUser} updatePwaStatus={updatePwaStatus}>
-          <ClientDashboard
-            db={db}
-            setDb={setDb}
-            currentUser={currentUser}
-            addProduct={addProduct}
-            addExpense={addExpense}
-            showToast={showToast}
-            formatUSD={formatUSD}
-            formatEUR={formatEUR}
-            logout={logout}
-            approveOrder={approveOrder}
-            rejectOrder={rejectOrder}
-            dispatchOrder={dispatchOrder}
-            paySubscription={paySubscription}
-            requestPayout={requestPayout}
-            requestTopUp={requestTopUp}
-          />
-        </AppEnforcer>
-      )}
-      {safeView === "vendedor" && (
-        <AppEnforcer currentUser={currentUser} updatePwaStatus={updatePwaStatus}>
-          <VendedorDashboard
-            db={db}
-            setDb={setDb}
-            currentUser={currentUser}
-            addProduct={addProduct}
-            processPurchase={processPurchase}
-            showToast={showToast}
-            formatUSD={formatUSD}
-            logout={logout}
-            approveOrder={approveOrder}
-            rejectOrder={rejectOrder}
-            generateZReport={generateZReport}
-            registerCrmExpress={registerCrmExpress}
-          />
-        </AppEnforcer>
-      )}
-      {safeView === "rider" && (
-        <AppEnforcer currentUser={currentUser} updatePwaStatus={updatePwaStatus}>
-          <RiderDashboard
-            db={db}
-            currentUser={currentUser}
-            logout={logout}
-          />
-        </AppEnforcer>
-      )}
-      {null}
+          {safeView === "login" && (
+            <LoginView
+              handleLogin={handleLogin}
+              registerClient={registerClient}
+              registerPromotora={registerPromotora}
+              db={db}
+              setView={setView}
+              currentUser={currentUser}
+              logout={logout}
+            />
+          )}
+          {safeView === "marketplace" && (
+            <MarketplaceView
+              db={db}
+              submitOnlineOrder={submitOnlineOrder}
+              formatUSD={formatUSD}
+              logout={logout}
+              currentUser={currentUser}
+            />
+          )}
+          {safeView === "customer" && (
+            <AppEnforcer currentUser={currentUser} updatePwaStatus={updatePwaStatus}>
+              <CustomerDashboard
+                db={db}
+                currentUser={currentUser}
+                logout={logout}
+                setView={setView}
+              />
+            </AppEnforcer>
+          )}
+          {safeView === "core" && (
+            <AppEnforcer currentUser={currentUser} updatePwaStatus={updatePwaStatus}>
+              <CoreDashboard
+                db={db}
+                setDb={setDb}
+                approvePromotora={approvePromotora}
+                rejectPromotora={rejectPromotora}
+                settlePromotoraEarnings={settlePromotoraEarnings}
+                showToast={showToast}
+                formatUSD={formatUSD}
+                formatEUR={formatEUR}
+                currentUser={currentUser}
+                logout={logout}
+                approveSubscription={approveSubscription}
+              />
+            </AppEnforcer>
+          )}
+          
+          {safeView === "promotora" && (
+            <AppEnforcer currentUser={currentUser} updatePwaStatus={updatePwaStatus}>
+              <PromotoraDashboard
+                db={db}
+                setDb={setDb}
+                currentUser={currentUser}
+                registerClient={registerClient}
+                upgradeToPremium={upgradeToPremium}
+                settlePromotoraEarnings={settlePromotoraEarnings}
+                formatUSD={formatUSD}
+                formatEUR={formatEUR}
+                logout={logout}
+                requestPayout={requestPayout}
+                registerVendedor={registerVendedor}
+              />
+            </AppEnforcer>
+          )}
+          
+          {safeView === "client" && (
+            <AppEnforcer currentUser={currentUser} updatePwaStatus={updatePwaStatus}>
+              <ClientDashboard
+                db={db}
+                setDb={setDb}
+                currentUser={currentUser}
+                addProduct={addProduct}
+                addExpense={addExpense}
+                showToast={showToast}
+                formatUSD={formatUSD}
+                formatEUR={formatEUR}
+                logout={logout}
+                approveOrder={approveOrder}
+                rejectOrder={rejectOrder}
+                dispatchOrder={dispatchOrder}
+                paySubscription={paySubscription}
+                requestPayout={requestPayout}
+                requestTopUp={requestTopUp}
+              />
+            </AppEnforcer>
+          )}
+          {safeView === "vendedor" && (
+            <AppEnforcer currentUser={currentUser} updatePwaStatus={updatePwaStatus}>
+              <VendedorDashboard
+                db={db}
+                setDb={setDb}
+                currentUser={currentUser}
+                addProduct={addProduct}
+                processPurchase={processPurchase}
+                showToast={showToast}
+                formatUSD={formatUSD}
+                logout={logout}
+                approveOrder={approveOrder}
+                rejectOrder={rejectOrder}
+                generateZReport={generateZReport}
+                registerCrmExpress={registerCrmExpress}
+              />
+            </AppEnforcer>
+          )}
+          {safeView === "rider" && (
+            <AppEnforcer currentUser={currentUser} updatePwaStatus={updatePwaStatus}>
+              <RiderDashboard
+                db={db}
+                currentUser={currentUser}
+                logout={logout}
+              />
+            </AppEnforcer>
+          )}
+          {null}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

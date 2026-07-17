@@ -1,38 +1,38 @@
 "use client";
 
 import { KFS_BRAND } from "../config/brandConfig";
-import React, { createContext, useContext, useState, useEffect, useRef } from "react";
+import React, { createContext, useContext, useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { supabase, isSupabaseConfigured, uploadAsset } from "./supabase";
 import { playScannerBeep, speakText, getStoreCoords, getCustomerCoords, playSyncChime, comparePasswordSecure, hashPasswordSecure } from "../lib/utils";
 import { getIndexedDBValue, setIndexedDBValue } from "../lib/indexedDB";
 import { syncToRelational } from "../lib/supabaseSync";
 
 const VENEZUELAN_PRODUCTS_CATALOG: Record<string, { name: string; imgUrl: string; category: string; brand: string }> = {
-  "7591006000016": { name: "Harina PAN Blanca (1kg)", imgUrl: "", category: "Alimentos", brand: "Alimentos Polar" },
-  "7591005000574": { name: "Margarina Mavesa Común (500g)", imgUrl: "", category: "Alimentos", brand: "Alimentos Polar" },
-  "7591005001151": { name: "Mayonesa Mavesa Tradicional (445g)", imgUrl: "", category: "Alimentos", brand: "Alimentos Polar" },
-  "7591001000219": { name: "Malta Polar Botella (250ml)", imgUrl: "", category: "Bebidas", brand: "Cervecería Polar" },
-  "7591001000110": { name: "Cerveza Polar Pilsen (Tercio 295ml)", imgUrl: "", category: "Bebidas", brand: "Cervecería Polar" },
-  "7591395000147": { name: "Pirulin Original (Lata 190g)", imgUrl: "", category: "Dulces", brand: "Nucita Venezolana" },
-  "7591016205722": { name: "Galleta Savoy Cocosette (50g)", imgUrl: "", category: "Dulces", brand: "Nestlé Savoy" },
-  "7591016205708": { name: "Galleta Savoy Susy (50g)", imgUrl: "", category: "Dulces", brand: "Nestlé Savoy" },
-  "7591016035251": { name: "Chocolate Savoy de Leche (130g)", imgUrl: "", category: "Dulces", brand: "Nestlé Savoy" },
-  "7591016035404": { name: "Bombón Savoy Toronto (Bolsa 36u)", imgUrl: "", category: "Dulces", brand: "Nestlé Savoy" },
-  "7591005001229": { name: "Queso Fundido Rikesa Cheddar (300g)", imgUrl: "", category: "Alimentos", brand: "Alimentos Polar" },
-  "7591041000675": { name: "Queso Fundido Cheez Whiz (300g)", imgUrl: "", category: "Alimentos", brand: "Kraft" },
-  "7591005002042": { name: "Toddy Chocolate en Polvo (400g)", imgUrl: "", category: "Bebidas", brand: "Alimentos Polar" },
-  "7591018000547": { name: "Salsa de Tomate Pampero (397g)", imgUrl: "", category: "Alimentos", brand: "Pampero" },
-  "7591642000678": { name: "Arroz Mary Dorado Extra (1kg)", imgUrl: "", category: "Alimentos", brand: "Alimentos Mary" },
-  "7591024001019": { name: "Café Molido Fama de América (250g)", imgUrl: "", category: "Alimentos", brand: "Fama de América" },
-  "7591006001044": { name: "Pasta Primor Spaghetti (1kg)", imgUrl: "", category: "Alimentos", brand: "Alimentos Polar" },
-  "7591060000120": { name: "Diablitos Underwood Jamón (115g)", imgUrl: "", category: "Alimentos", brand: "Diablitos Underwood" },
-  "7591021000107": { name: "Atún Margarita en Aceite (140g)", imgUrl: "", category: "Alimentos", brand: "Alimentos Polar" },
-  "759104101405": { name: "Salsa Inglesa Kraft (150ml)", imgUrl: "", category: "Alimentos", brand: "Kraft" },
-  "7591005000758": { name: "Vinagre Blanco Mavesa (1L)", imgUrl: "", category: "Alimentos", brand: "Alimentos Polar" },
-  "7591005002905": { name: "Detergente Polvo Las Llaves (1kg)", imgUrl: "", category: "Limpieza", brand: "Alimentos Polar" },
-  "7591005001601": { name: "Jabón Azul Las Llaves Bebé (250g)", imgUrl: "", category: "Limpieza", brand: "Alimentos Polar" },
-  "7591142100014": { name: "Harina de Trigo Robin Hood (1kg)", imgUrl: "", category: "Alimentos", brand: "Monaca" },
-  "7591736000454": { name: "Suavizante Ensueño Floral (1L)", imgUrl: "", category: "Limpieza", brand: "Corimon" }
+  "7591006000016": { name: "Harina PAN Blanca (1kg)", imgUrl: "https://images.unsplash.com/photo-1574484284002-952d92456975?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
+  "7591005000574": { name: "Margarina Mavesa Común (500g)", imgUrl: "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
+  "7591005001151": { name: "Mayonesa Mavesa Tradicional (445g)", imgUrl: "https://images.unsplash.com/photo-1571266028243-e4bb33394de9?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
+  "7591001000219": { name: "Malta Polar Botella (250ml)", imgUrl: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=500&auto=format&fit=crop&q=60", category: "Bebidas", brand: "Cervecería Polar" },
+  "7591001000110": { name: "Cerveza Polar Pilsen (Tercio 295ml)", imgUrl: "https://images.unsplash.com/photo-1608270176050-12ec0f24ee3d?w=500&auto=format&fit=crop&q=60", category: "Bebidas", brand: "Cervecería Polar" },
+  "7591395000147": { name: "Pirulin Original (Lata 190g)", imgUrl: "https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?w=500&auto=format&fit=crop&q=60", category: "Dulces", brand: "Nucita Venezolana" },
+  "7591016205722": { name: "Galleta Savoy Cocosette (50g)", imgUrl: "https://images.unsplash.com/photo-1558961312-503d216d5813?w=500&auto=format&fit=crop&q=60", category: "Dulces", brand: "Nestlé Savoy" },
+  "7591016205708": { name: "Galleta Savoy Susy (50g)", imgUrl: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&auto=format&fit=crop&q=60", category: "Dulces", brand: "Nestlé Savoy" },
+  "7591016035251": { name: "Chocolate Savoy de Leche (130g)", imgUrl: "https://images.unsplash.com/photo-1511381939415-e44015466834?w=500&auto=format&fit=crop&q=60", category: "Dulces", brand: "Nestlé Savoy" },
+  "7591016035404": { name: "Bombón Savoy Toronto (Bolsa 36u)", imgUrl: "https://images.unsplash.com/photo-1544025162-d76694265947?w=500&auto=format&fit=crop&q=60", category: "Dulces", brand: "Nestlé Savoy" },
+  "7591005001229": { name: "Queso Fundido Rikesa Cheddar (300g)", imgUrl: "https://images.unsplash.com/photo-1552767059-ce182ead6c1b?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
+  "7591041000675": { name: "Queso Fundido Cheez Whiz (300g)", imgUrl: "https://images.unsplash.com/photo-1586190848861-99aa4a171e90?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Kraft" },
+  "7591005002042": { name: "Toddy Chocolate en Polvo (400g)", imgUrl: "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=500&auto=format&fit=crop&q=60", category: "Bebidas", brand: "Alimentos Polar" },
+  "7591018000547": { name: "Salsa de Tomate Pampero (397g)", imgUrl: "https://images.unsplash.com/photo-1595855759920-86582396756a?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Pampero" },
+  "7591642000678": { name: "Arroz Mary Dorado Extra (1kg)", imgUrl: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Mary" },
+  "7591024001019": { name: "Café Molido Fama de América (250g)", imgUrl: "https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Fama de América" },
+  "7591006001044": { name: "Pasta Primor Spaghetti (1kg)", imgUrl: "https://images.unsplash.com/photo-1612966608997-30d211b2e1c4?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
+  "7591060000120": { name: "Diablitos Underwood Jamón (115g)", imgUrl: "https://images.unsplash.com/photo-1534482421-64566f976cfa?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Diablitos Underwood" },
+  "7591021000107": { name: "Atún Margarita en Aceite (140g)", imgUrl: "https://images.unsplash.com/photo-1599084993091-1cb5c0721cc6?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
+  "759104101405": { name: "Salsa Inglesa Kraft (150ml)", imgUrl: "https://images.unsplash.com/photo-1589135306090-e555e09fbeb6?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Kraft" },
+  "7591005000758": { name: "Vinagre Blanco Mavesa (1L)", imgUrl: "https://images.unsplash.com/photo-1563206767-5b18f218e8de?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
+  "7591005002905": { name: "Detergente Polvo Las Llaves (1kg)", imgUrl: "https://images.unsplash.com/photo-1607834306387-3ec72cc274b7?w=500&auto=format&fit=crop&q=60", category: "Limpieza", brand: "Alimentos Polar" },
+  "7591005001601": { name: "Jabón Azul Las Llaves Bebé (250g)", imgUrl: "https://images.unsplash.com/photo-1600857544200-b2f666a9a2ec?w=500&auto=format&fit=crop&q=60", category: "Limpieza", brand: "Alimentos Polar" },
+  "7591142100014": { name: "Harina de Trigo Robin Hood (1kg)", imgUrl: "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Monaca" },
+  "7591736000454": { name: "Suavizante Ensueño Floral (1L)", imgUrl: "https://images.unsplash.com/photo-1585130401366-fe05a8d813c4?w=500&auto=format&fit=crop&q=60", category: "Limpieza", brand: "Corimon" }
 };
 
 const MOCK_BCV_RATES = {
@@ -41,7 +41,7 @@ const MOCK_BCV_RATES = {
   isWeekend: false
 };
 
-const CURRENT_WIPE_VERSION = 6;
+const CURRENT_WIPE_VERSION = 7;
 
 const initialDB = {
   promotoras: [] as any[],
@@ -71,7 +71,96 @@ const initialDB = {
     }
   ] as any[],
   vendedores: [] as any[],
-  products: [] as any[],
+  products: [
+    {
+      id: "prod_dig_1",
+      name: "Curso Express",
+      image: "https://images.unsplash.com/photo-1541658016709-82535e94bc69?w=500&auto=format&fit=crop&q=60",
+      stock: 9998,
+      costUSD: 0,
+      category: "Servicios",
+      clientId: "kfs-express",
+      priceUSD: 0.5,
+      description: "Aprende los fundamentos del float financiero y la liquidez prepagada en 15 minutos."
+    },
+    {
+      id: "prod_dig_2",
+      name: "Plantillas Legales SENIAT (B2B)",
+      image: "https://images.unsplash.com/photo-1450133064473-71024230f91b?w=500&auto=format&fit=crop&q=60",
+      stock: 9999,
+      costUSD: 0,
+      category: "Servicios",
+      clientId: "kfs-express",
+      priceUSD: 5,
+      description: "Contratos de co-pago y formatos de facturación fiscal listos para imprimir y usar."
+    },
+    {
+      id: "prod_dig_3",
+      name: "Asesoría 1-a-1 Kreatek",
+      image: "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=500&auto=format&fit=crop&q=60",
+      stock: 9999,
+      costUSD: 0,
+      category: "Servicios",
+      clientId: "kfs-express",
+      priceUSD: 8,
+      description: "Sesión estratégica remota con un asesor especializado en escalamiento y optimización de caja."
+    },
+    {
+      id: "prod_dig_4",
+      name: "Modelo IA + Guía de Negocio",
+      image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=500&auto=format&fit=crop&q=60",
+      stock: 9999,
+      costUSD: 0,
+      category: "Servicios",
+      clientId: "kfs-express",
+      priceUSD: 10,
+      description: "Script generativo de IA para descripciones de tienda e integraciones de API BCV."
+    },
+    {
+      id: "prod_dig_5",
+      name: "Asesoría con CEO y Fundador",
+      image: "https://images.unsplash.com/photo-1556761175-4b46a572b786?w=500&auto=format&fit=crop&q=60",
+      stock: 9999,
+      costUSD: 0,
+      category: "Servicios",
+      clientId: "kfs-express",
+      priceUSD: 30,
+      description: "Reunión ejecutiva para evaluar la visión, escalabilidad y oportunidades de tu negocio directamente con el CEO."
+    },
+    {
+      id: "prod_dig_6",
+      name: "20 Diseños para Marketing",
+      image: "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=500&auto=format&fit=crop&q=60",
+      stock: 9999,
+      costUSD: 0,
+      category: "Servicios",
+      clientId: "kfs-express",
+      priceUSD: 25,
+      description: "Paquete de 20 diseños gráficos premium adaptados a tu marca para redes sociales y campañas publicitarias."
+    },
+    {
+      id: "prod_dig_7",
+      name: "8 Reels Profesionales",
+      image: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?w=500&auto=format&fit=crop&q=60",
+      stock: 9999,
+      costUSD: 0,
+      category: "Servicios",
+      clientId: "kfs-express",
+      priceUSD: 90,
+      description: "Creación, edición y montaje de 8 Reels/TikToks dinámicos enfocados en conversión y viralidad."
+    },
+    {
+      id: "prod_dig_8",
+      name: "5 Pautas Publicitarias (Grabación y Edición)",
+      image: "https://images.unsplash.com/photo-1601506521937-0121a7fc2a6b?w=500&auto=format&fit=crop&q=60",
+      stock: 9999,
+      costUSD: 0,
+      category: "Servicios",
+      clientId: "kfs-express",
+      priceUSD: 300,
+      description: "Producción completa de 5 pautas publicitarias de alto impacto con equipo profesional (grabación y edición incluidas)."
+    }
+  ] as any[],
   transactions: [] as any[],
   orders: [] as any[],
   expenses: [] as any[],
@@ -515,7 +604,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   if (dbError) {
     throw dbError; // Caught by ErrorBoundary
   }
-  const [view, setViewInternal] = useState("landing"); 
+  const [view, setViewInternal] = useState("vendedor"); 
   
   const setView = (newView: string) => {
     setViewInternal(newView);
@@ -524,7 +613,13 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [currentUser, setCurrentUser] = useState<any>({
+    id: "demo-vendedor",
+    name: "Vendedor Demo",
+    email: "vendedor@demo.com",
+    role: "vendedor",
+    clientId: "kfs-express"
+  });
   const currentUserRef = useRef(currentUser);
   const hasRestoredRef = useRef(false);
   useEffect(() => {
@@ -607,8 +702,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       if (hash) {
         setViewInternal(hash);
       } else {
-        setViewInternal("landing");
-        window.history.replaceState({ view: "landing" }, "", "#landing");
+        setViewInternal("vendedor");
+        window.history.replaceState({ view: "vendedor" }, "", "#vendedor");
       }
     }
 
@@ -620,7 +715,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         if (hash) {
           setViewInternal(hash);
         } else {
-          setViewInternal("landing");
+          setViewInternal("vendedor");
         }
       }
     };
@@ -1280,11 +1375,14 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       if (role === "vendedor") {
         let list = db.vendedores || [];
         if (list.length === 0) {
-          const newUser = { id: "demo-vendedor", name: "Vendedor Demo", email: safeEmail || "vendedor@demo.com", password: "000" };
+          const newUser = { id: "demo-vendedor", name: "Vendedor Demo", email: safeEmail || "vendedor@demo.com", password: "000", clientId: "kfs-express" };
           setDb((prev: any) => ({ ...prev, vendedores: [newUser] }));
           list = [newUser];
         }
         demoUser = list.find((v: any) => v.email === safeEmail) || list[0];
+        if (demoUser && !demoUser.clientId) {
+          demoUser = { ...demoUser, clientId: "kfs-express" };
+        }
       }
       if (role === "rider") {
         let list = db.riders || [];
@@ -4096,21 +4194,25 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast("Configuración del negocio actualizada.", "success");
   };
 
+  const contextValue = useMemo(() => ({
+    isClient, isBooting, view, setView, currentUser, setCurrentUser, updateUserAvatar,
+    toast, showToast, rates, updateBcvRates, db, setDb, formatUSD, formatEUR,
+    handleLogin, logout, registerClient, registerFreeUser, upgradeToPremium, registerPromotora, registerVendedor, approvePromotora, rejectPromotora, settlePromotoraEarnings,
+    addProduct, addExpense, processPurchase, submitOnlineOrder, approveOrder, rejectOrder, dispatchOrder, generateZReport,
+    originalUser, impersonateClient, stopImpersonating,
+    networkState, setNetworkState, smsConciliator, registerCrmExpress,
+    ghostTrapLocked, setGhostTrapLocked, createVale, payVale, processPayroll, registerPosTerminal, deletePosTerminal,
+    queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings, updatePaymentMethods, toggleProductFeatured,
+    sendNotification, requestNotificationPermission, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, transferKFSPoints, fundCustomerWallet, requestTopUp, requestPayout, validateTopUp, processMonthlyBilling, convertAsset, claimFlowMaster, trimLocalDatabase, registerCustomer, blockClient, releaseClient, deleteClient, deleteCustomer, deletePromotora, deleteVendedor, deleteRider,
+    registerCandidate, unlockCandidateContact, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, hireCandidate, releaseCandidate, toggleCandidateBacking, markNotificationsAsRead, updateCvBuilderOption,
+    registerRider, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, updateRiderPagoMovil, confirmDelivery, markAsPickedUp, rateRider, updateRiderGPS, riderCheckIn, riderCheckOut,
+    toggleBusinessOpen, updateBusinessConfig
+  }), [
+    isClient, isBooting, view, currentUser, toast, rates, db, originalUser, networkState, ghostTrapLocked, isDataLoaded
+  ]);
+
   return (
-    <KFSContext.Provider value={{
-      isClient, isBooting, view, setView, currentUser, setCurrentUser, updateUserAvatar,
-      toast, showToast, rates, updateBcvRates, db, setDb, formatUSD, formatEUR,
-      handleLogin, logout, registerClient, registerFreeUser, upgradeToPremium, registerPromotora, registerVendedor, approvePromotora, rejectPromotora, settlePromotoraEarnings,
-      addProduct, addExpense, processPurchase, submitOnlineOrder, approveOrder, rejectOrder, dispatchOrder, generateZReport,
-      originalUser, impersonateClient, stopImpersonating,
-      networkState, setNetworkState, smsConciliator, registerCrmExpress,
-      ghostTrapLocked, setGhostTrapLocked, createVale, payVale, processPayroll, registerPosTerminal, deletePosTerminal,
-      queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings, updatePaymentMethods, toggleProductFeatured,
-      sendNotification, requestNotificationPermission, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, transferKFSPoints, fundCustomerWallet, requestTopUp, requestPayout, validateTopUp, processMonthlyBilling, convertAsset, claimFlowMaster, trimLocalDatabase, registerCustomer, blockClient, releaseClient, deleteClient, deleteCustomer, deletePromotora, deleteVendedor, deleteRider,
-      registerCandidate, unlockCandidateContact, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, hireCandidate, releaseCandidate, toggleCandidateBacking, markNotificationsAsRead, updateCvBuilderOption,
-      registerRider, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, updateRiderPagoMovil, confirmDelivery, markAsPickedUp, rateRider, updateRiderGPS, riderCheckIn, riderCheckOut,
-      toggleBusinessOpen, updateBusinessConfig
-    }}>
+    <KFSContext.Provider value={contextValue}>
       {children}
     </KFSContext.Provider>
   );

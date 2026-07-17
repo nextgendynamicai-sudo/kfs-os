@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { KFS_BRAND } from "../config/brandConfig";
 import { QrCode, X, Info, Terminal } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
+import { triggerHapticFeedback, playScannerBeep } from "../lib/utils";
 
 export const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }: any) => {
   const [selectedProductToSimulate, setSelectedProductToSimulate] = useState("");
@@ -32,6 +33,8 @@ export const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }
           },
           (decodedText: string) => {
             if (html5QrCode && html5QrCode.isScanning) {
+              triggerHapticFeedback([100, 50, 100]);
+              playScannerBeep();
               html5QrCode.stop().then(() => {
                 onScan(decodedText);
               }).catch(() => {
@@ -59,6 +62,8 @@ export const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }
   }, [onScan]);
 
   const handleSimulatedScan = () => {
+    triggerHapticFeedback([100, 50, 100]);
+    playScannerBeep();
     if (selectedScanType === "product") {
       if (!selectedProductToSimulate) return;
       onScan(selectedProductToSimulate);

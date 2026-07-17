@@ -49,6 +49,20 @@ export const readAsBase64 = (file: File): Promise<string> => {
   });
 };
 
+/**
+ * Triggers a vibration pattern if the device supports it.
+ * @param pattern Number of ms to vibrate, or an array of timings (e.g. [100, 30, 100])
+ */
+export const triggerHapticFeedback = (pattern: number | number[] = 50) => {
+  if (typeof window !== "undefined" && window.navigator && window.navigator.vibrate) {
+    try {
+      window.navigator.vibrate(pattern);
+    } catch (e) {
+      // Ignore if blocked by browser policy
+    }
+  }
+};
+
 export const playPremiumChime = () => {
   if (typeof window === "undefined") return;
   try {
