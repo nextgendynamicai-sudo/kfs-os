@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Camera, CheckCircle } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { compressImage } from "../lib/utils";
+import { KreatekLogo } from "./KreatekLogo";
 
 export const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
   const { addProduct } = useKFS();

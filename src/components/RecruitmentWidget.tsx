@@ -5,6 +5,7 @@ import { KFS_BRAND } from "../config/brandConfig";
 import { Users, Lock, CheckCircle, Info, Clock, Check } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { compressImage } from "../lib/utils";
+import { CvViewerModal } from "./CvViewerModal";
 
 export const RecruitmentWidget = ({ db, currentUser, formatUSD }: any) => {
   const { unlockCandidateContact, updateStoreSettings, hireCandidate, releaseCandidate, showToast } = useKFS() as any;

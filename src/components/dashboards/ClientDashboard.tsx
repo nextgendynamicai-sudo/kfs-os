@@ -1738,7 +1738,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
               businessPreset !== "AXIS-ONLY" && { id: "inventario", icon: Package, label: "Inventario" },
               businessPreset !== "AXIS-ONLY" && { id: "personal", icon: Users, label: "Personal" },
               { id: "config", icon: Settings, label: "Ajustes" }
-            ].filter(Boolean).map(tab => {
+            ].filter((tab): tab is any => Boolean(tab)).map(tab => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
               return (

@@ -61,7 +61,7 @@ export default async function NitroStorefront({ params }: { params: Promise<{ sl
           </div>
           <h1 className="text-2xl font-black text-white">Nodo Comercial No Encontrado</h1>
           <p className="text-sm text-neutral-400 leading-relaxed">
-            La tienda bajo el enlace <strong className="text-yellow-500">/nitro/{params.slug}</strong> no está registrada en el sistema KFS o ha sido inhabilitada temporalmente.
+            La tienda bajo el enlace <strong className="text-yellow-500">/nitro/{slug}</strong> no está registrada en el sistema KFS o ha sido inhabilitada temporalmente.
           </p>
           <a href="/" className="inline-block bg-white text-black font-bold px-6 py-2.5 rounded-xl text-sm transition-transform active:scale-95 no-underline">
             Volver al Ecosistema KFS
