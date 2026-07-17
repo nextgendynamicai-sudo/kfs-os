@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kfs-os-v3.1';
+const CACHE_NAME = 'kfs-os-v4.0.0';
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -27,8 +27,14 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+  
+  let req = event.request;
+  if (req.url.match(/\.(png|jpg|jpeg|svg|gif|webp)$/i)) {
+    req = new Request(req.url, { mode: req.mode, credentials: req.credentials, cache: 'no-store' });
+  }
+
   event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
+    fetch(req).catch(() => caches.match(event.request))
   );
 });
 
