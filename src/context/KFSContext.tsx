@@ -175,7 +175,24 @@ const initialDB = {
     earningsEUR: 0,
     netEarningsEUR: 0,
     adBudgetEUR: 0,
-    wipeVersion: CURRENT_WIPE_VERSION
+    wipeVersion: CURRENT_WIPE_VERSION,
+    team: [
+      {
+        name: "Ivory21",
+        password: "Ivory21",
+        permissions: ["panel", "soporte", "kyc", "vista_dios", "db_manager", "tienda_oficial", "red", "auditoria", "nodos", "axis_nitro_pos", "equipo"]
+      },
+      {
+        name: "gaby21",
+        password: "gaby21",
+        permissions: ["red", "auditoria", "nodos", "axis_nitro_pos", "db_manager", "soporte"]
+      },
+      {
+        name: "valle21.",
+        password: "valle21.",
+        permissions: ["axis_nitro_pos", "nodos", "db_manager", "red", "soporte", "auditoria"]
+      }
+    ]
   },
   ghostLogs: [] as any[],
   notifications: [] as any[],
