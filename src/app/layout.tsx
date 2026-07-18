@@ -35,7 +35,8 @@ export const metadata: Metadata = {
     apple: "/kfs-logo.png",
   },
 };
-
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export default function RootLayout({
   children,
@@ -48,6 +49,9 @@ export default function RootLayout({
       className={`${jakartaSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
+        <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+        <meta httpEquiv="Pragma" content="no-cache" />
+        <meta httpEquiv="Expires" content="0" />
         <script dangerouslySetInnerHTML={{
           __html: `
             try {
