@@ -258,7 +258,7 @@ interface KFSContextType {
   updateStoreSettings: (clientId: string, settings: any) => void;
   updatePaymentMethods: (clientId: string, methods: any) => void;
   toggleProductFeatured: (productId: string, isFeatured: boolean) => void;
-  sendNotification: (audience: string, title: string, message: string) => void;
+  sendNotification: (audience: string, title: string, message: string, imageUrl?: string, destType?: string, destVal?: string) => void;
   assignPromotoraToClient: (clientId: string, promotoraId: string) => void;
   addGlobalProduct: (product: any) => void;
   paySubscription: (clientId: string, reference: string) => void;
@@ -2423,8 +2423,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const sendNotification = (audience: string, title: string, message: string) => {
-    const newNotif = { id: `notif${Date.now()}`, audience, title, message, date: new Date().toISOString() };
+  const sendNotification = (audience: string, title: string, message: string, imageUrl?: string, destType?: string, destVal?: string) => {
+    const newNotif = { id: `notif${Date.now()}`, audience, title, message, imageUrl, destType, destVal, date: new Date().toISOString() };
     setDb((prev: any) => ({ ...prev, notifications: [...(prev.notifications || []), newNotif] }));
     
     // Native Web Push Notification (PWA)
@@ -2438,11 +2438,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
             registration.showNotification(title, {
               body: message,
               icon: "/icons/icon-192x192.png",
+              image: imageUrl,
               vibrate: [200, 100, 200, 100, 200]
             } as any);
           }).catch(() => {
             // Fallback a Notification API estándar (Desktop)
-            new Notification(title, { body: message, icon: "/icons/icon-192x192.png" });
+            new Notification(title, { body: message, icon: "/icons/icon-192x192.png", image: imageUrl } as any);
           });
         } catch (e) {
           console.warn("No se pudo lanzar la Notificación nativa", e);
