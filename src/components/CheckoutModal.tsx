@@ -18,6 +18,55 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
   const [paymentScreenshot, setPaymentScreenshot] = useState("");
   const [kPointsToBurn, setKPointsToBurn] = useState(0);
   
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<any | null>(null);
+  const [couponError, setCouponError] = useState("");
+  
+  const handleApplyCoupon = () => {
+    setCouponError("");
+    if (!couponCode.trim()) {
+      setAppliedCoupon(null);
+      return;
+    }
+    const code = couponCode.toUpperCase().trim();
+    const c = db.coupons?.find((coupon: any) => coupon.code.toUpperCase() === code);
+    if (!c) {
+      setCouponError("El cupón no existe.");
+      setAppliedCoupon(null);
+      return;
+    }
+    if (!c.isActive) {
+      setCouponError("El cupón está inactivo.");
+      setAppliedCoupon(null);
+      return;
+    }
+    if (c.maxUses && c.usesCount >= c.maxUses) {
+      setCouponError("El cupón ha alcanzado el límite de usos.");
+      setAppliedCoupon(null);
+      return;
+    }
+    if (c.scope === "client" && c.clientId !== product.clientId) {
+      setCouponError("Este cupón no es válido para esta tienda.");
+      setAppliedCoupon(null);
+      return;
+    }
+    if (c.minPurchaseAmount && product.priceUSD < c.minPurchaseAmount) {
+      setCouponError(`Compra mínima requerida: $${c.minPurchaseAmount.toFixed(2)} USD.`);
+      setAppliedCoupon(null);
+      return;
+    }
+    if (c.expirationDate) {
+      const todayStr = new Date().toISOString().slice(0, 10);
+      if (todayStr > c.expirationDate) {
+        setCouponError(`El cupón expiró el ${c.expirationDate}.`);
+        setAppliedCoupon(null);
+        return;
+      }
+    }
+    setAppliedCoupon(c);
+    showToast("Cupón aplicado con éxito", "success");
+  };
+
   const [splitMethod1, setSplitMethod1] = useState("cash_usd");
   const [splitAmount1, setSplitAmount1] = useState("");
   const [splitMethod2, setSplitMethod2] = useState("cash_bs");
@@ -80,12 +129,22 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
 
   const isForeign = ['zinli', 'wally_tech', 'airtm', 'ubbi_app', 'cash_usd', 'cash_eur', 'binance', 'nfc_web'].includes(paymentMethod);
   const price = product.priceUSD;
-  const iva = applyIva ? price * 0.16 : 0;
-  const igtf = isForeign ? (price + iva) * 0.03 : 0;
+  
+  let couponDiscountUSD = 0;
+  if (appliedCoupon) {
+    if (appliedCoupon.discountType === "percentage") {
+      couponDiscountUSD = price * (appliedCoupon.discountValue / 100);
+    } else {
+      couponDiscountUSD = Math.min(price, appliedCoupon.discountValue);
+    }
+  }
+  const priceAfterCoupon = Math.max(0, price - couponDiscountUSD);
+  const iva = applyIva ? priceAfterCoupon * 0.16 : 0;
+  const igtf = isForeign ? (priceAfterCoupon + iva) * 0.03 : 0;
   
   // Calcular descuento por {KFS_BRAND.economy.currency} (100 puntos = $0.10 -> 1 punto = $0.001)
   const discountUSD = kPointsToBurn * 0.001;
-  const total = Math.max(0, price + iva + igtf - discountUSD);
+  const total = Math.max(0, priceAfterCoupon + iva + igtf - discountUSD);
   
   const totalBs = total * (rates?.USD || 36.45);
   const resolvedStoreOwner = storeOwner || db.clients?.find((c: any) => c.id === product?.clientId);
@@ -128,7 +187,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
           ndef.onreading = (event: any) => {
             setPosStep(4);
             setTimeout(() => {
-              onConfirm(paymentMethod, applyIva, `NFC-${Math.floor(100000 + Math.random() * 900000)}`, customerPhone, customerName, customerRif);
+              onConfirm(paymentMethod, applyIva, `NFC-${Math.floor(100000 + Math.random() * 900000)}`, customerPhone, customerName, customerRif, undefined, 0, appliedCoupon?.code || "");
             }, 2000);
           };
           ndef.onerror = (err: any) => {
@@ -154,7 +213,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
       setTimeout(() => {
         setPosStep(4);
         setTimeout(() => {
-          onConfirm(paymentMethod, applyIva, `POS-${Math.floor(100000 + Math.random() * 900000)}`, customerPhone, customerName, customerRif);
+          onConfirm(paymentMethod, applyIva, `POS-${Math.floor(100000 + Math.random() * 900000)}`, customerPhone, customerName, customerRif, undefined, 0, appliedCoupon?.code || "");
         }, 2000);
       }, 3600);
       return;
@@ -166,7 +225,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
     setTimeout(() => {
       setPosStep(4); // Trigger success checkmark
       setTimeout(() => {
-        onConfirm(paymentMethod, applyIva, paymentReference, customerPhone, customerName, customerRif, paymentScreenshot, kPointsToBurn);
+        onConfirm(paymentMethod, applyIva, paymentReference, customerPhone, customerName, customerRif, paymentScreenshot, kPointsToBurn, appliedCoupon?.code || "");
       }, 2000);
     }, 1500);
   };
@@ -374,14 +433,30 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
                     className="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-black file:bg-violet-600/10 file:text-violet-700 hover:file:bg-violet-600/20 cursor-pointer"
                   />
                   {paymentScreenshot && (
-                    <div className="relative inline-block w-24">
-                      <img src={paymentScreenshot} alt="Capture" className="w-24 h-24 object-cover rounded-xl border border-gray-200" />
-                      <button 
-                        type="button" 
-                        onClick={() => setPaymentScreenshot("")} 
-                        className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                    <div className="flex items-center gap-3 mt-2">
+                      <div className="relative inline-block w-24 shrink-0">
+                        <img src={paymentScreenshot} alt="Capture" className="w-24 h-24 object-cover rounded-xl border border-gray-200" />
+                        <button 
+                          type="button" 
+                          onClick={() => setPaymentScreenshot("")} 
+                          className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors"
+                        >
+                          <X size={10} />
+                        </button>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          showToast("Simulador OCR: Escaneando capture...", "success");
+                          setTimeout(() => {
+                            const mockRef = `${Math.floor(10000000 + Math.random() * 90000000)}`;
+                            setPaymentReference(mockRef);
+                            showToast(`OCR: Referencia detectada: ${mockRef}`, "success");
+                          }, 1500);
+                        }}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs px-4 py-3 rounded-xl transition-all cursor-pointer border-none shadow-md flex items-center gap-1.5 active:scale-95"
                       >
-                        <X size={10} />
+                        ⚡ Conciliar por OCR (Simular)
                       </button>
                     </div>
                   )}
@@ -457,8 +532,45 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
             </div>
           )}
 
+          {/* Campo de Código de Cupón */}
+          <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-widest block">Código de Cupón de Descuento</label>
+            <div className="flex gap-2">
+              <input 
+                type="text" 
+                placeholder="Ej: DESC10" 
+                value={couponCode} 
+                onChange={e => {
+                  setCouponCode(e.target.value);
+                  if (!e.target.value) {
+                    setAppliedCoupon(null);
+                    setCouponError("");
+                  }
+                }} 
+                className="flex-1 bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-900 uppercase focus:outline-none placeholder:text-slate-400"
+              />
+              <button 
+                type="button" 
+                onClick={handleApplyCoupon}
+                className="bg-violet-600 hover:bg-violet-700 text-white font-black text-xs px-4 py-2 rounded-xl transition-colors cursor-pointer border-none"
+              >
+                Aplicar
+              </button>
+            </div>
+            {appliedCoupon ? (
+              <p className="text-[10px] font-black text-emerald-600">
+                ✓ Cupón "{appliedCoupon.code}" aplicado: -{appliedCoupon.discountType === "percentage" ? `${appliedCoupon.discountValue}%` : `$${appliedCoupon.discountValue}`}
+              </p>
+            ) : couponError ? (
+              <p className="text-[10px] font-black text-rose-500">
+                ✗ {couponError}
+              </p>
+            ) : null}
+          </div>
+
           <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-2">
             <div className="flex justify-between text-sm font-bold text-gray-600"><span>Subtotal:</span> <span>{formatUSD(price)}</span></div>
+            {couponDiscountUSD > 0 && <div className="flex justify-between text-sm font-bold text-emerald-600"><span>Descuento Cupón:</span> <span>-{formatUSD(couponDiscountUSD)}</span></div>}
             {applyIva && <div className="flex justify-between text-sm font-bold text-gray-600"><span>IVA (16%):</span> <span className="text-red-500">+{formatUSD(iva)}</span></div>}
             {isForeign && <div className="flex justify-between text-sm font-bold text-gray-600"><span>IGTF (3%):</span> <span className="text-red-500">+{formatUSD(igtf)}</span></div>}
             {kPointsToBurn > 0 && <div className="flex justify-between text-sm font-bold text-purple-600"><span>Descuento {KFS_BRAND.economy.currency}:</span> <span>-{formatUSD(discountUSD)}</span></div>}

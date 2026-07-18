@@ -200,7 +200,9 @@ const initialDB = {
   supportTickets: [] as any[],
   candidates: [] as any[],
   unlockedContacts: [] as any[],
-  riders: [] as any[]
+  riders: [] as any[],
+  coupons: [] as any[],
+  fiscalLogs: [] as any[]
 };
 
 interface KFSContextType {
@@ -313,6 +315,10 @@ interface KFSContextType {
   riderCheckIn: (riderId: string) => void;
   riderCheckOut: (riderId: string) => void;
   markAsPickedUp: (txId: string) => void;
+  createCoupon: (couponData: any) => void;
+  deleteCoupon: (couponId: string) => void;
+  toggleCouponActive: (couponId: string) => void;
+  logFiscalAction: (clientId: string, cashierId: string, cashierName: string, command: string, details: string) => void;
 }
 
 const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
@@ -560,6 +566,7 @@ const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
   mergedDb.vales = mergeArrayIncoming(localDb.vales, remoteDb.vales, checkValeAuthority);
   mergedDb.candidates = mergeArrayIncoming(localDb.candidates, remoteDb.candidates, checkCandidateAuthority);
   mergedDb.unlockedContacts = mergeArrayIncoming(localDb.unlockedContacts, remoteDb.unlockedContacts, checkUnlockAuthority);
+  mergedDb.coupons = mergeArrayIncoming(localDb.coupons || [], remoteDb.coupons || []);
   
   // merge kreatekCore with max-value safety
   const localCore = localDb.kreatekCore || {};
@@ -606,6 +613,7 @@ const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
     mergedDb.riders = mergedDb.riders?.filter((r: any) => !deletedKeys.has(r.id));
     mergedDb.candidates = mergedDb.candidates?.filter((c: any) => !deletedKeys.has(c.id));
     mergedDb.promotoras = mergedDb.promotoras?.filter((p: any) => !deletedKeys.has(p.id));
+    mergedDb.coupons = (mergedDb.coupons || [])?.filter((c: any) => !deletedKeys.has(c.clientId) && !deletedKeys.has(c.id));
   }
 
   return mergedDb;
@@ -1955,7 +1963,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const processMonthlyBilling = (clientId: string) => {
     setDb((prev: any) => {
       const client = prev.clients.find((c: any) => c.id === clientId);
-      if (!client || (client.walletBalanceUSD || 0) < 6) {
+      const costUSD = client?.subscription?.costUSD !== undefined ? client.subscription.costUSD : 6;
+      if (!client || (client.walletBalanceUSD || 0) < costUSD) {
         return {
           ...prev,
           clients: prev.clients.map((c: any) => c.id === clientId ? { ...c, subscription: { ...c.subscription, status: "past_due" } } : c)
@@ -1965,7 +1974,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       const newNextMonth = new Date();
       newNextMonth.setMonth(newNextMonth.getMonth() + 1);
       
-      const splitUSD = 3;
+      const splitUSD = costUSD / 2;
       const splitEUR = (splitUSD * rates.USD) / rates.EUR;
 
       const updatedPromotoras = prev.promotoras.map((p: any) => 
@@ -1975,8 +1984,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       const updatedClients = prev.clients.map((c: any) => 
         c.id === clientId ? { 
           ...c, 
-          walletBalanceUSD: c.walletBalanceUSD - 6,
-          subscription: { plan: "kfs_pro", costUSD: 6, status: "active", nextBillingDate: newNextMonth.toISOString() }
+          walletBalanceUSD: c.walletBalanceUSD - costUSD,
+          subscription: { ...c.subscription, status: "active", nextBillingDate: newNextMonth.toISOString() }
         } : c
       );
 
@@ -1987,7 +1996,14 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         kreatekCore: { ...prev.kreatekCore, earningsEUR: prev.kreatekCore.earningsEUR + splitEUR }
       };
     });
-    logAction("System", "AUTO_BILLING", `Se dedujeron $6 a ${clientId}. Ganancias repartidas.`);
+    
+    // Safety check for logs
+    setTimeout(() => {
+      const clientForCost = db.clients.find((c: any) => c.id === clientId);
+      const costForAction = clientForCost?.subscription?.costUSD !== undefined ? clientForCost.subscription.costUSD : 6;
+      logAction("System", "AUTO_BILLING", `Se dedujeron $${costForAction} a ${clientId}. Ganancias repartidas.`);
+    }, 100);
+
     showToast("Ciclo de Facturación Procesado", "success");
   };
 
@@ -2270,8 +2286,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       business_preset: preset,
       preset_metadata,
       subscription: {
-        plan: "kfs_pro",
-        costUSD: 6,
+        plan: clientData.subscriptionPlan || "kfs_pro",
+        costUSD: clientData.subscriptionCost || 6,
         status: "active",
         nextBillingDate: nextMonth.toISOString()
       }
@@ -2486,7 +2502,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       const nextMonth = new Date();
       nextMonth.setMonth(nextMonth.getMonth() + 1);
       
-      const costEUR = (6 * rates.USD) / rates.EUR;
+      const costUSD = client.subscription?.costUSD !== undefined ? client.subscription.costUSD : 6;
+      const costEUR = (costUSD * rates.USD) / rates.EUR;
       const coreCut = costEUR * 0.5;
       const promoCut = costEUR * 0.5;
       
@@ -2637,7 +2654,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast("Egreso registrado contablemente.");
   };
 
-  const processPurchase = (product: any, paymentMethod: string = "cash", applyIva: boolean = false, customerPhone: string = "", customerName: string = "", customerRif: string = "", kPointsToBurn: number = 0) => {
+  const processPurchase = (product: any, paymentMethod: string = "cash", applyIva: boolean = false, customerPhone: string = "", customerName: string = "", customerRif: string = "", kPointsToBurn: number = 0, appliedCouponCode: string = "") => {
     if (product.stock !== undefined && product.stock <= 0) {
       showToast("Producto agotado", "error");
       return null;
@@ -2646,8 +2663,24 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     const isWeekend = new Date().getDay() === 0 || new Date().getDay() === 6;
     const basePriceUSD = isWeekend ? product.priceUSD * 1.10 : product.priceUSD; // Weekend Shield oculto
 
+    // Calcular descuento de cupón
+    let couponDiscountUSD = 0;
+    let targetCouponId = null;
+    if (appliedCouponCode && db.coupons) {
+      const c = db.coupons.find((coupon: any) => coupon.code.toUpperCase() === appliedCouponCode.toUpperCase().trim());
+      if (c && c.isActive && (!c.maxUses || c.usesCount < c.maxUses) && (c.scope === "global" || c.clientId === product.clientId)) {
+        targetCouponId = c.id;
+        if (c.discountType === "percentage") {
+          couponDiscountUSD = basePriceUSD * (c.discountValue / 100);
+        } else {
+          couponDiscountUSD = Math.min(basePriceUSD, c.discountValue);
+        }
+      }
+    }
+
+    const priceAfterCoupon = Math.max(0, basePriceUSD - couponDiscountUSD);
     const FEE = 0.04;
-    const subtotal = basePriceUSD;
+    const subtotal = priceAfterCoupon;
     const totalBruto = subtotal + FEE;
 
     const ivaUSD = applyIva ? totalBruto * 0.16 : 0;
@@ -2715,8 +2748,18 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     setDb((prev: any) => {
       const client = prev.clients.find((c: any) => c.id === product.clientId);
       
+      const updatedCoupons = (prev.coupons || []).map((c: any) => 
+        c.id === targetCouponId ? { 
+          ...c, 
+          usesCount: c.usesCount + 1,
+          revenueUSD: (c.revenueUSD || 0) + priceAfterCoupon
+        } : c
+      );
+      
       let kfsFeePercentage = 0.03; // Default Flow Velocity
-      if (client?.is_founder) {
+      if (client?.kfsFeePercentage !== undefined) {
+        kfsFeePercentage = client.kfsFeePercentage;
+      } else if (client?.is_founder) {
         kfsFeePercentage = 0.01;
       } else if (client?.onboardedUsers >= 50) {
         kfsFeePercentage = 0.03; // Peaje Gamificado permanente por traer 50 usuarios
@@ -2899,7 +2942,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         vendedorId: currentUser?.role === 'vendedor' ? currentUser.id : null,
         clientId: product.clientId,
         timestamp: new Date().toISOString(),
-        exchangeRateBCV: rates.USD
+        exchangeRateBCV: rates.USD,
+        appliedCouponCode: appliedCouponCode || null,
+        couponDiscountUSD: couponDiscountUSD || 0
       };
 
       // Handle CRM and Buyers
@@ -2960,6 +3005,20 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         });
       }
 
+      let updatedFiscalLogs = prev.fiscalLogs || [];
+      if (applyIva) {
+        const logObj = {
+          id: `flog_${Date.now()}_${Math.floor(1000 + Math.random() * 9000)}`,
+          timestamp: new Date().toISOString(),
+          clientId: product.clientId,
+          cashierId: currentUser?.id || "unknown",
+          cashierName: currentUser?.name || "unknown",
+          command: "FACTURA FISCAL",
+          details: `Factura emitida por ${basePriceUSD} USD. Total con IVA/IGTF: ${totalUSD} USD. Recibo: ${receiptNumber}`
+        };
+        updatedFiscalLogs = [logObj, ...updatedFiscalLogs];
+      }
+
       return {
         ...prev,
         clients: updatedClients,
@@ -2969,6 +3028,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         vales: updatedVales,
         posTerminals: updatedPosTerminals,
         buyers: updatedBuyers,
+        coupons: updatedCoupons,
+        fiscalLogs: updatedFiscalLogs,
         transactions: [...prev.transactions, transactionObj],
         kreatekCore: {
           totalTransactions: (prev.kreatekCore.totalTransactions || 0) + 1,
@@ -3028,7 +3089,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     return transactionObj;
   };
 
-  const submitOnlineOrder = async (product: any, paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone: string = "", customerName: string = "", customerRif: string = "", paymentScreenshot: string = "", kPointsToBurn: number = 0) => {
+  const submitOnlineOrder = async (product: any, paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone: string = "", customerName: string = "", customerRif: string = "", paymentScreenshot: string = "", kPointsToBurn: number = 0, appliedCouponCode: string = "") => {
     if (product.stock !== undefined && product.stock <= 0) {
       showToast("Producto agotado", "error");
       return;
@@ -3039,24 +3100,47 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       : paymentScreenshot;
 
     const priceUSD = product.priceUSD;
-    const ivaUSD = applyIva ? priceUSD * 0.16 : 0;
+    
+    // Calcular descuento de cupón
+    let couponDiscountUSD = 0;
+    if (appliedCouponCode && db.coupons) {
+      const c = db.coupons.find((coupon: any) => coupon.code.toUpperCase() === appliedCouponCode.toUpperCase().trim());
+      if (c && c.isActive && (!c.maxUses || c.usesCount < c.maxUses) && (c.scope === "global" || c.clientId === product.clientId)) {
+        if (c.discountType === "percentage") {
+          couponDiscountUSD = priceUSD * (c.discountValue / 100);
+        } else {
+          couponDiscountUSD = Math.min(priceUSD, c.discountValue);
+        }
+      }
+    }
+    
+    const priceAfterCoupon = Math.max(0, priceUSD - couponDiscountUSD);
+    const ivaUSD = applyIva ? priceAfterCoupon * 0.16 : 0;
     const isForeign = ['zinli', 'wally_tech', 'airtm', 'ubbi_app', 'cash_usd', 'cash_eur', 'binance'].includes(paymentMethod);
-    const igtfUSD = isForeign ? (priceUSD + ivaUSD) * 0.03 : 0;
+    const igtfUSD = isForeign ? (priceAfterCoupon + ivaUSD) * 0.03 : 0;
     
     const discountUSD = kPointsToBurn * 0.001;
-    const totalUSD = Math.max(0, priceUSD + ivaUSD + igtfUSD - discountUSD);
+    const totalUSD = Math.max(0, priceAfterCoupon + ivaUSD + igtfUSD - discountUSD);
 
     setDb((prev: any) => {
       const updatedProducts = prev.products.map((p: any) => 
         p.id === product.id && p.stock !== undefined ? { ...p, stock: p.stock - 1 } : p
       );
+      
+      const updatedCoupons = appliedCouponCode ? (prev.coupons || []).map((c: any) => 
+        c.code.toUpperCase() === appliedCouponCode.toUpperCase().trim() ? { 
+          ...c, 
+          usesCount: c.usesCount + 1,
+          revenueUSD: (c.revenueUSD || 0) + priceAfterCoupon
+        } : c
+      ) : prev.coupons;
 
       const orderObj = {
         id: `ord${Date.now()}`,
         productId: product.id,
         clientId: product.clientId, // to identify which store it belongs to
         amountUSD: totalUSD,
-        subtotalUSD: priceUSD,
+        subtotalUSD: priceAfterCoupon,
         ivaUSD,
         igtfUSD,
         paymentMethod,
@@ -3066,12 +3150,16 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         customerRif,
         paymentScreenshot: screenshotUrl,
         status: 'pending',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        kPointsToBurn,
+        appliedCouponCode: appliedCouponCode || null,
+        couponDiscountUSD: couponDiscountUSD || 0
       };
 
       return {
         ...prev,
         products: updatedProducts,
+        coupons: updatedCoupons,
         orders: [...(prev.orders || []), orderObj]
       };
     });
@@ -3128,7 +3216,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         paymentScreenshot: order.paymentScreenshot,
         clientId: order.clientId,
         timestamp: new Date().toISOString(),
-        shippingStatus: 'pending'
+        shippingStatus: 'pending',
+        appliedCouponCode: order.appliedCouponCode,
+        couponDiscountUSD: order.couponDiscountUSD
       };
 
       // Handle CRM for online orders
@@ -3209,10 +3299,15 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       const updatedProducts = prev.products.map((p: any) => 
         p.id === order.productId && p.stock !== undefined ? { ...p, stock: p.stock + 1 } : p
       );
+      
+      const updatedCoupons = order.appliedCouponCode ? (prev.coupons || []).map((c: any) => 
+        c.code.toUpperCase() === order.appliedCouponCode.toUpperCase() ? { ...c, usesCount: Math.max(0, c.usesCount - 1) } : c
+      ) : prev.coupons;
 
       return {
         ...prev,
         products: updatedProducts,
+        coupons: updatedCoupons,
         orders: prev.orders.filter((o: any) => o.id !== orderId),
         kreatekCore: {
           ...prev.kreatekCore,
@@ -3259,6 +3354,17 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         timestamp: new Date().toISOString()
       };
 
+      const cashierObj = prev.vendedores?.find((v: any) => v.id === vendedorId) || prev.clients?.find((c: any) => c.id === vendedorId);
+      const logObj = {
+        id: `flog_${Date.now()}_${Math.floor(1000 + Math.random() * 9000)}`,
+        timestamp: new Date().toISOString(),
+        clientId: clientId,
+        cashierId: vendedorId,
+        cashierName: cashierObj?.name || "Vendedor",
+        command: "REPORTE Z",
+        details: `Corte de caja Z realizado. Transacciones: ${shiftTxs.length}. Total facturado: ${totalUSD} USD.`
+      };
+      
       const updatedTxs = prev.transactions.map((tx: any) => 
         (tx.vendedorId === vendedorId && tx.clientId === clientId && !tx.zReported) 
           ? { ...tx, zReported: true } 
@@ -3269,7 +3375,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       return {
         ...prev,
         transactions: updatedTxs,
-        zReports: [...(prev.zReports || []), zReportObj]
+        zReports: [...(prev.zReports || []), zReportObj],
+        fiscalLogs: [logObj, ...(prev.fiscalLogs || [])]
       };
     });
   };
@@ -4211,6 +4318,57 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast("Configuración del negocio actualizada.", "success");
   };
 
+  const createCoupon = (couponData: any) => {
+    const newCoupon = {
+      id: `coup_${Date.now()}`,
+      usesCount: 0,
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      ...couponData,
+      code: couponData.code.toUpperCase().trim()
+    };
+    setDb((prev: any) => ({
+      ...prev,
+      coupons: [...(prev.coupons || []), newCoupon]
+    }));
+    showToast(`Cupón ${newCoupon.code} creado con éxito.`, "success");
+    logAction(currentUser?.name || "System", "CREATE_COUPON", `Cupón ${newCoupon.code} creado.`);
+  };
+
+  const deleteCoupon = (couponId: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      coupons: (prev.coupons || []).filter((c: any) => c.id !== couponId)
+    }));
+    showToast("Cupón eliminado.", "success");
+  };
+
+  const toggleCouponActive = (couponId: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      coupons: (prev.coupons || []).map((c: any) => 
+        c.id === couponId ? { ...c, isActive: !c.isActive } : c
+      )
+    }));
+    showToast("Estado del cupón actualizado.", "success");
+  };
+
+  const logFiscalAction = (clientId: string, cashierId: string, cashierName: string, command: string, details: string) => {
+    const newLog = {
+      id: `flog_${Date.now()}_${Math.floor(1000 + Math.random() * 9000)}`,
+      timestamp: new Date().toISOString(),
+      clientId,
+      cashierId,
+      cashierName,
+      command,
+      details
+    };
+    setDb((prev: any) => ({
+      ...prev,
+      fiscalLogs: [newLog, ...(prev.fiscalLogs || [])]
+    }));
+  };
+
   const contextValue = useMemo(() => ({
     isClient, isBooting, view, setView, currentUser, setCurrentUser, updateUserAvatar,
     toast, showToast, rates, updateBcvRates, db, setDb, formatUSD, formatEUR,
@@ -4223,7 +4381,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     sendNotification, requestNotificationPermission, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, transferKFSPoints, fundCustomerWallet, requestTopUp, requestPayout, validateTopUp, processMonthlyBilling, convertAsset, claimFlowMaster, trimLocalDatabase, registerCustomer, blockClient, releaseClient, deleteClient, deleteCustomer, deletePromotora, deleteVendedor, deleteRider,
     registerCandidate, unlockCandidateContact, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, hireCandidate, releaseCandidate, toggleCandidateBacking, markNotificationsAsRead, updateCvBuilderOption,
     registerRider, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, updateRiderPagoMovil, confirmDelivery, markAsPickedUp, rateRider, updateRiderGPS, riderCheckIn, riderCheckOut,
-    toggleBusinessOpen, updateBusinessConfig
+    toggleBusinessOpen, updateBusinessConfig, createCoupon, deleteCoupon, toggleCouponActive, logFiscalAction
   }), [
     isClient, isBooting, view, currentUser, toast, rates, db, originalUser, networkState, ghostTrapLocked, isDataLoaded
   ]);

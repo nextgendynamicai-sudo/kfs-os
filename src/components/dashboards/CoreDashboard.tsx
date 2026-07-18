@@ -26,7 +26,7 @@ import {
   ChevronRight, CheckCircle, CreditCard, Bell, X, Info,
   Store, Star, ChevronLeft, Clock, UserCheck, Palette,
   Zap, BookOpen, Printer, Smartphone, Settings, DownloadCloud, Terminal, Truck,
-  Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database, Trash2
+  Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database, Trash2, Sparkles, Tag
 } from "lucide-react";
 import { useKFS } from "../../context/KFSContext";
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from "recharts";
@@ -43,6 +43,7 @@ import { AxisNitroPOS } from "../AxisNitroPOS";
 import { DatabaseManagerWidget } from "../DatabaseManagerWidget";
 import { ReferralLinksWidget } from "../ReferralLinksWidget";
 import { KPointsIssuerWidget } from "../KPointsIssuerWidget";
+import { SalesLandingWidget } from "../SalesLandingWidget";
 import { useP2PTransfer } from "../../hooks/useP2PTransfer";
 import { compressImage, readAsBase64, playPremiumChime, playSyncChime, playCashDrawerSound, playScannerBeep, getStoreCoords, getCustomerCoords } from "../../lib/utils";
 import { AnimatedCounter } from "../AnimatedCounter";
@@ -81,8 +82,8 @@ const KREATEK_COLORS = {
 
 // Toast Component
 
-export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePromotoraEarnings, showToast, formatUSD, formatEUR, currentUser, logout, approveSubscription }: any) => {
-  const { impersonateClient, registerClient, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, deleteCustomer, deletePromotora, deleteVendedor, deleteRider, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, toggleCandidateBacking, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, validateTopUp, rates, updateBcvRates, transferKFSPoints, updateStoreSettings } = useKFS() as any;
+export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePromotoraEarnings, showToast, formatUSD, formatEUR, currentUser, logout, approveSubscription, setView }: any) => {
+  const { impersonateClient, registerClient, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, deleteCustomer, deletePromotora, deleteVendedor, deleteRider, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, toggleCandidateBacking, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, validateTopUp, rates, updateBcvRates, transferKFSPoints, updateStoreSettings, createCoupon, deleteCoupon, toggleCouponActive } = useKFS() as any;
   const [searchPromotora, setSearchPromotora] = useState("");
   const [searchClient, setSearchClient] = useState("");
   const [searchVendedor, setSearchVendedor] = useState("");
@@ -136,7 +137,8 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
         candidates: [],
         unlockedContacts: [],
         riders: [],
-        topups: []
+        topups: [],
+        coupons: []
       };
       setDb(cleared);
       localStorage.setItem("kfs_os_db_prod", JSON.stringify(cleared));
@@ -286,13 +288,21 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                 <h3 className="font-black text-lg text-white">Presentación Ejecutiva KAN CGOS</h3>
                 <p className="text-indigo-200 text-xs mt-1">Descarga el PDF maestro de la presentación comercial listo para editar o compartir.</p>
               </div>
-              <a 
-                href="/presentacion_kan_cgos.pdf" 
-                download="presentacion_kan_cgos.pdf" 
-                className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-black text-xs hover:scale-105 transition-all cursor-pointer shadow-lg shadow-emerald-500/20 flex items-center gap-2 no-underline"
-              >
-                <FileText size={16} /> Descargar PDF
-              </a>
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => setView("landing")} 
+                  className="bg-violet-500 hover:bg-violet-600 text-white px-6 py-3 rounded-xl font-black text-xs hover:scale-105 transition-all cursor-pointer shadow-lg shadow-violet-500/20 flex items-center gap-2 border-none"
+                >
+                  <Star size={16} /> Ver Landing de Ventas
+                </button>
+                <a 
+                  href="/presentacion_kan_cgos.pdf" 
+                  download="presentacion_kan_cgos.pdf" 
+                  className="bg-emerald-500 hover:bg-emerald-600 text-white px-6 py-3 rounded-xl font-black text-xs hover:scale-105 transition-all cursor-pointer shadow-lg shadow-emerald-500/20 flex items-center gap-2 no-underline"
+                >
+                  <FileText size={16} /> Descargar PDF
+                </a>
+              </div>
             </div>
 
             <ReferralLinksWidget userId={currentUser.id} showToast={showToast} />
@@ -507,17 +517,21 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
         {activeTab === "red" && (
           <div className="space-y-8 flex flex-col">
             {/* Tactical Buttons Row for RED */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               <button onClick={() => setActiveModal('store')} className="bg-white shadow-lg shadow-violet-200/40 border border-violet-100 p-6 rounded-[2rem] flex flex-col items-center gap-3 transition-all hover:scale-[0.98] group cursor-pointer hover:border-violet-200 hover:shadow-xl hover:shadow-violet-200/50">
                 <div className="bg-violet-600 text-white p-3 rounded-xl shadow-md shadow-violet-600/30 group-hover:scale-110 transition-transform"><Store size={24} /></div>
                 <span className="font-black text-violet-950 text-sm text-center">Alta de Comercio</span>
+              </button>
+              <button onClick={() => setActiveModal('store_nitro')} className="bg-white shadow-lg shadow-violet-200/40 border border-violet-100 p-6 rounded-[2rem] flex flex-col items-center gap-3 transition-all hover:scale-[0.98] group cursor-pointer hover:border-violet-200 hover:shadow-xl hover:shadow-violet-200/50">
+                <div className="bg-amber-500 text-white p-3 rounded-xl shadow-md shadow-amber-500/30 group-hover:scale-110 transition-transform"><Zap size={24} /></div>
+                <span className="font-black text-violet-950 text-sm text-center">Crear Tienda Axis Nitro ($20 + 3%)</span>
               </button>
               <button onClick={() => setActiveModal('assign')} className="bg-white shadow-lg shadow-violet-200/40 border border-violet-100 p-6 rounded-[2rem] flex flex-col items-center gap-3 transition-all hover:scale-[0.98] group cursor-pointer hover:border-violet-200 hover:shadow-xl hover:shadow-violet-200/50">
                 <div className="bg-violet-900 text-white p-3 rounded-xl shadow-md shadow-violet-900/30 group-hover:scale-110 transition-transform"><Users size={24} /></div>
                 <span className="font-black text-violet-950 text-sm text-center">Asignar Promotora</span>
               </button>
               <button onClick={() => setAssignRiderModal({ riderId: "", riderName: "" })} className="bg-white shadow-lg shadow-violet-200/40 border border-violet-100 p-6 rounded-[2rem] flex flex-col items-center gap-3 transition-all hover:scale-[0.98] group cursor-pointer hover:border-violet-200 hover:shadow-xl hover:shadow-violet-200/50">
-                <div className="bg-amber-500 text-white p-3 rounded-xl shadow-md shadow-amber-500/30 group-hover:scale-110 transition-transform"><Truck size={24} /></div>
+                <div className="bg-blue-600 text-white p-3 rounded-xl shadow-md shadow-blue-600/30 group-hover:scale-110 transition-transform"><Truck size={24} /></div>
                 <span className="font-black text-violet-950 text-sm text-center">Asignar Rider a Negocio</span>
               </button>
             </div>
@@ -1345,6 +1359,56 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                 </table>
               </div>
             </div>
+
+            {/* Historial de Auditoría Fiscal (Sincro-Shield) */}
+            <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 rounded-[2rem] p-8">
+              <div className="flex justify-between items-center mb-6 border-b border-violet-100 pb-4">
+                <h3 className="text-xl font-black text-violet-950 flex items-center gap-2">
+                  <Terminal className="text-violet-600" size={24} /> Trazabilidad Fiscal & Sincro-Shield Logs
+                </h3>
+                <span className="bg-violet-100 text-violet-700 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
+                  {(db.fiscalLogs || []).length} Logs Totales
+                </span>
+              </div>
+              
+              <div className="overflow-x-auto rounded-xl border border-violet-100">
+                <table className="w-full text-xs text-left">
+                  <thead className="bg-violet-50 text-violet-700 uppercase font-black text-[10px]">
+                    <tr>
+                      <th className="py-3 px-4">Timestamp</th>
+                      <th className="py-3 px-4">Comercio</th>
+                      <th className="py-3 px-4">Operador / Cajero</th>
+                      <th className="py-3 px-4">Comando Fiscal</th>
+                      <th className="py-3 px-4">Detalle / Telemetría</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white text-slate-700 font-medium">
+                    {(db.fiscalLogs || []).map((log: any) => {
+                      const client = db.clients?.find((c: any) => c.id === log.clientId);
+                      return (
+                        <tr key={log.id} className="border-b border-violet-100 hover:bg-violet-50/50 transition-colors">
+                          <td className="py-3 px-4 font-mono text-slate-500 whitespace-nowrap">{new Date(log.timestamp).toLocaleString()}</td>
+                          <td className="py-3 px-4 font-bold text-violet-950">{client?.company || "Central Core"}</td>
+                          <td className="py-3 px-4 text-slate-600">{log.cashierName} <span className="text-[9px] text-slate-400 font-mono block">ID: {log.cashierId}</span></td>
+                          <td className="py-3 px-4 font-black">
+                            <span className={`px-2 py-0.5 rounded text-[10px] ${log.command === "FACTURA FISCAL" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" : "bg-blue-50 text-blue-700 border border-blue-200"}`}>
+                              {log.command}
+                            </span>
+                          </td>
+                          <td className="py-3 px-4 font-mono text-slate-500 text-[10px] leading-relaxed">{log.details}</td>
+                        </tr>
+                      );
+                    })}
+                    {(db.fiscalLogs || []).length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="text-center py-8 text-slate-400 font-bold italic font-black">No hay logs fiscales registrados.</td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
           </div>
         )}
 
@@ -1464,6 +1528,35 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative p-2 shadow-2xl">
               <button onClick={() => setActiveModal(null)} className="absolute top-6 right-6 z-50 text-gray-400 hover:text-black"><X size={24} /></button>
               <RegisterClientForm onRegister={(data: any, promoId: string, fee: number) => { registerClient(data, promoId, fee); setActiveModal(null); }} onCancel={() => setActiveModal(null)} />
+            </div>
+          </div>
+        )}
+
+        {activeModal === 'store_nitro' && (
+          <div className="fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+            <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative p-6 shadow-2xl">
+              <button onClick={() => setActiveModal(null)} className="absolute top-6 right-6 z-50 text-gray-400 hover:text-black"><X size={24} /></button>
+              <div className="space-y-4">
+                <div className="border-b border-violet-100 pb-4">
+                  <h3 className="text-xl font-black text-violet-950 flex items-center gap-2">
+                    <Zap className="text-amber-500 fill-amber-500" /> Crear Tienda Axis Nitro ($20 + 3% Plan)
+                  </h3>
+                  <p className="text-xs text-slate-500">Registra un comercio con tarifa de 3% y mensualidad de $20 USD.</p>
+                </div>
+                
+                <RegisterClientForm 
+                  onRegister={(data: any, promoId: string) => { 
+                    registerClient({ 
+                      ...data, 
+                      subscriptionPlan: "axis_nitro", 
+                      subscriptionCost: 20, 
+                      fee_tier: "3%" 
+                    }, promoId, 0.03); 
+                    setActiveModal(null); 
+                  }} 
+                  onCancel={() => setActiveModal(null)} 
+                />
+              </div>
             </div>
           </div>
         )}
@@ -1845,6 +1938,158 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
           </div>
         )}
 
+        {activeTab === "sales_landing" && (
+          <div className="animate-fade-in relative z-10 pb-20">
+            <SalesLandingWidget />
+          </div>
+        )}
+
+        {activeTab === "cupones" && (
+          <div className="space-y-8 flex flex-col animate-fade-in pb-20 relative z-10">
+            <div className="bg-white rounded-[2rem] shadow-xl shadow-violet-200/50 border border-violet-100 p-8">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-black text-violet-950 flex items-center gap-2"><Tag size={20} className="text-violet-600" /> Sistema de Cupones Globales / Locales</h3>
+                <span className="bg-violet-100 text-violet-700 text-xs font-black px-3 py-1 rounded-full">{(db.coupons || []).length} Cupones</span>
+              </div>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Crear Cupón Form */}
+                <div className="bg-violet-50/50 border border-violet-100 p-6 rounded-2xl space-y-4">
+                  <h4 className="font-black text-violet-950 text-sm">Crear Nuevo Cupón</h4>
+                  
+                  <div className="space-y-3 text-violet-950">
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Código del Cupón</label>
+                      <input type="text" id="newCoupCode" placeholder="Ej: DESC10" className="w-full bg-white border border-violet-200 rounded-xl p-3 text-xs font-black text-violet-950 uppercase focus:outline-none" />
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Tipo Descuento</label>
+                        <select id="newCoupType" className="w-full bg-white border border-violet-200 rounded-xl p-3 text-xs font-bold text-violet-950 focus:outline-none">
+                          <option value="percentage">Porcentaje (%)</option>
+                          <option value="fixed">Fijo ($ USD)</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Valor</label>
+                        <input type="number" id="newCoupVal" placeholder="Ej: 10" step="0.01" className="w-full bg-white border border-violet-200 rounded-xl p-3 text-xs font-bold text-violet-950 focus:outline-none" />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Ámbito (Scope)</label>
+                        <select id="newCoupScope" className="w-full bg-white border border-violet-200 rounded-xl p-3 text-xs font-bold text-violet-950 focus:outline-none" onChange={(e) => {
+                          const el = document.getElementById("newCoupClientDiv");
+                          if (el) el.style.display = e.target.value === "client" ? "block" : "none";
+                        }}>
+                          <option value="global">Global (Red)</option>
+                          <option value="client">Comercio Específico</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Límite Usos</label>
+                        <input type="number" id="newCoupMax" placeholder="Sin límite" className="w-full bg-white border border-violet-200 rounded-xl p-3 text-xs font-bold text-violet-950 focus:outline-none" />
+                      </div>
+                    </div>
+                    
+                    <div id="newCoupClientDiv" style={{ display: "none" }} className="space-y-1">
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Comercio Target</label>
+                      <select id="newCoupClientId" className="w-full bg-white border border-violet-200 rounded-xl p-3 text-xs font-bold text-violet-950 focus:outline-none">
+                        {db.clients?.map((c: any) => <option key={c.id} value={c.id}>{c.company}</option>)}
+                      </select>
+                    </div>
+                    
+                    <button onClick={() => {
+                      const codeEl = document.getElementById("newCoupCode") as HTMLInputElement;
+                      const typeEl = document.getElementById("newCoupType") as HTMLSelectElement;
+                      const valEl = document.getElementById("newCoupVal") as HTMLInputElement;
+                      const scopeEl = document.getElementById("newCoupScope") as HTMLSelectElement;
+                      const maxEl = document.getElementById("newCoupMax") as HTMLInputElement;
+                      const clientEl = document.getElementById("newCoupClientId") as HTMLSelectElement;
+                      
+                      const code = codeEl?.value;
+                      const type = typeEl?.value;
+                      const val = parseFloat(valEl?.value);
+                      const scope = scopeEl?.value;
+                      const maxUsesRaw = maxEl?.value;
+                      const clientId = clientEl?.value;
+                      
+                      if (!code?.trim() || isNaN(val) || val <= 0) {
+                        showToast("Completa los campos con valores válidos.", "error");
+                        return;
+                      }
+                      
+                      const maxUses = maxUsesRaw ? parseInt(maxUsesRaw) : undefined;
+                      createCoupon({
+                        code,
+                        discountType: type,
+                        discountValue: val,
+                        scope,
+                        clientId: scope === "client" ? clientId : undefined,
+                        maxUses
+                      });
+                      
+                      // Clear inputs
+                      if (codeEl) codeEl.value = "";
+                      if (valEl) valEl.value = "";
+                      if (maxEl) maxEl.value = "";
+                    }} className="w-full py-3 bg-violet-600 hover:bg-violet-700 text-white font-black text-xs rounded-xl shadow-md transition-colors cursor-pointer border-none mt-2">
+                      Generar Cupón Autorizado
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Listar Cupones */}
+                <div className="lg:col-span-2 overflow-x-auto rounded-xl border border-violet-100">
+                  <table className="w-full text-xs text-left">
+                    <thead className="bg-violet-50 text-violet-700 uppercase font-black">
+                      <tr>
+                        <th className="py-3 px-4">Código</th>
+                        <th className="py-3 px-4">Descuento</th>
+                        <th className="py-3 px-4">Ámbito / Comercio</th>
+                        <th className="py-3 px-4 text-center">Usos</th>
+                        <th className="py-3 px-4 text-right">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white font-medium">
+                      {(db.coupons || []).map((c: any) => {
+                        const client = c.scope === "client" ? db.clients?.find((cl: any) => cl.id === c.clientId) : null;
+                        return (
+                          <tr key={c.id} className="border-b border-violet-100 hover:bg-violet-50/50">
+                            <td className="py-3 px-4 font-black text-violet-950">{c.code}</td>
+                            <td className="py-3 px-4 text-slate-700">{c.discountType === "percentage" ? `${c.discountValue}%` : `$${c.discountValue.toFixed(2)}`}</td>
+                            <td className="py-3 px-4 text-slate-500">
+                              {c.scope === "global" ? (
+                                <span className="bg-violet-100 text-violet-700 px-2 py-0.5 rounded text-[10px] font-bold">Global (Red)</span>
+                              ) : (
+                                <span className="bg-amber-100 text-amber-700 px-2 py-0.5 rounded text-[10px] font-bold font-black">Local: {client?.company || c.clientId}</span>
+                              )}
+                            </td>
+                            <td className="py-3 px-4 text-center text-slate-600 font-mono">
+                              {c.usesCount} {c.maxUses ? `/ ${c.maxUses}` : ""}
+                            </td>
+                            <td className="py-3 px-4 text-right space-x-2">
+                              <button onClick={() => toggleCouponActive(c.id)} className={`px-2 py-1 rounded text-[10px] font-bold cursor-pointer border ${c.isActive ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-red-50 text-red-700 border-red-200"}`}>
+                                {c.isActive ? "Activo" : "Inactivo"}
+                              </button>
+                              <button onClick={() => deleteCoupon(c.id)} className="p-1 text-red-500 hover:text-red-700 border-none bg-transparent cursor-pointer inline-flex items-center justify-center align-middle">
+                                <Trash2 size={14} />
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      {(db.coupons || []).length === 0 && <tr><td colSpan={5} className="text-center py-6 text-slate-400 font-bold italic">No hay cupones emitidos.</td></tr>}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {activeTab === "equipo" && (
           <div className="space-y-8 flex flex-col animate-fade-in pb-20">
             <div className="bg-gradient-to-r from-slate-900 to-violet-950 rounded-[2rem] p-8 shadow-2xl text-white border border-violet-800">
@@ -1884,6 +2129,8 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                       <div className="grid grid-cols-2 gap-2 max-h-48 overflow-y-auto bg-black/30 p-3 rounded-xl border border-white/5">
                         {[
                           { id: "panel", label: "Panel Principal" },
+                          { id: "sales_landing", label: "Presentación Ventas" },
+                          { id: "cupones", label: "Gestión de Cupones" },
                           { id: "red", label: `Red ${KFS_BRAND.productAcronym}` },
                           { id: "soporte", label: "Soporte Técnico" },
                           { id: "auditoria", label: "Auditoría de Red" },
@@ -2013,6 +2260,8 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
         <div className="max-w-5xl mx-auto px-6 py-4 flex justify-around items-center relative">
           {[
             { id: "panel", icon: Activity, label: "Panel" },
+            { id: "sales_landing", icon: Sparkles, label: "Presentación" },
+            { id: "cupones", icon: Tag, label: "Cupones" },
             { id: "red", icon: Store, label: `Red ${KFS_BRAND.productAcronym}`, badge: (db.riders?.filter((r: any) => r.status === "pending") || []).length },
             { id: "soporte", icon: Bell, label: "Soporte", badge: (db.clients?.filter((c: any) => c.subscription?.status === 'pending_verification').length + (db.candidates?.filter((c: any) => c.registrationPaymentStatus === 'pending_approval').length || 0) + (db.unlockedContacts?.filter((u: any) => u.status === 'pending_approval').length || 0) + (db.supportTickets || []).filter((t: any) => t.status === 'open').length) },
             { id: "auditoria", icon: Shield, label: "Auditoría" },

@@ -26,7 +26,7 @@ import {
   ChevronRight, CheckCircle, CreditCard, Bell, X, Info,
   Store, Star, ChevronLeft, Clock, UserCheck, Palette,
   Zap, BookOpen, Printer, Smartphone, Settings, DownloadCloud, Terminal, Truck,
-  Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database, Trash2
+  Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database, Trash2, Tag
 } from "lucide-react";
 import { useKFS } from "../../context/KFSContext";
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from "recharts";
@@ -106,7 +106,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
   const [ticketMsg, setTicketMsg] = useState("");
   const [fundAmount, setFundAmount] = useState("");
   const [isTopUpOpen, setIsTopUpOpen] = useState(false);
-  const { createTicket, fundWallet, processMonthlyBilling, createVale, payVale, processPayroll, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating, registerPosTerminal, deletePosTerminal, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, toggleBusinessOpen, updateBusinessConfig } = useKFS() as any;
+  const { createTicket, fundWallet, processMonthlyBilling, createVale, payVale, processPayroll, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating, registerPosTerminal, deletePosTerminal, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, toggleBusinessOpen, updateBusinessConfig, createCoupon, deleteCoupon, toggleCouponActive } = useKFS() as any;
   const [deliveryRadiusKm, setDeliveryRadiusKm] = useState(clientInfo?.deliveryRadiusKm || 5);
 
   const handleCSVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -969,7 +969,36 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
 
         {/* Bóveda {KFS_BRAND.productAcronym} (Métodos de Pago del Dueño) */}
         {activeTab === 'config' && (
-          <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-violet-200/50 border border-violet-100 space-y-6">
+          <div className="space-y-6">
+            {/* Informacion de Plan Activo */}
+            <div className="bg-gradient-to-r from-violet-900 to-indigo-950 p-8 rounded-[2rem] shadow-xl border border-violet-850 text-white relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-2xl"></div>
+              <h3 className="font-black text-xl mb-2 flex items-center gap-2">💎 Plan Operativo KFS OS</h3>
+              <p className="text-xs text-violet-200 mb-6">Detalle de tus suscripciones y comisiones activas contratadas.</p>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 font-mono">
+                <div className="bg-black/20 p-4 rounded-xl border border-white/5">
+                  <span className="text-[10px] text-violet-300 uppercase block font-bold">Tipo de Comercio</span>
+                  <span className="text-lg font-black uppercase text-white mt-1 block">
+                    {clientInfo.business_preset === "AXIS-ONLY" ? "Axis Nitro Digital" : "Comercio Físico + Delivery"}
+                  </span>
+                </div>
+                <div className="bg-black/20 p-4 rounded-xl border border-white/5">
+                  <span className="text-[10px] text-violet-300 uppercase block font-bold">Mensualidad del Sistema</span>
+                  <span className="text-lg font-black text-white mt-1 block">
+                    ${clientInfo.subscription?.costUSD || 6} USD <span className="text-xs font-normal text-violet-300">/mes</span>
+                  </span>
+                </div>
+                <div className="bg-black/20 p-4 rounded-xl border border-white/5">
+                  <span className="text-[10px] text-violet-300 uppercase block font-bold">Comisión Transaccional</span>
+                  <span className="text-lg font-black text-emerald-400 mt-1 block">
+                    {clientInfo.kfsFeePercentage !== undefined ? `${(clientInfo.kfsFeePercentage * 100).toFixed(1)}%` : clientInfo.is_founder ? "1.0%" : "3.0%"}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-violet-200/50 border border-violet-100 space-y-6">
             <div className="flex justify-between items-center border-b border-violet-100 pb-4">
               <h3 className="font-black text-xl text-violet-950 flex items-center gap-2">
                 🏦 Bóveda Financiera (Métodos de Cobro)
@@ -1019,10 +1048,11 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                 <input name="pMovilId" defaultValue={currentUser.paymentMethods?.pagoMovilId || ""} placeholder="Cédula/RIF" className="w-full bg-white border border-violet-100 shadow-sm rounded-xl px-3 py-2 text-xs text-violet-950 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 placeholder:text-slate-400" />
               </div>
               <div className="md:col-span-3 flex justify-end">
-                <button type="submit" className="bg-violet-900 text-white font-bold py-3 px-8 rounded-xl hover:bg-slate-800 transition-colors cursor-pointer active:scale-95 shadow-md">Guardar en Bóveda Criptográfica</button>
+                <button type="submit" className="bg-violet-900 text-white font-bold py-3 px-8 rounded-xl hover:bg-slate-800 transition-colors cursor-pointer active:scale-95 shadow-md border-none">Guardar en Bóveda Criptográfica</button>
               </div>
             </form>
           </div>
+        </div>
         )}
 
         {/* Gobernanza de Puntos de Venta (Multi-POS Integrado) */}
@@ -1201,6 +1231,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                         </div>
                       );
                     })}
+                    {myOrders.length === 0 && <div className="col-span-2 md:col-span-4 text-center py-10 bg-white rounded-2xl text-slate-400 font-bold">Catálogo vacío.</div>}
                   </div>
 
                   {/* Columna Centro: Órdenes por Despachar */}
@@ -1518,6 +1549,145 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
             </div>
           </div>
         )}
+        {activeTab === "cupones" && (
+          <div className="space-y-8 flex flex-col animate-fade-in relative z-10">
+            <div className="bg-white rounded-[2rem] shadow-xl shadow-violet-200/50 border border-violet-100 p-8">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-black text-violet-950 flex items-center gap-2"><Tag size={20} className="text-violet-600" /> Mis Códigos de Cupones</h3>
+                <span className="bg-violet-100 text-violet-700 text-xs font-black px-3 py-1 rounded-full">{(db.coupons || []).filter((c: any) => c.clientId === currentUser.id).length} Cupones</span>
+              </div>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Crear Cupón Form */}
+                <div className="bg-violet-50/50 border border-violet-100 p-6 rounded-2xl space-y-4">
+                  <h4 className="font-black text-violet-950 text-sm">Crear Nuevo Cupón de Tienda</h4>
+                  
+                  <div className="space-y-3 text-violet-950">
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Código del Cupón</label>
+                      <input type="text" id="newClientCoupCode" placeholder="Ej: TIENDA10" className="w-full bg-white border border-violet-200 rounded-xl p-3 text-xs font-black text-violet-950 uppercase focus:outline-none placeholder:text-slate-450" />
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Tipo Descuento</label>
+                        <select id="newClientCoupType" className="w-full bg-white border border-violet-200 rounded-xl p-3 text-xs font-bold text-violet-950 focus:outline-none">
+                          <option value="percentage">Porcentaje (%)</option>
+                          <option value="fixed">Fijo ($ USD)</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Valor</label>
+                        <input type="number" id="newClientCoupVal" placeholder="Ej: 10" step="0.01" className="w-full bg-white border border-violet-200 rounded-xl p-3 text-xs font-bold text-violet-950 focus:outline-none placeholder:text-slate-450" />
+                      </div>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Mín. Compra ($)</label>
+                        <input type="number" id="newClientCoupMin" placeholder="Sin mínimo" step="0.01" className="w-full bg-white border border-violet-200 rounded-xl p-3 text-xs font-bold text-violet-950 focus:outline-none placeholder:text-slate-450" />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Límite Usos</label>
+                        <input type="number" id="newClientCoupMax" placeholder="Sin límite" className="w-full bg-white border border-violet-200 rounded-xl p-3 text-xs font-bold text-violet-950 focus:outline-none placeholder:text-slate-455" />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1">Fecha de Expiración</label>
+                      <input type="date" id="newClientCoupExp" className="w-full bg-white border border-violet-200 rounded-xl p-3 text-xs font-bold text-violet-950 focus:outline-none font-mono" />
+                    </div>
+                    
+                    <button onClick={() => {
+                      const codeEl = document.getElementById("newClientCoupCode") as HTMLInputElement;
+                      const typeEl = document.getElementById("newClientCoupType") as HTMLSelectElement;
+                      const valEl = document.getElementById("newClientCoupVal") as HTMLInputElement;
+                      const minEl = document.getElementById("newClientCoupMin") as HTMLInputElement;
+                      const maxEl = document.getElementById("newClientCoupMax") as HTMLInputElement;
+                      const expEl = document.getElementById("newClientCoupExp") as HTMLInputElement;
+                      
+                      const code = codeEl?.value;
+                      const type = typeEl?.value;
+                      const val = parseFloat(valEl?.value);
+                      const minPurchaseAmountRaw = minEl?.value;
+                      const maxUsesRaw = maxEl?.value;
+                      const expirationDate = expEl?.value || undefined;
+                      
+                      if (!code?.trim() || isNaN(val) || val <= 0) {
+                        showToast("Completa los campos con valores válidos.", "error");
+                        return;
+                      }
+                      
+                      const maxUses = maxUsesRaw ? parseInt(maxUsesRaw) : undefined;
+                      const minPurchaseAmount = minPurchaseAmountRaw ? parseFloat(minPurchaseAmountRaw) : undefined;
+
+                      createCoupon({
+                        code,
+                        discountType: type,
+                        discountValue: val,
+                        scope: "client",
+                        clientId: currentUser.id,
+                        maxUses,
+                        minPurchaseAmount,
+                        expirationDate,
+                        revenueUSD: 0
+                      });
+                      
+                      // Clear inputs
+                      if (codeEl) codeEl.value = "";
+                      if (valEl) valEl.value = "";
+                      if (minEl) minEl.value = "";
+                      if (maxEl) maxEl.value = "";
+                      if (expEl) expEl.value = "";
+                    }} className="w-full py-3 bg-violet-900 hover:bg-slate-800 text-white font-black text-xs rounded-xl shadow-md transition-colors cursor-pointer border-none mt-2">
+                      Crear Cupón de Comercio
+                    </button>
+                  </div>
+                </div>
+                
+                {/* Listar Cupones */}
+                <div className="lg:col-span-2 overflow-x-auto rounded-xl border border-violet-100">
+                  <table className="w-full text-xs text-left">
+                    <thead className="bg-violet-50 text-violet-700 uppercase font-black">
+                      <tr>
+                        <th className="py-3 px-4">Código</th>
+                        <th className="py-3 px-4">Descuento</th>
+                        <th className="py-3 px-4">Condición</th>
+                        <th className="py-3 px-4">Vencimiento</th>
+                        <th className="py-3 px-4 text-center">Usos</th>
+                        <th className="py-3 px-4 text-center">Ingresos</th>
+                        <th className="py-3 px-4 text-right">Acciones</th>
+                      </tr>
+                    </thead>
+                    <tbody className="bg-white font-medium">
+                      {(db.coupons || []).filter((c: any) => c.clientId === currentUser.id).map((c: any) => {
+                        return (
+                          <tr key={c.id} className="border-b border-violet-100 hover:bg-violet-50/50">
+                            <td className="py-3 px-4 font-black text-violet-950">{c.code}</td>
+                            <td className="py-3 px-4 text-slate-700">{c.discountType === "percentage" ? `${c.discountValue}%` : `$${c.discountValue.toFixed(2)}`}</td>
+                            <td className="py-3 px-4 text-slate-500">{c.minPurchaseAmount ? `Mín: $${c.minPurchaseAmount.toFixed(2)}` : "Sin mínimo"}</td>
+                            <td className="py-3 px-4 text-slate-500 font-mono">{c.expirationDate || "N/A"}</td>
+                            <td className="py-3 px-4 text-center text-slate-600 font-mono">{c.usesCount}{c.maxUses ? ` / ${c.maxUses}` : ""}</td>
+                            <td className="py-3 px-4 text-center text-emerald-600 font-black">{formatUSD(c.revenueUSD || 0)}</td>
+                            <td className="py-3 px-4 text-right space-x-2">
+                              <button onClick={() => toggleCouponActive(c.id)} className={`px-2 py-1 rounded text-[10px] font-bold cursor-pointer border ${c.isActive ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-red-50 text-red-700 border-red-200"}`}>
+                                {c.isActive ? "Activo" : "Inactivo"}
+                              </button>
+                              <button onClick={() => deleteCoupon(c.id)} className="p-1 text-red-500 hover:text-red-700 border-none bg-transparent cursor-pointer inline-flex items-center justify-center align-middle">
+                                <Trash2 size={14} />
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      {(db.coupons || []).filter((c: any) => c.clientId === currentUser.id).length === 0 && <tr><td colSpan={7} className="text-center py-6 text-slate-400 font-bold italic font-black">No hay cupones emitidos para tu tienda.</td></tr>}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Modal Agregar Producto */}
         {showAddModal && (
@@ -1737,6 +1907,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
               { id: "resumen", icon: Activity, label: "Resumen" },
               businessPreset !== "AXIS-ONLY" && { id: "inventario", icon: Package, label: "Inventario" },
               businessPreset !== "AXIS-ONLY" && { id: "personal", icon: Users, label: "Personal" },
+              { id: "cupones", icon: Tag, label: "Cupones" },
               { id: "config", icon: Settings, label: "Ajustes" }
             ].filter((tab): tab is any => Boolean(tab)).map(tab => {
               const Icon = tab.icon;

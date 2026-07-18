@@ -509,6 +509,7 @@ export default function Home() {
                 currentUser={currentUser}
                 logout={logout}
                 approveSubscription={approveSubscription}
+                setView={setView}
               />
             </AppEnforcer>
           )}

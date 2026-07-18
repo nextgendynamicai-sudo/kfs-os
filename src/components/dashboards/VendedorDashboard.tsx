@@ -290,8 +290,8 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
     setShowScanner(false);
   };
 
-  const handleConfirmCheckout = (paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone: string, customerName: string, customerRif: string, paymentScreenshot?: string, kPointsToBurn: number = 0) => {
-    const tx = processPurchase(checkoutProduct, paymentMethod, applyIva, customerPhone, customerName, customerRif, kPointsToBurn);
+  const handleConfirmCheckout = (paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone: string, customerName: string, customerRif: string, paymentScreenshot?: string, kPointsToBurn: number = 0, appliedCouponCode: string = "") => {
+    const tx = processPurchase(checkoutProduct, paymentMethod, applyIva, customerPhone, customerName, customerRif, kPointsToBurn, appliedCouponCode);
     if (tx) {
       setReceiptTx(tx);
     }

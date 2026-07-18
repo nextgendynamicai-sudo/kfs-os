@@ -233,11 +233,7 @@ export const LoginView = ({ handleLogin, registerClient, registerPromotora, db, 
             </>
           )}
 
-          <div className="mt-8 pt-6 border-t border-violet-100 text-center">
-            <button onClick={() => setView("landing")} className="text-sm font-black text-violet-600 hover:text-violet-800 transition-colors cursor-pointer flex items-center justify-center gap-2 mx-auto border-none bg-transparent">
-              <Star size={16} /> Ver Landing de Ventas - {KFS_BRAND.modules.marketplace} & Axis Points
-            </button>
-          </div>
+
 
         </div>
       </div>
