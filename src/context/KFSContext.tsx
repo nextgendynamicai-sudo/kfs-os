@@ -629,7 +629,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   if (dbError) {
     throw dbError; // Caught by ErrorBoundary
   }
-  const [view, setViewInternal] = useState("vendedor"); 
+  const [view, setViewInternal] = useState("landing"); 
   
   const setView = (newView: string) => {
     setViewInternal(newView);
@@ -638,13 +638,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const [currentUser, setCurrentUser] = useState<any>({
-    id: "demo-vendedor",
-    name: "Vendedor Demo",
-    email: "vendedor@demo.com",
-    role: "vendedor",
-    clientId: "kfs-express"
-  });
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const currentUserRef = useRef(currentUser);
   const hasRestoredRef = useRef(false);
   useEffect(() => {
