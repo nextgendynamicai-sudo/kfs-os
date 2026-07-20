@@ -41,7 +41,7 @@ const MOCK_BCV_RATES = {
   isWeekend: false
 };
 
-const CURRENT_WIPE_VERSION = 7;
+const CURRENT_WIPE_VERSION = 8;
 
 const initialDB = {
   promotoras: [] as any[],
@@ -67,6 +67,58 @@ const initialDB = {
         typography: "font-sans",
         layoutType: "grid",
         profilePicUrl: "https://cdn-icons-png.flaticon.com/512/3063/3063822.png"
+      }
+    },
+    {
+      id: "demo_negocio_000",
+      company: "Negocio Demo 000 (1 Mes)",
+      name: "Juan Perez Demo",
+      email: "demo@000.com",
+      phone: "+584140000000",
+      password: "000",
+      address: `Local Demo`,
+      rating: 5.0,
+      reviewCount: 0,
+      kfsFeePercentage: 0.05,
+      fee_tier: "5%",
+      is_founder: false,
+      kfsFeesOwedUSD: 0,
+      isOnboarded: true,
+      walletBalanceUSD: 100,
+      salesUSD: 0,
+      account_tier: "demo",
+      storeSettings: {
+        bioText: "Tienda de demostración de Monopoly OS",
+        themeColor: "#7c3aed",
+        typography: "font-sans",
+        layoutType: "grid",
+        profilePicUrl: ""
+      }
+    },
+    {
+      id: "pionero_negocio_0000",
+      company: "Negocio Pionero 0000 (Fundador)",
+      name: "Maria Lopez Pionera",
+      email: "pionero@0000.com",
+      phone: "+584140000001",
+      password: "0000",
+      address: `Local Pionero`,
+      rating: 5.0,
+      reviewCount: 0,
+      kfsFeePercentage: 0.02,
+      fee_tier: "2%",
+      is_founder: true,
+      kfsFeesOwedUSD: 0,
+      isOnboarded: true,
+      walletBalanceUSD: 0,
+      salesUSD: 0,
+      account_tier: "pionero",
+      storeSettings: {
+        bioText: "Tienda con tarifa especial pionera",
+        themeColor: "#f59e0b",
+        typography: "font-sans",
+        layoutType: "grid",
+        profilePicUrl: ""
       }
     }
   ] as any[],
@@ -225,6 +277,7 @@ interface KFSContextType {
   logout: () => void;
   registerClient: (clientData: any, promotoraId: string, kfsFeePercentage: number) => void;
   registerFreeUser: (clientData: any, promotoraId: string) => Promise<any>;
+  registerCommerceWithOffer: (clientData: any, offerType: "demo" | "pionero") => Promise<any>;
   upgradeToPremium: (clientId: string, promotoraId: string) => Promise<void>;
   registerPromotora: (promoData: any) => void;
   registerVendedor: (vendedorData: any) => void;
@@ -2094,6 +2147,40 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
     showToast("Comercio Freemium registrado con éxito. Bono de 2000 Axis Points otorgado (Bloqueado).", "success");
     if (view !== "promotora") setView("login");
+    return newClient;
+  };
+
+  const registerCommerceWithOffer = async (clientData: any, offerType: "demo" | "pionero") => {
+    const newClient = {
+      ...clientData,
+      password: hashPassword(clientData.password),
+      id: `c${Date.now()}`,
+      salesUSD: 0,
+      promotoraId: "arquitecto",
+      rating: 5.0,
+      reviewCount: 0,
+      isOnboarded: false,
+      acceptedToS: true,
+      kycDocumentUrl: "",
+      kyc_status: "verified",
+      walletBalanceUSD: 0,
+      account_tier: offerType,
+      is_k_points_locked: false,
+      k_points_balance: 0,
+      real_balance: 0,
+      createdAt: new Date().toISOString(),
+    };
+
+    logAction("System", "REGISTER_COMMERCE_OFFER", `Comercio registrado: ${clientData.company} bajo oferta: ${offerType}`);
+
+    setDb((prev: any) => ({
+      ...prev,
+      clients: [...(prev.clients || []), newClient]
+    }));
+
+    showToast(`¡Bienvenido! Tu comercio ha sido registrado con el plan ${offerType}.`, "success");
+    setCurrentUser({ ...newClient, role: "dueño" });
+    setView("dueño");
     return newClient;
   };
 
@@ -4367,7 +4454,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const contextValue = useMemo(() => ({
     isClient, isBooting, view, setView, currentUser, setCurrentUser, updateUserAvatar,
     toast, showToast, rates, updateBcvRates, db, setDb, formatUSD, formatEUR,
-    handleLogin, logout, registerClient, registerFreeUser, upgradeToPremium, registerPromotora, registerVendedor, approvePromotora, rejectPromotora, settlePromotoraEarnings,
+    handleLogin, logout, registerClient, registerFreeUser, registerCommerceWithOffer, upgradeToPremium, registerPromotora, registerVendedor, approvePromotora, rejectPromotora, settlePromotoraEarnings,
     addProduct, addExpense, processPurchase, submitOnlineOrder, approveOrder, rejectOrder, dispatchOrder, generateZReport,
     originalUser, impersonateClient, stopImpersonating,
     networkState, setNetworkState, smsConciliator, registerCrmExpress,

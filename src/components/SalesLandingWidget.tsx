@@ -9,26 +9,28 @@ import {
   FileText, CheckCircle, Gift, BarChart2, MessageSquare, Layers, Percent, Clock
 } from "lucide-react";
 import { playPremiumChime, playCashDrawerSound } from "../lib/utils";
+import { RegistrationModal } from "./RegistrationModal";
 
 export function SalesLandingWidget() {
   const { showToast, formatUSD, formatEUR } = useKFS() as any;
   const [selectedOffer, setSelectedOffer] = useState<string | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleAction = (type: string) => {
     setSelectedOffer(type);
+    setIsModalOpen(true);
     if (type === "demo") {
       playPremiumChime();
-      showToast("🚀 ¡Felicidades! Iniciaste tu Demo de 1 Mes en Flow Monopoly OS por $100.", "success");
     } else {
       playCashDrawerSound();
-      showToast("🎁 ¡Excelente elección! Te has registrado en la Tasa Pionera de 2% + $30 de Instalación.", "success");
     }
   };
 
   return (
-    <div className="bg-slate-950 text-white rounded-[2.5rem] border border-violet-900/50 p-6 md:p-10 shadow-[0_20px_60px_rgba(30,20,80,0.6)] space-y-12 animate-fade-in max-w-5xl mx-auto overflow-hidden relative">
-      
-      {/* Background glowing effects */}
+    <>
+      <div className="bg-slate-950 text-white rounded-[2.5rem] border border-violet-900/50 p-6 md:p-10 shadow-[0_20px_60px_rgba(30,20,80,0.6)] space-y-12 animate-fade-in max-w-5xl mx-auto overflow-hidden relative">
+        
+        {/* Background glowing effects */}
       <div className="absolute top-0 left-1/4 w-80 h-80 bg-violet-600/10 rounded-full blur-[120px] -z-10 animate-pulse"></div>
       <div className="absolute bottom-10 right-1/4 w-96 h-96 bg-fuchsia-600/10 rounded-full blur-[140px] -z-10"></div>
 
@@ -332,12 +334,12 @@ export function SalesLandingWidget() {
         </div>
 
         {/* Action feedback modal/alert box */}
-        {selectedOffer && (
+        {selectedOffer && !isModalOpen && (
           <div className="bg-white/5 border border-white/10 rounded-2xl p-5 text-center space-y-2 animate-fade-in">
             <p className="text-xs font-bold text-violet-300">
               {selectedOffer === "demo" 
-                ? "🎁 Mapeando Licencia de Prueba de Monopoly OS ($100)"
-                : "⚡ Mapeando Tarifa Pionera de Comisión Red (2% + $30)"}
+                ? "🎁 Licencia de Prueba de Monopoly OS ($100)"
+                : "⚡ Tarifa Pionera de Comisión Red (2% + $30)"}
             </p>
             <p className="text-[10px] text-slate-400">
               Para formalizar la carga fiscal de tu nodo comercial, coordina el envío de los fondos con tu promotora autorizada o recarga el balance desde la consola principal.
@@ -346,6 +348,13 @@ export function SalesLandingWidget() {
         )}
       </div>
 
-    </div>
+      </div>
+
+      <RegistrationModal 
+        isOpen={isModalOpen} 
+        onClose={() => setIsModalOpen(false)} 
+        offerType={selectedOffer as any} 
+      />
+    </>
   );
 }
