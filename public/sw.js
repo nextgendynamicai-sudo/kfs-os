@@ -1,14 +1,16 @@
-const CACHE_NAME = 'kfs-os-v4.0.0';
+const CACHE_NAME = 'kfs-os-v1';
+const STATIC_ASSETS = [
+  '/',
+  '/manifest.json',
+  '/kfs-logo.png',
+  '/icon.png',
+  '/apple-icon.png'
+];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll([
-        '/',
-        '/manifest.json',
-        '/window.svg',
-        '/kfs-logo.png'
-      ]);
+      return cache.addAll(STATIC_ASSETS);
     })
   );
   self.skipWaiting();
@@ -18,7 +20,9 @@ self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) => {
       return Promise.all(
-        cacheNames.filter((name) => name !== CACHE_NAME).map((name) => caches.delete(name))
+        cacheNames
+          .filter((name) => name !== CACHE_NAME)
+          .map((name) => caches.delete(name))
       );
     })
   );
@@ -26,57 +30,24 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
+  const { request } = event;
   
-  let req = event.request;
-  if (req.url.match(/\.(png|jpg|jpeg|svg|gif|webp)$/i)) {
-    req = new Request(req.url, { mode: req.mode, credentials: req.credentials, cache: 'no-store' });
+  // Ignore non-GET requests and external domains (unless Supabase, but we let browser handle that)
+  if (request.method !== 'GET' || !request.url.startsWith(self.location.origin)) {
+    return;
   }
 
   event.respondWith(
-    fetch(req).catch(() => caches.match(event.request))
-  );
-});
-
-self.addEventListener('push', function(event) {
-  if (event.data) {
-    const data = event.data.json();
-    const options = {
-      body: data.body,
-      icon: data.icon || '/kfs-logo.png',
-      image: data.image || null,
-      badge: '/window.svg',
-      vibrate: [100, 50, 100],
-      data: {
-        dateOfArrival: Date.now(),
-        primaryKey: '2',
-        url: data.url || '/'
-      }
-    };
-    event.waitUntil(
-      self.registration.showNotification(data.title, options)
-    );
-  }
-});
-
-self.addEventListener('notificationclick', function(event) {
-  event.notification.close();
-  const urlToOpen = event.notification.data.url || '/';
-
-  event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(windowClients) {
-      for (let i = 0; i < windowClients.length; i++) {
-        const client = windowClients[i];
-        if ('focus' in client) {
-          client.focus();
-          // Solo navegamos si es distinto (o podríamos dejar que react-router lo maneje si fuera SPA)
-          // Para forzar navegación: client.navigate(urlToOpen)
-          return client.navigate(urlToOpen);
-        }
-      }
-      if (clients.openWindow) {
-        return clients.openWindow(urlToOpen);
-      }
+    caches.match(request).then((cachedResponse) => {
+      const fetchPromise = fetch(request).then((networkResponse) => {
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(request, networkResponse.clone());
+        });
+        return networkResponse;
+      }).catch(() => {
+        // network failed, return cached response if exists
+      });
+      return cachedResponse || fetchPromise;
     })
   );
 });

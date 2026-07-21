@@ -29,7 +29,7 @@ import {
   Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database, Trash2, Tag
 } from "lucide-react";
 import { useKFS } from "../../context/KFSContext";
-import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from "recharts";
+import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { CheckoutModal } from "../CheckoutModal";
 import { TopUpModal } from "../TopUpModal";
 import { PayoutModal } from "../PayoutModal";

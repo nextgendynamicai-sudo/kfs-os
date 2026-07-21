@@ -50,12 +50,12 @@ export default function RootLayout({
       className={`${jakartaSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <head>
-        <meta httpEquiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-        <meta httpEquiv="Pragma" content="no-cache" />
-        <meta httpEquiv="Expires" content="0" />
         <script dangerouslySetInnerHTML={{
           __html: `
             try {
+              if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').catch(err => console.error('SW Failed:', err));
+              }
               if (typeof window !== 'undefined') {
                 if (localStorage.getItem("theme") === "dark" || (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
                   document.documentElement.classList.add("dark");
