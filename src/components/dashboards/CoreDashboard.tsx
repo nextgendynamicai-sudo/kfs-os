@@ -2410,9 +2410,10 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                       ))
                     )}
                   </div>
-                </div>
+              </div>
             </div>
           </div>
+        </div>
         )}
 
         {activeTab === "descargas_apk" && (
