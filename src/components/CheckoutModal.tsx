@@ -233,6 +233,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
 
   if (isProcessingPos) {
     return (
+      <ModalPortal>
       <div className="fixed inset-0 bg-black/60 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-fade-in font-sans">
         <div className="bg-white/95 backdrop-blur-xl text-violet-950 rounded-[2rem] w-full max-w-md p-8 shadow-2xl border border-violet-100 relative overflow-hidden text-center space-y-6">
           <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-violet-600 via-indigo-400 to-violet-600 animate-pulse"></div>

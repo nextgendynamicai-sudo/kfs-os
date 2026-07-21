@@ -162,6 +162,7 @@ export function RegistrationModal({ isOpen, onClose, offerType }: RegistrationMo
           </p>
         </form>
       </div>
+      </div>
     </ModalPortal>
   );
 }

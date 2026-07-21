@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
-export type ViewType = "login" | "customer_dashboard" | "client_dashboard" | "promotora_dashboard" | "vendedor_dashboard" | "rider_dashboard" | "core" | "sales_landing" | "marketplace";
+export type ViewType = string;
 
 interface UIContextType {
   view: ViewType;

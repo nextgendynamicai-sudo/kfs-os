@@ -296,8 +296,8 @@ interface KFSContextType {
   originalUser: any;
   impersonateClient: (client: any) => void;
   stopImpersonating: () => void;
-  networkState: "online" | "mesh" | "offline";
-  setNetworkState: (state: "online" | "mesh" | "offline") => void;
+  networkState: "online" | "mesh" | "offline" | "syncing";
+  setNetworkState: (state: "online" | "mesh" | "offline" | "syncing") => void;
   smsConciliator: (smsText: string) => { matched: boolean; order?: any; bank?: string; amount?: number; reference?: string; phone?: string; error?: string };
   registerCrmExpress: (idCard: string, name: string, surname: string, phone?: string) => void;
   ghostTrapLocked: boolean;
@@ -763,22 +763,22 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== "undefined") {
       const hash = window.location.hash.replace("#", "");
       if (hash) {
-        setViewInternal(hash);
+        setView(hash);
       } else {
-        setViewInternal("vendedor");
+        setView("vendedor");
         window.history.replaceState({ view: "vendedor" }, "", "#vendedor");
       }
     }
 
     const handlePopState = (event: PopStateEvent) => {
       if (event.state && event.state.view) {
-        setViewInternal(event.state.view);
+        setView(event.state.view);
       } else {
         const hash = window.location.hash.replace("#", "");
         if (hash) {
-          setViewInternal(hash);
+          setView(hash);
         } else {
-          setViewInternal("vendedor");
+          setView("vendedor");
         }
       }
     };
