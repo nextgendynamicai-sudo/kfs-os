@@ -13,6 +13,10 @@ export async function POST(req: Request) {
   try {
     const { customerId, amountUSD, gateway } = await req.json();
 
+    if (!customerId || typeof amountUSD !== 'number' || isNaN(amountUSD) || amountUSD <= 0) {
+      return NextResponse.json({ error: 'Monto o cliente inválido' }, { status: 400 });
+    }
+
     const syncId = "kfs-general-db-prod";
     let attempts = 0;
     const maxAttempts = 3;

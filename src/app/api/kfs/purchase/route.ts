@@ -13,6 +13,15 @@ export async function POST(req: Request) {
   try {
     const { product, paymentMethod, applyIva, customerPhone, clientId, vendedorId } = await req.json();
 
+    if (!clientId || !product || product.price === undefined || product.price === null) {
+      return NextResponse.json({ error: 'Datos de producto o comercio incompletos' }, { status: 400 });
+    }
+
+    const itemPrice = typeof product.price === 'string' ? parseFloat(product.price) : product.price;
+    if (isNaN(itemPrice) || itemPrice <= 0) {
+      return NextResponse.json({ error: 'Precio de producto inválido' }, { status: 400 });
+    }
+
     const syncId = "kfs-general-db-prod";
     let attempts = 0;
     const maxAttempts = 3;
@@ -34,7 +43,7 @@ export async function POST(req: Request) {
 
       const oldUpdatedAt = storeData.updated_at;
       let db = storeData.db_state;
-      const client = db.clients.find((c: any) => c.id === clientId);
+      const client = db.clients?.find((c: any) => c.id === clientId);
       if (!client) return NextResponse.json({ error: 'Client not found' }, { status: 404 });
 
       // Lógica de cálculo B2B
@@ -43,9 +52,7 @@ export async function POST(req: Request) {
         kfsFeePercentage = 0.03;
       }
 
-      const itemPrice = typeof product.price === 'string' ? parseFloat(product.price) : product.price;
       const priceUSD = applyIva ? itemPrice * 1.16 : itemPrice;
-      
       let subTotalUSD = priceUSD;
       let kfsFee = subTotalUSD * kfsFeePercentage;
 

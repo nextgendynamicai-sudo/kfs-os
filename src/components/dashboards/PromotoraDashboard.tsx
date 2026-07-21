@@ -86,8 +86,8 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
   const [searchClient, setSearchClient] = useState("");
   const [customizingClient, setCustomizingClient] = useState<any>(null);
   const { updateStoreSettings, replyTicket, validateTopUp, showToast } = useKFS() as any;
-  const myClients = db.clients.filter((c: any) => c.promotoraId === currentUser.id);
-  const myPromotoraData = db.promotoras.find((p: any) => p.id === currentUser.id);
+  const myClients = (db.clients || []).filter((c: any) => c.promotoraId === currentUser?.id);
+  const myPromotoraData = (db.promotoras || []).find((p: any) => p.id === currentUser?.id);
   const filteredClients = myClients.filter((c: any) => c.company?.toLowerCase().includes(searchClient.toLowerCase()) || c.name?.toLowerCase().includes(searchClient.toLowerCase()));
   const myCustomers = db.customers?.filter((c: any) => c.referred_by_promoter_id === currentUser.id) || [];
 

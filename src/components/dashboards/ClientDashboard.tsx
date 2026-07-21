@@ -83,7 +83,7 @@ const KREATEK_COLORS = {
 export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showToast, formatUSD, formatEUR, logout, approveOrder, rejectOrder, dispatchOrder, paySubscription, requestPayout, requestTopUp }: any) => {
   const { finishOnboarding } = useKFS();
   const { businessPreset } = usePreset();
-  const clientInfo = db.clients?.find((c: any) => c.id === currentUser.id) || currentUser;
+  const clientInfo = db.clients?.find((c: any) => c.id === currentUser?.id) || currentUser || {};
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState("resumen"); // resumen | inventario | personal | config
   const [showAddModal, setShowAddModal] = useState(false);
@@ -220,18 +220,18 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
     setIsFetchingBarcode(false);
   };
 
-  const myProducts = db.products.filter((p: any) => p.clientId === currentUser.id);
-  const myVendedores = db.vendedores?.filter((v: any) => v.clientId === currentUser.id) || [];
-  const myExpenses = db.expenses?.filter((e: any) => e.clientId === currentUser.id) || [];
-  const myOrders = db.orders?.filter((o: any) => o.clientId === currentUser.id && o.status === 'pending') || [];
-  const myPendingDispatch = db.transactions?.filter((tx: any) => tx.clientId === currentUser.id && tx.shippingStatus === 'pending') || [];
+  const myProducts = db.products?.filter((p: any) => p.clientId === currentUser?.id) || [];
+  const myVendedores = db.vendedores?.filter((v: any) => v.clientId === currentUser?.id) || [];
+  const myExpenses = db.expenses?.filter((e: any) => e.clientId === currentUser?.id) || [];
+  const myOrders = db.orders?.filter((o: any) => o.clientId === currentUser?.id && o.status === 'pending') || [];
+  const myPendingDispatch = db.transactions?.filter((tx: any) => tx.clientId === currentUser?.id && tx.shippingStatus === 'pending') || [];
 
-  const totalExpensesUSD = myExpenses.reduce((sum: number, exp: any) => sum + parseFloat(exp.amountUSD), 0);
+  const totalExpensesUSD = myExpenses.reduce((sum: number, exp: any) => sum + (parseFloat(exp.amountUSD) || 0), 0);
   const grossSalesUSD = clientInfo.salesUSD || 0;
   const netProfitUSD = grossSalesUSD - totalExpensesUSD;
 
-  const myTransactions = db.transactions.filter((tx: any) =>
-    db.products.find((p: any) => p.id === tx.productId)?.clientId === currentUser.id
+  const myTransactions = (db.transactions || []).filter((tx: any) =>
+    db.products?.find((p: any) => p.id === tx.productId)?.clientId === currentUser?.id
   );
   const clientChartData = myTransactions.map((t: any, index: number) => ({
     name: `Venta ${index + 1}`,

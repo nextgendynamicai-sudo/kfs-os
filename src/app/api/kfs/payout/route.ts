@@ -13,6 +13,10 @@ export async function POST(req: Request) {
   try {
     const { userId, role, amountUSD, bankDetails } = await req.json();
 
+    if (!userId || !role || typeof amountUSD !== 'number' || isNaN(amountUSD) || amountUSD <= 0) {
+      return NextResponse.json({ error: 'Monto de retiro o datos de usuario inválidos' }, { status: 400 });
+    }
+
     const syncId = "kfs-general-db-prod";
     let attempts = 0;
     const maxAttempts = 3;

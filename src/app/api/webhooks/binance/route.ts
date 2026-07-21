@@ -32,6 +32,10 @@ export async function POST(req: Request) {
     const customerId = data.merchantTradeNo; 
     const amountUSD = parseFloat(data.orderAmount);
 
+    if (!customerId || isNaN(amountUSD) || amountUSD <= 0) {
+      return NextResponse.json({ returnCode: "FAIL", returnMessage: "Invalid customer or amount" }, { status: 400 });
+    }
+
     // 3. Obtener estado actual (Híbrido) con reintentos OCC
     const syncId = "kfs-general-db-prod";
     let attempts = 0;
