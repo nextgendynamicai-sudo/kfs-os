@@ -16,7 +16,7 @@ import { RegisterRiderForm } from "../RegisterRiderForm";
 import { RecruitmentWidget } from "../RecruitmentWidget";
 import { ScannerView } from "../ScannerView";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import {
   Camera, Upload, ShoppingCart, TrendingUp, Users, DollarSign,
