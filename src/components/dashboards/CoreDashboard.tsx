@@ -253,33 +253,37 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
   })).slice(-15);
 
   return (
-    <div className="min-h-screen bg-[#EEF2F5] pb-24 font-sans text-violet-900 relative">
-      {/* Wavy Header */}
-      <div className="bg-[#EEF2F5] rounded-b-[3rem] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none pt-6 pb-12 px-6 text-violet-900 relative z-10">
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-2">
-            <span className="bg-violet-100 p-2 rounded-xl text-violet-600 shadow-inner"><Shield size={20} /></span>
-            <h1 className="font-black text-xl tracking-tight">{KFS_BRAND.productAcronym} OS (Arquitecto)</h1>
+    <div className="min-h-screen bg-slate-950 pb-28 font-sans text-white relative overflow-hidden">
+      {/* Soft background glow circles */}
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-600/15 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-600/15 rounded-full blur-3xl pointer-events-none"></div>
+
+      {/* Header */}
+      <div className="bg-slate-900/60 backdrop-blur-xl border-b border-violet-500/20 pt-6 pb-8 px-6 text-white relative z-10 shadow-2xl">
+        <div className="flex justify-between items-center mb-6 max-w-7xl mx-auto">
+          <div className="flex items-center gap-3">
+            <span className="bg-violet-900/50 border border-violet-500/30 p-2.5 rounded-2xl text-violet-300 shadow-lg"><Shield size={20} /></span>
+            <h1 className="font-black text-xl tracking-tight bg-gradient-to-r from-violet-200 via-white to-indigo-200 bg-clip-text text-transparent">{KFS_BRAND.productAcronym} OS (Arquitecto)</h1>
           </div>
-          <button onClick={logout} className="p-2 bg-white shadow-sm rounded-xl hover:text-red-500 transition-colors cursor-pointer text-gray-500 border-none">
-            <LogOut size={16} />
+          <button onClick={logout} className="p-2.5 bg-white/10 hover:bg-red-500/20 border border-white/10 rounded-2xl text-slate-300 hover:text-red-400 transition-all cursor-pointer">
+            <LogOut size={18} />
           </button>
         </div>
 
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
           <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-white shadow-sm border border-violet-100 rounded-full flex items-center justify-center text-violet-600 font-black text-2xl flex-shrink-0 relative z-20 placeholder:text-slate-400">
+            <div className="w-16 h-16 bg-violet-950/60 border border-violet-500/30 rounded-full flex items-center justify-center text-violet-300 font-black text-2xl flex-shrink-0 relative z-20 shadow-xl overflow-hidden">
               <ProfileAvatarEditor currentUser={currentUser} />
             </div>
             <div>
-              <h2 className="text-xl md:text-2xl font-black tracking-tight truncate text-violet-950">Control Matriz {KFS_BRAND.productAcronym}</h2>
-              <p className="text-violet-700 font-mono text-xs mt-1 bg-violet-100 shadow-sm inline-block px-2 py-0.5 rounded-md border border-violet-200">Vista de Dios • Arquitectura de Red</p>
+              <h2 className="text-xl md:text-2xl font-black tracking-tight truncate text-white">Control Matriz {KFS_BRAND.productAcronym}</h2>
+              <p className="text-violet-300 font-mono text-xs mt-1 bg-violet-900/50 inline-block px-3 py-1 rounded-xl border border-violet-500/30 shadow-inner">Vista de Dios • Arquitectura de Red</p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="p-4 md:p-8 max-w-5xl mx-auto -mt-6 relative z-20 flex flex-col gap-8 animate-fade-in">
+      <div className="p-4 md:p-8 max-w-7xl mx-auto relative z-20 flex flex-col gap-8 animate-fade-in">
         {activeTab === "panel" && (
           <div className="space-y-8 flex flex-col">
             {/* PDF Presentation Banner */}
