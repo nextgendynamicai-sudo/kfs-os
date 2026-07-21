@@ -51,7 +51,7 @@ const initialDB = {
       id: "kfs-express",
       company: "Arquitecto Axis Points Reward",
       email: "arquitecto@kfs.com",
-      password: "000",
+      password: "05c7a8802c74b9f7ed07821d82015d1178ca3e5ed1e708bb5246ec01f635b7a6", // Hash for '000'
       address: `Soporte Central ${KFS_BRAND.productAcronym}`,
       rating: 5.0,
       reviewCount: 0,
@@ -74,9 +74,9 @@ const initialDB = {
       id: "demo_negocio_000",
       company: "Negocio Demo 000 (1 Mes)",
       name: "Juan Perez Demo",
-      email: "demo@000.com",
+      email: "000",
       phone: "+584140000000",
-      password: "000",
+      password: "130987d23fdb7d4354e7a2753b82c9481e845b49bdca0c0e7f79453c6e573893", // Hash for '0000'
       address: `Local Demo`,
       rating: 5.0,
       reviewCount: 0,
@@ -100,9 +100,9 @@ const initialDB = {
       id: "pionero_negocio_0000",
       company: "Negocio Pionero 0000 (Fundador)",
       name: "Maria Lopez Pionera",
-      email: "pionero@0000.com",
+      email: "0000",
       phone: "+584140000001",
-      password: "0000",
+      password: "130987d23fdb7d4354e7a2753b82c9481e845b49bdca0c0e7f79453c6e573893", // Hash for '0000'
       address: `Local Pionero`,
       rating: 5.0,
       reviewCount: 0,

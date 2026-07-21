@@ -63,9 +63,9 @@ export default function RootLayout({
                   document.documentElement.classList.remove("dark");
                 }
               }
-              if (typeof window !== 'undefined' && localStorage.getItem("kfs_hard_reset_v3.1") !== "done") {
+              if (typeof window !== 'undefined' && localStorage.getItem("kfs_hard_reset_v3.2") !== "done") {
                 localStorage.removeItem("kfs_os_current_user");
-                localStorage.setItem("kfs_hard_reset_v3.1", "done");
+                localStorage.setItem("kfs_hard_reset_v3.2", "done");
                 if ('caches' in window) {
                   caches.keys().then(names => {
                     for (let name of names) caches.delete(name);
