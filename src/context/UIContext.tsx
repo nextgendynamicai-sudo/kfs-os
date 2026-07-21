@@ -32,13 +32,21 @@ export const UIProvider = ({ children }: { children: ReactNode }) => {
   const [ghostTrapLocked, setGhostTrapLocked] = useState(false);
 
   useEffect(() => {
-    const handleOnline = () => {
+    const handleOnline = async () => {
+      setNetworkState("syncing");
+      const { processOfflineQueue } = await import("../lib/offlineSync");
+      const { syncedCount } = await processOfflineQueue();
+      
       setNetworkState("online");
-      showToast("Conexión restaurada con el Ecosistema.", "success");
+      if (syncedCount > 0) {
+        showToast(`⚡ Sincronización offline completada: ${syncedCount} operaciones subidas a la nube con éxito.`, "success");
+      } else {
+        showToast("Conexión restaurada con el Ecosistema.", "success");
+      }
     };
     const handleOffline = () => {
       setNetworkState("offline");
-      showToast("Sin conexión. Operando en Modo Local (Cache).", "warning");
+      showToast("Sin conexión. Modo Offline activo: Las operaciones se guardarán localmente.", "warning");
     };
     
     if (typeof window !== "undefined") {
