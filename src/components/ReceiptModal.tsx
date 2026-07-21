@@ -124,7 +124,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
             {/* Large Final Total */}
             <div className="text-center py-2 bg-gray-50 border border-gray-100 rounded-xl mt-3">
               <span className="text-[9px] text-slate-500 font-black uppercase block tracking-widest">Total Cancelado</span>
-              <span className="text-3xl font-black text-white block">{formatUSD(tx.amountUSD)}</span>
+              <span className="text-3xl font-black text-slate-900 block">{formatUSD(tx.amountUSD)}</span>
               {tx.kfsPointsEarned > 0 && (
                 <div className="mt-1 bg-violet-600/10 rounded-lg py-1 px-2 inline-block">
                   <span className="text-[10px] font-black text-violet-600">+{tx.kfsPointsEarned.toFixed(1)} {KFS_BRAND.economy.currency} Ganados</span>

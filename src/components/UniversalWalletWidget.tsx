@@ -67,11 +67,11 @@ export function UniversalWalletWidget({ currentUser, formatUSD, children }: Univ
       {/* Balances Display - Grid 4 Columns */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         
-        {/* Reserva Central (USD) */}
+        {/* Saldo Disponible (USD & Bs. BCV) */}
         <div className="bg-violet-50 border border-violet-100 rounded-2xl p-5 flex flex-col justify-between hover:border-emerald-500/20 transition-all">
           <div className="flex justify-between items-start">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-1">
-              <DollarSign size={10} className="text-emerald-500" /> Reserva Central (USD)
+              <DollarSign size={10} className="text-emerald-500" /> Saldo Disponible (USD)
             </p>
             <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 text-sm font-bold">
               $
@@ -79,7 +79,9 @@ export function UniversalWalletWidget({ currentUser, formatUSD, children }: Univ
           </div>
           <div className="mt-4">
             <p className="text-3xl font-black tracking-tight text-violet-950">{formatUSD(realBalance)}</p>
-            <p className="text-[9px] text-slate-500 mt-1">Inamovible a bancos.</p>
+            <p className="text-xs font-bold text-emerald-600 mt-1">
+              ≈ Bs. {(realBalance * 36.45).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-[9px] font-normal text-slate-400">(Tasa BCV)</span>
+            </p>
           </div>
         </div>
 
@@ -87,7 +89,7 @@ export function UniversalWalletWidget({ currentUser, formatUSD, children }: Univ
         <div className="bg-violet-50 border border-violet-100 rounded-2xl p-5 flex flex-col justify-between hover:border-[#3B82F6]/20 transition-all relative overflow-hidden">
           <div className="flex justify-between items-start">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-1">
-              <CircleDollarSign size={10} className="text-[#3B82F6]" /> Axis Cash
+              <CircleDollarSign size={10} className="text-[#3B82F6]" /> Saldo Axis Cash
             </p>
             <div className="w-8 h-8 rounded-full bg-[#3B82F6]/10 flex items-center justify-center text-[#3B82F6] text-sm font-bold">
               AC
@@ -95,15 +97,15 @@ export function UniversalWalletWidget({ currentUser, formatUSD, children }: Univ
           </div>
           <div className="mt-4">
             <p className="text-3xl font-black tracking-tight text-violet-950">{kPointCashBalance.toLocaleString()}</p>
-            <p className="text-[9px] text-slate-500 mt-1">Alta liquidez. Transferible.</p>
+            <p className="text-[9px] text-slate-500 mt-1">Saldo para compras y transferencias P2P.</p>
           </div>
         </div>
 
-        {/* {KFS_BRAND.economy.currency} (Normal) */}
+        {/* Axis Points */}
         <div className="bg-violet-50 border border-violet-100 rounded-2xl p-5 flex flex-col justify-between hover:border-[#8B5CF6]/20 transition-all">
           <div className="flex justify-between items-start">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-1">
-              <Gift size={10} className="text-[#8B5CF6]" /> {KFS_BRAND.economy.currency}
+              <Gift size={10} className="text-[#8B5CF6]" /> Puntos Acumulados
             </p>
             <div className="w-8 h-8 rounded-full bg-[#8B5CF6]/10 flex items-center justify-center text-[#8B5CF6] text-xs font-bold">
               AP
@@ -111,10 +113,10 @@ export function UniversalWalletWidget({ currentUser, formatUSD, children }: Univ
           </div>
           <div className="mt-4">
             <p className="text-3xl font-black tracking-tight text-[#8B5CF6]">
-              {kPointsBalance.toLocaleString()} <span className="text-xs text-[#8B5CF6]/80">Axis Points</span>
+              {kPointsBalance.toLocaleString()} <span className="text-xs text-[#8B5CF6]/80">Pts</span>
             </p>
             <p className="text-[9px] text-slate-500 mt-1">
-              {kPointsBalance > 0 && !isExpired && timeLeftStr ? `AOF en: ${timeLeftStr}` : "Moneda de consumo forzado."}
+              {kPointsBalance > 0 && !isExpired && timeLeftStr ? `Vence en: ${timeLeftStr}` : "Ganados por tus compras."}
             </p>
           </div>
         </div>
@@ -123,7 +125,7 @@ export function UniversalWalletWidget({ currentUser, formatUSD, children }: Univ
         <div className="bg-violet-50 border border-violet-100 rounded-2xl p-5 flex flex-col justify-between hover:border-[#F59E0B]/20 transition-all">
           <div className="flex justify-between items-start">
             <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 flex items-center gap-1">
-              <Zap size={10} className="text-[#F59E0B]" /> Axis Bonus
+              <Zap size={10} className="text-[#F59E0B]" /> Puntos de Regalo
             </p>
             <div className="w-8 h-8 rounded-full bg-[#F59E0B]/10 flex items-center justify-center text-[#F59E0B] text-xs font-bold">
               AB
