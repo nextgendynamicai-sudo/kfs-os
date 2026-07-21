@@ -9,12 +9,12 @@ import { FiscalPrinterSetupWidget } from "../FiscalPrinterSetupWidget";
 import { KFSIoTEdgeConsole } from "../KFSIoTEdgeConsole";
 import { KreatekLogo } from "../KreatekLogo";
 import { Navbar } from "../Navbar";
-import { RegisterClientForm } from "../RegisterClientForm";
-import { RegisterPromotoraForm } from "../RegisterPromotoraForm";
-import { RegisterCustomerForm } from "../RegisterCustomerForm";
-import { RegisterRiderForm } from "../RegisterRiderForm";
+const RegisterClientForm = dynamic(() => import("../RegisterClientForm").then(m => m.RegisterClientForm), { ssr: false });
+const RegisterPromotoraForm = dynamic(() => import("../RegisterPromotoraForm").then(m => m.RegisterPromotoraForm), { ssr: false });
+const RegisterCustomerForm = dynamic(() => import("../RegisterCustomerForm").then(m => m.RegisterCustomerForm), { ssr: false });
+const RegisterRiderForm = dynamic(() => import("../RegisterRiderForm").then(m => m.RegisterRiderForm), { ssr: false });
 import { StorefrontCustomizer } from "../StorefrontCustomizer";
-import { OnboardingWizard } from "../OnboardingWizard";
+const OnboardingWizard = dynamic(() => import("../OnboardingWizard").then(m => m.OnboardingWizard), { ssr: false });
 import { RecruitmentWidget } from "../RecruitmentWidget";
 import { ScannerView } from "../ScannerView";
 

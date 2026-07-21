@@ -13,10 +13,10 @@ export const ReferralLinksWidget = ({ userId, showToast }: { userId: string, sho
   };
 
   const links = [
-    { id: "dueño", label: "Referir Dueño (Comercio)", role: "dueño", icon: Store, description: "Crea una tienda y únete al ecosistema." },
-    { id: "cliente", label: "Referir Cliente (Customer)", role: "customer", icon: Users, description: "Afiliar a un cliente consumidor final." },
-    { id: "promotora", label: "Referir Gobernadora", role: "promotora", icon: Shield, description: "Invita a un líder de territorio." },
-    { id: "rider", label: "Referir Delivery (Rider)", role: "rider", icon: Car, description: `Atrae flotilla para ${KFS_BRAND.productAcronym}.` }
+    { id: "dueño", label: "Referir Dueño (Comercio)", role: "register", icon: Store, description: "Crea una tienda y únete al ecosistema." },
+    { id: "cliente", label: "Referir Cliente (Customer)", role: "registerCustomer", icon: Users, description: "Afiliar a un cliente consumidor final." },
+    { id: "promotora", label: "Referir Gobernadora", role: "registerPromo", icon: Shield, description: "Invita a un líder de territorio." },
+    { id: "rider", label: "Referir Delivery (Rider)", role: "registerRider", icon: Car, description: `Atrae flotilla para ${KFS_BRAND.productAcronym}.` }
   ];
 
   const handleCopy = (role: string) => {

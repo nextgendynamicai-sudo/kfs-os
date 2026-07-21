@@ -756,6 +756,25 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     }
   }, [networkState]);
 
+  // Offline Sync Queue Processor
+  useEffect(() => {
+    if (networkState === "online" && typeof window !== "undefined") {
+      const txQueue = JSON.parse(localStorage.getItem('kfs_tx_queue') || '[]');
+      if (txQueue.length > 0) {
+        console.log(`[Offline Sync] Procesando ${txQueue.length} transacciones en cola...`);
+        txQueue.forEach((tx: any) => syncSingleTransaction(tx));
+        localStorage.removeItem('kfs_tx_queue');
+      }
+
+      const clientQueue = JSON.parse(localStorage.getItem('kfs_client_queue') || '[]');
+      if (clientQueue.length > 0) {
+        console.log(`[Offline Sync] Procesando ${clientQueue.length} clientes en cola...`);
+        clientQueue.forEach((client: any) => syncSingleClient(client));
+        localStorage.removeItem('kfs_client_queue');
+      }
+    }
+  }, [networkState]);
+
   // Hydration and Boot timer
   useEffect(() => {
     setIsClient(true);

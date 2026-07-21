@@ -149,7 +149,7 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
               </div>
               <button 
                 onClick={() => {
-                  window.location.href = `/?role=register&ref=${currentUser.id}#login`;
+                  window.location.href = `/?role=registerPromo&ref=${currentUser.id}#login`;
                 }}
                 className="bg-white text-violet-950 px-6 py-3 rounded-2xl font-black text-sm hover:scale-105 transition-transform cursor-pointer shadow-lg shadow-black/10 border-none"
               >
