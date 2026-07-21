@@ -80,3 +80,12 @@ ON CONFLICT (barcode) DO UPDATE SET
     image_url = EXCLUDED.image_url, 
     category = EXCLUDED.category, 
     brand = EXCLUDED.brand;
+
+
+-- 4. Storage Bucket Setup (kfs-assets)
+INSERT INTO storage.buckets (id, name, public) VALUES ('kfs-assets', 'kfs-assets', true) ON CONFLICT (id) DO NOTHING;
+
+CREATE POLICY "Public Access" ON storage.objects FOR SELECT USING ( bucket_id = 'kfs-assets' );
+CREATE POLICY "Public Insert" ON storage.objects FOR INSERT WITH CHECK ( bucket_id = 'kfs-assets' );
+CREATE POLICY "Public Update" ON storage.objects FOR UPDATE USING ( bucket_id = 'kfs-assets' );
+CREATE POLICY "Public Delete" ON storage.objects FOR DELETE USING ( bucket_id = 'kfs-assets' );
