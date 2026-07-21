@@ -318,23 +318,7 @@ export default function Home() {
     }
   };
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get("mode") === "god" || params.get("role") === "core") {
-        if (!currentUser || currentUser.role !== "core") {
-          setCurrentUser({
-            id: "arquitecto_god",
-            name: "Arquitecto Supremo",
-            role: "core",
-            email: "godmode@kreatek.com"
-          });
-          setView("core");
-          showToast("⚡ Modo Dios Activado en este Dispositivo ⚡", "success");
-        }
-      }
-    }
-  }, [currentUser, setCurrentUser, setView]);
+
 
   useEffect(() => {
     if (currentUser && !isUserValid) {

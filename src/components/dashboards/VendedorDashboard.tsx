@@ -746,24 +746,37 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
         </div>
       )}
 
-      {/* Mobile TabBar Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-violet-950 border-t border-violet-800 flex justify-around items-center p-4 z-50 shadow-[0_-10px_40px_rgba(46,16,101,0.5)]">
-        <button onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="flex flex-col items-center gap-1 text-violet-400 hover:text-white transition-colors cursor-pointer">
-          <Store size={22} />
-          <span className="text-[10px] font-bold uppercase tracking-wider">Inicio</span>
-        </button>
-        <button onClick={() => { setShowScanner(true); showToast("Cámara activada"); }} className="flex flex-col items-center justify-center text-white bg-violet-600 w-14 h-14 rounded-full -mt-10 shadow-lg shadow-violet-600/50 border-4 border-slate-50 transition-transform active:scale-95 cursor-pointer">
-          <QrCode size={26} />
-        </button>
-        <button onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })} className="flex flex-col items-center gap-1 text-violet-400 hover:text-white transition-colors relative cursor-pointer">
-          <Package size={22} />
-          <span className="text-[10px] font-bold uppercase tracking-wider">Vender</span>
-          {myOrders.length > 0 && (
-            <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[9px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-md animate-pulse">
-              {myOrders.length}
-            </span>
-          )}
-        </button>
+      {/* Mobile TabBar Navigation - PREMIUM GLASS CARDS */}
+      <div className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-slate-950/80 backdrop-blur-2xl border-t border-violet-500/20 shadow-[0_-10px_40px_rgba(15,23,42,0.6)] py-2 px-4">
+        <div className="flex justify-around items-center gap-2">
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            className="flex flex-col items-center justify-center min-w-[72px] px-3 py-2 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 text-slate-300 hover:text-white cursor-pointer transition-all"
+          >
+            <Store size={20} className="text-violet-300 mb-1" />
+            <span className="text-[10px] font-extrabold tracking-tight">Inicio</span>
+          </button>
+          
+          <button
+            onClick={() => { setShowScanner(true); showToast("Cámara activada"); }}
+            className="flex flex-col items-center justify-center text-white bg-gradient-to-r from-violet-600 to-indigo-600 w-14 h-14 rounded-2xl -mt-6 shadow-xl shadow-violet-600/50 border-2 border-violet-300 transition-transform active:scale-95 cursor-pointer"
+          >
+            <QrCode size={26} />
+          </button>
+
+          <button
+            onClick={() => window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })}
+            className="relative flex flex-col items-center justify-center min-w-[72px] px-3 py-2 rounded-2xl bg-white/10 hover:bg-white/15 border border-white/10 text-slate-300 hover:text-white cursor-pointer transition-all"
+          >
+            <Package size={20} className="text-violet-300 mb-1" />
+            <span className="text-[10px] font-extrabold tracking-tight">Vender</span>
+            {myOrders.length > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full border border-slate-900 animate-pulse shadow-sm">
+                {myOrders.length}
+              </span>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );

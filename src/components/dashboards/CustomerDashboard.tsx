@@ -968,9 +968,9 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
 
       </div>
 
-      {/* FIXED BOTTOM NAVIGATION */}
-      <div className="fixed bottom-0 inset-x-0 z-50 bg-white/90 backdrop-blur-xl border-t border-violet-100 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(14,165,233,0.05)] pb-safe">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex justify-center gap-10 items-center relative">
+      {/* FIXED BOTTOM NAVIGATION - PREMIUM GLASS CARDS */}
+      <div className="fixed bottom-0 inset-x-0 z-50 bg-slate-950/80 backdrop-blur-2xl border-t border-violet-500/20 shadow-[0_-10px_40px_rgba(15,23,42,0.6)] py-3 px-4">
+        <div className="max-w-4xl mx-auto flex items-center justify-center gap-4 overflow-x-auto no-scrollbar py-1 px-2">
           {[
             { id: "profile", icon: Activity, label: "Mi Cuenta" },
             { id: "jobs", icon: Briefcase, label: "Empleos", badge: unreadNotifsCount }
@@ -981,18 +981,23 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
               <button
                 key={tab.id}
                 onClick={() => setSubTab(tab.id)}
-                className="relative flex flex-col items-center justify-center w-20 h-12 cursor-pointer group border-none bg-transparent"
+                className={`relative flex flex-col items-center justify-center min-w-[80px] px-4 py-2.5 rounded-2xl cursor-pointer transition-all duration-300 border backdrop-blur-md flex-shrink-0 ${
+                  isActive
+                    ? 'bg-gradient-to-b from-violet-600/90 to-indigo-700/90 border-violet-400/50 text-white shadow-[0_4px_20px_rgba(124,58,237,0.4)] scale-105'
+                    : 'bg-white/10 hover:bg-white/15 border-white/10 text-slate-300 hover:text-white hover:border-violet-400/30'
+                }`}
               >
-                {isActive && <span className="absolute -top-4 w-12 h-1 bg-violet-500 rounded-b-full shadow-[0_4px_10px_rgba(14,165,233,0.5)]" />}
-                <div className={`relative transition-all duration-300 ${isActive ? '-translate-y-2 text-violet-600' : 'text-slate-400 group-hover:text-slate-600'}`}>
-                  <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
+                <div className="relative flex items-center justify-center mb-1">
+                  <Icon size={20} strokeWidth={isActive ? 2.5 : 2} className={isActive ? 'text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]' : 'text-violet-300'} />
                   {tab.badge ? (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.5 rounded-full border-2 border-white animate-pulse">
+                    <span className="absolute -top-2 -right-3 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full border border-slate-900 animate-pulse shadow-sm">
                       {tab.badge}
                     </span>
                   ) : null}
                 </div>
-                <span className={`text-[9px] font-bold mt-1 transition-all duration-300 ${isActive ? 'opacity-100 text-violet-900' : 'opacity-0 translate-y-2'}`}>{tab.label}</span>
+                <span className={`text-[10px] font-extrabold tracking-tight whitespace-nowrap text-center ${isActive ? 'text-white' : 'text-slate-300'}`}>
+                  {tab.label}
+                </span>
               </button>
             )
           })}
