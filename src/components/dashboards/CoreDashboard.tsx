@@ -286,6 +286,90 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
       <div className="p-4 md:p-8 max-w-7xl mx-auto relative z-20 flex flex-col gap-8 animate-fade-in">
         {activeTab === "panel" && (
           <div className="space-y-8 flex flex-col">
+            
+            {/* EXPLORE NAVIGATION GRID (LIKE APP SCREENSHOT) */}
+            <div className="mb-4">
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="font-black text-2xl tracking-tight text-white">Explorar</h3>
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <Bell className="text-slate-300" size={24} />
+                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex gap-6 border-b border-white/10 mb-6 pb-2">
+                <button className="font-bold text-[10px] tracking-widest uppercase text-slate-400">Descubrir</button>
+                <button className="font-bold text-[10px] tracking-widest uppercase text-pink-500 border-b-2 border-pink-500 pb-2 -mb-[9px]">Actividades</button>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 auto-rows-[140px]">
+                {/* Card 1: Wide */}
+                <button onClick={() => setActiveTab('sales_landing')} className="col-span-2 bg-gradient-to-br from-rose-400 to-orange-400 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-lg border-none hover:scale-[1.02] transition-transform cursor-pointer">
+                  <Sparkles size={32} className="text-white mb-2" strokeWidth={1.5} />
+                  <div className="absolute bottom-5 left-5">
+                    <h4 className="text-white font-black text-lg">Presentación</h4>
+                    <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold">Landing Comercial</p>
+                  </div>
+                </button>
+
+                {/* Card 2: Square */}
+                <button onClick={() => setActiveTab('red')} className="bg-gradient-to-br from-fuchsia-500 to-purple-600 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-lg border-none hover:scale-[1.02] transition-transform cursor-pointer">
+                  <Store size={32} className="text-white mb-2" strokeWidth={1.5} />
+                  <div className="absolute bottom-5 left-5">
+                    <h4 className="text-white font-black text-lg">Red {KFS_BRAND.productAcronym}</h4>
+                    <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold">Comercios</p>
+                  </div>
+                </button>
+
+                {/* Card 3: Tall (row-span-2) */}
+                <button onClick={() => setActiveTab('soporte')} className="row-span-2 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-lg border-none hover:scale-[1.02] transition-transform cursor-pointer">
+                  <Bell size={32} className="text-white mb-2" strokeWidth={1.5} />
+                  <div className="absolute bottom-5 left-5">
+                    <h4 className="text-white font-black text-lg">Soporte</h4>
+                    <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold">Tickets & Ayuda</p>
+                  </div>
+                </button>
+
+                {/* Card 4: Tall (row-span-2) */}
+                <button onClick={() => setActiveTab('vista_dios')} className="row-span-2 bg-gradient-to-br from-indigo-400 to-blue-500 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-lg border-none hover:scale-[1.02] transition-transform cursor-pointer">
+                  <Eye size={32} className="text-white mb-2" strokeWidth={1.5} />
+                  <div className="absolute bottom-5 left-5">
+                    <h4 className="text-white font-black text-lg">Vista Dios</h4>
+                    <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold">Control Total</p>
+                  </div>
+                </button>
+
+                {/* Card 5: Square */}
+                <button onClick={() => setActiveTab('kyc')} className="bg-gradient-to-br from-blue-400 to-cyan-500 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-lg border-none hover:scale-[1.02] transition-transform cursor-pointer">
+                  <FileText size={32} className="text-white mb-2" strokeWidth={1.5} />
+                  <div className="absolute bottom-5 left-5">
+                    <h4 className="text-white font-black text-lg">Bóveda KYC</h4>
+                    <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold">Documentos</p>
+                  </div>
+                </button>
+                
+                {/* Card 6: Square */}
+                <button onClick={() => setActiveTab('tienda_oficial')} className="bg-gradient-to-br from-emerald-400 to-teal-500 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-lg border-none hover:scale-[1.02] transition-transform cursor-pointer">
+                  <Tag size={32} className="text-white mb-2" strokeWidth={1.5} />
+                  <div className="absolute bottom-5 left-5">
+                    <h4 className="text-white font-black text-lg">Tienda Oficial</h4>
+                    <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold">Marketplace</p>
+                  </div>
+                </button>
+
+                {/* Card 7: Wide */}
+                <button onClick={() => setActiveTab('descargas_apk')} className="col-span-2 bg-gradient-to-br from-slate-700 to-slate-900 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-lg border-none hover:scale-[1.02] transition-transform cursor-pointer">
+                  <Smartphone size={32} className="text-white mb-2" strokeWidth={1.5} />
+                  <div className="absolute bottom-5 left-5">
+                    <h4 className="text-white font-black text-lg">Descarga APK</h4>
+                    <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold">Instaladores</p>
+                  </div>
+                </button>
+              </div>
+            </div>
+
             {/* PDF Presentation Banner */}
             <div className="bg-gradient-to-r from-violet-900 to-indigo-900 rounded-[2rem] p-6 text-white shadow-xl shadow-indigo-950/20 border border-indigo-500/30 flex flex-col md:flex-row justify-between items-center gap-4 animate-fade-in">
               <div>
@@ -2397,25 +2481,15 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
       </div>
 
 
-      {/* FIXED BOTTOM NAVIGATION - HIGH CONTRAST VISIBLE GLASS CARDS */}
-      <div className="fixed bottom-0 inset-x-0 z-50 bg-slate-950/95 backdrop-blur-2xl border-t border-violet-500/30 shadow-[0_-10px_40px_rgba(0,0,0,0.8)] py-3 px-4">
-        <div className="max-w-7xl mx-auto flex items-center gap-3 overflow-x-auto no-scrollbar scroll-smooth py-1 px-2">
+      {/* FIXED BOTTOM NAVIGATION - SLEEK 5-ICON STATIC BAR (LIKE SCREENSHOT) */}
+      <div className="fixed bottom-0 inset-x-0 z-50 bg-[#1A1A1A] border-t border-white/5 py-4 px-6 pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.8)]">
+        <div className="max-w-md mx-auto flex items-center justify-between">
           {[
-            { id: "panel", icon: Activity, label: "Panel" },
-            { id: "sales_landing", icon: Sparkles, label: "Presentación" },
-            { id: "cupones", icon: Tag, label: "Cupones" },
-            { id: "red", icon: Store, label: `Red ${KFS_BRAND.productAcronym}`, badge: (db.riders?.filter((r: any) => r.status === "pending") || []).length },
-            { id: "soporte", icon: Bell, label: "Soporte", badge: (db.clients?.filter((c: any) => c.subscription?.status === 'pending_verification').length + (db.candidates?.filter((c: any) => c.registrationPaymentStatus === 'pending_approval').length || 0) + (db.unlockedContacts?.filter((u: any) => u.status === 'pending_approval').length || 0) + (db.supportTickets || []).filter((t: any) => t.status === 'open').length) },
-            { id: "auditoria", icon: Shield, label: "Auditoría" },
-            { id: "kyc", icon: FileText, label: "Bóveda KYC" },
-            { id: "nodos", icon: QrCode, label: `Nodos ${KFS_BRAND.productAcronym}` },
-            { id: "vista_dios", icon: Eye, label: "Vista Dios" },
-            { id: "axis_nitro_pos", icon: Zap, label: "POS Demo" },
-            { id: "db_manager", icon: Database, label: "Gestión DB" },
-            { id: "equipo", icon: Users, label: "Equipo" },
-            { id: "descargas_apk", icon: Smartphone, label: "Descarga APK" },
-            { id: "tienda_oficial", icon: Store, label: `${KFS_BRAND.modules.marketplace} ${KFS_BRAND.productAcronym}` },
-            { id: "logistica_riders", icon: Truck, label: "Logística Riders", badge: (db.transactions || []).filter((tx: any) => tx.shippingStatus === "pending" || (tx.requiresDelivery === true && tx.shippingStatus !== "dispatched")).length }
+            { id: "panel", icon: Activity, label: "Explorar" },
+            { id: "red", icon: Store, label: "Red", badge: (db.riders?.filter((r: any) => r.status === "pending") || []).length },
+            { id: "tienda_oficial", icon: Tag, label: "Tienda" },
+            { id: "soporte", icon: Bell, label: "Soporte", badge: (db.supportTickets || []).filter((t: any) => t.status === 'open').length },
+            { id: "equipo", icon: Users, label: "Perfil" }
           ].filter(tab => {
             if (currentUser.isTeamMember) {
               return currentUser.permissions?.includes(tab.id);
@@ -2428,23 +2502,21 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`relative flex flex-col items-center justify-center min-w-[85px] px-3.5 py-2.5 rounded-2xl cursor-pointer transition-all duration-300 border flex-shrink-0 ${
-                  isActive
-                    ? 'bg-gradient-to-b from-violet-600 to-indigo-700 border-violet-300 text-white shadow-[0_0_20px_rgba(139,92,246,0.6)] scale-105'
-                    : 'bg-violet-950/80 hover:bg-violet-900/90 border-violet-700/50 text-violet-200 hover:text-white shadow-md'
+                className={`relative flex flex-col items-center justify-center p-2 rounded-full cursor-pointer transition-all duration-300 border-none bg-transparent ${
+                  isActive ? 'text-pink-500 scale-110' : 'text-slate-500 hover:text-white'
                 }`}
               >
-                <div className="relative flex items-center justify-center mb-1">
-                  <Icon size={22} strokeWidth={isActive ? 2.5 : 2} className={isActive ? 'text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]' : 'text-violet-300'} />
+                <div className="relative">
+                  <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
                   {tab.badge ? (
-                    <span className="absolute -top-2 -right-3 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full border border-slate-900 animate-pulse shadow-sm">
+                    <span className="absolute -top-1 -right-2 bg-red-500 text-white text-[9px] font-black w-4 h-4 flex items-center justify-center rounded-full border-2 border-[#1A1A1A]">
                       {tab.badge}
                     </span>
                   ) : null}
+                  {isActive && (
+                    <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-1 h-1 bg-pink-500 rounded-full"></span>
+                  )}
                 </div>
-                <span className={`text-[10px] font-black tracking-tight whitespace-nowrap text-center block ${isActive ? 'text-white' : 'text-violet-200'}`}>
-                  {tab.label}
-                </span>
               </button>
             )
           })}
