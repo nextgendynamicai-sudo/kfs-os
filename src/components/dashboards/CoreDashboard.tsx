@@ -241,7 +241,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
   const totalDueños = useMemo(() => db.clients?.length || 0, [db.clients]);
   const totalPromotoras = useMemo(() => db.promotoras?.length || 0, [db.promotoras]);
-  const totalSetups = useMemo(() => db.promotoras.reduce((acc: number, p: any) => acc + (p.setups || 0), 0), [db.promotoras]);
+  const totalSetups = useMemo(() => db.promotoras?.reduce((acc: number, p: any) => acc + (p.setups || 0), 0) || 0, [db.promotoras]);
   
   const globalSalesUSD = useMemo(() => 
     db.clients?.reduce((acc: number, c: any) => acc + (c.salesUSD || 0), 0) || 0,
