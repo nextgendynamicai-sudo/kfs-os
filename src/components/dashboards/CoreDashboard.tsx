@@ -2323,9 +2323,10 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                     )}
                   </div>
                 </div>
-              </div>
             </div>
           </div>
+        )}
+
         {activeTab === "descargas_apk" && (
           <div className="space-y-8 flex flex-col animate-fade-in pb-20">
             <div className="bg-gradient-to-r from-slate-900 to-violet-950 rounded-[2rem] p-8 shadow-2xl text-white border border-violet-800 relative overflow-hidden">

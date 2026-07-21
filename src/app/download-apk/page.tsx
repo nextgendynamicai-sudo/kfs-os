@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Download, Smartphone, Chrome, ShieldCheck, ArrowRight, Share2, HelpCircle } from "lucide-react";
+import { Download, Smartphone, Compass, ShieldCheck, ArrowRight, Share2, HelpCircle } from "lucide-react";
 import { KreatekLogo } from "../../components/KreatekLogo";
 import { isSupabaseConfigured, supabase } from "../../context/supabase";
 import { KFS_BRAND } from "../../config/brandConfig";
@@ -70,7 +70,7 @@ export default function DownloadApkPage() {
           <div className="bg-white/5 border border-white/10 hover:border-violet-500/30 rounded-3xl p-6 flex flex-col justify-between space-y-6 transition-all duration-300 group">
             <div className="space-y-3">
               <div className="w-12 h-12 rounded-xl bg-violet-900/50 border border-violet-500/30 flex items-center justify-center text-violet-400 group-hover:scale-110 transition-transform">
-                <Chrome size={24} />
+                <Compass size={24} />
               </div>
               <h3 className="text-lg font-bold text-white">Instalar como PWA (Recomendado)</h3>
               <p className="text-xs text-slate-300 leading-relaxed">
