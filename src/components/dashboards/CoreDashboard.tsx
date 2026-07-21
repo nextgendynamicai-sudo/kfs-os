@@ -2326,6 +2326,68 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
               </div>
             </div>
           </div>
+        {activeTab === "descargas_apk" && (
+          <div className="space-y-8 flex flex-col animate-fade-in pb-20">
+            <div className="bg-gradient-to-r from-slate-900 to-violet-950 rounded-[2rem] p-8 shadow-2xl text-white border border-violet-800 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2"></div>
+              
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                <div>
+                  <h3 className="text-2xl font-black flex items-center gap-2 text-white">
+                    <Smartphone className="text-violet-400" /> Centro de Distribución APK & PWA
+                  </h3>
+                  <p className="text-sm text-violet-200 mt-1">Comparte y descarga las aplicaciones móviles de KFS-OS.</p>
+                </div>
+                <button
+                  onClick={() => {
+                    const shareUrl = `${window.location.origin}/download-apk`;
+                    navigator.clipboard.writeText(shareUrl);
+                    showToast("Enlace copiado al portapapeles.", "success");
+                  }}
+                  className="px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white text-xs font-black rounded-xl transition-all shadow-md active:scale-95 border-none cursor-pointer flex items-center gap-1.5"
+                >
+                  🔗 Copiar Enlace Público
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* QR Code de Descarga */}
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 flex flex-col items-center justify-center text-center space-y-4">
+                  <span className="text-violet-400 font-black uppercase tracking-widest text-xs">Acceso Móvil Rápido</span>
+                  <div className="bg-white p-4 rounded-2xl shadow-lg">
+                    <QRCodeSVG value={`${window.location.origin}/download-apk`} size={160} />
+                  </div>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    Escanea este código con cualquier teléfono celular para ir directo al portal de descarga del APK e instalación.
+                  </p>
+                </div>
+
+                {/* Accesos Especiales */}
+                <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-2xl p-6 space-y-6">
+                  <div>
+                    <h4 className="text-white font-bold text-sm flex items-center gap-2 mb-2">
+                      ⚡ Enlace Modo Dios (WebView / S25 Ultra)
+                    </h4>
+                    <p className="text-xs text-slate-300 leading-relaxed mb-3">
+                      Este enlace está pre-configurado para saltar los logins y abrir directamente tu panel de control maestro. Ideal para configurarlo dentro de tu APK del S25 Ultra.
+                    </p>
+                    <div className="flex gap-2 items-center bg-black/40 p-3 rounded-xl border border-white/5 font-mono text-[10px] text-violet-300 break-all select-all">
+                      {window.location.origin}/?mode=god
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="text-white font-bold text-sm flex items-center gap-2 mb-2">
+                      📲 Cómo Subir tu APK Directo a la Nube
+                    </h4>
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      Una vez que compiles tu APK en Android Studio, sube el archivo a tu Supabase Storage en el bucket <strong>kfs-assets</strong> con el nombre de archivo <strong>kfs-os.apk</strong>. La página de descargas lo servirá automáticamente como descarga directa.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
@@ -2346,6 +2408,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             { id: "axis_nitro_pos", icon: Zap, label: "POS Demo" },
             { id: "db_manager", icon: Database, label: "Gestión DB" },
             { id: "equipo", icon: Users, label: "Equipo" },
+            { id: "descargas_apk", icon: Smartphone, label: "Descarga APK" },
             { id: "tienda_oficial", icon: Store, label: `${KFS_BRAND.modules.marketplace} ${KFS_BRAND.productAcronym}` },
             { id: "logistica_riders", icon: Truck, label: "Logística Riders", badge: (db.transactions || []).filter((tx: any) => tx.shippingStatus === "pending" || (tx.requiresDelivery === true && tx.shippingStatus !== "dispatched")).length }
           ].filter(tab => {

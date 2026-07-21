@@ -151,6 +151,32 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
             {isSupabaseConfigured ? "☁️ CLOUD ACTIVE" : "☁️ MOCK ACTIVE"}
           </span>
 
+          {/* Compartir APK / App */}
+          <button
+            onClick={async () => {
+              const shareUrl = `${window.location.origin}/download-apk`;
+              if (navigator.share) {
+                try {
+                  await navigator.share({
+                    title: "KFS-OS APK",
+                    text: "Descarga la aplicación oficial de KFS-OS en tu dispositivo móvil",
+                    url: shareUrl
+                  });
+                  showToast("Enlace compartido con éxito", "success");
+                } catch (e) {
+                  // user cancelled or share failed
+                }
+              } else {
+                navigator.clipboard.writeText(shareUrl);
+                showToast("Enlace de descarga copiado al portapapeles.", "success");
+              }
+            }}
+            className="flex items-center justify-center p-2 rounded-xl border border-violet-500/30 hover:bg-violet-800 text-violet-300 hover:text-white transition-all cursor-pointer h-8 px-3 gap-1.5 bg-violet-950/40 text-xs font-black uppercase tracking-wider"
+            title="Compartir enlace de descarga de la aplicación móvil"
+          >
+            <span>🔗 Compartir App</span>
+          </button>
+
           {/* Theme Toggle Button */}
           <button
             onClick={toggleTheme}
