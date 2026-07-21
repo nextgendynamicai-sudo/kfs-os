@@ -139,5 +139,77 @@ export const fetchFromRelational = async () => {
   }
 };
 
-export const syncSingleTransaction = async (tx: any) => { if (!supabase) return; try { const payload = { id: tx.id, client_id: tx.clientId || null, customer_id: tx.customerId || null, amount_usd: tx.amount || 0, fee_collected_usd: 0.04, k_points_burned: 0, type: tx.type || 'standard', status: tx.status || 'completed', raw_data: cleanBase64(tx) }; await supabase.from('kfs_transactions').upsert([payload], { onConflict: 'id' }); console.log('[Supabase Write-Through] Tx synced'); } catch (e) { console.error(e); } };
-export const syncSingleClient = async (client: any) => { if (!supabase) return; try { const payload = { id: client.id, business_name: client.company || client.name || 'KFS Business', wallet_balance_usd: client.walletBalanceUSD || 0, k_points_balance: 0, raw_data: cleanBase64(client) }; await supabase.from('kfs_clients').upsert([payload], { onConflict: 'id' }); console.log('[Supabase Write-Through] Client synced'); } catch (e) { console.error(e); } };
+export const syncSingleTransaction = async (tx: any) => {
+  if (!supabase) return;
+  try {
+    const payload = {
+      id: tx.id || `tx_${Date.now()}`,
+      client_id: tx.clientId || null,
+      customer_id: tx.customerId || null,
+      amount_usd: tx.amountUSD || tx.amount || tx.subtotalUSD || 0,
+      fee_collected_usd: tx.kfsFeeUSD || tx.kfsFee || 0.04,
+      k_points_burned: tx.kPointsBurned || 0,
+      type: tx.type || 'sale',
+      status: tx.status || 'completed',
+      raw_data: cleanBase64(tx)
+    };
+    await supabase.from('kfs_transactions').upsert([payload], { onConflict: 'id' });
+    console.log('[Supabase Write-Through] Transacción espejo sincronizada con éxito:', tx.id);
+  } catch (e) {
+    console.warn('[Supabase Write-Through Bypass] Error en sync de transacción:', e);
+  }
+};
+
+export const syncSingleClient = async (client: any) => {
+  if (!supabase) return;
+  try {
+    const payload = {
+      id: client.id,
+      business_name: client.company || client.name || 'KFS Business',
+      wallet_balance_usd: client.walletBalanceUSD || client.wallet_balance || 0,
+      k_points_balance: client.kPoints || 0,
+      raw_data: cleanBase64(client)
+    };
+    await supabase.from('kfs_clients').upsert([payload], { onConflict: 'id' });
+    console.log('[Supabase Write-Through] Cliente espejo sincronizado con éxito:', client.id);
+  } catch (e) {
+    console.warn('[Supabase Write-Through Bypass] Error en sync de cliente:', e);
+  }
+};
+
+export const syncSingleCustomer = async (customer: any) => {
+  if (!supabase) return;
+  try {
+    const payload = {
+      id: customer.id,
+      phone: customer.phone || '',
+      name: customer.name || 'Customer',
+      wallet_balance_usd: customer.real_balance || customer.walletUSD || 0,
+      k_points_balance: customer.k_points_balance || customer.kPoints || 0,
+      raw_data: cleanBase64(customer)
+    };
+    await supabase.from('kfs_customers').upsert([payload], { onConflict: 'id' });
+    console.log('[Supabase Write-Through] Consumidor espejo sincronizado con éxito:', customer.id);
+  } catch (e) {
+    console.warn('[Supabase Write-Through Bypass] Error en sync de consumidor:', e);
+  }
+};
+
+export const syncSingleProduct = async (product: any) => {
+  if (!supabase) return;
+  try {
+    const payload = {
+      id: product.id,
+      client_id: product.clientId || null,
+      name: product.name || 'Producto',
+      price_usd: typeof product.price === 'number' ? product.price : parseFloat(product.price || 0),
+      image_url: product.photoUrl || product.image || '',
+      stock: product.stock || 0,
+      raw_data: cleanBase64(product)
+    };
+    await supabase.from('kfs_products').upsert([payload], { onConflict: 'id' });
+    console.log('[Supabase Write-Through] Producto espejo sincronizado con éxito:', product.id);
+  } catch (e) {
+    console.warn('[Supabase Write-Through Bypass] Error en sync de producto:', e);
+  }
+};

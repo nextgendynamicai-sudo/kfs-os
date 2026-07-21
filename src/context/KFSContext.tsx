@@ -6,7 +6,7 @@ import { supabase, isSupabaseConfigured, uploadAsset } from "./supabase";
 import { playScannerBeep, speakText, getStoreCoords, getCustomerCoords, playSyncChime } from "../lib/utils";
 import { useUI } from "./UIContext";
 import { getIndexedDBValue, setIndexedDBValue } from "../lib/indexedDB";
-import { syncToRelational, syncSingleTransaction, syncSingleClient } from "../lib/supabaseSync";
+import { syncToRelational, syncSingleTransaction, syncSingleClient, syncSingleCustomer, syncSingleProduct } from "../lib/supabaseSync";
 
 const VENEZUELAN_PRODUCTS_CATALOG: Record<string, { name: string; imgUrl: string; category: string; brand: string }> = {
   "7591006000016": { name: "Harina PAN Blanca (1kg)", imgUrl: "https://images.unsplash.com/photo-1574484284002-952d92456975?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
