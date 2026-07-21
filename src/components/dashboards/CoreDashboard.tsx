@@ -13,8 +13,6 @@ import { RegisterClientForm } from "../RegisterClientForm";
 import { RegisterPromotoraForm } from "../RegisterPromotoraForm";
 import { RegisterCustomerForm } from "../RegisterCustomerForm";
 import { RegisterRiderForm } from "../RegisterRiderForm";
-import { StorefrontCustomizer } from "../StorefrontCustomizer";
-import { OnboardingWizard } from "../OnboardingWizard";
 import { RecruitmentWidget } from "../RecruitmentWidget";
 import { ScannerView } from "../ScannerView";
 
@@ -39,11 +37,8 @@ import { ProfileAvatarEditor } from "../ProfileAvatarEditor";
 
 import { FlowExpressCatalog } from "../FlowExpressCatalog";
 import { B2BSelfOnboarding } from "../B2BSelfOnboarding";
-import { AxisNitroPOS } from "../AxisNitroPOS";
-import { DatabaseManagerWidget } from "../DatabaseManagerWidget";
 import { ReferralLinksWidget } from "../ReferralLinksWidget";
 import { KPointsIssuerWidget } from "../KPointsIssuerWidget";
-import { SalesLandingWidget } from "../SalesLandingWidget";
 import { useP2PTransfer } from "../../hooks/useP2PTransfer";
 import { compressImage, readAsBase64, playPremiumChime, playSyncChime, playCashDrawerSound, playScannerBeep, getStoreCoords, getCustomerCoords } from "../../lib/utils";
 import { AnimatedCounter } from "../AnimatedCounter";
@@ -57,6 +52,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import dynamic from 'next/dynamic';
 
 const LiveMap = dynamic(() => import("../LiveMap"), { ssr: false });
+const DatabaseManagerWidget = dynamic(() => import("../DatabaseManagerWidget").then(m => m.DatabaseManagerWidget), { ssr: false });
+const AxisNitroPOS = dynamic(() => import("../AxisNitroPOS").then(m => m.AxisNitroPOS), { ssr: false });
+const SalesLandingWidget = dynamic(() => import("../SalesLandingWidget").then(m => m.SalesLandingWidget), { ssr: false });
+const StorefrontCustomizer = dynamic(() => import("../StorefrontCustomizer").then(m => m.StorefrontCustomizer), { ssr: false });
+const OnboardingWizard = dynamic(() => import("../OnboardingWizard").then(m => m.OnboardingWizard), { ssr: false });
 
 // Theme and Global Constants
 const KREATEK_COLORS = {
@@ -239,18 +239,30 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
     };
   }, [showToast, formatUSD]);
 
-  const totalPromotoras = db.promotoras.length;
-  const totalSetups = db.promotoras.reduce((acc: number, p: any) => acc + (p.setups || 0), 0);
-  const totalDueños = db.clients.length;
-  const globalSalesUSD = db.clients.reduce((acc: number, c: any) => acc + (c.salesUSD || 0), 0);
-  const globalDebtUSD = db.clients.reduce((acc: number, c: any) => acc + (c.kfsFeesOwedUSD || 0), 0);
-  const totalKPoints = db.customers?.reduce((acc: number, c: any) => acc + (c.kPoints || 0), 0) || 0;
-  const usdFloat = db.customers?.reduce((acc: number, c: any) => acc + (c.walletUSD || 0), 0) || 0;
+  const totalDueños = useMemo(() => db.clients?.length || 0, [db.clients]);
+  const totalPromotoras = useMemo(() => db.promotoras?.length || 0, [db.promotoras]);
+  const totalSetups = useMemo(() => db.promotoras.reduce((acc: number, p: any) => acc + (p.setups || 0), 0), [db.promotoras]);
+  
+  const globalSalesUSD = useMemo(() => 
+    db.clients?.reduce((acc: number, c: any) => acc + (c.salesUSD || 0), 0) || 0,
+  [db.clients]);
+  
+  const globalDebtUSD = useMemo(() => 
+    db.clients?.reduce((acc: number, c: any) => acc + (c.kfsFeesOwedUSD || 0), 0) || 0,
+  [db.clients]);
+  
+  const totalKPoints = useMemo(() => 
+    db.customers?.reduce((acc: number, c: any) => acc + (c.kPoints || 0), 0) || 0,
+  [db.customers]);
+  
+  const usdFloat = useMemo(() => 
+    db.customers?.reduce((acc: number, c: any) => acc + (c.walletUSD || 0), 0) || 0,
+  [db.customers]);
 
-  const chartData = db.transactions.map((t: any, index: number) => ({
+  const chartData = useMemo(() => db.transactions?.map((t: any, index: number) => ({
     name: `TX-${index + 1}`,
-    kreatekFee: t.kreatekFeeEUR
-  })).slice(-15);
+    kreatekFee: t.kreatekFeeEUR || 0
+  })).slice(-15) || [], [db.transactions]);
 
   return (
     <div className="min-h-screen bg-slate-950 pb-28 font-sans text-white relative overflow-hidden">
