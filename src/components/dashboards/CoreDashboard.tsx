@@ -2397,9 +2397,9 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
       </div>
 
 
-      {/* FIXED BOTTOM NAVIGATION - PREMIUM GLASS CARDS */}
-      <div className="fixed bottom-0 inset-x-0 z-50 bg-slate-950/80 backdrop-blur-2xl border-t border-violet-500/20 shadow-[0_-10px_40px_rgba(15,23,42,0.6)] py-3 px-4">
-        <div className="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar scroll-smooth py-1 px-2">
+      {/* FIXED BOTTOM NAVIGATION - HIGH CONTRAST VISIBLE GLASS CARDS */}
+      <div className="fixed bottom-0 inset-x-0 z-50 bg-slate-950/95 backdrop-blur-2xl border-t border-violet-500/30 shadow-[0_-10px_40px_rgba(0,0,0,0.8)] py-3 px-4">
+        <div className="max-w-7xl mx-auto flex items-center gap-3 overflow-x-auto no-scrollbar scroll-smooth py-1 px-2">
           {[
             { id: "panel", icon: Activity, label: "Panel" },
             { id: "sales_landing", icon: Sparkles, label: "Presentación" },
@@ -2428,21 +2428,21 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`relative flex flex-col items-center justify-center min-w-[72px] px-3 py-2 rounded-2xl cursor-pointer transition-all duration-300 border backdrop-blur-md flex-shrink-0 ${
+                className={`relative flex flex-col items-center justify-center min-w-[85px] px-3.5 py-2.5 rounded-2xl cursor-pointer transition-all duration-300 border flex-shrink-0 ${
                   isActive
-                    ? 'bg-gradient-to-b from-violet-600/90 to-indigo-700/90 border-violet-400/50 text-white shadow-[0_4px_20px_rgba(124,58,237,0.4)] scale-105'
-                    : 'bg-white/10 hover:bg-white/15 border-white/10 text-slate-300 hover:text-white hover:border-violet-400/30'
+                    ? 'bg-gradient-to-b from-violet-600 to-indigo-700 border-violet-300 text-white shadow-[0_0_20px_rgba(139,92,246,0.6)] scale-105'
+                    : 'bg-violet-950/80 hover:bg-violet-900/90 border-violet-700/50 text-violet-200 hover:text-white shadow-md'
                 }`}
               >
                 <div className="relative flex items-center justify-center mb-1">
-                  <Icon size={20} strokeWidth={isActive ? 2.5 : 2} className={isActive ? 'text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.6)]' : 'text-violet-300'} />
+                  <Icon size={22} strokeWidth={isActive ? 2.5 : 2} className={isActive ? 'text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]' : 'text-violet-300'} />
                   {tab.badge ? (
                     <span className="absolute -top-2 -right-3 bg-red-500 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full border border-slate-900 animate-pulse shadow-sm">
                       {tab.badge}
                     </span>
                   ) : null}
                 </div>
-                <span className={`text-[10px] font-extrabold tracking-tight whitespace-nowrap text-center ${isActive ? 'text-white' : 'text-slate-300'}`}>
+                <span className={`text-[10px] font-black tracking-tight whitespace-nowrap text-center block ${isActive ? 'text-white' : 'text-violet-200'}`}>
                   {tab.label}
                 </span>
               </button>
