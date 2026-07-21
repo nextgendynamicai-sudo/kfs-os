@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { X, Store, User, Mail, Phone, Lock, FileText, ChevronRight } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
+import { ModalPortal } from "./ModalPortal";
 
 interface RegistrationModalProps {
   isOpen: boolean;
@@ -45,7 +46,8 @@ export function RegistrationModal({ isOpen, onClose, offerType }: RegistrationMo
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <ModalPortal>
+      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div 
         className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" 
         onClick={onClose}
@@ -160,6 +162,6 @@ export function RegistrationModal({ isOpen, onClose, offerType }: RegistrationMo
           </p>
         </form>
       </div>
-    </div>
+    </ModalPortal>
   );
 }

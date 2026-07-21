@@ -3,9 +3,10 @@
 import { KFS_BRAND } from "../config/brandConfig";
 import React, { createContext, useContext, useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { supabase, isSupabaseConfigured, uploadAsset } from "./supabase";
-import { playScannerBeep, speakText, getStoreCoords, getCustomerCoords, playSyncChime, comparePasswordSecure, hashPasswordSecure } from "../lib/utils";
+import { playScannerBeep, speakText, getStoreCoords, getCustomerCoords, playSyncChime } from "../lib/utils";
+import { useUI } from "./UIContext";
 import { getIndexedDBValue, setIndexedDBValue } from "../lib/indexedDB";
-import { syncToRelational } from "../lib/supabaseSync";
+import { syncToRelational, syncSingleTransaction, syncSingleClient } from "../lib/supabaseSync";
 
 const VENEZUELAN_PRODUCTS_CATALOG: Record<string, { name: string; imgUrl: string; category: string; brand: string }> = {
   "7591006000016": { name: "Harina PAN Blanca (1kg)", imgUrl: "https://images.unsplash.com/photo-1574484284002-952d92456975?w=500&auto=format&fit=crop&q=60", category: "Alimentos", brand: "Alimentos Polar" },
@@ -317,7 +318,7 @@ interface KFSContextType {
   paySubscription: (clientId: string, reference: string) => void;
   approveSubscription: (clientId: string) => void;
   finishOnboarding: (clientId: string, kycDocBase64?: string) => void;
-  hashPassword: (password: string) => string;
+  hashPassword: (password: string) => Promise<string>;
   logAction: (actor: string, action: string, details: string) => void;
   createTicket: (clientId: string, subject: string, description: string) => void;
   replyTicket: (ticketId: string, author: string, message: string) => void;
@@ -682,14 +683,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   if (dbError) {
     throw dbError; // Caught by ErrorBoundary
   }
-  const [view, setViewInternal] = useState("landing"); 
-  
-  const setView = (newView: string) => {
-    setViewInternal(newView);
-    if (typeof window !== "undefined" && window.history) {
-      window.history.pushState({ view: newView }, "", `#${newView}`);
-    }
-  };
+  const { view, setView, toast, showToast, networkState, setNetworkState, ghostTrapLocked, setGhostTrapLocked } = useUI();
 
   const [currentUser, setCurrentUser] = useState<any>(null);
   const currentUserRef = useRef(currentUser);
@@ -722,15 +716,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       showToast("Retornando a panel Core de Arquitecto", "success");
     }
   };
-  const [toast, setToast] = useState({ show: false, message: "", type: "success" });
   const [rates, setRates] = useState(MOCK_BCV_RATES);
   const updateBcvRates = (usd: number, eur: number) => {
     setRates({ USD: usd, EUR: eur, isWeekend: rates.isWeekend });
     showToast("Tasa BCV global actualizada con éxito.", "success");
   };
   const [db, setDb] = useState<any>(initialDB);
-  const [networkState, setNetworkState] = useState<"online" | "mesh" | "offline">("online");
-  const [ghostTrapLocked, setGhostTrapLocked] = useState(false);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
 
   const ghostTrapActive = useRef(true);
@@ -1394,20 +1385,6 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     }
   }, [db, isClient, networkState, currentUser, isDataLoaded]);
 
-  const showToast = (message: string, type: "success" | "error" | "warning" = "success") => {
-    setToast({ show: true, message, type });
-    setTimeout(() => setToast({ show: false, message: "", type: "success" }), 3000);
-    
-    // Native Push Notification Support
-    if ("Notification" in window && Notification.permission === "granted" && type === "success") {
-      try {
-        new Notification(`${KFS_BRAND.productAcronym} OS`, { body: message, icon: "/kfs-logo.png" });
-      } catch (e) {
-        console.warn("Native notification failed", e);
-      }
-    }
-  };
-
   const formatUSD = (val: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(val);
   const formatEUR = (val: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(val);
 
@@ -1525,10 +1502,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       if (error) {
         // Fallback a base de datos local JSON (Transición)
         let foundUser = null;
-        const hashedPass = hashPassword(safePass);
+        const hashedPass = await hashPassword(safePass);
         
         const matchesPass = (userPass: string) => {
-          return userPass === safePass || userPass === hashedPass || comparePasswordSecure(safePass, userPass);
+          return userPass === safePass || userPass === hashedPass;
         };
 
         if (role === "promotora") foundUser = db.promotoras.find((p: any) => p.email === safeEmail && matchesPass(p.password));
@@ -1594,8 +1571,18 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const hashPassword = (password: string) => {
-    return hashPasswordSecure(password);
+  const hashPassword = async (password: string) => {
+    try {
+      const res = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      });
+      const data = await res.json();
+      return data.hash || "";
+    } catch {
+      return "";
+    }
   };
 
   const logAction = (actor: string, action: string, details: string) => {
@@ -1964,7 +1951,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     const newCustomer = {
       id: `cust_${Date.now()}`,
       phone,
-      password: hashPassword(password),
+      password: await hashPassword(password),
       name,
       real_balance: 0,
       k_point_cash_balance: 0, // [NEW] White Paper: Dinero Pro
@@ -2113,7 +2100,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     const newClient = {
       ...clientData,
       avatar: avatarUrl,
-      password: hashPassword(clientData.password),
+      password: await hashPassword(clientData.password),
       id: `c${Date.now()}`,
       salesUSD: 0,
       promotoraId,
@@ -2153,7 +2140,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const registerCommerceWithOffer = async (clientData: any, offerType: "demo" | "pionero") => {
     const newClient = {
       ...clientData,
-      password: hashPassword(clientData.password),
+      password: await hashPassword(clientData.password),
       id: `c${Date.now()}`,
       salesUSD: 0,
       promotoraId: "arquitecto",
@@ -2346,7 +2333,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       ...clientData, 
       auth_user_id: authUserId,
       avatar: avatarUrl,
-      password: hashPassword(clientData.password),
+      password: await hashPassword(clientData.password),
       id: `c${Date.now()}`, 
       salesUSD: 0, 
       promotoraId, 
@@ -2404,6 +2391,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       };
     });
 
+    // Write-Through Cache
+    syncSingleClient(newClient);
+
     showToast("Setup de Cliente completado con éxito. Bono de Instalación ($37.50) liquidado a la Promotora.");
     if (view !== "promotora") setView("login");
   };
@@ -2433,7 +2423,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     const newPromo = { 
       ...promoData, 
       avatar: avatarUrl,
-      password: hashPassword(promoData.password), 
+      password: await hashPassword(promoData.password), 
       id: `p${Date.now()}`, 
       setups: 0, 
       earningsEUR: 0, 
@@ -3167,6 +3157,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         console.warn("[Sincro-Shield] Proxy local desconectado. Factura fiscal en cola virtual.", err);
       });
     }
+    
+    // Write-Through Cache
+    syncSingleTransaction(transactionObj);
     
     return transactionObj;
   };
@@ -4164,7 +4157,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
     const newRider = {
       ...riderData,
-      password: hashPassword(riderData.password),
+      password: await hashPassword(riderData.password),
       id: `rider_${Date.now()}`,
       status: "pending",
       associatedBusinesses: [],

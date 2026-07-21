@@ -6,6 +6,7 @@ import React, { useState, useEffect } from "react";
 import { useKFS } from "../context/KFSContext";
 import { playCashDrawerSound } from "../lib/utils";
 import { motion } from "framer-motion";
+import { ModalPortal } from "./ModalPortal";
 
 export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap, showToast, currentUser }: any) => {
   const [isPrinting, setIsPrinting] = useState(true);
@@ -40,7 +41,8 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
   };
 
   return (
-    <div className="fixed inset-0 bg-violet-950/60 backdrop-blur-xl z-[99999] flex items-center justify-center p-4 animate-fade-in">
+    <ModalPortal>
+      <div className="fixed inset-0 bg-violet-950/60 backdrop-blur-xl z-[99999] flex items-center justify-center p-4 animate-fade-in">
       <motion.div 
         initial={{ y: 100, opacity: 0, scale: 0.9 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
@@ -198,5 +200,6 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
         </div>
       </motion.div>
     </div>
+    </ModalPortal>
   );
 };

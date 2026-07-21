@@ -4,6 +4,7 @@ import { X, Upload, DollarSign, CreditCard, Camera } from 'lucide-react';
 import { compressImage } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useKFS } from '../context/KFSContext';
+import { ModalPortal } from './ModalPortal';
 
 export const TopUpModal = ({ isOpen, onClose, amount: initialAmount, onSubmit, userType }: any) => {
   const { showToast } = useKFS() as any;
@@ -46,7 +47,8 @@ export const TopUpModal = ({ isOpen, onClose, amount: initialAmount, onSubmit, u
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
+    <ModalPortal>
+      <AnimatePresence>
       <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[99999] bg-violet-950/60 backdrop-blur-md flex items-center justify-center p-4">
         <motion.div initial={{ scale: 0.95, y: 20 }} animate={{ scale: 1, y: 0 }} className="bg-white text-violet-950 w-full max-w-md rounded-3xl shadow-2xl overflow-hidden border border-violet-100 flex flex-col max-h-[90vh]">
           <div className="flex justify-between items-center p-6 border-b border-violet-100 bg-violet-50 shrink-0">
@@ -109,6 +111,7 @@ export const TopUpModal = ({ isOpen, onClose, amount: initialAmount, onSubmit, u
           </div>
         </motion.div>
       </motion.div>
-    </AnimatePresence>
+      </AnimatePresence>
+    </ModalPortal>
   );
 };

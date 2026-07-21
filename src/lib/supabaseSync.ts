@@ -138,3 +138,6 @@ export const fetchFromRelational = async () => {
     return null;
   }
 };
+
+export const syncSingleTransaction = async (tx: any) => { if (!supabase) return; try { const payload = { id: tx.id, client_id: tx.clientId || null, customer_id: tx.customerId || null, amount_usd: tx.amount || 0, fee_collected_usd: 0.04, k_points_burned: 0, type: tx.type || standard, status: tx.status || completed, raw_data: cleanBase64(tx) }; await supabase.from(kfs_transactions).upsert([payload], { onConflict: id }); console.log([Supabase Write-Through] Tx synced); } catch (e) { console.error(e); } };
+export const syncSingleClient = async (client: any) => { if (!supabase) return; try { const payload = { id: client.id, business_name: client.company || client.name || KFS Business, wallet_balance_usd: client.walletBalanceUSD || 0, k_points_balance: 0, raw_data: cleanBase64(client) }; await supabase.from(kfs_clients).upsert([payload], { onConflict: id }); console.log([Supabase Write-Through] Client synced); } catch (e) { console.error(e); } };

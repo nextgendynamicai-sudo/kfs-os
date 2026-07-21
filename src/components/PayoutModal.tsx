@@ -4,6 +4,7 @@ import { KFS_BRAND } from "../config/brandConfig";
 import React, { useState } from "react";
 import { DollarSign, Landmark, X, CheckCircle, Shield } from "lucide-react";
 import { motion } from "framer-motion";
+import { ModalPortal } from "./ModalPortal";
 
 export const PayoutModal = ({ maxAmount, currency, onConfirm, onCancel, formatMoney }: any) => {
   const [amount, setAmount] = useState<string>("");
@@ -17,7 +18,8 @@ export const PayoutModal = ({ maxAmount, currency, onConfirm, onCancel, formatMo
   const isAmountValid = parsedAmount > 0 && totalToDeduct <= maxAmount;
 
   return (
-    <div className="fixed inset-0 bg-violet-950/60 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-fade-in">
+    <ModalPortal>
+      <div className="fixed inset-0 bg-violet-950/60 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-fade-in">
       <motion.div 
         initial={{ y: 50, opacity: 0, scale: 0.95 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
@@ -111,5 +113,6 @@ export const PayoutModal = ({ maxAmount, currency, onConfirm, onCancel, formatMo
         </div>
       </motion.div>
     </div>
+    </ModalPortal>
   );
 };

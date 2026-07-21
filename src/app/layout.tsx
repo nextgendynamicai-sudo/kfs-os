@@ -3,6 +3,7 @@ import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { KFSProvider } from "../context/KFSContext";
+import { UIProvider } from "../context/UIContext";
 import { PresetProvider } from "../context/PresetContext";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 
@@ -80,11 +81,13 @@ export default function RootLayout({
       </head>
       <body className="min-h-full flex flex-col">
         <ErrorBoundary>
-          <KFSProvider>
-            <PresetProvider>
-              {children}
-            </PresetProvider>
-          </KFSProvider>
+          <UIProvider>
+            <KFSProvider>
+              <PresetProvider>
+                {children}
+              </PresetProvider>
+            </KFSProvider>
+          </UIProvider>
         </ErrorBoundary>
       </body>
     </html>
