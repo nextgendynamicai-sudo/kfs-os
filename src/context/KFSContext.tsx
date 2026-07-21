@@ -2552,8 +2552,17 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast("Promotora reasignada con éxito al comercio.");
   };
 
-  const addGlobalProduct = (product: any) => {
-    const globalProd = { ...product, id: `global${Date.now()}`, clientId: "global", stock: 9999 };
+  const addGlobalProduct = async (product: any) => {
+    let finalImageUrl = product.image;
+    if (finalImageUrl && finalImageUrl.startsWith("data:")) {
+      try {
+        const { uploadAsset } = await import('./supabase');
+        finalImageUrl = await uploadAsset(`products/global_${Date.now()}.png`, finalImageUrl);
+      } catch (e) {
+        // Fallback to base64
+      }
+    }
+    const globalProd = { ...product, image: finalImageUrl, id: `global${Date.now()}`, clientId: "global", stock: 9999 };
     setDb((prev: any) => ({ ...prev, products: [...prev.products, globalProd] }));
     showToast(`Producto Global ${KFS_BRAND.productAcronym} inyectado a la red.`);
   };
@@ -2735,9 +2744,18 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   };
 
 
-  const addProduct = (productData: any) => {
-    setDb((prev: any) => ({ ...prev, products: [...prev.products, { ...productData, id: `prod${Date.now()}` }] }));
-    showToast("Producto sincronizado con {KFS_BRAND.modules.marketplace}.");
+  const addProduct = async (productData: any) => {
+    let finalImageUrl = productData.image;
+    if (finalImageUrl && finalImageUrl.startsWith("data:")) {
+      try {
+        const { uploadAsset } = await import('./supabase');
+        finalImageUrl = await uploadAsset(`products/prod_${Date.now()}.png`, finalImageUrl);
+      } catch (e) {
+        // Fallback to base64
+      }
+    }
+    setDb((prev: any) => ({ ...prev, products: [...prev.products, { ...productData, image: finalImageUrl, id: `prod${Date.now()}` }] }));
+    showToast(`Producto sincronizado con ${KFS_BRAND.modules.marketplace}.`);
   };
 
   const addExpense = (expenseData: any) => {
