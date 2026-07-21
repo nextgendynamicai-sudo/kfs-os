@@ -3412,10 +3412,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast("Orden rechazada y el inventario fue restablecido.", "success");
   };
 
-  const dispatchOrder = (txId: string) => {
+  const dispatchOrder = (txId: string, riderId?: string) => {
     setDb((prev: any) => {
       const updatedTxs = prev.transactions.map((tx: any) => 
-        tx.id === txId ? { ...tx, shippingStatus: 'dispatched' } : tx
+        tx.id === txId ? { ...tx, shippingStatus: 'dispatched', riderId: riderId || tx.riderId } : tx
       );
       return { ...prev, transactions: updatedTxs };
     });

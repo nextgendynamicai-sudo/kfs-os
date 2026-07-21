@@ -104,7 +104,7 @@ export function FlowExpressCatalog({ currentUser, formatUSD }: FlowExpressCatalo
 
   const handlePurchase = (product: ProductItem) => {
     if (!currentUser) {
-      alert("Debes iniciar sesión para adquirir productos.");
+      window.location.href = '/?role=registerCustomer';
       return;
     }
 

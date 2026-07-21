@@ -1881,7 +1881,81 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
           </div>
         )}
 
-        {activeTab === "tienda_oficial" && (
+        
+          {activeTab === "logistica_riders" && (() => {
+            const pendingOrders = (db.transactions || []).filter((tx: any) => tx.shippingStatus === "pending" || (tx.requiresDelivery === true && tx.shippingStatus !== "dispatched" && tx.shippingStatus !== "delivered"));
+            const { dispatchOrder } = useKFS() as any;
+            
+            return (
+            <div className="space-y-6 animate-fade-in">
+              <div className="flex justify-between items-center bg-violet-950/30 p-6 rounded-[2rem] border border-violet-500/20 backdrop-blur-md">
+                <div>
+                  <h3 className="text-2xl font-black text-white flex items-center gap-3">
+                    <Truck className="text-violet-400" size={32} /> Central de Logística (Nitro Riders)
+                  </h3>
+                  <p className="text-violet-200 mt-2">Asignación de despachos y gestión de flota en tiempo real.</p>
+                </div>
+                <div className="bg-violet-900/50 p-4 rounded-xl text-center border border-violet-500/30">
+                  <span className="block text-3xl font-black text-violet-300">
+                    {pendingOrders.length}
+                  </span>
+                  <span className="text-[10px] uppercase font-bold text-violet-400 tracking-wider">Pendientes</span>
+                </div>
+              </div>
+
+              <div className="bg-[#0f041a] rounded-[2rem] p-6 md:p-8 border border-white/5 shadow-2xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-violet-600/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2"></div>
+                <h4 className="font-bold text-lg text-white mb-6 flex items-center gap-2">
+                  <Package className="text-violet-500" /> Órdenes por Despachar
+                </h4>
+
+                <div className="space-y-4 relative z-10">
+                  {pendingOrders.map((tx: any) => (
+                    <div key={tx.id} className="bg-white/5 border border-white/10 p-5 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-4 hover:bg-white/10 transition-colors">
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-sm text-violet-300 font-bold">{tx.id.slice(0, 8).toUpperCase()}</span>
+                          <span className="bg-amber-500/20 text-amber-300 text-[10px] px-2 py-0.5 rounded-full font-bold border border-amber-500/30">PENDIENTE DE ENVÍO</span>
+                        </div>
+                        <span className="text-white font-bold">{tx.buyerName || 'Cliente B2B'} - {formatUSD(tx.amount || 0)}</span>
+                        <span className="text-xs text-slate-400 flex items-center gap-1"><MapPin size={12} /> {tx.shippingAddress || 'Dirección de envío no especificada'}</span>
+                      </div>
+                      
+                      <div className="flex flex-col md:flex-row gap-3 items-center">
+                        <select 
+                          className="bg-black/40 border border-violet-500/30 text-white text-sm rounded-xl px-4 py-2 focus:outline-none focus:border-violet-500 min-w-[200px]"
+                          onChange={(e) => {
+                            if (!e.target.value) return;
+                            if (window.confirm("¿Seguro que deseas asignar y despachar esta orden?")) {
+                                dispatchOrder(tx.id, e.target.value);
+                            } else {
+                                e.target.value = "";
+                            }
+                          }}
+                          defaultValue=""
+                        >
+                          <option value="" disabled>Asignar a Nitro Rider...</option>
+                          {(db.riders || []).filter((r: any) => r.status === "approved").map((rider: any) => (
+                            <option key={rider.id} value={rider.id}>🚀 {rider.name} ({rider.plate || 'Moto'})</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  ))}
+                  {pendingOrders.length === 0 && (
+                    <div className="text-center py-12 border-2 border-dashed border-white/10 rounded-2xl">
+                      <CheckCircle className="mx-auto text-emerald-500 mb-3 opacity-50" size={48} />
+                      <p className="text-slate-400 font-bold">No hay despachos pendientes.</p>
+                      <p className="text-xs text-slate-500 mt-1">Tu flota está al día.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+            );
+          })()}
+
+          {activeTab === "tienda_oficial" && (
           <div className="space-y-8 flex flex-col animate-fade-in relative">
               <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 rounded-[2rem] p-8 text-center flex flex-col items-center">
               <div className="w-24 h-24 bg-gradient-to-tr from-violet-600 to-violet-400 rounded-[2rem] shadow-lg shadow-violet-600/30 flex items-center justify-center mb-6">
@@ -2140,7 +2214,8 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                           { id: "axis_nitro_pos", label: "POS Demo" },
                           { id: "db_manager", label: "Gestión DB" },
                           { id: "equipo", label: "Gestión de Equipo" },
-                          { id: "tienda_oficial", label: "Tienda Oficial" }
+                          { id: "tienda_oficial", label: "Tienda Oficial" },
+                          { id: "logistica_riders", label: "Logística Riders" }
                         ].map(perm => (
                           <label key={perm.id} className="flex items-center gap-2 text-[11px] text-slate-300 hover:text-white cursor-pointer select-none">
                             <input
@@ -2271,7 +2346,8 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             { id: "axis_nitro_pos", icon: Zap, label: "POS Demo" },
             { id: "db_manager", icon: Database, label: "Gestión DB" },
             { id: "equipo", icon: Users, label: "Equipo" },
-            { id: "tienda_oficial", icon: Store, label: `${KFS_BRAND.modules.marketplace} ${KFS_BRAND.productAcronym}` }
+            { id: "tienda_oficial", icon: Store, label: `${KFS_BRAND.modules.marketplace} ${KFS_BRAND.productAcronym}` },
+            { id: "logistica_riders", icon: Truck, label: "Logística Riders", badge: (db.transactions || []).filter((tx: any) => tx.shippingStatus === "pending" || (tx.requiresDelivery === true && tx.shippingStatus !== "dispatched")).length }
           ].filter(tab => {
             if (currentUser.isTeamMember) {
               return currentUser.permissions?.includes(tab.id);
