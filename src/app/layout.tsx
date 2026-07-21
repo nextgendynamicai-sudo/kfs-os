@@ -6,6 +6,7 @@ import { KFSProvider } from "../context/KFSContext";
 import { UIProvider } from "../context/UIContext";
 import { PresetProvider } from "../context/PresetContext";
 import { ErrorBoundary } from "../components/ErrorBoundary";
+import { PwaUpdater } from "../components/PwaUpdater";
 
 const jakartaSans = Plus_Jakarta_Sans({
   variable: "--font-jakarta-sans",
@@ -53,9 +54,6 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{
           __html: `
             try {
-              if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js').catch(err => console.error('SW Failed:', err));
-              }
               if (typeof window !== 'undefined') {
                 if (localStorage.getItem("theme") === "dark" || (!("theme" in localStorage) && window.matchMedia("(prefers-color-scheme: dark)").matches)) {
                   document.documentElement.classList.add("dark");
@@ -84,6 +82,7 @@ export default function RootLayout({
           <UIProvider>
             <KFSProvider>
               <PresetProvider>
+                <PwaUpdater />
                 {children}
               </PresetProvider>
             </KFSProvider>
