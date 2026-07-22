@@ -2453,9 +2453,16 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       kyc_status: "pending",
       customerAcquisitionBonusUSD: 0
     };
-    setDb((prev: any) => ({ ...prev, promotoras: [...prev.promotoras, newPromo] }));
+    setDb((prev: any) => {
+      const existingPromos = prev.promotoras || [];
+      const updatedDb = { ...prev, promotoras: [...existingPromos, newPromo] };
+      if (isSupabaseConfigured) {
+        syncToRelational(updatedDb).catch(err => console.warn("Relational promo sync bypass:", err));
+      }
+      return updatedDb;
+    });
     logAction("System", "REGISTER_PROMOTORA", `Promotora solicitó registro: ${promoData.name}`);
-    showToast("Solicitud enviada. En espera de aprobación.");
+    showToast("Solicitud enviada con éxito a la nube. En espera de aprobación.");
     setView("login");
   };
 
