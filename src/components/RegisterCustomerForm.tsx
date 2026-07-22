@@ -32,7 +32,7 @@ export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCanc
   const isNameValid = name.trim().length >= 3;
   const isPasswordValid = password.length >= 6;
   const isAddressValid = kycAddress.trim().length >= 5;
-  const isFormValid = isNameValid && isPhoneValid && !!kycPhoto && !!kycCedula && isPasswordValid && isAddressValid;
+  const isFormValid = isNameValid && isPhoneValid && isPasswordValid && isAddressValid;
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>, setter: any) => {
     const file = e.target.files?.[0];

@@ -32,7 +32,7 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
   const isCompanyValid = formData.company.trim().length >= 3;
   const isAddressValid = formData.address.trim().length >= 5;
   const isPasswordValid = formData.password.length >= 6;
-  const isFormValid = isNameValid && isIdCardValid && isCompanyValid && isAddressValid && isPhoneValid && isEmailValid && isPasswordValid && !!avatar && !!kycCedula && acceptedToS;
+  const isFormValid = isNameValid && isIdCardValid && isCompanyValid && isAddressValid && isPhoneValid && isEmailValid && isPasswordValid && acceptedToS;
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
