@@ -22,7 +22,7 @@ import {
   Camera, Upload, ShoppingCart, TrendingUp, Users, DollarSign,
   LogOut, Shield, Package, Activity, Search, QrCode, Lock,
   ChevronRight, CheckCircle, CreditCard, Bell, X, Info,
-  Store, Star, ChevronLeft, Clock, UserCheck, Palette,
+  Store, Star, ChevronLeft, Clock, UserCheck, Palette, RefreshCw, Send,
   Zap, BookOpen, Printer, Smartphone, Settings, DownloadCloud, Terminal, Truck,
   Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database, Trash2, Sparkles, Tag
 } from "lucide-react";
@@ -406,6 +406,167 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             </div>
 
             <ReferralLinksWidget userId={currentUser.id} showToast={showToast} />
+
+            {/* Centro de Mando Telemétrico en Vivo (Control Directo del Ecosistema) */}
+            <div className="bg-slate-900 border border-violet-500/30 rounded-[2.5rem] p-6 sm:p-8 shadow-2xl text-white relative overflow-hidden animate-fade-in">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-6 border-b border-white/10">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="relative flex h-3 w-3">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                    </span>
+                    <h3 className="text-xl font-black text-white tracking-tight flex items-center gap-2">
+                      <Activity className="text-emerald-400" size={22} />
+                      Centro de Mando Telemétrico KAN CGOS
+                    </h3>
+                  </div>
+                  <p className="text-xs text-slate-400 font-bold mt-1">Sincronización en tiempo real con Supabase • Tasa Oficial BCV: <strong className="text-emerald-400 font-mono">Bs. 36,45 / USD</strong></p>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  <button 
+                    onClick={() => {
+                      showToast("Sincronizando todo el ecosistema con Supabase...", "success");
+                      window.location.reload();
+                    }}
+                    className="px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-black text-xs transition-all shadow-lg shadow-violet-600/30 border-none cursor-pointer flex items-center gap-1.5"
+                  >
+                    <RefreshCw size={14} className="animate-spin" /> Sincronizar Nube
+                  </button>
+                  <button 
+                    onClick={() => setActiveTab("db_manager")}
+                    className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-all border border-slate-700 cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Database size={14} /> Gestor de BD
+                  </button>
+                </div>
+              </div>
+
+              {/* Grid 3 Columns: Solicitudes Pendientes, Actividad Reciente y Accesos Directos */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                {/* Panel 1: Solicitudes de Promotoras Pendientes */}
+                <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between">
+                  <div>
+                    <div className="flex justify-between items-center mb-3">
+                      <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+                        <Users size={14} className="text-violet-400" /> Promotoras por Aprobar
+                      </h4>
+                      <span className="text-[10px] font-black bg-violet-500/20 text-violet-300 px-2 py-0.5 rounded-full border border-violet-500/30">
+                        {(db.promotoras || []).filter((p: any) => p.status === 'pending').length} pendientes
+                      </span>
+                    </div>
+
+                    {(db.promotoras || []).filter((p: any) => p.status === 'pending').length > 0 ? (
+                      <div className="space-y-2 max-h-44 overflow-y-auto pr-1">
+                        {(db.promotoras || []).filter((p: any) => p.status === 'pending').map((promo: any) => (
+                          <div key={promo.id} className="bg-slate-900 border border-slate-800 rounded-xl p-3 flex justify-between items-center">
+                            <div>
+                              <p className="text-xs font-bold text-white">{promo.name}</p>
+                              <p className="text-[10px] text-slate-400 font-mono">{promo.email}</p>
+                            </div>
+                            <button 
+                              onClick={() => approvePromotora(promo.id)}
+                              className="bg-emerald-500 hover:bg-emerald-600 text-white px-2.5 py-1 rounded-lg text-[10px] font-black border-none cursor-pointer transition-colors"
+                            >
+                              ✓ Aprobar
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="py-6 text-center text-slate-500 text-xs font-bold bg-slate-900/50 rounded-xl border border-slate-800/50">
+                        ✓ Todas las promotoras han sido aprobadas
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Panel 2: Feed de Últimas Ventas en Tiempo Real */}
+                <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between">
+                  <div>
+                    <div className="flex justify-between items-center mb-3">
+                      <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+                        <TrendingUp size={14} className="text-emerald-400" /> Facturación Reciente
+                      </h4>
+                      <span className="text-[10px] font-mono text-emerald-400 font-bold">
+                        {(db.transactions || []).length} Ventas
+                      </span>
+                    </div>
+
+                    {(db.transactions || []).length > 0 ? (
+                      <div className="space-y-2 max-h-44 overflow-y-auto pr-1">
+                        {(db.transactions || []).slice(-3).reverse().map((tx: any, idx: number) => (
+                          <div key={tx.id || idx} className="bg-slate-900 border border-slate-800 rounded-xl p-3 flex justify-between items-center">
+                            <div>
+                              <p className="text-xs font-bold text-white">{tx.productName || tx.description || "Venta en Caja"}</p>
+                              <p className="text-[10px] text-slate-400 font-mono">{new Date(tx.timestamp || Date.now()).toLocaleTimeString()}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-xs font-black text-emerald-400">{formatUSD(tx.amountUSD || tx.amount || 0)}</p>
+                              <p className="text-[9px] text-slate-400 font-mono">≈ Bs. {((tx.amountUSD || tx.amount || 0) * 36.45).toFixed(2)}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="py-6 text-center text-slate-500 text-xs font-bold bg-slate-900/50 rounded-xl border border-slate-800/50">
+                        Esperando primeras transacciones en vivo...
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                {/* Panel 3: Acceso Inmediato a Controles Clave */}
+                <div className="bg-slate-950/80 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between">
+                  <div>
+                    <h4 className="text-xs font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5 mb-3">
+                      <Zap size={14} className="text-amber-400" /> Accesos Inmediatos
+                    </h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button 
+                        onClick={() => setActiveTab("registerPromo")}
+                        className="p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-left transition-colors border-none cursor-pointer"
+                      >
+                        <Shield className="text-violet-400 mb-1" size={16} />
+                        <p className="text-xs font-bold text-white block">Crear Promotora</p>
+                        <p className="text-[9px] text-slate-400">Manual</p>
+                      </button>
+
+                      <button 
+                        onClick={() => setActiveTab("register")}
+                        className="p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-left transition-colors border-none cursor-pointer"
+                      >
+                        <Store className="text-emerald-400 mb-1" size={16} />
+                        <p className="text-xs font-bold text-white block">Crear Comercio</p>
+                        <p className="text-[9px] text-slate-400">Nuevo Nodo</p>
+                      </button>
+
+                      <button 
+                        onClick={() => setActiveTab("notificaciones")}
+                        className="p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-left transition-colors border-none cursor-pointer"
+                      >
+                        <Send className="text-cyan-400 mb-1" size={16} />
+                        <p className="text-xs font-bold text-white block">Push Global</p>
+                        <p className="text-[9px] text-slate-400">Notificar Red</p>
+                      </button>
+
+                      <button 
+                        onClick={() => setView("marketplace")}
+                        className="p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-left transition-colors border-none cursor-pointer"
+                      >
+                        <ShoppingCart className="text-pink-400 mb-1" size={16} />
+                        <p className="text-xs font-bold text-white block">Nitro Market</p>
+                        <p className="text-[9px] text-slate-400">Ver Catálogo</p>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
             <KPointsIssuerWidget db={db} transferKFSPoints={transferKFSPoints} />
             <OracleControlSlider merchantId={db.clients?.[0]?.id} merchantName={db.clients?.[0]?.company || "N/A"} currentFee={db.clients?.[0]?.oracle_fee_percentage} setDb={setDb} />
             {/* Global Metrics Cards Grid */}
