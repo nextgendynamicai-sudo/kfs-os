@@ -2425,6 +2425,129 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
           </div>
         )}
 
+        {activeTab === "tienda_oficial" && (
+          <div className="space-y-8 flex flex-col animate-fade-in pb-20">
+            <div className="bg-gradient-to-r from-slate-900 to-violet-950 rounded-[2rem] p-8 shadow-2xl text-white border border-violet-800">
+              <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+                <div>
+                  <h3 className="text-2xl font-black flex items-center gap-2 text-white">
+                    <Tag className="text-pink-400" /> Tienda Oficial & Catálogo Nitro Market
+                  </h3>
+                  <p className="text-sm text-violet-200 mt-1">Gestión de productos oficiales y ofertas exclusivas de KFS OS.</p>
+                </div>
+                <button 
+                  onClick={() => setView("marketplace")}
+                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-pink-500 to-violet-600 text-white font-black text-xs hover:scale-105 transition-all shadow-lg shadow-pink-500/20 border-none cursor-pointer flex items-center gap-2"
+                >
+                  <ShoppingCart size={16} /> Ver Nitro Market en Vivo
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {/* Formulario Nuevo Producto */}
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
+                  <h4 className="text-pink-400 font-black uppercase tracking-widest text-xs">Agregar Producto a Tienda Oficial</h4>
+                  
+                  <div className="space-y-3">
+                    <div>
+                      <label className="block text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Nombre del Producto</label>
+                      <input 
+                        type="text" 
+                        placeholder="Ej: Licencia Pro KFS" 
+                        value={globalProdName} 
+                        onChange={e => setGlobalProdName(e.target.value)}
+                        className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-pink-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Precio ($ USD)</label>
+                      <input 
+                        type="number" 
+                        placeholder="37.50" 
+                        value={globalProdPrice} 
+                        onChange={e => setGlobalProdPrice(e.target.value)}
+                        className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-pink-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-1">Categoría</label>
+                      <input 
+                        type="text" 
+                        placeholder="Ej: Licencias / Hardware" 
+                        value={globalProdCategory} 
+                        onChange={e => setGlobalProdCategory(e.target.value)}
+                        className="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-pink-500"
+                      />
+                    </div>
+                    <button 
+                      onClick={() => {
+                        if (!globalProdName || !globalProdPrice) {
+                          showToast("Nombre y precio son obligatorios", "error");
+                          return;
+                        }
+                        addGlobalProduct(globalProdName, Number(globalProdPrice), globalProdCategory || "General");
+                        setGlobalProdName("");
+                        setGlobalProdPrice("");
+                        setGlobalProdCategory("");
+                        showToast("Producto agregado a la Tienda Oficial", "success");
+                      }}
+                      className="w-full py-3 bg-pink-600 hover:bg-pink-500 text-white font-black text-xs rounded-xl transition-all shadow-lg shadow-pink-600/30 border-none cursor-pointer"
+                    >
+                      Publicar Producto
+                    </button>
+                  </div>
+                </div>
+
+                {/* Catálogo de Productos Publicados */}
+                <div className="lg:col-span-2 bg-white/5 border border-white/10 rounded-2xl p-6 space-y-4">
+                  <h4 className="text-white font-black uppercase tracking-widest text-xs flex justify-between items-center">
+                    <span>Productos Oficiales Publicados</span>
+                    <span className="bg-pink-500/20 text-pink-300 px-3 py-1 rounded-full text-[10px] font-mono">
+                      {(db.products || []).filter((p: any) => p.clientId === "kfs-express").length} ítems
+                    </span>
+                  </h4>
+
+                  <div className="space-y-3 max-h-[500px] overflow-y-auto">
+                    {(db.products || []).filter((p: any) => p.clientId === "kfs-express").map((prod: any) => (
+                      <div key={prod.id} className="bg-slate-900/80 border border-slate-800 p-4 rounded-xl flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          {prod.image ? (
+                            <img src={prod.image} alt={prod.name} className="w-12 h-12 object-cover rounded-lg border border-slate-700" />
+                          ) : (
+                            <div className="w-12 h-12 bg-pink-950/50 border border-pink-800/40 rounded-lg flex items-center justify-center text-pink-400 font-bold text-xs">
+                              KFS
+                            </div>
+                          )}
+                          <div>
+                            <p className="text-xs font-black text-white">{prod.name}</p>
+                            <p className="text-[10px] text-pink-400 font-mono font-bold">${prod.priceUSD} USD</p>
+                            <span className="text-[9px] text-slate-500 uppercase">{prod.category || "General"}</span>
+                          </div>
+                        </div>
+
+                        <button 
+                          onClick={() => {
+                            if (confirm(`¿Eliminar '${prod.name}' de la Tienda Oficial?`)) {
+                              setDb((prev: any) => ({
+                                ...prev,
+                                products: prev.products.filter((p: any) => p.id !== prod.id)
+                              }));
+                              showToast("Producto eliminado", "success");
+                            }
+                          }}
+                          className="p-2 text-red-400 hover:text-red-300 hover:bg-red-950/30 rounded-lg border-none bg-transparent cursor-pointer"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {activeTab === "equipo" && (
           <div className="space-y-8 flex flex-col animate-fade-in pb-20">
             <div className="bg-gradient-to-r from-slate-900 to-violet-950 rounded-[2rem] p-8 shadow-2xl text-white border border-violet-800">
