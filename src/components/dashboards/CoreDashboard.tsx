@@ -568,7 +568,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             </div>
 
             <KPointsIssuerWidget db={db} transferKFSPoints={transferKFSPoints} />
-            <OracleControlSlider merchantId={db.clients?.[0]?.id} merchantName={db.clients?.[0]?.company || "N/A"} currentFee={db.clients?.[0]?.oracle_fee_percentage} setDb={setDb} />
+            <OracleControlSlider db={db} setDb={setDb} showToast={showToast} onOpenCreateMerchantModal={() => setActiveModal("register")} />
             {/* Global Metrics Cards Grid */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 text-violet-950 p-6 rounded-[2rem] relative overflow-hidden flex flex-col">
