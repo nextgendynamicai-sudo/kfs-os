@@ -7,7 +7,8 @@ import { useKFS } from "../context/KFSContext";
 import { playPremiumChime } from "../lib/utils";
 
 export const SMSConciliatorSimulator = () => {
-  const { smsConciliator, showToast, db } = useKFS() as any;
+  const { smsConciliator, showToast, db, rates } = useKFS() as any;
+  const bcvUsd = rates?.USD || 36.45;
   const [isOpen, setIsOpen] = useState(false);
   const [bank, setBank] = useState("Mercantil");
   const [amount, setAmount] = useState("450,00");
@@ -53,10 +54,10 @@ export const SMSConciliatorSimulator = () => {
 
   const handleAutofillReference = (ref: string, amt: number, ph: string) => {
     setReference(ref);
-    const bsAmount = (amt * 36.45).toFixed(2).replace('.', ',');
+    const bsAmount = (amt * bcvUsd).toFixed(2).replace('.', ',');
     setAmount(bsAmount);
     setPhone(ph || "04141234567");
-    addLog(`autofill: Parsed pending order reference ${ref} and amount Bs ${amt * 36.45}`);
+    addLog(`autofill: Parsed pending order reference ${ref} and amount Bs ${amt * bcvUsd}`);
     showToast("Campos auto-rellenados.", "success");
   };
 

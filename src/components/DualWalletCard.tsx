@@ -8,7 +8,11 @@ interface DualWalletCardProps {
   onRequestTopUp?: (amount: number, promoterId?: string) => void;
 }
 
+import { useKFS } from "../context/KFSContext";
+
 export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualWalletCardProps) {
+  const { rates } = (useKFS() || {}) as any;
+  const bcvUsd = rates?.USD || 36.45;
   const [timeLeftStr, setTimeLeftStr] = useState<string>("");
   const [isExpired, setIsExpired] = useState<boolean>(false);
   const [selectedPromoter, setSelectedPromoter] = useState<string>("");
@@ -96,7 +100,7 @@ export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualW
               {formatUSD(realBalance)}
             </p>
             <p className="text-[11px] font-bold text-emerald-600 mt-0.5">
-              ≈ Bs. {(realBalance * 36.45).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-[9px] font-normal text-slate-400">(Tasa BCV)</span>
+              ≈ Bs. {(realBalance * bcvUsd).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-[9px] font-normal text-slate-400">(Tasa BCV)</span>
             </p>
           </div>
         </div>

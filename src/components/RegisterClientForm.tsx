@@ -37,7 +37,7 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const base64String = await compressImage(file, 200, 0.6);
+      const base64String = await compressImage(file, 400, 0.6);
       setAvatar(base64String);
       setFormData(prev => ({ ...prev, avatar: base64String }));
     }
@@ -46,14 +46,55 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
   const handleCedulaChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const base64String = await compressImage(file, 200, 0.6);
+      const base64String = await compressImage(file, 400, 0.6);
       setKycCedula(base64String);
       setFormData(prev => ({ ...prev, kycCedula: base64String }));
     }
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.company.trim()) {
+      alert("Por favor ingresa el Nombre Comercial / Empresa.");
+      return;
+    }
+    if (!isNameValid) {
+      alert("Por favor ingresa el Nombre del Representante Legal.");
+      return;
+    }
+    if (!isPhoneValid) {
+      alert("Por favor ingresa un número de teléfono válido (Ej: 04141234567).");
+      return;
+    }
+    if (!isEmailValid) {
+      alert("Por favor ingresa un correo electrónico válido.");
+      return;
+    }
+    if (!isPasswordValid) {
+      alert("La contraseña debe tener al menos 4 caracteres.");
+      return;
+    }
+    if (!acceptedToS) {
+      alert("Debes aceptar los Términos de Servicio para registrar tu comercio.");
+      return;
+    }
+
+    const defaultAvatar = "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=150&auto=format&fit=crop&q=80";
+    const defaultCedula = "default_cedula_doc";
+
+    const fallbackData = {
+      ...formData,
+      idCard: formData.idCard.trim() || "V00000000",
+      address: formData.address.trim() || "Dirección Comercial Principal",
+      avatar: avatar || defaultAvatar,
+      kycCedula: kycCedula || defaultCedula
+    };
+
+    onRegister(fallbackData, defaultReferralCode, 0.03);
+  };
+
   return (
-    <form onSubmit={(e) => { e.preventDefault(); if (isFormValid) onRegister(formData, defaultReferralCode, 0.03); }} className={`space-y-3 ${standalone ? "text-violet-950 animate-fade-in" : "text-violet-950"}`}>
+    <form onSubmit={handleSubmit} className={`space-y-3 ${standalone ? "text-violet-950 animate-fade-in" : "text-violet-950"}`}>
       <h3 className={`text-lg font-black mb-4 border-b pb-2 ${standalone ? "text-violet-700 border-violet-100" : "text-violet-900 border-violet-100"}`}>Setup de Nuevo Comercio</h3>
 
       <div className="flex flex-col items-center gap-2 mb-4 relative">

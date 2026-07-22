@@ -80,22 +80,37 @@ const KREATEK_COLORS = {
 // Toast Component
 
 export const LoginView = ({ handleLogin, registerClient, registerPromotora, db, setView, currentUser, logout }: any) => {
+  const [referralCode, setReferralCode] = useState(() => {
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      return searchParams.get('ref') || searchParams.get('referral') || searchParams.get('referralCode') || searchParams.get('code') || searchParams.get('promotoraId') || "";
+    }
+    return "";
+  });
+
   const [activeTab, setActiveTab] = useState(() => {
     if (typeof window !== "undefined") {
       const searchParams = new URLSearchParams(window.location.search);
       const urlRole = searchParams.get('role');
-      const hasRef = !!searchParams.get('ref');
+      const hash = window.location.hash.replace('#', '').trim();
+
+      if (hash === 'register' || hash === 'registerCustomer' || hash === 'registerPromo' || hash === 'registerRider') {
+        return hash;
+      }
 
       if (urlRole) {
-        if (hasRef) {
-          if (urlRole === 'dueño' || urlRole === 'register') return 'register';
-          if (urlRole === 'customer' || urlRole === 'registerCustomer') return 'registerCustomer';
-          if (urlRole === 'promotora' || urlRole === 'registerPromo') return 'registerPromo';
-          if (urlRole === 'rider' || urlRole === 'registerRider') return 'registerRider';
-        }
+        if (urlRole === 'dueño' || urlRole === 'register') return 'register';
+        if (urlRole === 'customer' || urlRole === 'registerCustomer') return 'registerCustomer';
+        if (urlRole === 'promotora' || urlRole === 'registerPromo') return 'registerPromo';
+        if (urlRole === 'rider' || urlRole === 'registerRider') return 'registerRider';
         return urlRole;
       }
-      
+
+      const ref = searchParams.get('ref') || searchParams.get('referral') || searchParams.get('referralCode') || searchParams.get('code') || searchParams.get('promotoraId');
+      if (ref) {
+        return 'registerCustomer';
+      }
+
       const saved = localStorage.getItem("kfs_pending_tab");
       if (saved) {
         localStorage.removeItem("kfs_pending_tab");
@@ -106,14 +121,6 @@ export const LoginView = ({ handleLogin, registerClient, registerPromotora, db, 
   });
   const [password, setPassword] = useState("");
   const [email, setEmail] = useState("");
-
-  const [referralCode, setReferralCode] = useState(() => {
-    if (typeof window !== "undefined") {
-      const searchParams = new URLSearchParams(window.location.search);
-      return searchParams.get('ref') || "";
-    }
-    return "";
-  });
 
   return (
     <div className="min-h-screen flex flex-col bg-violet-50 font-sans">

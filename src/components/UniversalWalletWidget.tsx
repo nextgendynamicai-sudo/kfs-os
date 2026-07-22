@@ -8,7 +8,11 @@ interface UniversalWalletWidgetProps {
   children?: React.ReactNode;
 }
 
+import { useKFS } from "../context/KFSContext";
+
 export function UniversalWalletWidget({ currentUser, formatUSD, children }: UniversalWalletWidgetProps) {
+  const { rates } = (useKFS() || {}) as any;
+  const bcvUsd = rates?.USD || 36.45;
   const [timeLeftStr, setTimeLeftStr] = useState<string>("");
   const [isExpired, setIsExpired] = useState<boolean>(false);
 
@@ -80,7 +84,7 @@ export function UniversalWalletWidget({ currentUser, formatUSD, children }: Univ
           <div className="mt-4">
             <p className="text-3xl font-black tracking-tight text-violet-950">{formatUSD(realBalance)}</p>
             <p className="text-xs font-bold text-emerald-600 mt-1">
-              ≈ Bs. {(realBalance * 36.45).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-[9px] font-normal text-slate-400">(Tasa BCV)</span>
+              ≈ Bs. {(realBalance * bcvUsd).toLocaleString('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} <span className="text-[9px] font-normal text-slate-400">(Tasa BCV)</span>
             </p>
           </div>
         </div>

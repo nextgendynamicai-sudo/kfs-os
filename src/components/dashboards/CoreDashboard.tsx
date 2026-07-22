@@ -511,7 +511,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                             </div>
                             <div className="text-right">
                               <p className="text-xs font-black text-emerald-400">{formatUSD(tx.amountUSD || tx.amount || 0)}</p>
-                              <p className="text-[9px] text-slate-400 font-mono">≈ Bs. {((tx.amountUSD || tx.amount || 0) * 36.45).toFixed(2)}</p>
+                              <p className="text-[9px] text-slate-400 font-mono">≈ Bs. {((tx.amountUSD || tx.amount || 0) * (rates?.USD || 36.45)).toFixed(2)}</p>
                             </div>
                           </div>
                         ))}

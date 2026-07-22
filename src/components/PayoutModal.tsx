@@ -79,7 +79,7 @@ export const PayoutModal = ({ maxAmount, currency, onConfirm, onCancel, formatMo
             <select 
               value={banco} 
               onChange={e => setBanco(e.target.value)} 
-              className="w-full bg-white border border-violet-100 rounded-xl px-4 py-3 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-400"
+              className="w-full bg-white border border-violet-100 rounded-xl px-4 py-3 text-sm text-[#0A1128] focus:outline-none focus:ring-2 focus:ring-violet-400 font-bold"
             >
               <option value="">— Selecciona Banco —</option>
               {["Banesco", "Mercantil", "Banco de Venezuela", "Provincial", "BOD", "Bancaribe", "Bicentenario", "BNC", "Exterior", "Tesoro"].map(b => <option key={b} value={b}>{b}</option>)}
@@ -87,11 +87,11 @@ export const PayoutModal = ({ maxAmount, currency, onConfirm, onCancel, formatMo
             <div className="grid grid-cols-2 gap-3">
               <input 
                 type="tel" placeholder="Teléfono (Ej: 0414...)" value={telefono} onChange={e => setTelefono(e.target.value)} 
-                className="w-full bg-white border border-violet-100 rounded-xl px-4 py-3 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-400" 
+                className="w-full bg-white border border-violet-100 rounded-xl px-4 py-3 text-sm text-[#0A1128] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-400 font-bold" 
               />
               <input 
                 type="text" placeholder="Cédula Titular" value={cedula} onChange={e => setCedula(e.target.value)} 
-                className="w-full bg-white border border-violet-100 rounded-xl px-4 py-3 text-sm text-slate-600 focus:outline-none focus:ring-2 focus:ring-violet-400" 
+                className="w-full bg-white border border-violet-100 rounded-xl px-4 py-3 text-sm text-[#0A1128] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-400 font-bold" 
               />
             </div>
           </div>

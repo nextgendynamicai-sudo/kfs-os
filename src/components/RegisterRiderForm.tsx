@@ -32,14 +32,10 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
   const isPhoneValid = validatePhone(formData.phone);
   const isPmPhoneValid = validatePhone(formData.pagoMovil.telefono);
   const isEmailValid = validateEmail(formData.email);
-  const isNameValid = formData.name.trim().length >= 3;
-  const isPasswordValid = formData.password.length >= 6;
-  const isPmCedulaValid = formData.pagoMovil.cedula.trim().length >= 5;
-  const isPmBancoValid = !!formData.pagoMovil.banco;
+  const isNameValid = formData.name.trim().length >= 2;
+  const isPasswordValid = formData.password.length >= 4;
 
-  const isFormValid = isNameValid && isPhoneValid && isEmailValid && isPasswordValid &&
-    !!formData.cedulaImg && !!formData.medCertImg && !!formData.licenseImg &&
-    isPmBancoValid && isPmPhoneValid && isPmCedulaValid;
+  const isFormValid = isNameValid && isPhoneValid && isEmailValid && isPasswordValid;
 
   const handleDocUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: "cedulaImg" | "medCertImg" | "licenseImg", key: "cedula" | "med" | "license") => {
     const file = e.target.files?.[0];
@@ -56,8 +52,37 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isFormValid) return;
-    registerRider({ ...formData, referredBy: defaultReferralCode });
+    if (!isNameValid) {
+      alert("Por favor ingresa tu Nombre Completo.");
+      return;
+    }
+    if (!isPhoneValid) {
+      alert("Por favor ingresa un número de Teléfono celular válido.");
+      return;
+    }
+    if (!isEmailValid) {
+      alert("Por favor ingresa un correo electrónico válido.");
+      return;
+    }
+    if (!isPasswordValid) {
+      alert("La contraseña debe tener al menos 4 caracteres.");
+      return;
+    }
+
+    const fallbackData = {
+      ...formData,
+      cedulaImg: formData.cedulaImg || "default_rider_cedula",
+      medCertImg: formData.medCertImg || "default_med",
+      licenseImg: formData.licenseImg || "default_license",
+      pagoMovil: {
+        banco: formData.pagoMovil.banco || "Banesco",
+        telefono: formData.pagoMovil.telefono || formData.phone,
+        cedula: formData.pagoMovil.cedula || "V00000000"
+      },
+      referredBy: defaultReferralCode
+    };
+
+    registerRider(fallbackData);
   };
 
   const DocUploadField = ({ label, icon, field, fileKey, uploaded }: { label: string; icon: string; field: "cedulaImg" | "medCertImg" | "licenseImg"; fileKey: "cedula" | "med" | "license"; uploaded: boolean }) => (

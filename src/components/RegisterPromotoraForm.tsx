@@ -26,19 +26,19 @@ export const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCod
 
   const isPhoneValid = validatePhone(formData.pagoMovil);
   const isEmailValid = validateEmail(formData.email);
-  const isNameValid = formData.name.trim().length >= 3;
-  const isAddressValid = formData.kycAddress.trim().length >= 5;
-  const isPasswordValid = formData.password.length >= 6;
-  const isBinanceValid = formData.binanceId.trim().length >= 5;
+  const isNameValid = formData.name.trim().length >= 2;
+  const isPasswordValid = formData.password.length >= 4;
+  const isAddressValid = formData.kycAddress.trim().length >= 3;
+  const isBinanceValid = formData.binanceId.trim().length >= 3;
   const hasAvatar = !!avatar;
   const hasCedula = !!kycCedula;
 
-  const isFormValid = isNameValid && isAddressValid && isEmailValid && isPasswordValid && isBinanceValid && isPhoneValid && hasAvatar && hasCedula;
+  const isFormValid = isNameValid && isEmailValid && isPasswordValid && isPhoneValid;
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const base64String = await compressImage(file, 200, 0.6);
+      const base64String = await compressImage(file, 400, 0.6);
       setAvatar(base64String);
       setFormData(prev => ({ ...prev, avatar: base64String }));
     }
@@ -47,7 +47,7 @@ export const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCod
   const handleCedulaChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const base64String = await compressImage(file, 200, 0.6);
+      const base64String = await compressImage(file, 400, 0.6);
       setKycCedula(base64String);
       setFormData(prev => ({ ...prev, kycCedula: base64String }));
     }
@@ -55,10 +55,38 @@ export const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCod
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isFormValid || isSubmitting) return;
+    if (!isNameValid) {
+      alert("Por favor ingresa tu Nombre Completo.");
+      return;
+    }
+    if (!isPhoneValid) {
+      alert("Por favor ingresa un número de Teléfono/Pago Móvil válido (Ej: 04141234567).");
+      return;
+    }
+    if (!isEmailValid) {
+      alert("Por favor ingresa un correo electrónico válido.");
+      return;
+    }
+    if (!isPasswordValid) {
+      alert("La contraseña debe tener al menos 4 caracteres.");
+      return;
+    }
+    if (isSubmitting) return;
+
     setIsSubmitting(true);
+    const defaultAvatar = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80";
+    const defaultCedula = "default_promotora_cedula";
+
     try {
-      onRegister({ ...formData, referralCode: defaultReferralCode });
+      const fallbackData = {
+        ...formData,
+        binanceId: formData.binanceId.trim() || "N/A",
+        kycAddress: formData.kycAddress.trim() || "Dirección pendiente",
+        avatar: avatar || defaultAvatar,
+        kycCedula: kycCedula || defaultCedula,
+        referralCode: defaultReferralCode
+      };
+      onRegister(fallbackData);
     } finally {
       setIsSubmitting(false);
     }

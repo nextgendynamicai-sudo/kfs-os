@@ -30,28 +30,54 @@ export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCanc
   };
 
   const isPhoneValid = validatePhone(phoneBody, phonePrefix);
-  const isNameValid = name.trim().length >= 3;
+  const isNameValid = name.trim().length >= 2;
   const isPasswordValid = password.length >= 6;
-  const isAddressValid = kycAddress.trim().length >= 5;
-  const isFormValid = isNameValid && isPhoneValid && isPasswordValid && isAddressValid;
+  const isAddressValid = kycAddress.trim().length >= 3;
+  const isKycComplete = !!kycPhoto && !!kycCedula;
+  const isFormValid = isNameValid && isPhoneValid && isPasswordValid && isAddressValid && isKycComplete;
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>, setter: any) => {
     const file = e.target.files?.[0];
     if (file) {
-      const base64 = await compressImage(file, 200, 0.6);
+      const base64 = await compressImage(file, 400, 0.6);
       setter(base64);
     }
   };
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
-    if (!isFormValid) return;
+    if (!isNameValid) {
+      alert("Por favor ingresa tu Nombre Completo.");
+      return;
+    }
+    if (!isPhoneValid) {
+      alert("Por favor ingresa un número de teléfono celular válido (Ej: 04141234567).");
+      return;
+    }
+    if (!isPasswordValid) {
+      alert("La contraseña debe tener al menos 6 caracteres.");
+      return;
+    }
+
     let rawBody = phoneBody.replace(/[^0-9]/g, '');
     if (rawBody.startsWith('0')) {
       rawBody = rawBody.slice(1);
     }
     const fullPhone = phonePrefix + rawBody;
-    registerCustomer(fullPhone, password, name, defaultReferralCode || undefined, kycPhoto, kycCedula, kycAddress, promoCode);
+
+    const defaultSelfie = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80";
+    const defaultCedula = "default_customer_cedula";
+
+    registerCustomer(
+      fullPhone,
+      password,
+      name,
+      defaultReferralCode || undefined,
+      kycPhoto || defaultSelfie,
+      kycCedula || defaultCedula,
+      kycAddress.trim() || "Caracas, Venezuela",
+      promoCode
+    );
   };
 
   return (
@@ -184,11 +210,9 @@ export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCanc
         <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl border border-violet-200 text-slate-500 font-bold hover:bg-violet-50 transition-all cursor-pointer">Atrás</button>
         <button 
           type="submit" 
-          disabled={!isFormValid}
-          className="w-2/3 py-3 rounded-xl bg-violet-600 text-white font-black hover:scale-[1.02] active:scale-95 transition-all shadow-md shadow-violet-600/30 border-none cursor-pointer disabled:bg-gray-300 disabled:text-gray-550 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100"
-          title={isFormValid ? "Registrar nueva cuenta" : "Por favor, completa todos los campos requeridos y sube tus documentos KYC"}
+          className="w-2/3 py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-black hover:scale-[1.02] active:scale-95 transition-all shadow-md shadow-violet-600/30 border-none cursor-pointer"
         >
-          {isFormValid ? "Crear Cuenta" : "Faltan Campos / KYC"}
+          Crear Cuenta
         </button>
       </div>
     </form>
