@@ -45,7 +45,6 @@ const MOCK_BCV_RATES = {
 const CURRENT_WIPE_VERSION = 8;
 
 const initialDB = {
-  promotoras: [] as any[],
   clients: [
     {
       id: "kfs-express",
@@ -247,12 +246,36 @@ const initialDB = {
       }
     ]
   },
-  ghostLogs: [] as any[],
-  notifications: [] as any[],
-  auditLogs: [] as any[],
-  supportTickets: [] as any[],
-  candidates: [] as any[],
-  unlockedContacts: [] as any[],
+  promotoras: [
+    {
+      id: "p1",
+      name: "Promotora Oficial KFS",
+      email: "p1",
+      password: "0000",
+      binanceId: "184592019",
+      pagoMovil: "04141234567",
+      setups: 1,
+      earningsEUR: 18.75,
+      status: "active",
+      kyc_status: "approved",
+      passiveEarningsEUR: 5.0,
+      pendingPayoutEUR: 0
+    },
+    {
+      id: "p2",
+      name: "Gobernadora Regional Caracas",
+      email: "promotora@kfs.com",
+      password: "0000",
+      binanceId: "987654321",
+      pagoMovil: "04249876543",
+      setups: 3,
+      earningsEUR: 56.25,
+      status: "active",
+      kyc_status: "approved",
+      passiveEarningsEUR: 12.5,
+      pendingPayoutEUR: 0
+    }
+  ] as any[],
   riders: [] as any[],
   coupons: [] as any[],
   fiscalLogs: [] as any[]

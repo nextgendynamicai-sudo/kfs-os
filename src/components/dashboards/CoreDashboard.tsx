@@ -658,7 +658,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    {db.promotoras.filter((p: any) => p.name.toLowerCase().includes(searchPromotora.toLowerCase()) || p.email.toLowerCase().includes(searchPromotora.toLowerCase())).map((p: any) => (
+                    {(db.promotoras || []).filter((p: any) => p.name?.toLowerCase().includes(searchPromotora.toLowerCase()) || p.email?.toLowerCase().includes(searchPromotora.toLowerCase())).map((p: any) => (
                       <tr key={p.id} className="border-b border-violet-100 hover:bg-violet-50/50 transition-colors">
                         <td className="py-4 px-4 font-bold text-violet-950">{p.name}</td>
                         <td className="py-4 px-4 text-slate-500"><span className="text-xs font-mono block">{p.email}</span><span className="text-xs font-mono">P: {p.password}</span></td>
@@ -692,7 +692,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                         </td>
                       </tr>
                     ))}
-                    {db.promotoras.length === 0 && <tr><td colSpan={5} className="text-center py-10 text-slate-400 font-bold">No hay promotoras en la red.</td></tr>}
+                    {(!db.promotoras || db.promotoras.length === 0) && <tr><td colSpan={5} className="text-center py-10 text-slate-400 font-bold">No hay promotoras registradas aún.</td></tr>}
                   </tbody>
                 </table>
               </div>
