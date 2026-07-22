@@ -2,12 +2,38 @@ import { NextResponse } from 'next/server';
 import https from 'https';
 import * as cheerio from 'cheerio';
 
-export const revalidate = 3600; // Cache de Next.js por 1 hora (ISR)
+export const revalidate = 60; // Revalidate every 60 seconds (ISR)
 
-export async function GET() {
-  return new Promise<NextResponse>((resolve) => {
+async function fetchFromDolarApi(): Promise<{ USD: number; EUR: number } | null> {
+  try {
+    const resUsd = await fetch('https://ve.dolarapi.com/v1/dolares/oficial', { cache: 'no-store' });
+    const dataUsd = await resUsd.json();
+    
+    if (dataUsd && dataUsd.promedio && typeof dataUsd.promedio === 'number') {
+      const usdRate = dataUsd.promedio;
+      // Fetch EUR if available or compute from standard EUR/USD ratio
+      let eurRate = usdRate * 1.08;
+      try {
+        const resEur = await fetch('https://ve.dolarapi.com/v1/euros/oficial', { cache: 'no-store' });
+        const dataEur = await resEur.json();
+        if (dataEur && dataEur.promedio && typeof dataEur.promedio === 'number') {
+          eurRate = dataEur.promedio;
+        }
+      } catch (e) {
+        // fallback eur ratio
+      }
+      return { USD: usdRate, EUR: eurRate };
+    }
+  } catch (err) {
+    console.warn('DolarApi fetch failed, trying direct BCV scrape...', err);
+  }
+  return null;
+}
+
+async function fetchFromBcvDirect(): Promise<{ USD: number; EUR: number } | null> {
+  return new Promise((resolve) => {
     const agent = new https.Agent({
-      rejectUnauthorized: false // Se mantiene deshabilitado temporalmente debido a errores del certificado del sitio oficial del BCV.
+      rejectUnauthorized: false
     });
 
     https.get('https://www.bcv.org.ve/', {
@@ -27,17 +53,34 @@ export async function GET() {
           const USD = parseFloat(usdText);
           const EUR = parseFloat(eurText);
 
-          if (isNaN(USD) || isNaN(EUR)) {
-            resolve(NextResponse.json({ USD: 36.45, EUR: 39.20, error: 'Invalid parsing' }, { status: 500 }));
+          if (!isNaN(USD) && !isNaN(EUR) && USD > 0) {
+            resolve({ USD, EUR });
           } else {
-            resolve(NextResponse.json({ USD, EUR }));
+            resolve(null);
           }
         } catch (error) {
-          resolve(NextResponse.json({ USD: 36.45, EUR: 39.20, error: 'Parse failed' }, { status: 500 }));
+          resolve(null);
         }
       });
-    }).on('error', (err) => {
-      resolve(NextResponse.json({ USD: 36.45, EUR: 39.20, error: err.message }, { status: 500 }));
+    }).on('error', () => {
+      resolve(null);
     });
   });
+}
+
+export async function GET() {
+  // Provider 1: DolarApi (Fast CDN)
+  const dolarApiResult = await fetchFromDolarApi();
+  if (dolarApiResult) {
+    return NextResponse.json(dolarApiResult);
+  }
+
+  // Provider 2: Direct Scrape of BCV Official Site (https://www.bcv.org.ve/)
+  const bcvDirectResult = await fetchFromBcvDirect();
+  if (bcvDirectResult) {
+    return NextResponse.json(bcvDirectResult);
+  }
+
+  // Fallback Baseline if BCV servers are down
+  return NextResponse.json({ USD: 36.45, EUR: 39.20, fallback: true });
 }

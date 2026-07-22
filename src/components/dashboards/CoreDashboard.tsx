@@ -421,7 +421,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                       Centro de Mando Telemétrico KAN CGOS
                     </h3>
                   </div>
-                  <p className="text-xs text-slate-400 font-bold mt-1">Sincronización en tiempo real con Supabase • Tasa Oficial BCV: <strong className="text-emerald-400 font-mono">Bs. 36,45 / USD</strong></p>
+                  <p className="text-xs text-slate-400 font-bold mt-1">Sincronización en tiempo real con Supabase • Tasa Oficial BCV: <strong className="text-emerald-400 font-mono">Bs. {rates?.USD ? rates.USD.toFixed(2) : "36.45"} / USD</strong></p>
                 </div>
 
                 <div className="flex flex-wrap gap-2">
