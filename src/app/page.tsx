@@ -343,6 +343,12 @@ export default function Home() {
 
   const safeView = (!currentUser || !isUserValid) && protectedViews.includes(view) ? "landing" : view;
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [safeView, view]);
+
   if (isBooting || !isClient) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-violet-950 to-indigo-950 flex flex-col items-center justify-center text-white relative overflow-hidden">

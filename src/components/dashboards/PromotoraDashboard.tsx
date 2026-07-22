@@ -97,6 +97,13 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
   )) || [];
 
   const [activeTab, setActiveTab] = useState("panel"); // panel | negocios | afiliados
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [activeTab]);
+
   const [activeManual, setActiveManual] = useState<string | null>(null);
   const [showPayoutModal, setShowPayoutModal] = useState(false);
   const [hostUrl, setHostUrl] = useState("https://kfs-os.vercel.app");

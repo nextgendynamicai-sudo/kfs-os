@@ -106,6 +106,12 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
       }
     }
   }, [currentUser, activeTab]);
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [activeTab]);
   const { isSupabaseConfigured } = useKFS() as any;
   const pendingTopUps = db.topups?.filter((t: any) => t.status === 'pending') || [];
   const pendingCandidates = db.candidates?.filter((c: any) => c.status === 'pending') || [];
