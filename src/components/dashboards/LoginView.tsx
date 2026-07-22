@@ -84,7 +84,17 @@ export const LoginView = ({ handleLogin, registerClient, registerPromotora, db, 
     if (typeof window !== "undefined") {
       const searchParams = new URLSearchParams(window.location.search);
       const urlRole = searchParams.get('role');
-      if (urlRole) return urlRole;
+      const hasRef = !!searchParams.get('ref');
+
+      if (urlRole) {
+        if (hasRef) {
+          if (urlRole === 'dueño' || urlRole === 'register') return 'register';
+          if (urlRole === 'customer' || urlRole === 'registerCustomer') return 'registerCustomer';
+          if (urlRole === 'promotora' || urlRole === 'registerPromo') return 'registerPromo';
+          if (urlRole === 'rider' || urlRole === 'registerRider') return 'registerRider';
+        }
+        return urlRole;
+      }
       
       const saved = localStorage.getItem("kfs_pending_tab");
       if (saved) {
