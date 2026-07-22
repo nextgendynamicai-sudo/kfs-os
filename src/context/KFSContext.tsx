@@ -2228,6 +2228,32 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   };
 
   const registerClient = async (clientData: any, promotoraId: string, kfsFeePercentage: number) => {
+    const checkEmail = (clientData.email || "").trim().toLowerCase();
+    const checkCedula = (clientData.cedula || clientData.rif || clientData.kyc_id_card_number || "").trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+    const checkPhone = (clientData.phone || clientData.pagoMovil || "").trim().replace(/[^0-9]/g, "");
+
+    const isDup = [
+      ...(db.clients || []),
+      ...(db.promotoras || []),
+      ...(db.customers || []),
+      ...(db.riders || []),
+      ...(db.vendedores || [])
+    ].some((u: any) => {
+      const uEmail = u.email ? u.email.trim().toLowerCase() : "";
+      const uCedula = (u.cedula || u.rif || u.kyc_id_card_number || "").trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+      const uPhone = (u.phone || u.pagoMovil || "").trim().replace(/[^0-9]/g, "");
+
+      if (checkEmail && uEmail && checkEmail === uEmail) return true;
+      if (checkCedula && uCedula && checkCedula === uCedula) return true;
+      if (checkPhone && uPhone && checkPhone.length > 6 && checkPhone === uPhone) return true;
+      return false;
+    });
+
+    if (isDup) {
+      showToast("❌ Error: Ya existe un comercio registrado con esa Cédula/RIF, Correo o Teléfono.", "error");
+      return null;
+    }
+
     const avatarUrl = clientData.avatar && clientData.avatar.startsWith("data:")
       ? await uploadAsset(`avatars/client_${Date.now()}.png`, clientData.avatar)
       : clientData.avatar;
@@ -2360,6 +2386,32 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   };
 
   const registerPromotora = async (promoData: any) => {
+    const checkEmail = (promoData.email || "").trim().toLowerCase();
+    const checkCedula = (promoData.cedula || promoData.kyc_id_card_number || "").trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+    const checkPhone = (promoData.phone || promoData.pagoMovil || "").trim().replace(/[^0-9]/g, "");
+
+    const isDup = [
+      ...(db.clients || []),
+      ...(db.promotoras || []),
+      ...(db.customers || []),
+      ...(db.riders || []),
+      ...(db.vendedores || [])
+    ].some((u: any) => {
+      const uEmail = u.email ? u.email.trim().toLowerCase() : "";
+      const uCedula = (u.cedula || u.rif || u.kyc_id_card_number || "").trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+      const uPhone = (u.phone || u.pagoMovil || "").trim().replace(/[^0-9]/g, "");
+
+      if (checkEmail && uEmail && checkEmail === uEmail) return true;
+      if (checkCedula && uCedula && checkCedula === uCedula) return true;
+      if (checkPhone && uPhone && checkPhone.length > 6 && checkPhone === uPhone) return true;
+      return false;
+    });
+
+    if (isDup) {
+      showToast("❌ Error: Ya existe una Promotora registrada con esa Cédula, Correo o Teléfono.", "error");
+      return null;
+    }
+
     const avatarUrl = promoData.avatar && promoData.avatar.startsWith("data:")
       ? await uploadAsset(`avatars/promotora_${Date.now()}.png`, promoData.avatar)
       : promoData.avatar;
@@ -4430,11 +4482,21 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     }));
   };
 
+  const editProduct = (productId: string, updatedFields: any) => {
+    setDb((prev: any) => ({
+      ...prev,
+      products: (prev.products || []).map((p: any) => 
+        p.id === productId ? { ...p, ...updatedFields, priceUSD: updatedFields.priceUSD !== undefined ? Number(updatedFields.priceUSD) : p.priceUSD } : p
+      )
+    }));
+    showToast("✅ Producto modificado exitosamente.", "success");
+  };
+
   const contextValue = useMemo(() => ({
     isClient, isBooting, view, setView, currentUser, setCurrentUser, updateUserAvatar,
     toast, showToast, rates, updateBcvRates, db, setDb, formatUSD, formatEUR,
     handleLogin, logout, registerClient, registerFreeUser, registerCommerceWithOffer, upgradeToPremium, registerPromotora, registerVendedor, approvePromotora, rejectPromotora, settlePromotoraEarnings,
-    addProduct, addExpense, processPurchase, submitOnlineOrder, approveOrder, rejectOrder, dispatchOrder, generateZReport,
+    addProduct, editProduct, addExpense, processPurchase, submitOnlineOrder, approveOrder, rejectOrder, dispatchOrder, generateZReport,
     originalUser, impersonateClient, stopImpersonating,
     networkState, setNetworkState, smsConciliator, registerCrmExpress,
     ghostTrapLocked, setGhostTrapLocked, createVale, payVale, processPayroll, registerPosTerminal, deletePosTerminal,

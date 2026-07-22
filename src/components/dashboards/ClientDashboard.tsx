@@ -22,7 +22,7 @@ import { ScannerView } from "../ScannerView";
 import React, { useState, useEffect, useRef } from "react";
 import {
   Camera, Upload, ShoppingCart, TrendingUp, Users, DollarSign,
-  LogOut, Shield, Package, Activity, Search, QrCode, Lock,
+  LogOut, Shield, Package, Activity, Search, QrCode, Lock, Plus,
   ChevronRight, CheckCircle, CreditCard, Bell, X, Info,
   Store, Star, ChevronLeft, Clock, UserCheck, Palette,
   Zap, BookOpen, Printer, Smartphone, Settings, DownloadCloud, Terminal, Truck,
@@ -87,6 +87,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeTab, setActiveTab] = useState("resumen"); // resumen | inventario | personal | config
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingProd, setEditingProd] = useState<any | null>(null);
   const [showAddVendedor, setShowAddVendedor] = useState(false);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [showPayoutModal, setShowPayoutModal] = useState(false);
@@ -106,7 +107,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
   const [ticketMsg, setTicketMsg] = useState("");
   const [fundAmount, setFundAmount] = useState("");
   const [isTopUpOpen, setIsTopUpOpen] = useState(false);
-  const { createTicket, fundWallet, processMonthlyBilling, createVale, payVale, processPayroll, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating, registerPosTerminal, deletePosTerminal, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, toggleBusinessOpen, updateBusinessConfig, createCoupon, deleteCoupon, toggleCouponActive } = useKFS() as any;
+  const { editProduct, createTicket, fundWallet, processMonthlyBilling, createVale, payVale, processPayroll, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating, registerPosTerminal, deletePosTerminal, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, toggleBusinessOpen, updateBusinessConfig, createCoupon, deleteCoupon, toggleCouponActive } = useKFS() as any;
   const [deliveryRadiusKm, setDeliveryRadiusKm] = useState(clientInfo?.deliveryRadiusKm || 5);
 
   const handleCSVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -1352,6 +1353,59 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
               </div>
             )}
 
+            {/* Gestión y Edición de Productos Publicados */}
+            <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-violet-200/50 border border-violet-100 space-y-6">
+              <div className="flex justify-between items-center border-b border-violet-100 pb-4">
+                <h3 className="font-black text-xl text-violet-950 flex items-center gap-2">
+                  🛍️ Catálogo Activo & Edición de Productos ({myProducts.length})
+                </h3>
+                <button 
+                  onClick={() => setShowAddModal(true)} 
+                  className="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs rounded-xl transition-all shadow-md cursor-pointer border-none flex items-center gap-1.5"
+                >
+                  <Plus size={16} /> Agregar Producto
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {myProducts.map((p: any) => (
+                  <div key={p.id} className="bg-slate-50 border border-violet-100 rounded-2xl p-4 flex flex-col justify-between space-y-3 hover:shadow-md transition-shadow">
+                    <div className="flex gap-3 items-center">
+                      {p.image ? (
+                        <img src={p.image} alt={p.name} className="w-14 h-14 rounded-xl object-cover border border-slate-200 shrink-0" />
+                      ) : (
+                        <div className="w-14 h-14 bg-violet-100 rounded-xl flex items-center justify-center text-violet-600 font-bold text-xs shrink-0">
+                          📦 Sin Img
+                        </div>
+                      )}
+                      <div className="overflow-hidden">
+                        <h4 className="font-bold text-slate-900 text-sm truncate">{p.name}</h4>
+                        <span className="text-[10px] bg-violet-100 text-violet-700 font-bold px-2 py-0.5 rounded-md inline-block mt-0.5">
+                          {p.category || "General"}
+                        </span>
+                        <p className="text-xs text-slate-500 font-mono mt-1">Stock: <span className="font-bold text-slate-900">{p.stock}</span> unids</p>
+                      </div>
+                    </div>
+
+                    <div className="flex justify-between items-center pt-2 border-t border-slate-200">
+                      <span className="font-black text-emerald-600 text-base font-mono">${(p.priceUSD || 0).toFixed(2)} USD</span>
+                      <button 
+                        onClick={() => setEditingProd(p)}
+                        className="px-3 py-1.5 bg-violet-900 hover:bg-slate-800 text-white font-black text-xs rounded-lg transition-colors cursor-pointer border-none shadow-sm flex items-center gap-1"
+                      >
+                        ✏️ Configurar / Editar
+                      </button>
+                    </div>
+                  </div>
+                ))}
+                {myProducts.length === 0 && (
+                  <div className="col-span-full text-center py-8 text-slate-400 font-bold">
+                    No tienes productos publicados. Haz clic en "Agregar Producto" para subir tu primer ítem.
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-violet-200/50 border border-violet-100">
               <h3 className="font-black text-xl text-violet-950 mb-6 flex items-center gap-2">Registro de Egresos Operativos</h3>
               <div className="space-y-3">
@@ -2001,6 +2055,119 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
             setShowPayoutModal(false);
           }}
         />
+      )}
+
+      {/* Modal de Edición de Producto */}
+      {editingProd && (
+        <div className="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white border-2 border-violet-600 rounded-3xl p-6 sm:p-8 w-full max-w-lg text-slate-950 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button 
+              onClick={() => setEditingProd(null)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 border-none bg-transparent cursor-pointer text-lg font-bold"
+            >
+              ✕
+            </button>
+            <h3 className="text-xl font-black text-slate-900 mb-1 flex items-center gap-2">
+              ✏️ Configurar / Editar Producto
+            </h3>
+            <p className="text-xs text-slate-500 mb-6">Actualiza los datos del producto en tu tienda en vivo y en la red POS.</p>
+
+            <form onSubmit={(e) => {
+              e.preventDefault();
+              editProduct(editingProd.id, editingProd);
+              setEditingProd(null);
+            }} className="space-y-4">
+              <div>
+                <label className="block text-xs font-black text-violet-900 uppercase tracking-widest mb-1">Nombre del Producto</label>
+                <input 
+                  type="text" 
+                  required
+                  value={editingProd.name || ""} 
+                  onChange={(e) => setEditingProd({ ...editingProd, name: e.target.value })}
+                  className="w-full bg-white text-slate-950 font-bold border-2 border-slate-300 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-violet-600 shadow-sm"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-black text-violet-900 uppercase tracking-widest mb-1">Precio ($ USD)</label>
+                  <input 
+                    type="number" 
+                    step="0.01"
+                    required
+                    value={editingProd.priceUSD !== undefined ? editingProd.priceUSD : ""} 
+                    onChange={(e) => setEditingProd({ ...editingProd, priceUSD: parseFloat(e.target.value) || 0 })}
+                    className="w-full bg-white text-slate-950 font-bold border-2 border-slate-300 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-violet-600 shadow-sm font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-black text-violet-900 uppercase tracking-widest mb-1">Stock Disponible</label>
+                  <input 
+                    type="number" 
+                    required
+                    value={editingProd.stock !== undefined ? editingProd.stock : ""} 
+                    onChange={(e) => setEditingProd({ ...editingProd, stock: parseInt(e.target.value) || 0 })}
+                    className="w-full bg-white text-slate-950 font-bold border-2 border-slate-300 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-violet-600 shadow-sm font-mono"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-black text-violet-900 uppercase tracking-widest mb-1">Categoría</label>
+                <select 
+                  value={editingProd.category || "Alimentos"}
+                  onChange={(e) => setEditingProd({ ...editingProd, category: e.target.value })}
+                  className="w-full bg-white text-slate-950 font-bold border-2 border-slate-300 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-violet-600 cursor-pointer shadow-sm"
+                >
+                  <option value="Alimentos">Alimentos</option>
+                  <option value="Bebidas">Bebidas</option>
+                  <option value="Limpieza">Limpieza</option>
+                  <option value="Electrónica">Electrónica</option>
+                  <option value="Farmacia">Farmacia</option>
+                  <option value="Servicios">Servicios</option>
+                  <option value="Importados">Importados</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-black text-violet-900 uppercase tracking-widest mb-1">Imagen (URL o Base64)</label>
+                <input 
+                  type="text" 
+                  value={editingProd.image || ""} 
+                  onChange={(e) => setEditingProd({ ...editingProd, image: e.target.value })}
+                  placeholder="https://o_imagen_base64..."
+                  className="w-full bg-white text-slate-950 font-bold border-2 border-slate-300 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-violet-600 shadow-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-black text-violet-900 uppercase tracking-widest mb-1">Descripción</label>
+                <textarea 
+                  value={editingProd.description || ""} 
+                  onChange={(e) => setEditingProd({ ...editingProd, description: e.target.value })}
+                  className="w-full bg-white text-slate-950 font-bold border-2 border-slate-300 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-violet-600 h-20 resize-none shadow-sm"
+                  placeholder="Detalles del producto..."
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button 
+                  type="button"
+                  onClick={() => setEditingProd(null)}
+                  className="w-1/3 py-3.5 rounded-xl border border-slate-300 bg-slate-100 text-slate-700 font-bold text-xs cursor-pointer hover:bg-slate-200"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  type="submit"
+                  className="w-2/3 py-3.5 rounded-xl font-black text-white bg-violet-600 hover:bg-violet-700 transition-all text-xs border-none cursor-pointer shadow-lg shadow-violet-600/30 flex items-center justify-center gap-1.5"
+                >
+                  💾 Guardar Cambios
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
 
     </div>
