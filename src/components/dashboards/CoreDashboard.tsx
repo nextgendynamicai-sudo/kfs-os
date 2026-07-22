@@ -83,7 +83,7 @@ const KREATEK_COLORS = {
 // Toast Component
 
 export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePromotoraEarnings, showToast, formatUSD, formatEUR, currentUser, logout, approveSubscription, setView }: any) => {
-  const { impersonateClient, registerClient, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, deleteCustomer, deletePromotora, deleteVendedor, deleteRider, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, toggleCandidateBacking, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, validateTopUp, rates, updateBcvRates, transferKFSPoints, updateStoreSettings, createCoupon, deleteCoupon, toggleCouponActive } = useKFS() as any;
+  const { impersonateClient, registerClient, registerPromotora, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, deleteCustomer, deletePromotora, deleteVendedor, deleteRider, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, toggleCandidateBacking, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, validateTopUp, rates, updateBcvRates, transferKFSPoints, updateStoreSettings, createCoupon, deleteCoupon, toggleCouponActive } = useKFS() as any;
   const [searchPromotora, setSearchPromotora] = useState("");
   const [searchClient, setSearchClient] = useState("");
   const [searchVendedor, setSearchVendedor] = useState("");
@@ -526,7 +526,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                     </h4>
                     <div className="grid grid-cols-2 gap-2">
                       <button 
-                        onClick={() => setActiveTab("registerPromo")}
+                        onClick={() => setActiveModal("registerPromo")}
                         className="p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-left transition-colors border-none cursor-pointer"
                       >
                         <Shield className="text-violet-400 mb-1" size={16} />
@@ -535,7 +535,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                       </button>
 
                       <button 
-                        onClick={() => setActiveTab("register")}
+                        onClick={() => setActiveModal("register")}
                         className="p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-left transition-colors border-none cursor-pointer"
                       >
                         <Store className="text-emerald-400 mb-1" size={16} />
@@ -544,7 +544,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                       </button>
 
                       <button 
-                        onClick={() => setActiveTab("notificaciones")}
+                        onClick={() => setActiveModal("notificaciones")}
                         className="p-3 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-left transition-colors border-none cursor-pointer"
                       >
                         <Send className="text-cyan-400 mb-1" size={16} />
@@ -2696,6 +2696,131 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
           })}
         </div>
       </div>
+
+      {/* Interactive Modal: Crear Promotora (Manual) */}
+      {activeModal === "registerPromo" && (
+        <div className="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white border border-violet-100 rounded-3xl p-6 sm:p-8 w-full max-w-md shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button 
+              onClick={() => setActiveModal(null)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 border-none bg-transparent cursor-pointer text-lg"
+            >
+              ✕
+            </button>
+            <RegisterPromotoraForm 
+              onRegister={(data: any) => {
+                registerPromotora(data);
+                setActiveModal(null);
+                showToast("Promotora creada e inscrita exitosamente", "success");
+              }} 
+              onCancel={() => setActiveModal(null)} 
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Interactive Modal: Crear Comercio (Nuevo Nodo) */}
+      {activeModal === "register" && (
+        <div className="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white border border-violet-100 rounded-3xl p-6 sm:p-8 w-full max-w-lg shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button 
+              onClick={() => setActiveModal(null)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-900 border-none bg-transparent cursor-pointer text-lg z-10"
+            >
+              ✕
+            </button>
+            <RegisterClientForm 
+              onRegister={(formData: any, refCode: any, feePct: any) => {
+                registerClient(formData, refCode, feePct);
+                setActiveModal(null);
+                showToast("Comercio creado e inscrito exitosamente", "success");
+              }} 
+              onCancel={() => setActiveModal(null)} 
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Interactive Modal: Push Global (Notificar Red) */}
+      {activeModal === "notificaciones" && (
+        <div className="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-slate-900 border border-violet-500/30 rounded-3xl p-6 sm:p-8 w-full max-w-md text-white shadow-2xl relative">
+            <button 
+              onClick={() => setActiveModal(null)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-white border-none bg-transparent cursor-pointer text-lg"
+            >
+              ✕
+            </button>
+            <h3 className="text-xl font-black text-white mb-2 flex items-center gap-2">
+              <Send className="text-cyan-400" /> Push Broadcast Global
+            </h3>
+            <p className="text-xs text-slate-400 mb-6">Emite un anuncio emergente o alerta nativa a todos los usuarios de la plataforma.</p>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-black text-violet-400 uppercase tracking-widest mb-1">Audiencia Objetivo</label>
+                <select 
+                  value={notifTarget} 
+                  onChange={e => setNotifTarget(e.target.value)}
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-400 cursor-pointer"
+                >
+                  <option value="all">📢 Todos los Usuarios de la Red</option>
+                  <option value="dueño">🏪 Solo Dueños de Comercio</option>
+                  <option value="promotora">🛡️ Solo Gobernadoras / Promotoras</option>
+                  <option value="customer">🛒 Solo Clientes Consumidores</option>
+                  <option value="rider">🛵 Solo Flotilla de Riders</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-black text-violet-400 uppercase tracking-widest mb-1">Título de la Notificación</label>
+                <input 
+                  type="text" 
+                  placeholder="Ej: ¡Nueva Tasa BCV Actualizada!" 
+                  value={notifTitle} 
+                  onChange={e => setNotifTitle(e.target.value)}
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-black text-violet-400 uppercase tracking-widest mb-1">Mensaje del Anuncio</label>
+                <textarea 
+                  placeholder="Escribe el cuerpo del mensaje..." 
+                  value={notifMsg} 
+                  onChange={e => setNotifMsg(e.target.value)}
+                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-400 h-24 resize-none"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <button 
+                  onClick={() => setActiveModal(null)}
+                  className="w-1/3 py-3.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-400 hover:text-white font-bold text-xs cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button 
+                  onClick={() => {
+                    if (!notifTitle || !notifMsg) {
+                      showToast("Por favor escribe un título y un mensaje", "error");
+                      return;
+                    }
+                    sendNotification(notifTarget, notifTitle, notifMsg);
+                    showToast("Notificación enviada a la red exitosamente", "success");
+                    setNotifTitle("");
+                    setNotifMsg("");
+                    setActiveModal(null);
+                  }}
+                  className="w-2/3 py-3.5 rounded-xl font-black text-white bg-violet-600 hover:bg-violet-500 transition-all text-xs border-none cursor-pointer shadow-lg shadow-violet-600/30"
+                >
+                  📢 Enviar Alerta
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
