@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Camera, Lock, UserCheck, Smartphone, FileText, MapPin, Trash2 } from "lucide-react";
+import { Camera, Lock, UserCheck, Smartphone, FileText, MapPin, Trash2, Tag } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { compressImage } from "../lib/utils";
 
@@ -13,6 +13,7 @@ export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCanc
   const [kycPhoto, setKycPhoto] = useState<string>("");
   const [kycCedula, setKycCedula] = useState<string>("");
   const [kycAddress, setKycAddress] = useState("");
+  const [promoCode, setPromoCode] = useState("1000");
   const { registerCustomer } = useKFS() as any;
 
   const validatePhone = (phone: string, prefix: string) => {
@@ -50,11 +51,32 @@ export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCanc
       rawBody = rawBody.slice(1);
     }
     const fullPhone = phonePrefix + rawBody;
-    registerCustomer(fullPhone, password, name, defaultReferralCode || undefined, kycPhoto, kycCedula, kycAddress);
+    registerCustomer(fullPhone, password, name, defaultReferralCode || undefined, kycPhoto, kycCedula, kycAddress, promoCode);
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 animate-fade-in">
+      {/* Promo Code Input */}
+      <div className="relative bg-gradient-to-r from-amber-500/10 to-emerald-500/10 p-3 rounded-2xl border border-amber-300">
+        <label className="block text-xs font-black text-amber-700 uppercase tracking-widest mb-1 flex items-center gap-1">
+          <Tag size={14} className="text-amber-600" /> Código de Promoción / Lanzamiento
+        </label>
+        <div className="relative">
+          <input 
+            type="text" 
+            placeholder="Ej: 1000" 
+            value={promoCode} 
+            onChange={e => setPromoCode(e.target.value)} 
+            className="w-full bg-white text-slate-950 font-mono font-black border-2 border-amber-300 rounded-xl px-4 py-2.5 text-xs placeholder:text-slate-400 focus:outline-none focus:border-amber-500 uppercase tracking-widest shadow-sm" 
+          />
+        </div>
+        {promoCode.trim() === "1000" && (
+          <div className="mt-2 p-2 bg-emerald-100 border border-emerald-300 rounded-xl text-emerald-800 text-[10px] font-bold animate-fade-in flex items-center gap-1.5">
+            <span>🎉 ¡Código 1000 Activo! Al recargar $2.00 USD y ser aprobada tu recarga, se te otorgarán automáticamente +2,000 Axis Points.</span>
+          </div>
+        )}
+      </div>
+
       <div className="relative">
         <label className="block text-xs font-black text-violet-700 uppercase tracking-widest mb-1 ml-1">Nombre Completo</label>
         <div className="relative">

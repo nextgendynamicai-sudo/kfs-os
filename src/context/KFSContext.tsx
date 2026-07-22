@@ -1688,17 +1688,27 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                 );
               }
 
+              // 🎁 LÓGICA CÓDIGO PROMO 1000: Si usó código 1000 y recarga $2.00 USD o más
+              const isPromo1000Match = (c.promoCode === "1000" || c.promoBonusEligible) && topup.amountUSD >= 2.00 && !c.promoBonusClaimed;
+              const promoBonusAxis = isPromo1000Match ? 2000 : 0;
+              const totalBonusPoints = bonusKP + promoBonusAxis;
+
+              if (isPromo1000Match) {
+                setTimeout(() => showToast("🎉 ¡Bono Código 1000 Reclamado! +2,000 Axis Points acreditados por tu recarga de $2.00 USD.", "success"), 250);
+              }
+
               return {
                 ...c,
                 real_balance: (c.real_balance || 0) + topup.amountUSD,
-                k_points_balance: (c.k_points_balance || 0) + bonusKP,
-                k_points_expiry: bonusKP > 0 ? expiryDateStr : c.k_points_expiry
+                k_points_balance: (c.k_points_balance || 0) + totalBonusPoints,
+                k_points_expiry: totalBonusPoints > 0 ? expiryDateStr : c.k_points_expiry,
+                promoBonusClaimed: isPromo1000Match ? true : (c.promoBonusClaimed || false)
               };
             }
             return c;
           });
         }
-        setTimeout(() => showToast(`Recarga aprobada. +$${topup.amountUSD}`, "success"), 100);
+        setTimeout(() => showToast(`Recarga aprobada. +$${topup.amountUSD.toFixed(2)} USD`, "success"), 100);
       } else {
         setTimeout(() => showToast("Recarga rechazada.", "error"), 100);
       }
@@ -1865,7 +1875,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-  const registerCustomer = async (phone: string, password: string, name: string, referralCode?: string, kycPhoto?: string, kycCedula?: string, kycAddress?: string) => {
+  const registerCustomer = async (phone: string, password: string, name: string, referralCode?: string, kycPhoto?: string, kycCedula?: string, kycAddress?: string, promoCode?: string) => {
     const existing = db.customers?.find((c: any) => c.phone === phone);
     if (existing) {
       showToast("Este número de teléfono ya está registrado.", "error");
@@ -1909,6 +1919,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       if (kycCedula && kycCedula.startsWith('data:')) cedulaUrl = await uploadAsset(`customers/${phone}-cedula.jpg`, kycCedula);
     } catch (_e) { /* Network issue — keep base64 as fallback */ }
 
+    const cleanPromoCode = (promoCode || "1000").trim();
+
     const newCustomer = {
       id: `cust_${Date.now()}`,
       phone,
@@ -1927,6 +1939,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       kyc_id_card_img: cedulaUrl,
       kyc_address: kycAddress || "",
       kyc_status: "verified",
+      promoCode: cleanPromoCode,
+      promoBonusEligible: cleanPromoCode === "1000",
+      promoBonusClaimed: false,
       createdAt: new Date().toISOString()
     };
 
