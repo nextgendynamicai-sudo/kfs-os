@@ -93,6 +93,11 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
   const [newMemberName, setNewMemberName] = useState("");
   const [newMemberPass, setNewMemberPass] = useState("");
   const [newMemberPermissions, setNewMemberPermissions] = useState<string[]>([]);
+  const [notifTarget, setNotifTarget] = useState("all");
+  const [notifTitle, setNotifTitle] = useState("");
+  const [notifMsg, setNotifMsg] = useState("");
+  const [notifDestType, setNotifDestType] = useState("none");
+  const [notifDestVal, setNotifDestVal] = useState("");
 
   useEffect(() => {
     if (currentUser.isTeamMember && currentUser.permissions?.length > 0) {
@@ -218,11 +223,6 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
   const [globalProdName, setGlobalProdName] = useState("");
   const [globalProdPrice, setGlobalProdPrice] = useState("");
   const [globalProdCategory, setGlobalProdCategory] = useState("");
-
-  // Notification State
-  const [notifTarget, setNotifTarget] = useState("all");
-  const [notifTitle, setNotifTitle] = useState("");
-  const [notifMsg, setNotifMsg] = useState("");
 
   useEffect(() => {
     const handleGlobalSale = (e: any) => {
@@ -2867,7 +2867,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
       {/* Interactive Modal: Push Global (Notificar Red) */}
       {activeModal === "notificaciones" && (
         <div className="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
-          <div className="bg-slate-900 border border-violet-500/30 rounded-3xl p-6 sm:p-8 w-full max-w-md text-white shadow-2xl relative">
+          <div className="bg-slate-900 border border-violet-500/30 rounded-3xl p-6 sm:p-8 w-full max-w-lg text-white shadow-2xl relative max-h-[90vh] overflow-y-auto">
             <button 
               onClick={() => setActiveModal(null)}
               className="absolute top-4 right-4 text-slate-400 hover:text-white border-none bg-transparent cursor-pointer text-lg"
@@ -2881,11 +2881,11 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
             <div className="space-y-4">
               <div>
-                <label className="block text-xs font-black text-violet-400 uppercase tracking-widest mb-1">Audiencia Objetivo</label>
+                <label className="block text-xs font-black text-amber-400 uppercase tracking-widest mb-1">1. Audiencia Objetivo</label>
                 <select 
                   value={notifTarget} 
                   onChange={e => setNotifTarget(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white focus:outline-none focus:ring-2 focus:ring-violet-400 cursor-pointer"
+                  className="w-full bg-white text-slate-950 font-bold border-2 border-slate-300 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-violet-600 cursor-pointer shadow-sm"
                 >
                   <option value="all">📢 Todos los Usuarios de la Red</option>
                   <option value="dueño">🏪 Solo Dueños de Comercio</option>
@@ -2896,25 +2896,95 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
               </div>
 
               <div>
-                <label className="block text-xs font-black text-violet-400 uppercase tracking-widest mb-1">Título de la Notificación</label>
+                <label className="block text-xs font-black text-amber-400 uppercase tracking-widest mb-1">2. Título de la Notificación</label>
                 <input 
                   type="text" 
                   placeholder="Ej: ¡Nueva Tasa BCV Actualizada!" 
                   value={notifTitle} 
                   onChange={e => setNotifTitle(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-400"
+                  className="w-full bg-white text-slate-950 font-bold border-2 border-slate-300 rounded-xl px-4 py-3 text-xs placeholder:text-slate-400 focus:outline-none focus:border-violet-600 shadow-sm"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-black text-violet-400 uppercase tracking-widest mb-1">Mensaje del Anuncio</label>
+                <label className="block text-xs font-black text-amber-400 uppercase tracking-widest mb-1">3. Mensaje del Anuncio</label>
                 <textarea 
                   placeholder="Escribe el cuerpo del mensaje..." 
                   value={notifMsg} 
                   onChange={e => setNotifMsg(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-400 h-24 resize-none"
+                  className="w-full bg-white text-slate-950 font-bold border-2 border-slate-300 rounded-xl px-4 py-3 text-xs placeholder:text-slate-400 focus:outline-none focus:border-violet-600 h-20 resize-none shadow-sm"
                 />
               </div>
+
+              {/* Acciones de Redirección */}
+              <div>
+                <label className="block text-xs font-black text-amber-400 uppercase tracking-widest mb-1">4. Acción de Redirección al hacer Clic</label>
+                <select 
+                  value={notifDestType} 
+                  onChange={e => {
+                    setNotifDestType(e.target.value);
+                    setNotifDestVal("");
+                  }}
+                  className="w-full bg-white text-slate-950 font-bold border-2 border-slate-300 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-violet-600 cursor-pointer shadow-sm"
+                >
+                  <option value="none">🚫 Sin Redirección (Notificación Informativa)</option>
+                  <option value="product">🛍️ Redirigir a Producto del Catálogo (Nitro Market)</option>
+                  <option value="store">🏪 Redirigir a Tienda / Comercio Específico</option>
+                  <option value="url">🌐 Redirigir a Enlace Externo (URL / Landing)</option>
+                </select>
+              </div>
+
+              {/* Redirección: Producto */}
+              {notifDestType === "product" && (
+                <div className="animate-fade-in">
+                  <label className="block text-[10px] text-slate-300 font-bold uppercase tracking-wider mb-1">Seleccionar Producto Destino</label>
+                  <select 
+                    value={notifDestVal}
+                    onChange={e => setNotifDestVal(e.target.value)}
+                    className="w-full bg-white text-slate-950 font-bold border-2 border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-violet-600 cursor-pointer"
+                  >
+                    <option value="">-- Selecciona un Producto --</option>
+                    {(db.products || []).map((p: any) => (
+                      <option key={p.id} value={p.id}>
+                        {p.name} (${p.priceUSD} USD)
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Redirección: Comercio */}
+              {notifDestType === "store" && (
+                <div className="animate-fade-in">
+                  <label className="block text-[10px] text-slate-300 font-bold uppercase tracking-wider mb-1">Seleccionar Comercio Destino</label>
+                  <select 
+                    value={notifDestVal}
+                    onChange={e => setNotifDestVal(e.target.value)}
+                    className="w-full bg-white text-slate-950 font-bold border-2 border-slate-300 rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-violet-600 cursor-pointer"
+                  >
+                    <option value="">-- Selecciona un Comercio --</option>
+                    {(db.clients || []).map((c: any) => (
+                      <option key={c.id} value={c.id}>
+                        {c.company || c.name || c.id}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
+              {/* Redirección: URL Externa */}
+              {notifDestType === "url" && (
+                <div className="animate-fade-in">
+                  <label className="block text-[10px] text-slate-300 font-bold uppercase tracking-wider mb-1">Escribir URL Externa</label>
+                  <input 
+                    type="url" 
+                    placeholder="https://tudominio.com/oferta" 
+                    value={notifDestVal} 
+                    onChange={e => setNotifDestVal(e.target.value)}
+                    className="w-full bg-white text-slate-950 font-bold border-2 border-slate-300 rounded-xl px-4 py-2.5 text-xs placeholder:text-slate-400 focus:outline-none focus:border-violet-600"
+                  />
+                </div>
+              )}
 
               <div className="flex gap-3 pt-2">
                 <button 
@@ -2924,20 +2994,32 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                   Cancelar
                 </button>
                 <button 
-                  onClick={() => {
+                  onClick={async () => {
                     if (!notifTitle || !notifMsg) {
                       showToast("Por favor escribe un título y un mensaje", "error");
                       return;
                     }
-                    sendNotification(notifTarget, notifTitle, notifMsg);
-                    showToast("Notificación enviada a la red exitosamente", "success");
+
+                    // Solicitar permiso de Notificación Nativa Web Push si no está concedido
+                    if ("Notification" in window && Notification.permission !== "granted") {
+                      try {
+                        await Notification.requestPermission();
+                      } catch (e) {
+                        // ignore permission error
+                      }
+                    }
+
+                    sendNotification(notifTarget, notifTitle, notifMsg, undefined, notifDestType, notifDestVal);
+                    showToast("Notificación enviada y transmitida a la red exitosamente", "success");
                     setNotifTitle("");
                     setNotifMsg("");
+                    setNotifDestType("none");
+                    setNotifDestVal("");
                     setActiveModal(null);
                   }}
-                  className="w-2/3 py-3.5 rounded-xl font-black text-white bg-violet-600 hover:bg-violet-500 transition-all text-xs border-none cursor-pointer shadow-lg shadow-violet-600/30"
+                  className="w-2/3 py-3.5 rounded-xl font-black text-white bg-gradient-to-r from-violet-600 to-pink-600 hover:from-violet-500 hover:to-pink-500 transition-all text-xs border-none cursor-pointer shadow-lg shadow-violet-600/30 flex items-center justify-center gap-1.5"
                 >
-                  📢 Enviar Alerta
+                  📢 Emitir Alerta Push
                 </button>
               </div>
             </div>

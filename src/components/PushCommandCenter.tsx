@@ -141,7 +141,7 @@ export function PushCommandCenter({ currentUser }: any) {
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 placeholder="Ej. ¡Oferta Relámpago!"
-                className="w-full bg-white px-4 py-3 rounded-xl border-none shadow-inner focus:ring-2 focus:ring-violet-400 outline-none text-sm"
+                className="w-full bg-white text-slate-950 font-bold px-4 py-3 rounded-xl border-2 border-slate-300 shadow-inner focus:ring-2 focus:ring-violet-400 outline-none text-sm placeholder:text-slate-400"
               />
             </div>
             <div>
@@ -151,7 +151,7 @@ export function PushCommandCenter({ currentUser }: any) {
                 onChange={e => setMessage(e.target.value)}
                 placeholder="Escribe el cuerpo del mensaje..."
                 rows={3}
-                className="w-full bg-white px-4 py-3 rounded-xl border-none shadow-inner focus:ring-2 focus:ring-violet-400 outline-none text-sm resize-none"
+                className="w-full bg-white text-slate-950 font-bold px-4 py-3 rounded-xl border-2 border-slate-300 shadow-inner focus:ring-2 focus:ring-violet-400 outline-none text-sm resize-none placeholder:text-slate-400"
               ></textarea>
             </div>
             <div>
