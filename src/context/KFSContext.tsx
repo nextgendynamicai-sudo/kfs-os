@@ -42,7 +42,7 @@ const MOCK_BCV_RATES = {
   isWeekend: false
 };
 
-const CURRENT_WIPE_VERSION = 8;
+const CURRENT_WIPE_VERSION = 9;
 
 const initialDB = {
   clients: [
@@ -67,58 +67,6 @@ const initialDB = {
         typography: "font-sans",
         layoutType: "grid",
         profilePicUrl: "https://cdn-icons-png.flaticon.com/512/3063/3063822.png"
-      }
-    },
-    {
-      id: "demo_negocio_000",
-      company: "Negocio Demo 000 (1 Mes)",
-      name: "Juan Perez Demo",
-      email: "000",
-      phone: "+584140000000",
-      password: "130987d23fdb7d4354e7a2753b82c9481e845b49bdca0c0e7f79453c6e573893", // Hash for '0000'
-      address: `Local Demo`,
-      rating: 5.0,
-      reviewCount: 0,
-      kfsFeePercentage: 0.05,
-      fee_tier: "5%",
-      is_founder: false,
-      kfsFeesOwedUSD: 0,
-      isOnboarded: true,
-      walletBalanceUSD: 100,
-      salesUSD: 0,
-      account_tier: "demo",
-      storeSettings: {
-        bioText: "Tienda de demostración de Monopoly OS",
-        themeColor: "#7c3aed",
-        typography: "font-sans",
-        layoutType: "grid",
-        profilePicUrl: ""
-      }
-    },
-    {
-      id: "pionero_negocio_0000",
-      company: "Negocio Pionero 0000 (Fundador)",
-      name: "Maria Lopez Pionera",
-      email: "0000",
-      phone: "+584140000001",
-      password: "130987d23fdb7d4354e7a2753b82c9481e845b49bdca0c0e7f79453c6e573893", // Hash for '0000'
-      address: `Local Pionero`,
-      rating: 5.0,
-      reviewCount: 0,
-      kfsFeePercentage: 0.02,
-      fee_tier: "2%",
-      is_founder: true,
-      kfsFeesOwedUSD: 0,
-      isOnboarded: true,
-      walletBalanceUSD: 0,
-      salesUSD: 0,
-      account_tier: "pionero",
-      storeSettings: {
-        bioText: "Tienda con tarifa especial pionera",
-        themeColor: "#f59e0b",
-        typography: "font-sans",
-        layoutType: "grid",
-        profilePicUrl: ""
       }
     }
   ] as any[],
@@ -246,36 +194,7 @@ const initialDB = {
       }
     ]
   },
-  promotoras: [
-    {
-      id: "p1",
-      name: "Promotora Oficial KFS",
-      email: "p1",
-      password: "0000",
-      binanceId: "184592019",
-      pagoMovil: "04141234567",
-      setups: 1,
-      earningsEUR: 18.75,
-      status: "active",
-      kyc_status: "approved",
-      passiveEarningsEUR: 5.0,
-      pendingPayoutEUR: 0
-    },
-    {
-      id: "p2",
-      name: "Gobernadora Regional Caracas",
-      email: "promotora@kfs.com",
-      password: "0000",
-      binanceId: "987654321",
-      pagoMovil: "04249876543",
-      setups: 3,
-      earningsEUR: 56.25,
-      status: "active",
-      kyc_status: "approved",
-      passiveEarningsEUR: 12.5,
-      pendingPayoutEUR: 0
-    }
-  ] as any[],
+  promotoras: [] as any[],
   riders: [] as any[],
   coupons: [] as any[],
   fiscalLogs: [] as any[]
