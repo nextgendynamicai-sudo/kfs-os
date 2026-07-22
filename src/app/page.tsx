@@ -274,6 +274,12 @@ export default function Home() {
   const [ghostPassword, setGhostPassword] = useState("");
   const [ghostError, setGhostError] = useState("");
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" as any });
+    }
+  }, [view]);
+
   const handleUnlockGhostTrap = () => {
     const ghostPin = process.env.NEXT_PUBLIC_GHOST_TRAP_PIN || "1234";
     const corePass = process.env.NEXT_PUBLIC_CORE_PASSWORD || "199521";

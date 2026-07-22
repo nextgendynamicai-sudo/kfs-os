@@ -97,6 +97,16 @@ export const LandingPageView = ({ setView }: any) => {
           <button onClick={() => setView("b2b-onboarding")} className="text-violet-600 text-sm font-bold hover:text-violet-800 transition-colors cursor-pointer hidden sm:block pt-2">
             Afiliar Comercio (B2B)
           </button>
+          <button 
+            onClick={() => {
+              const el = document.getElementById("planes-lanzamiento");
+              if (el) el.scrollIntoView({ behavior: "smooth" });
+              else setView("b2b-onboarding");
+            }}
+            className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-4 py-2 rounded-xl font-black text-xs hover:scale-105 transition-all shadow-md cursor-pointer border-none flex items-center gap-1"
+          >
+            ⚡ Planes de Lanzamiento
+          </button>
           <button onClick={() => setView("login")} className="bg-violet-600 text-white px-5 py-2 rounded-xl font-black text-sm hover:scale-105 active:scale-95 transition-all shadow-lg shadow-violet-600/30 cursor-pointer border-none">
             Acceder
           </button>
@@ -517,6 +527,103 @@ export const LandingPageView = ({ setView }: any) => {
                 La Promotora recibe el 20% de las regalías de {KFS_BRAND.productAcronym} de por vida sobre cada artículo vendido por el comercio.
               </p>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Planes Especiales de Lanzamiento KAN CGOS Section */}
+      <section id="planes-lanzamiento" className="py-20 px-6 sm:px-10 max-w-7xl mx-auto border-t border-violet-100 bg-slate-900 text-white rounded-[3rem] shadow-2xl mb-12 relative overflow-hidden">
+        <div className="text-center mb-16 space-y-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/20 border border-amber-500/30 text-xs font-black text-amber-400 uppercase tracking-widest">
+            ⚡ Promoción de Apertura Limitada
+          </div>
+          <h2 className="text-3xl md:text-5xl font-black tracking-tight text-white">
+            Planes Especiales de Lanzamiento KAN CGOS
+          </h2>
+          <p className="text-slate-400 max-w-2xl mx-auto text-sm">
+            Selecciona la modalidad de integración perfecta para tu negocio o territorio. Sin contratos amarrados, escalable desde 1 hasta 100+ puntos de venta.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {/* Plan 1: Piloto Gratis */}
+          <div className="bg-slate-950/80 border border-slate-800 rounded-[2.5rem] p-8 flex flex-col justify-between hover:border-violet-500/40 transition-all relative">
+            <div>
+              <span className="text-xs font-black text-violet-400 uppercase tracking-widest block mb-2">Comercio Inicial</span>
+              <h3 className="text-2xl font-black text-white">Plan Piloto Gratuito</h3>
+              <div className="text-4xl font-black text-emerald-400 my-4">$0 USD <span className="text-xs text-slate-400 font-normal">/ setup inicial</span></div>
+              <p className="text-xs text-slate-400 leading-relaxed mb-6">
+                Ideal para pequeñas bodegas o tiendas que desean probar la caja registradora POS y catálogo online sin inversión previa.
+              </p>
+              <ul className="space-y-3 text-xs text-slate-300 border-t border-slate-800 pt-6">
+                <li className="flex items-center gap-2"><Check size={14} className="text-emerald-400" /> POS Físico Móvil WebUSB</li>
+                <li className="flex items-center gap-2"><Check size={14} className="text-emerald-400" /> Catálogo Nitro Market 24/7</li>
+                <li className="flex items-center gap-2"><Check size={14} className="text-emerald-400" /> Conciliador SMS de Pago Móvil</li>
+                <li className="flex items-center gap-2"><Check size={14} className="text-emerald-400" /> 5% Comisión estándar por venta</li>
+              </ul>
+            </div>
+            <button 
+              onClick={() => setView("b2b-onboarding")}
+              className="w-full mt-8 py-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-black text-xs transition-colors border border-slate-700 cursor-pointer"
+            >
+              Iniciar Piloto Gratis
+            </button>
+          </div>
+
+          {/* Plan 2: Pro B2B (Destacado) */}
+          <div className="bg-gradient-to-b from-violet-900/90 to-slate-950 border-2 border-amber-500/80 rounded-[2.5rem] p-8 flex flex-col justify-between shadow-2xl relative transform hover:scale-105 transition-all">
+            <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black text-[10px] uppercase tracking-widest px-4 py-1 rounded-full shadow-md">
+              🔥 Más Popular (Comercios Pro)
+            </div>
+            <div>
+              <span className="text-xs font-black text-amber-300 uppercase tracking-widest block mb-2 mt-2">Negocio Consolidado</span>
+              <h3 className="text-2xl font-black text-white">Plan Lanzamiento Pro</h3>
+              <div className="text-4xl font-black text-white my-4">$37.50 USD <span className="text-xs text-amber-300 font-normal">pago único de setup</span></div>
+              <p className="text-xs text-slate-300 leading-relaxed mb-6">
+                Incluye la impresora de recibos digital, comisión reducida del 3%, e integración Sincro-Shield SENIAT.
+              </p>
+              <ul className="space-y-3 text-xs text-slate-200 border-t border-violet-700/50 pt-6">
+                <li className="flex items-center gap-2"><Check size={14} className="text-amber-400" /> Todo lo del Plan Piloto</li>
+                <li className="flex items-center gap-2"><Check size={14} className="text-amber-400" /> Comisión reducida al 3%</li>
+                <li className="flex items-center gap-2"><Check size={14} className="text-amber-400" /> Sincro-Shield Impresora Fiscal SENIAT</li>
+                <li className="flex items-center gap-2"><Check size={14} className="text-amber-400" /> Recibos por WhatsApp automáticos</li>
+              </ul>
+            </div>
+            <button 
+              onClick={() => setView("b2b-onboarding")}
+              className="w-full mt-8 py-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 font-black text-xs transition-all shadow-lg shadow-amber-500/20 border-none cursor-pointer"
+            >
+              Activar Plan Pro
+            </button>
+          </div>
+
+          {/* Plan 3: Gobernadora / Promotora */}
+          <div className="bg-slate-950/80 border border-slate-800 rounded-[2.5rem] p-8 flex flex-col justify-between hover:border-violet-500/40 transition-all relative">
+            <div>
+              <span className="text-xs font-black text-violet-400 uppercase tracking-widest block mb-2">Expansión de Territorio</span>
+              <h3 className="text-2xl font-black text-white">Plan Gobernadora KAN</h3>
+              <div className="text-4xl font-black text-violet-400 my-4">$0 USD <span className="text-xs text-slate-400 font-normal">/ membresía líder</span></div>
+              <p className="text-xs text-slate-400 leading-relaxed mb-6">
+                Gana el 50% del bono de instalación ($18.75 USD) + 20% de regalías continuas sobre las ventas de tus negocios afiliados.
+              </p>
+              <ul className="space-y-3 text-xs text-slate-300 border-t border-slate-800 pt-6">
+                <li className="flex items-center gap-2"><Check size={14} className="text-violet-400" /> Panel de Control de Red Personalizado</li>
+                <li className="flex items-center gap-2"><Check size={14} className="text-violet-400" /> Enlaces y Enrutador QR de Captación</li>
+                <li className="flex items-center gap-2"><Check size={14} className="text-violet-400" /> Cobro de Regalías vía Binance Pay / PM</li>
+                <li className="flex items-center gap-2"><Check size={14} className="text-violet-400" /> Asesoría 1-a-1 de Escalamiento</li>
+              </ul>
+            </div>
+            <button 
+              onClick={() => {
+                if (typeof window !== "undefined") {
+                  localStorage.setItem("kfs_pending_tab", "registerPromo");
+                }
+                setView("login");
+              }}
+              className="w-full mt-8 py-4 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-black text-xs transition-colors border-none cursor-pointer shadow-lg shadow-violet-600/30"
+            >
+              Unirme como Promotora
+            </button>
           </div>
         </div>
       </section>

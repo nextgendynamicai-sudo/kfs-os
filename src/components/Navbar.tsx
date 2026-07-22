@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ChevronLeft, Bell, Sun, Moon } from "lucide-react";
+import { ChevronLeft, Bell, Sun, Moon, X } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { KreatekLogo } from "./KreatekLogo";
 import { compressImage, playSyncChime } from "../lib/utils";
@@ -25,6 +25,7 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
   } = useKFS() as any;
   const [isSyncing, setIsSyncing] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const [showNotifDrawer, setShowNotifDrawer] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -186,6 +187,20 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
             {theme === "light" ? <Moon size={14} /> : <Sun size={14} />}
           </button>
 
+          {/* Interactive Notification Bell */}
+          <button
+            onClick={() => setShowNotifDrawer(prev => !prev)}
+            className="relative flex items-center justify-center p-2 rounded-xl border border-violet-500/30 hover:bg-violet-800/50 text-violet-200 hover:text-white transition-all cursor-pointer h-8 w-8 bg-violet-950/40"
+            title="Ver centro de notificaciones"
+          >
+            <Bell size={14} className={db.notifications?.length > 0 ? "animate-pulse text-amber-400" : ""} />
+            {(db.notifications || []).length > 0 && (
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[9px] font-black text-slate-950 shadow-md">
+                {(db.notifications || []).length}
+              </span>
+            )}
+          </button>
+
           {currentUser && currentUser.role !== "marketplace" && (
             <label className="relative w-8 h-8 rounded-full border border-violet-600/50 cursor-pointer overflow-hidden flex items-center justify-center bg-white/10 hover:bg-white/20 transition-all shadow-inner group" title="Toca tu foto para actualizar tu imagen de perfil">
               <input
@@ -247,6 +262,66 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
           )}
         </div>
 
+        {/* Notification Modal Drawer */}
+        {showNotifDrawer && (
+          <div className="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-md flex justify-end animate-fade-in">
+            <div className="w-full max-w-md bg-slate-900 border-l border-violet-500/30 text-white h-full p-6 flex flex-col justify-between shadow-2xl overflow-y-auto">
+              <div>
+                <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+                  <div className="flex items-center gap-2">
+                    <Bell className="text-amber-400" size={20} />
+                    <h3 className="text-lg font-black text-white">Centro de Notificaciones</h3>
+                  </div>
+                  <button 
+                    onClick={() => setShowNotifDrawer(false)}
+                    className="p-1.5 rounded-full hover:bg-white/10 text-slate-400 hover:text-white border-none cursor-pointer"
+                  >
+                    <X size={20} />
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  {(db.notifications || []).length > 0 ? (
+                    (db.notifications || []).slice().reverse().map((notif: any, idx: number) => (
+                      <div key={notif.id || idx} className="bg-slate-800/80 border border-slate-700/50 rounded-2xl p-4 space-y-1 relative overflow-hidden">
+                        <div className="flex justify-between items-start">
+                          <h4 className="text-xs font-black text-amber-300 uppercase tracking-wider">{notif.title}</h4>
+                          <span className="text-[9px] text-slate-400 font-mono">
+                            {notif.date ? new Date(notif.date).toLocaleTimeString() : "En vivo"}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-300 font-bold">{notif.message}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="bg-slate-950/50 border border-slate-800 rounded-2xl p-8 text-center space-y-2">
+                      <Bell className="mx-auto text-slate-600 mb-2" size={36} />
+                      <p className="text-sm font-bold text-slate-300">Sin notificaciones pendientes</p>
+                      <p className="text-xs text-slate-500">Todas las alertas del ecosistema aparecerán en esta bandeja.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="pt-6 border-t border-white/10 mt-6 flex justify-between gap-3">
+                <button 
+                  onClick={() => {
+                    showToast("Notificación Push de prueba enviada", "success");
+                  }}
+                  className="flex-1 py-3 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-black text-xs border-none cursor-pointer shadow-lg shadow-violet-600/30"
+                >
+                  ⚡ Probar Alerta
+                </button>
+                <button 
+                  onClick={() => setShowNotifDrawer(false)}
+                  className="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs border border-slate-700 cursor-pointer"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </nav>
     </>
   );
