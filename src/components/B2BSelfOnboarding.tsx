@@ -2,6 +2,7 @@ import { KFS_BRAND } from "../config/brandConfig";
 import React, { useState } from "react";
 import { Store, ShieldCheck, CreditCard, ArrowRight, Download, Printer, CheckCircle } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
+import { PhoneInput } from "./PhoneInput";
 
 interface B2BSelfOnboardingProps {
   setView: (view: string) => void;
@@ -156,12 +157,10 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="text-xs font-bold text-[#334155] block mb-1">Teléfono Móvil (WhatsApp)</label>
-                  <input
-                    type="tel"
-                    placeholder="Ej: 04121234567"
+                  <PhoneInput
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7c3aed] transition-colors"
+                    onChange={(val) => setFormData({ ...formData, phone: val })}
+                    placeholder="04121234567"
                   />
                 </div>
                 <div>

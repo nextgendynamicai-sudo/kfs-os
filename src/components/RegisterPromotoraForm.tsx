@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { Camera, Trash2, ShieldCheck, CheckCircle2, AlertCircle, Info, Lock, Smartphone, Mail, User, MapPin, CreditCard } from "lucide-react";
 import { compressImage } from "../lib/utils";
+import { PhoneInput } from "./PhoneInput";
 
 export const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCode = "" }: any) => {
   const [formData, setFormData] = useState({ name: "", email: "", password: "", binanceId: "", pagoMovil: "", avatar: "", kycCedula: "", kycAddress: "" });
@@ -239,7 +240,12 @@ export const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCod
             </span>
           )}
         </div>
-        <input required placeholder="Ej: 04141234567" value={formData.pagoMovil} className="w-full bg-violet-50/50 border border-violet-100 rounded-xl px-4 py-3 text-sm text-violet-950 focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all placeholder:text-slate-400" onChange={e => setFormData({ ...formData, pagoMovil: e.target.value })} />
+        <PhoneInput
+          required
+          value={formData.pagoMovil}
+          onChange={val => setFormData({ ...formData, pagoMovil: val })}
+          placeholder="04141234567"
+        />
       </div>
 
       <div className="flex gap-3 pt-4">

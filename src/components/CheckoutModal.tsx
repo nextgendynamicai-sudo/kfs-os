@@ -7,6 +7,7 @@ import { useKFS } from "../context/KFSContext";
 import { compressImage } from "../lib/utils";
 import { motion } from "framer-motion";
 import { ModalPortal } from "./ModalPortal";
+import { PhoneInput } from "./PhoneInput";
 
 export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnline = false, storeOwner, currentUser }: any) => {
   const { db, rates, showToast } = useKFS() as any;
@@ -487,7 +488,11 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
                   </span>
                 )}
               </div>
-              <input type="text" placeholder="Ej: 04141234567" value={customerPhone} onChange={e => { setCustomerPhone(e.target.value); setKPointsToBurn(0); }} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-400" />
+              <PhoneInput
+                value={customerPhone}
+                onChange={val => { setCustomerPhone(val); setKPointsToBurn(0); }}
+                placeholder="4141234567"
+              />
               <p className="text-[10px] text-gray-400 mt-1">Opcional. {isOnline ? "Para que el comercio te contacte." : "Para enviar el recibo electrónico por WhatsApp."}</p>
             </div>
 

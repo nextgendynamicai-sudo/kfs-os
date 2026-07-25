@@ -5,6 +5,7 @@ import { KFS_BRAND } from "../config/brandConfig";
 import { Truck, Trash2 } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { compressImage } from "../lib/utils";
+import { PhoneInput } from "./PhoneInput";
 
 export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCancel: () => void, defaultReferralCode?: string }) => {
   const { registerRider, showToast } = useKFS() as any;
@@ -132,7 +133,12 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
               </span>
             )}
           </div>
-          <input required type="tel" placeholder="Ej: 04141234567" value={formData.phone} onChange={e => setFormData(p => ({ ...p, phone: e.target.value }))} className="w-full bg-violet-50/50 border border-violet-100 rounded-xl px-4 py-3 text-violet-950 text-sm focus:outline-none focus:border-violet-400 transition-all placeholder:text-slate-400" />
+          <PhoneInput
+            required
+            value={formData.phone}
+            onChange={val => setFormData(p => ({ ...p, phone: val }))}
+            placeholder="04141234567"
+          />
         </div>
         <div>
           <div className="flex justify-between items-center mb-1 ml-1">
@@ -171,7 +177,7 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
         <option value="">— Selecciona Banco —</option>
         {["Banesco", "Mercantil", "Banco de Venezuela", "Provincial", "BOD", "Bancaribe", "Bicentenario", "BNC", "Exterior", "Tesoro"].map(b => <option key={b} value={b}>{b}</option>)}
       </select>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="space-y-2">
         <div>
           <div className="flex justify-between items-center mb-1 ml-1">
             <label className="block text-[8px] font-black text-violet-700 uppercase tracking-widest">Teléfono PM</label>
@@ -181,7 +187,12 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
               </span>
             )}
           </div>
-          <input required type="tel" placeholder="Teléfono PM (04xx...)" value={formData.pagoMovil.telefono} onChange={e => setFormData(p => ({ ...p, pagoMovil: { ...p.pagoMovil, telefono: e.target.value } }))} className="w-full bg-violet-50/50 border border-violet-100 rounded-xl px-3 py-3 text-violet-950 text-sm focus:outline-none focus:border-violet-400 transition-all placeholder:text-slate-400" />
+          <PhoneInput
+            required
+            value={formData.pagoMovil.telefono}
+            onChange={val => setFormData(p => ({ ...p, pagoMovil: { ...p.pagoMovil, telefono: val } }))}
+            placeholder="Teléfono PM"
+          />
         </div>
         <div>
           <label className="block text-[8px] font-black text-violet-700 uppercase tracking-widest mb-1 ml-1">Cédula Titular</label>

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { X, Store, User, Mail, Phone, Lock, FileText, ChevronRight } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { ModalPortal } from "./ModalPortal";
+import { PhoneInput } from "./PhoneInput";
 
 interface RegistrationModalProps {
   isOpen: boolean;
@@ -115,11 +116,12 @@ export function RegistrationModal({ isOpen, onClose, offerType }: RegistrationMo
                 />
               </div>
               <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
-                <input 
-                  type="tel" name="phone" required value={formData.phone} onChange={handleChange}
-                  placeholder="WhatsApp"
-                  className="w-full bg-slate-900/50 border border-slate-800 rounded-xl py-3 pl-10 pr-4 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500 transition-all"
+                <PhoneInput
+                  variant="dark"
+                  required
+                  value={formData.phone}
+                  onChange={(val) => setFormData(prev => ({ ...prev, phone: val }))}
+                  placeholder="WhatsApp (04xx...)"
                 />
               </div>
             </div>

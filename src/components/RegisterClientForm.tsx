@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { KFS_BRAND } from "../config/brandConfig";
 import { Camera, DollarSign, Lock, Info, Store, UserCheck, Smartphone, FileText, MapPin, Trash2 } from "lucide-react";
 import { compressImage } from "../lib/utils";
+import { PhoneInput } from "./PhoneInput";
 
 export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, defaultReferralCode = "" }: any) => {
   const [formData, setFormData] = useState({ name: "", idCard: "", company: "", avgBilling: "", phone: "", email: "", password: "", address: "", kfsFeePercentage: 0.03, avatar: "", kycCedula: "", business_preset: "RETAIL-QUICK" });
@@ -249,10 +250,12 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
             </span>
           )}
         </div>
-        <div className="relative">
-          <Smartphone className="absolute left-4 top-3.5 text-violet-400" size={20} />
-          <input required placeholder="Ej: 04141234567" value={formData.phone} className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all ${standalone ? "bg-violet-50/50 border-violet-100 text-violet-950 placeholder:text-slate-400" : "bg-violet-50/30 border-violet-100 text-violet-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, phone: e.target.value })} />
-        </div>
+        <PhoneInput
+          required
+          value={formData.phone}
+          onChange={val => setFormData({ ...formData, phone: val })}
+          placeholder="04141234567"
+        />
       </div>
       
       <div className="relative">

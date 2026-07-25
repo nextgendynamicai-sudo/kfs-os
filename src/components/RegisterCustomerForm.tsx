@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Camera, Lock, UserCheck, Smartphone, FileText, MapPin, Trash2, Tag } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { compressImage } from "../lib/utils";
+import { PhoneInput, parsePhoneNumber } from "./PhoneInput";
 
 export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCancel: () => void, defaultReferralCode?: string }) => {
   const [name, setName] = useState("");
@@ -120,28 +121,16 @@ export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCanc
             </span>
           )}
         </div>
-        <div className="flex gap-2">
-          <select
-            value={phonePrefix}
-            onChange={e => setPhonePrefix(e.target.value)}
-            className="bg-violet-50/50 border border-violet-100 rounded-xl px-3 py-3 text-violet-950 focus:outline-none focus:border-violet-400 text-sm cursor-pointer"
-          >
-            <option value="+58">VE (+58)</option>
-            <option value="+57">CO (+57)</option>
-            <option value="+507">PA (+507)</option>
-            <option value="+34">ES (+34)</option>
-            <option value="+56">CL (+56)</option>
-            <option value="+593">EC (+593)</option>
-            <option value="+51">PE (+51)</option>
-            <option value="+54">AR (+54)</option>
-            <option value="+1">US/CA (+1)</option>
-            <option value="+1809">DO (+1-809)</option>
-          </select>
-          <div className="relative flex-1">
-            <Smartphone className="absolute left-4 top-3.5 text-violet-400" size={20} />
-            <input required type="text" placeholder="Ej: 4141234567" value={phoneBody} onChange={e => setPhoneBody(e.target.value)} className="w-full bg-violet-50/50 border border-violet-100 rounded-xl pl-12 pr-4 py-3 text-violet-950 placeholder:text-slate-400 focus:outline-none focus:border-violet-400 transition-all" />
-          </div>
-        </div>
+        <PhoneInput
+          required
+          value={`${phonePrefix}${phoneBody}`}
+          onChange={(val) => {
+            const parsed = parsePhoneNumber(val);
+            setPhonePrefix(parsed.prefix);
+            setPhoneBody(parsed.body);
+          }}
+          placeholder="4141234567"
+        />
       </div>
 
       <div className="flex gap-4 mb-2">

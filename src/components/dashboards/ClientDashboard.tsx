@@ -2,6 +2,7 @@
 
 import { KFS_BRAND } from "../../config/brandConfig";
 import { Toast } from "../Toast";
+import { PhoneInput } from "../PhoneInput";
 import { CvViewerModal } from "../CvViewerModal";
 import { SMSConciliatorSimulator } from "../SMSConciliatorSimulator";
 import { KFSFinancialSplitCalculator } from "../KFSFinancialSplitCalculator";
@@ -1051,7 +1052,14 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
               <div className="space-y-2 border border-violet-100 p-4 rounded-xl bg-slate-50">
                 <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest font-mono mb-2 block">Pago Móvil</label>
                 <input name="pMovilBank" defaultValue={currentUser.paymentMethods?.pagoMovilBank || ""} placeholder="Banco (Ej. Banesco 0134)" className="w-full bg-white border border-violet-100 shadow-sm rounded-xl px-3 py-2 text-xs text-violet-950 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 mb-2 placeholder:text-slate-400" />
-                <input name="pMovilPhone" defaultValue={currentUser.paymentMethods?.pagoMovilPhone || ""} placeholder="Teléfono" className="w-full bg-white border border-violet-100 shadow-sm rounded-xl px-3 py-2 text-xs text-violet-950 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 mb-2 placeholder:text-slate-400" />
+                <div className="mb-2">
+                  <PhoneInput
+                    name="pMovilPhone"
+                    value={currentUser.paymentMethods?.pagoMovilPhone || ""}
+                    onChange={() => {}}
+                    placeholder="Teléfono (04xx...)"
+                  />
+                </div>
                 <input name="pMovilId" defaultValue={currentUser.paymentMethods?.pagoMovilId || ""} placeholder="Cédula/RIF" className="w-full bg-white border border-violet-100 shadow-sm rounded-xl px-3 py-2 text-xs text-violet-950 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 placeholder:text-slate-400" />
               </div>
               <div className="md:col-span-3 flex justify-end">

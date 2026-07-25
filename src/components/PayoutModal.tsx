@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { DollarSign, Landmark, X, CheckCircle, Shield } from "lucide-react";
 import { motion } from "framer-motion";
 import { ModalPortal } from "./ModalPortal";
+import { PhoneInput } from "./PhoneInput";
 
 export const PayoutModal = ({ maxAmount, currency, onConfirm, onCancel, formatMoney }: any) => {
   const [amount, setAmount] = useState<string>("");
@@ -84,10 +85,11 @@ export const PayoutModal = ({ maxAmount, currency, onConfirm, onCancel, formatMo
               <option value="">— Selecciona Banco —</option>
               {["Banesco", "Mercantil", "Banco de Venezuela", "Provincial", "BOD", "Bancaribe", "Bicentenario", "BNC", "Exterior", "Tesoro"].map(b => <option key={b} value={b}>{b}</option>)}
             </select>
-            <div className="grid grid-cols-2 gap-3">
-              <input 
-                type="tel" placeholder="Teléfono (Ej: 0414...)" value={telefono} onChange={e => setTelefono(e.target.value)} 
-                className="w-full bg-white border border-violet-100 rounded-xl px-4 py-3 text-sm text-[#0A1128] placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-violet-400 font-bold" 
+            <div className="space-y-3">
+              <PhoneInput
+                value={telefono}
+                onChange={val => setTelefono(val)}
+                placeholder="Teléfono (04xx...)"
               />
               <input 
                 type="text" placeholder="Cédula Titular" value={cedula} onChange={e => setCedula(e.target.value)} 
