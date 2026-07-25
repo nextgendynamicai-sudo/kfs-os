@@ -341,7 +341,13 @@ export default function Home() {
     }
   }, [currentUser, isUserValid, logout, setView, showToast, setCurrentUser]);
 
-  const safeView = (!currentUser || !isUserValid) && protectedViews.includes(view) ? "landing" : view;
+  const validViews = ["landing", "axis_nitro_pos", "b2b-onboarding", "login", "marketplace", "customer", "core", "promotora", "client", "vendedor", "rider"];
+  let normalizedView = view === "dueño" ? "client" : view;
+  if (!validViews.includes(normalizedView)) {
+    normalizedView = currentUser ? (currentUser.role === "dueño" ? "client" : (currentUser.role || "landing")) : "landing";
+  }
+
+  const safeView = (!currentUser || !isUserValid) && protectedViews.includes(normalizedView) ? "landing" : normalizedView;
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
