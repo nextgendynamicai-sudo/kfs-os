@@ -3884,9 +3884,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       ? await uploadAsset(`cvs/${candidateData.phone || "anon"}_cv.pdf`, candidateData.cvFile)
       : candidateData.cvFile;
 
-    const screenshotUrl = candidateData.registrationPaymentScreenshot && candidateData.registrationPaymentScreenshot.startsWith("data:")
-      ? await uploadAsset(`screenshots/${candidateData.phone || "anon"}_payment.png`, candidateData.registrationPaymentScreenshot)
-      : candidateData.registrationPaymentScreenshot;
+    const rawProof = candidateData.registrationPaymentProof || candidateData.registrationPaymentScreenshot || "";
+    const screenshotUrl = rawProof && rawProof.startsWith("data:")
+      ? await uploadAsset(`screenshots/${candidateData.phone || "anon"}_payment.png`, rawProof)
+      : rawProof;
 
     let deductionSuccessful = false;
 
@@ -3897,25 +3898,23 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       const customerIdx = prev.customers?.findIndex((c: any) => c.id === customerId);
       let updatedCustomers = [...(prev.customers || [])];
 
-      // Si no ha sido aprobado/pagado antes, intentamos cobrar 1 USD
       if (candidateData.registrationPaymentStatus !== "approved") {
-        if (customerIdx !== -1 && updatedCustomers[customerIdx].walletUSD >= 1) {
+        if (customerIdx !== undefined && customerIdx !== -1 && updatedCustomers[customerIdx]?.walletUSD >= 1) {
           updatedCustomers[customerIdx] = {
             ...updatedCustomers[customerIdx],
             walletUSD: updatedCustomers[customerIdx].walletUSD - 1
           };
           deductionSuccessful = true;
-          candidateData.registrationPaymentStatus = "pending_approval"; // Pasa a revisión del core
-        } else {
-          return prev; // Falla silenciosamente, el componente maneja el Toast antes
         }
+        candidateData.registrationPaymentStatus = "pending_approval";
       } else {
-        deductionSuccessful = true; // Ya estaba pagado
+        deductionSuccessful = true;
       }
 
       const newCandidate = {
         ...candidateData,
         cvFile: cvUrl,
+        registrationPaymentProof: screenshotUrl,
         registrationPaymentScreenshot: screenshotUrl,
         id: candidateData.id || `cand_${Date.now()}`,
         status: candidateData.status || "pending",
@@ -3930,7 +3929,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (deductionSuccessful) {
-      showToast(`Perfil enviado. Se debitó $1.00 USD de tu Reserva Central. En espera de revisión por el ${KFS_BRAND.productAcronym} Core.`, "success");
+      showToast(`Perfil laboral publicado. Se debitó $1.00 USD de tu saldo. En espera de aprobación por el ${KFS_BRAND.productAcronym} Core.`, "success");
+    } else {
+      showToast(`Perfil laboral publicado con tu comprobante de Pago Móvil ($1.00 USD). En espera de aprobación por el ${KFS_BRAND.productAcronym} Core.`, "success");
     }
   };
 

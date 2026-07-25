@@ -898,7 +898,6 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                           <label className="text-xs font-bold text-violet-700 uppercase tracking-wider block mb-1">Referencia de Pago Móvil</label>
                           <input
                             type="text"
-                            required
                             placeholder="Ej: 12345678"
                             value={regRefNum}
                             onChange={(e) => setRegRefNum(e.target.value)}
@@ -919,7 +918,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                               <Camera size={24} className="text-violet-400 mb-2" />
                               <span className="text-sm font-bold text-violet-700">Subir Captura</span>
                               <span className="text-[10px] text-slate-500 mt-1">PNG, JPG (Máx. 5MB)</span>
-                              <input type="file" required accept="image/*" className="hidden" onChange={async (e) => {
+                              <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
                                 const file = e.target.files?.[0];
                                 if (file) {
                                   try {
