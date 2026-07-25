@@ -2181,7 +2181,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
     showToast(`¡Bienvenido! Tu comercio ha sido registrado con el plan ${offerType}.`, "success");
     setCurrentUser({ ...newClient, role: "dueño" });
-    setView("dueño");
+    setView("client");
     return newClient;
   };
 
