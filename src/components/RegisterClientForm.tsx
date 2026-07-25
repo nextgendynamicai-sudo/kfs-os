@@ -52,6 +52,38 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
     }
   };
 
+  const ALL_AVAILABLE_SERVICES = [
+    { id: "pos_checkout", label: "Punto de Venta POS & Cobro Multimoneda", desc: "Caja registradora, escáner e impresión" },
+    { id: "inventory_management", label: "Inventario & Catálogo de Productos", desc: "Gestión de stock, fotos y precios" },
+    { id: "online_marketplace", label: "Tienda Digital en Marketplace", desc: "Ventas online directas en la web" },
+    { id: "delivery_rider", label: "Despacho Delivery / Motorizados", desc: "Asignación de riders a pedidos" },
+    { id: "vales_payroll", label: "Gestión de Vales & Nómina", desc: "Adelantos de sueldo a cajeros" },
+    { id: "crm_express", label: "Fidelización CRM & Axis Points", desc: "Cashback y registro de clientes" },
+    { id: "fiscal_printer", label: "Conexión Impresora Fiscal", desc: "Facturación legal y fiscal" },
+    { id: "escandallos_serial", label: "Escandallos / Seriales", desc: "Trazabilidad de costo y serie" },
+    { id: "booking_room", label: "Reservas & Habitaciones", desc: "Reserva de citas o salas" }
+  ];
+
+  const [enabledServices, setEnabledServices] = useState<string[]>([
+    "pos_checkout",
+    "inventory_management",
+    "online_marketplace",
+    "delivery_rider",
+    "vales_payroll",
+    "crm_express",
+    "fiscal_printer",
+    "escandallos_serial",
+    "booking_room"
+  ]);
+
+  const toggleService = (serviceId: string) => {
+    setEnabledServices(prev => 
+      prev.includes(serviceId) 
+        ? prev.filter(id => id !== serviceId) 
+        : [...prev, serviceId]
+    );
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.company.trim()) {
@@ -84,6 +116,7 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
 
     const fallbackData = {
       ...formData,
+      enabledServices,
       idCard: formData.idCard.trim() || "V00000000",
       address: formData.address.trim() || "Dirección Comercial Principal",
       avatar: avatar || defaultAvatar,
@@ -242,6 +275,41 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
         <div className="relative">
           <Lock className="absolute left-4 top-3.5 text-violet-400" size={20} />
           <input required type="password" placeholder="Mínimo 6 caracteres" value={formData.password} className={`w-full border rounded-lg pl-12 pr-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all ${standalone ? "bg-violet-50/50 border-violet-100 text-violet-950 placeholder:text-slate-400" : "bg-violet-50/30 border-violet-100 text-violet-950 placeholder:text-slate-400"}`} onChange={e => setFormData({ ...formData, password: e.target.value })} />
+        </div>
+      </div>
+
+      {/* SELECCIONADOR MODULAR DE SERVICIOS */}
+      <div className="bg-violet-50/60 border border-violet-100 rounded-xl p-3 my-3">
+        <label className="block text-xs font-black uppercase tracking-widest text-violet-800 mb-1">
+          Servicios Habilitados para el Comercio ({enabledServices.length} de {ALL_AVAILABLE_SERVICES.length})
+        </label>
+        <p className="text-[10px] text-slate-500 mb-3">Selecciona únicamente los servicios y módulos que el cliente desea activar en su plan:</p>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-48 overflow-y-auto p-1">
+          {ALL_AVAILABLE_SERVICES.map((srv) => {
+            const isChecked = enabledServices.includes(srv.id);
+            return (
+              <label 
+                key={srv.id} 
+                className={`flex items-start gap-2 p-2 rounded-lg border cursor-pointer transition-all ${
+                  isChecked 
+                    ? "bg-white border-violet-400 shadow-sm" 
+                    : "bg-gray-50/50 border-gray-200 opacity-60 hover:opacity-100"
+                }`}
+              >
+                <input 
+                  type="checkbox" 
+                  checked={isChecked} 
+                  onChange={() => toggleService(srv.id)}
+                  className="mt-0.5 accent-violet-600 cursor-pointer"
+                />
+                <div>
+                  <span className="text-[11px] font-bold text-violet-950 block leading-tight">{srv.label}</span>
+                  <span className="text-[9px] text-slate-500 block leading-tight">{srv.desc}</span>
+                </div>
+              </label>
+            );
+          })}
         </div>
       </div>
 
