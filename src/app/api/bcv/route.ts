@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import https from 'https';
 import * as cheerio from 'cheerio';
 
-export const revalidate = 60; // Revalidate every 60 seconds (ISR)
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 async function fetchFromDolarApi(): Promise<{ USD: number; EUR: number } | null> {
   try {
