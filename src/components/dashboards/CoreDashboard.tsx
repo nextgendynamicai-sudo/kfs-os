@@ -89,6 +89,37 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
   const [searchVendedor, setSearchVendedor] = useState("");
   const [viewingCandidateCv, setViewingCandidateCv] = useState<any | null>(null);
   const [viewingKycPhoto, setViewingKycPhoto] = useState<string | null>(null);
+  const [viewingProofMedia, setViewingProofMedia] = useState<{ src: string; title: string } | null>(null);
+
+  const openMediaViewer = (mediaSrc: string, title: string = "Capture de Pantalla") => {
+    if (!mediaSrc) return;
+
+    if (mediaSrc.startsWith("data:application/pdf") || mediaSrc.toLowerCase().endsWith(".pdf")) {
+      try {
+        if (mediaSrc.startsWith("data:")) {
+          const parts = mediaSrc.split(",");
+          const byteString = atob(parts[1]);
+          const mimeString = parts[0].split(":")[1].split(";")[0];
+          const ab = new ArrayBuffer(byteString.length);
+          const ia = new Uint8Array(ab);
+          for (let i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+          }
+          const blob = new Blob([ab], { type: mimeString });
+          const blobUrl = URL.createObjectURL(blob);
+          window.open(blobUrl, "_blank");
+          return;
+        }
+      } catch (e) {
+        console.error("Error creating Blob for PDF viewer", e);
+      }
+      window.open(mediaSrc, "_blank");
+      return;
+    }
+
+    setViewingProofMedia({ src: mediaSrc, title });
+  };
+
   const [activeTab, setActiveTab] = useState("panel"); // panel | red | soporte | auditoria
   const [newMemberName, setNewMemberName] = useState("");
   const [newMemberPass, setNewMemberPass] = useState("");
@@ -1247,7 +1278,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                                 if (cand.useKfsCvBuilder) {
                                   setViewingCandidateCv(cand);
                                 } else {
-                                  window.open(cand.cvFile, '_blank');
+                                  openMediaViewer(cand.cvFile, `Currículum - ${cand.name}`);
                                 }
                               }}
                               className="text-[10px] font-black text-violet-600 underline cursor-pointer flex items-center gap-1 hover:text-violet-700 transition-colors"
@@ -1255,9 +1286,9 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                               👁️ {cand.useKfsCvBuilder ? `Ver CV Digital ${KFS_BRAND.productAcronym}` : `Abrir Currículum (${cand.cvFileType?.includes('pdf') ? 'PDF' : 'Imagen'})`}
                             </button>
                           )}
-                          {cand.registrationPaymentProof && (
+                          {(cand.registrationPaymentProof || cand.registrationPaymentScreenshot) && (
                             <button
-                              onClick={() => window.open(cand.registrationPaymentProof, '_blank')}
+                              onClick={() => openMediaViewer(cand.registrationPaymentProof || cand.registrationPaymentScreenshot, `Capture de Pago ($1) - ${cand.name}`)}
                               className="text-[10px] font-black text-emerald-600 underline cursor-pointer flex items-center gap-1 hover:text-emerald-700 transition-colors"
                             >
                               👁️ Ver Capture de Pago
@@ -1308,7 +1339,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                           {u.screenshot && (
                             <div className="mt-2">
                               <button
-                                onClick={() => window.open(u.screenshot, '_blank')}
+                                onClick={() => openMediaViewer(u.screenshot, `Capture de Desbloqueo ($10) - ${client?.company || "Comercio"}`)}
                                 className="text-[10px] font-black text-emerald-600 underline cursor-pointer hover:text-emerald-700 transition-colors"
                               >
                                 👁️ Ver Capture de Pago
@@ -3031,6 +3062,88 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             </div>
           </div>
         </div>
+      )}
+
+      {/* MODAL PREVIEW PARA CAPTURES DE PAGO Y MEDIOS */}
+      {viewingProofMedia && (
+        <div className="fixed inset-0 bg-slate-950/80 z-[99999] flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in zoom-in-95 duration-200">
+          <div className="bg-slate-900 border-2 border-emerald-500/40 rounded-[2.5rem] w-full max-w-xl p-6 shadow-2xl relative flex flex-col items-center overflow-hidden">
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none" />
+            
+            <button
+              onClick={() => setViewingProofMedia(null)}
+              className="absolute top-5 right-5 text-slate-400 hover:text-white hover:bg-white/10 p-2 rounded-full transition-colors cursor-pointer"
+            >
+              <X size={20} />
+            </button>
+            
+            <h3 className="text-lg font-black text-white mb-4 flex items-center gap-2">
+              <Eye size={20} className="text-emerald-400" /> {viewingProofMedia.title}
+            </h3>
+            
+            <div className="w-full max-h-[70vh] overflow-auto rounded-2xl border border-white/10 bg-slate-950/80 p-2 flex justify-center items-center">
+              <img
+                src={viewingProofMedia.src}
+                alt={viewingProofMedia.title}
+                className="max-w-full h-auto rounded-xl object-contain shadow-md"
+              />
+            </div>
+
+            <div className="mt-5 flex gap-3 w-full">
+              <button
+                onClick={() => {
+                  try {
+                    if (viewingProofMedia.src.startsWith("data:")) {
+                      const parts = viewingProofMedia.src.split(",");
+                      const byteString = atob(parts[1]);
+                      const mimeString = parts[0].split(":")[1].split(";")[0];
+                      const ab = new ArrayBuffer(byteString.length);
+                      const ia = new Uint8Array(ab);
+                      for (let i = 0; i < byteString.length; i++) {
+                        ia[i] = byteString.charCodeAt(i);
+                      }
+                      const blob = new Blob([ab], { type: mimeString });
+                      const blobUrl = URL.createObjectURL(blob);
+                      window.open(blobUrl, "_blank");
+                    } else {
+                      window.open(viewingProofMedia.src, "_blank");
+                    }
+                  } catch (e) {
+                    window.open(viewingProofMedia.src, "_blank");
+                  }
+                }}
+                className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-all cursor-pointer shadow-lg shadow-emerald-600/30 flex items-center justify-center gap-2 border-none"
+              >
+                <ArrowUpRight size={16} /> Abrir en Nueva Pestaña (Blob)
+              </button>
+
+              <button
+                onClick={() => setViewingProofMedia(null)}
+                className="px-6 py-3 bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs rounded-xl transition-all cursor-pointer border-none"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL PREVIEW PARA CV DIGITAL DE CANDIDATO */}
+      {viewingCandidateCv && (
+        <CvViewerModal
+          isOpen={!!viewingCandidateCv}
+          onClose={() => setViewingCandidateCv(null)}
+          candidate={{
+            name: viewingCandidateCv.name,
+            phone: viewingCandidateCv.phone,
+            email: viewingCandidateCv.email || "correo@ejemplo.com",
+            bio: viewingCandidateCv.bio || "Presentación no especificada",
+            role: viewingCandidateCv.role || "Cajero",
+            skills: viewingCandidateCv.skills || [],
+            answers: viewingCandidateCv.answers || {},
+            id: viewingCandidateCv.id || "cand_demo"
+          }}
+        />
       )}
     </div>
   );
