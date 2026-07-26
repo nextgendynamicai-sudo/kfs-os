@@ -1190,7 +1190,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
               newC.k_points_expiry = new Date(now + 5 * 24 * 60 * 60 * 1000).toISOString();
               
               // Simulate Webhook sending
-              console.log(`[WEBHOOK WHATSAPP SENT to ${newC.phone}]: {KFS_BRAND.productAcronym}: Tu balance inactivo de {KFS_BRAND.economy.currency} ha sufrido un AOF del 0.5% (${penalty.toFixed(2)} pts). Utilízalos pronto.`);
+              console.log(`[WEBHOOK WHATSAPP SENT to ${newC.phone}]: ${KFS_BRAND.productAcronym}: Tu balance inactivo de ${KFS_BRAND.economy.currency} ha sufrido un AOF del 0.5% (${penalty.toFixed(2)} pts). Utilízalos pronto.`);
             }
           }
 
@@ -1672,8 +1672,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         )
       };
     });
-    logAction("Arquitecto", "EMIT_KFS_POINTS", `Emisión/Transferencia de ${amount} {KFS_BRAND.economy.currency} a ${userId} en ${collectionName}`);
-    showToast(`Se han transferido ${amount} {KFS_BRAND.economy.currency} exitosamente.`, "success");
+    logAction("Arquitecto", "EMIT_KFS_POINTS", `Emisión/Transferencia de ${amount} ${KFS_BRAND.economy.currency} a ${userId} en ${collectionName}`);
+    showToast(`Se han transferido ${amount} ${KFS_BRAND.economy.currency} exitosamente.`, "success");
   };
 
   const requestTopUp = async (userId: string, userType: 'client' | 'customer', amountUSD: number, paymentReference: string, screenshotBase64: string) => {
@@ -2178,7 +2178,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       promotoraId: "arquitecto",
       rating: 5.0,
       reviewCount: 0,
-      isOnboarded: false,
+      isOnboarded: true,
       acceptedToS: true,
       kycDocumentUrl: "",
       kyc_status: "verified",

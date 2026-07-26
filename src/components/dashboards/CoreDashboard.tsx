@@ -224,21 +224,13 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
     }
   };
 
-  // Feature 5: Inject {KFS_BRAND.productAcronym} Points to any user
-  const handleInjectPoints = (collection: string, userId: string) => {
-    const raw = prompt(`Cantidad de ${KFS_BRAND.productAcronym} Points a inyectar (ej: 500 = $0.50 USD):`, '500');
-    if (!raw || isNaN(Number(raw))) return;
-    const amount = parseInt(raw, 10);
-    setDb((prev: any) => ({
-      ...prev,
-      [collection]: prev[collection].map((u: any) =>
-        u.id === userId ? { ...u, kfsPoints: (u.kfsPoints || 0) + amount } : u
-      ),
-    }));
-    showToast(`🎁 ${amount} {KFS_BRAND.economy.currency} inyectados.`, 'success');
+  // Feature 5: Inject KFS Points to any user
+  const handleInjectPoints = (collection: string, userId: string, userName: string) => {
+    setInjectPointsModal({ collection, userId, userName, amount: '500' });
   };
 
   const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [injectPointsModal, setInjectPointsModal] = useState<{ collection: string; userId: string; userName: string; amount: string } | null>(null);
 
   const clearClientDebt = (clientId: string) => {
     if(confirm("¿Estás seguro de perdonar/eliminar la deuda de cobranza de este comercio?")) {
@@ -1003,7 +995,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                                 💬 Cobro WA
                               </button>
 
-                              <button onClick={() => handleInjectPoints('clients', c.id)} className="bg-amber-100 text-amber-700 border border-amber-200 px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-amber-200 transition-colors cursor-pointer inline-flex items-center gap-1 shadow-sm">
+                              <button onClick={() => handleInjectPoints('clients', c.id, c.company || c.name || c.id)} className="bg-amber-100 text-amber-700 border border-amber-200 px-3 py-1.5 rounded-lg font-bold text-[10px] hover:bg-amber-200 transition-colors cursor-pointer inline-flex items-center gap-1 shadow-sm">
                                 🎁 Axis Pts
                               </button>
 
@@ -3238,6 +3230,58 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                   Cerrar
                 </button>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* Inject KFS Points Modal */}
+      {injectPointsModal && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-slate-900 border border-violet-500/30 rounded-[2rem] shadow-2xl w-full max-w-sm p-6 space-y-4 text-white">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-amber-500/20 rounded-full flex items-center justify-center mx-auto mb-3 border border-amber-500/30">
+                <span className="text-2xl">🎁</span>
+              </div>
+              <h3 className="font-black text-white text-lg">Inyectar {KFS_BRAND.economy.currency}</h3>
+              <p className="text-xs text-slate-400 mt-1">Para: <span className="font-bold text-amber-300">{injectPointsModal.userName}</span></p>
+            </div>
+            <div>
+              <label className="block text-[10px] font-black text-violet-300 uppercase tracking-widest mb-2">Cantidad de {KFS_BRAND.economy.currency} (ej: 500 = $0.50 USD)</label>
+              <input
+                type="number"
+                min="1"
+                step="1"
+                value={injectPointsModal.amount}
+                onChange={e => setInjectPointsModal(prev => prev ? { ...prev, amount: e.target.value } : null)}
+                className="w-full bg-slate-800 border border-violet-500/30 rounded-xl px-4 py-3 text-white font-black text-xl text-center focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all"
+                autoFocus
+              />
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setInjectPointsModal(null)}
+                className="flex-1 py-3 rounded-xl border border-slate-700 text-slate-400 font-bold text-sm hover:bg-slate-800 transition-colors cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  const amount = parseInt(injectPointsModal.amount || '0', 10);
+                  if (!isNaN(amount) && amount > 0) {
+                    setDb((prev: any) => ({
+                      ...prev,
+                      [injectPointsModal.collection]: (prev[injectPointsModal.collection] || []).map((u: any) =>
+                        u.id === injectPointsModal.userId ? { ...u, kfsPoints: (u.kfsPoints || 0) + amount } : u
+                      ),
+                    }));
+                    showToast(`🎁 ${amount} ${KFS_BRAND.economy.currency} inyectados a ${injectPointsModal.userName}.`, 'success');
+                    setInjectPointsModal(null);
+                  }
+                }}
+                className="flex-1 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-900 font-black text-sm shadow-lg shadow-amber-500/30 transition-all cursor-pointer"
+              >
+                ✓ Inyectar Puntos
+              </button>
             </div>
           </div>
         </div>

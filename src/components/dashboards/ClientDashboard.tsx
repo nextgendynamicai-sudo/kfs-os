@@ -108,6 +108,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
   const [ticketMsg, setTicketMsg] = useState("");
   const [fundAmount, setFundAmount] = useState("");
   const [isTopUpOpen, setIsTopUpOpen] = useState(false);
+  const [payValeModal, setPayValeModal] = useState<{ vale: any; amount: string } | null>(null);
   const { editProduct, createTicket, fundWallet, processMonthlyBilling, createVale, payVale, processPayroll, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating, registerPosTerminal, deletePosTerminal, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, toggleBusinessOpen, updateBusinessConfig, createCoupon, deleteCoupon, toggleCouponActive } = useKFS() as any;
   const [deliveryRadiusKm, setDeliveryRadiusKm] = useState(clientInfo?.deliveryRadiusKm || 5);
 
@@ -909,12 +910,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                           </td>
                           <td className="py-3 px-3 text-right">
                             {v.status === "pending" ? (
-                              <button onClick={() => {
-                                const payAmount = parseFloat(prompt("Ingrese el monto del abono en USD ($):", v.totalDueUSD.toFixed(2)) || "0");
-                                if (payAmount > 0) {
-                                  payVale(v.id, payAmount);
-                                }
-                              }} className="bg-emerald-100 text-emerald-700 font-black px-2.5 py-1.5 rounded-lg hover:bg-emerald-200 transition-colors cursor-pointer border border-emerald-200">
+                              <button onClick={() => setPayValeModal({ vale: v, amount: v.totalDueUSD.toFixed(2) })} className="bg-emerald-100 text-emerald-700 font-black px-2.5 py-1.5 rounded-lg hover:bg-emerald-200 transition-colors cursor-pointer border border-emerald-200">
                                 Abonar
                               </button>
                             ) : (
@@ -2180,6 +2176,54 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* Pay Vale Modal */}
+      {payValeModal && (
+        <div className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm z-[99990] flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white rounded-[2rem] shadow-2xl shadow-violet-200/50 border border-violet-100 w-full max-w-sm p-6 space-y-4">
+            <div className="text-center">
+              <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                <span className="text-2xl">💳</span>
+              </div>
+              <h3 className="font-black text-violet-950 text-lg">Registrar Abono</h3>
+              <p className="text-xs text-slate-500 mt-1">Vale a <span className="font-bold">{payValeModal.vale.recipientName}</span></p>
+              <p className="text-xs text-slate-400 font-mono mt-1">Total pendiente: <span className="font-black text-rose-500">{formatUSD(payValeModal.vale.totalDueUSD)}</span></p>
+            </div>
+            <div>
+              <label className="block text-[10px] font-black text-violet-700 uppercase tracking-widest mb-1">Monto a Abonar (USD)</label>
+              <input
+                type="number"
+                min="0.01"
+                step="0.01"
+                max={payValeModal.vale.totalDueUSD}
+                value={payValeModal.amount}
+                onChange={e => setPayValeModal(prev => prev ? { ...prev, amount: e.target.value } : null)}
+                className="w-full bg-violet-50 border border-violet-200 rounded-xl px-4 py-3 text-violet-950 font-black text-lg text-center focus:outline-none focus:ring-2 focus:ring-violet-400 transition-all"
+                autoFocus
+              />
+            </div>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setPayValeModal(null)}
+                className="flex-1 py-3 rounded-xl border border-slate-200 text-slate-500 font-bold text-sm hover:bg-slate-50 transition-colors cursor-pointer"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => {
+                  const amt = parseFloat(payValeModal.amount || "0");
+                  if (amt > 0) {
+                    payVale(payValeModal.vale.id, amt);
+                    setPayValeModal(null);
+                  }
+                }}
+                className="flex-1 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm shadow-lg shadow-emerald-500/30 transition-all cursor-pointer"
+              >
+                ✓ Confirmar Abono
+              </button>
+            </div>
           </div>
         </div>
       )}

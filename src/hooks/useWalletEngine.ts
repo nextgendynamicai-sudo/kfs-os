@@ -143,7 +143,7 @@ export function useWalletEngine() {
       };
     });
 
-    showToast(`Recarga exitosa de $${amountUSD} USD! ${bonusKP > 0 ? `Bono de +${bonusKP} {KFS_BRAND.economy.currency} asignado.` : ""}`, "success");
+    showToast(`Recarga exitosa de $${amountUSD} USD! ${bonusKP > 0 ? `Bono de +${bonusKP} ${KFS_BRAND.economy.currency} asignado.` : ""}`, "success");
   };
 
   // Award cashback (1% on real USD spent)
