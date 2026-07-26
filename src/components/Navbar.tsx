@@ -265,9 +265,9 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
         {/* Notification Modal Drawer */}
         {showNotifDrawer && (
           <div className="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-md flex justify-end animate-fade-in">
-            <div className="w-full max-w-md bg-slate-900 border-l border-violet-500/30 text-white h-full p-6 flex flex-col justify-between shadow-2xl overflow-y-auto">
-              <div>
-                <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-6">
+            <div className="w-full max-w-md bg-slate-900 border-l border-violet-500/30 text-white h-full p-6 flex flex-col justify-between shadow-2xl overflow-hidden">
+              <div className="flex flex-col h-full overflow-hidden">
+                <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-4 shrink-0">
                   <div className="flex items-center gap-2">
                     <Bell className="text-amber-400" size={20} />
                     <h3 className="text-lg font-black text-white">Centro de Notificaciones</h3>
@@ -280,44 +280,72 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
                   </button>
                 </div>
 
-                <div className="space-y-3">
-                  {(db.notifications || []).length > 0 ? (
-                    (db.notifications || []).slice().reverse().map((notif: any, idx: number) => (
-                      <div key={notif.id || idx} className="bg-slate-800/80 border border-slate-700/50 rounded-2xl p-4 space-y-1 relative overflow-hidden">
+                <div className="flex-1 overflow-y-auto pr-1 space-y-3 max-h-[full] scrollbar-thin">
+                  {(() => {
+                    const userNotifs = (db.notifications || []).filter((n: any) => 
+                      !n.audience || n.audience === 'all' || n.audience === 'global' || n.audience === currentUser?.role || currentUser?.role === 'core'
+                    );
+
+                    if (userNotifs.length === 0) {
+                      return (
+                        <div className="bg-slate-950/50 border border-slate-800 rounded-2xl p-8 text-center space-y-2 my-auto">
+                          <Bell className="mx-auto text-slate-600 mb-2" size={36} />
+                          <p className="text-sm font-bold text-slate-300">Sin notificaciones pendientes</p>
+                          <p className="text-xs text-slate-500">Todas las alertas del ecosistema aparecerán en esta bandeja.</p>
+                        </div>
+                      );
+                    }
+
+                    return userNotifs.slice().reverse().map((notif: any, idx: number) => (
+                      <div key={notif.id || idx} className="bg-slate-800/80 border border-slate-700/50 rounded-2xl p-4 space-y-2 relative overflow-hidden hover:border-violet-500/50 transition-all">
                         <div className="flex justify-between items-start">
                           <h4 className="text-xs font-black text-amber-300 uppercase tracking-wider">{notif.title}</h4>
                           <span className="text-[9px] text-slate-400 font-mono">
-                            {notif.date ? new Date(notif.date).toLocaleTimeString() : "En vivo"}
+                            {notif.date ? new Date(notif.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "En vivo"}
                           </span>
                         </div>
-                        <p className="text-xs text-slate-300 font-bold">{notif.message}</p>
+                        <p className="text-xs text-slate-300 font-medium leading-relaxed">{notif.message}</p>
+                        {notif.imageUrl && (
+                          <img src={notif.imageUrl} alt="Adjunto" className="w-full max-h-36 object-cover rounded-xl border border-white/10 mt-2" />
+                        )}
+                        {notif.destType && notif.destType !== "none" && (
+                          <button
+                            onClick={() => {
+                              setShowNotifDrawer(false);
+                              if (notif.destType === "product") {
+                                setView("landing");
+                              } else if (notif.destType === "store" && setView) {
+                                setView("client");
+                              } else if (notif.destType === "url" && notif.destVal) {
+                                window.open(notif.destVal, "_blank");
+                              }
+                            }}
+                            className="w-full mt-2 py-2 bg-violet-600/80 hover:bg-violet-600 text-white font-bold text-[10px] uppercase tracking-wider rounded-xl transition-all border-none cursor-pointer flex items-center justify-center gap-1"
+                          >
+                            Ir a Destino ➔
+                          </button>
+                        )}
                       </div>
-                    ))
-                  ) : (
-                    <div className="bg-slate-950/50 border border-slate-800 rounded-2xl p-8 text-center space-y-2">
-                      <Bell className="mx-auto text-slate-600 mb-2" size={36} />
-                      <p className="text-sm font-bold text-slate-300">Sin notificaciones pendientes</p>
-                      <p className="text-xs text-slate-500">Todas las alertas del ecosistema aparecerán en esta bandeja.</p>
-                    </div>
-                  )}
+                    ));
+                  })()}
                 </div>
-              </div>
 
-              <div className="pt-6 border-t border-white/10 mt-6 flex justify-between gap-3">
-                <button 
-                  onClick={() => {
-                    showToast("Notificación Push de prueba enviada", "success");
-                  }}
-                  className="flex-1 py-3 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-black text-xs border-none cursor-pointer shadow-lg shadow-violet-600/30"
-                >
-                  ⚡ Probar Alerta
-                </button>
-                <button 
-                  onClick={() => setShowNotifDrawer(false)}
-                  className="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs border border-slate-700 cursor-pointer"
-                >
-                  Cerrar
-                </button>
+                <div className="pt-4 border-t border-white/10 mt-4 flex justify-between gap-3 shrink-0">
+                  <button 
+                    onClick={() => {
+                      showToast("Notificación Push de prueba emitida", "success");
+                    }}
+                    className="flex-1 py-3 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-black text-xs border-none cursor-pointer shadow-lg shadow-violet-600/30"
+                  >
+                    ⚡ Probar Alerta
+                  </button>
+                  <button 
+                    onClick={() => setShowNotifDrawer(false)}
+                    className="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs border border-slate-700 cursor-pointer"
+                  >
+                    Cerrar
+                  </button>
+                </div>
               </div>
             </div>
           </div>

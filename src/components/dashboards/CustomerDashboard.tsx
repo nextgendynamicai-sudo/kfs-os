@@ -583,7 +583,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                     </button>
                   )}
                 </div>
-                <div className="space-y-3 max-h-48 overflow-y-auto pr-2">
+                <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2 scrollbar-thin">
                   {[...currentCandidate.notifications].reverse().map((n: any) => (
                     <div key={n.id} className={`p-4 rounded-xl border transition-all text-xs ${n.read ? 'bg-violet-50 border-violet-100 text-slate-500' : 'bg-violet-100/50 border-violet-300 text-violet-950 font-bold shadow-sm'}`}>
                       <div className="flex justify-between items-start gap-2">

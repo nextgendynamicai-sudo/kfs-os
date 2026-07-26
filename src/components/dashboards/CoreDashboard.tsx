@@ -121,6 +121,8 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
   };
 
   const [activeTab, setActiveTab] = useState("panel"); // panel | red | soporte | auditoria
+  const [exploreSubTab, setExploreSubTab] = useState<"descubrir" | "actividades">("descubrir");
+  const [showCoreNotifDrawer, setShowCoreNotifDrawer] = useState(false);
   const [newMemberName, setNewMemberName] = useState("");
   const [newMemberPass, setNewMemberPass] = useState("");
   const [newMemberPermissions, setNewMemberPermissions] = useState<string[]>([]);
@@ -341,16 +343,42 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
               <div className="flex justify-between items-center mb-6">
                 <h3 className="font-black text-2xl tracking-tight text-white">Explorar</h3>
                 <div className="flex items-center gap-4">
-                  <div className="relative">
-                    <Bell className="text-slate-300" size={24} />
-                    <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                  </div>
+                  <button
+                    onClick={() => setShowCoreNotifDrawer(true)}
+                    className="relative p-2.5 rounded-xl bg-slate-900/80 border border-violet-500/30 text-amber-400 hover:text-white transition-all cursor-pointer"
+                    title="Ver centro de notificaciones"
+                  >
+                    <Bell size={20} className={(db.notifications || []).length > 0 ? "animate-pulse" : ""} />
+                    {(db.notifications || []).length > 0 && (
+                      <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[9px] font-black text-slate-950 shadow-md">
+                        {(db.notifications || []).length}
+                      </span>
+                    )}
+                  </button>
                 </div>
               </div>
               
               <div className="flex gap-6 border-b border-white/10 mb-6 pb-2">
-                <button className="font-bold text-[10px] tracking-widest uppercase text-slate-400">Descubrir</button>
-                <button className="font-bold text-[10px] tracking-widest uppercase text-pink-500 border-b-2 border-pink-500 pb-2 -mb-[9px]">Actividades</button>
+                <button
+                  onClick={() => setExploreSubTab('descubrir')}
+                  className={`font-bold text-[10px] tracking-widest uppercase cursor-pointer pb-2 -mb-[9px] transition-all border-none bg-transparent ${
+                    exploreSubTab === 'descubrir'
+                      ? 'text-pink-500 border-b-2 border-pink-500 font-black'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  Descubrir
+                </button>
+                <button
+                  onClick={() => setExploreSubTab('actividades')}
+                  className={`font-bold text-[10px] tracking-widest uppercase cursor-pointer pb-2 -mb-[9px] transition-all border-none bg-transparent ${
+                    exploreSubTab === 'actividades'
+                      ? 'text-pink-500 border-b-2 border-pink-500 font-black'
+                      : 'text-slate-400 hover:text-white'
+                  }`}
+                >
+                  Actividades
+                </button>
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 auto-rows-[140px]">
@@ -3144,6 +3172,71 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             id: viewingCandidateCv.id || "cand_demo"
           }}
         />
+      )}
+
+      {/* CORE NOTIFICATION DRAWER */}
+      {showCoreNotifDrawer && (
+        <div className="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-md flex justify-end animate-fade-in">
+          <div className="w-full max-w-md bg-slate-900 border-l border-violet-500/30 text-white h-full p-6 flex flex-col justify-between shadow-2xl overflow-hidden">
+            <div className="flex flex-col h-full overflow-hidden">
+              <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-4 shrink-0">
+                <div className="flex items-center gap-2">
+                  <Bell className="text-amber-400" size={20} />
+                  <h3 className="text-lg font-black text-white">Bandeja de Notificaciones Core</h3>
+                </div>
+                <button 
+                  onClick={() => setShowCoreNotifDrawer(false)}
+                  className="p-1.5 rounded-full hover:bg-white/10 text-slate-400 hover:text-white border-none cursor-pointer"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto pr-1 space-y-3 max-h-[full] scrollbar-thin">
+                {(db.notifications || []).length > 0 ? (
+                  (db.notifications || []).slice().reverse().map((notif: any, idx: number) => (
+                    <div key={notif.id || idx} className="bg-slate-800/80 border border-slate-700/50 rounded-2xl p-4 space-y-2 relative overflow-hidden">
+                      <div className="flex justify-between items-start">
+                        <h4 className="text-xs font-black text-amber-300 uppercase tracking-wider">{notif.title}</h4>
+                        <span className="text-[9px] text-slate-400 font-mono">
+                          {notif.date ? new Date(notif.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "En vivo"}
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-300 font-medium leading-relaxed">{notif.message}</p>
+                      {notif.imageUrl && (
+                        <img src={notif.imageUrl} alt="Adjunto" className="w-full max-h-36 object-cover rounded-xl border border-white/10 mt-2" />
+                      )}
+                    </div>
+                  ))
+                ) : (
+                  <div className="bg-slate-950/50 border border-slate-800 rounded-2xl p-8 text-center space-y-2 my-auto">
+                    <Bell className="mx-auto text-slate-600 mb-2" size={36} />
+                    <p className="text-sm font-bold text-slate-300">Sin notificaciones registradas</p>
+                    <p className="text-xs text-slate-500">Las alertas y emisiones push enviadas a la red aparecerán aquí.</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="pt-4 border-t border-white/10 mt-4 flex justify-between gap-3 shrink-0">
+                <button 
+                  onClick={() => {
+                    setActiveModal("notificaciones");
+                    setShowCoreNotifDrawer(false);
+                  }}
+                  className="flex-1 py-3 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-black text-xs border-none cursor-pointer shadow-lg shadow-violet-600/30 flex items-center justify-center gap-1.5"
+                >
+                  📢 Emitir Alerta Push
+                </button>
+                <button 
+                  onClick={() => setShowCoreNotifDrawer(false)}
+                  className="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs border border-slate-700 cursor-pointer"
+                >
+                  Cerrar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

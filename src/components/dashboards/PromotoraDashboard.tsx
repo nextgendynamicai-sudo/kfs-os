@@ -247,7 +247,7 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
 
             <div className="bg-white rounded-[2rem] shadow-xl shadow-violet-200/50 border border-violet-100 p-8 text-violet-950 mt-8">
               <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-red-500"><Bell className="text-red-500" /> Tickets de Mis Comercios</h3>
-              <div className="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+              <div className="space-y-3 max-h-[500px] overflow-y-auto pr-2 scrollbar-thin">
                 {(db.supportTickets || []).slice().reverse().filter((t: any) => {
                   const client = myClients.find((c: any) => c.id === t.clientId);
                   return client !== undefined;

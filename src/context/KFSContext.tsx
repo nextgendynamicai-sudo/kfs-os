@@ -218,7 +218,25 @@ const initialDB = {
   promotoras: [] as any[],
   riders: [] as any[],
   coupons: [] as any[],
-  fiscalLogs: [] as any[]
+  fiscalLogs: [] as any[],
+  notifications: [
+    {
+      id: "notif_welcome_1",
+      audience: "all",
+      title: "🚀 Bienvenido al Ecosistema KFS OS",
+      message: "Sistema en vivo con arquitectura telemétrica, Bóveda Financiera y conciliación automática activa.",
+      date: new Date().toISOString(),
+      destType: "none"
+    },
+    {
+      id: "notif_bcv_2",
+      audience: "all",
+      title: "📊 Cotización Oficial BCV Sincronizada",
+      message: "Las tasas de cambio oficiales están calibradas en tiempo real para todos los puntos de venta y cobros.",
+      date: new Date().toISOString(),
+      destType: "none"
+    }
+  ] as any[]
 };
 
 interface KFSContextType {
@@ -4210,17 +4228,18 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-  const markNotificationsAsRead = (candidateId: string) => {
+  const markNotificationsAsRead = (userIdOrCandidateId?: string) => {
     setDb((prev: any) => ({
       ...prev,
       candidates: (prev.candidates || []).map((c: any) =>
-        c.id === candidateId
+        !userIdOrCandidateId || c.id === userIdOrCandidateId
           ? {
               ...c,
               notifications: (c.notifications || []).map((n: any) => ({ ...n, read: true }))
             }
           : c
-      )
+      ),
+      notifications: (prev.notifications || []).map((n: any) => ({ ...n, read: true }))
     }));
   };
 
