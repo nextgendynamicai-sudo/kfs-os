@@ -3196,7 +3196,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto pr-1 space-y-3 max-h-[full] scrollbar-thin">
+              <div className="flex-1 overflow-y-auto pr-1 space-y-3 py-2 scrollbar-thin">
                 {(db.notifications || []).length > 0 ? (
                   (db.notifications || []).slice().reverse().map((notif: any, idx: number) => (
                     <div key={notif.id || idx} className="bg-slate-800/80 border border-slate-700/50 rounded-2xl p-4 space-y-2 relative overflow-hidden">
@@ -3213,10 +3213,10 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                     </div>
                   ))
                 ) : (
-                  <div className="bg-slate-950/50 border border-slate-800 rounded-2xl p-8 text-center space-y-2 my-auto">
-                    <Bell className="mx-auto text-slate-600 mb-2" size={36} />
-                    <p className="text-sm font-bold text-slate-300">Sin notificaciones registradas</p>
-                    <p className="text-xs text-slate-500">Las alertas y emisiones push enviadas a la red aparecerán aquí.</p>
+                  <div className="bg-slate-950/60 border border-slate-800 rounded-2xl p-8 text-center space-y-2 my-4 shadow-inner">
+                    <Bell className="mx-auto text-slate-500 mb-2" size={36} />
+                    <p className="text-sm font-bold text-slate-200">Sin notificaciones registradas</p>
+                    <p className="text-xs text-slate-400">Las alertas y emisiones push enviadas a la red aparecerán aquí.</p>
                   </div>
                 )}
               </div>
