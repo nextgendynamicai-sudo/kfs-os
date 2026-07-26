@@ -11,6 +11,7 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
   const { registerRider, showToast } = useKFS() as any;
   const [formData, setFormData] = useState({
     name: "", email: "", password: "", phone: "",
+    vehicleType: "Moto",
     cedulaImg: "", medCertImg: "", licenseImg: "",
     pagoMovil: { banco: "", telefono: "", cedula: "" }
   });
@@ -20,10 +21,13 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
     if (!phone) return false;
     const clean = phone.replace(/[^0-9]/g, "");
     let rawBody = clean;
+    if (rawBody.startsWith('58')) {
+      rawBody = rawBody.slice(2);
+    }
     if (rawBody.startsWith('0')) {
       rawBody = rawBody.slice(1);
     }
-    return /^(412|414|424|416|426|415|425)\d{7}$/.test(rawBody) || (rawBody.length >= 7 && rawBody.length <= 12);
+    return /^(412|414|424|416|426|415|425)\d{7}$/.test(rawBody) || (rawBody.length >= 7 && rawBody.length <= 13);
   };
 
   const validateEmail = (email: string) => {
@@ -154,6 +158,15 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
         <div>
           <label className="block text-[10px] font-black text-violet-700 uppercase tracking-widest mb-1 ml-1">Contraseña</label>
           <input required type="password" placeholder="Crear Contraseña" value={formData.password} onChange={e => setFormData(p => ({ ...p, password: e.target.value }))} className="w-full bg-violet-50/50 border border-violet-100 rounded-xl px-4 py-3 text-violet-950 text-sm focus:outline-none focus:border-violet-400 transition-all placeholder:text-slate-400" />
+        </div>
+        <div className="col-span-1 sm:col-span-2">
+          <label className="block text-[10px] font-black text-violet-700 uppercase tracking-widest mb-1 ml-1">Tipo de Vehículo</label>
+          <select value={formData.vehicleType} onChange={e => setFormData(p => ({ ...p, vehicleType: e.target.value }))} className="w-full bg-violet-50/50 border border-violet-100 rounded-xl px-4 py-3 text-violet-950 text-sm focus:outline-none focus:border-violet-400 transition-all cursor-pointer">
+            <option value="Moto">🏍️ Moto</option>
+            <option value="Bicicleta">🚲 Bicicleta</option>
+            <option value="Automóvil">🚗 Automóvil / Carro</option>
+            <option value="Monopatín">🛴 Monopatín / Eléctrico</option>
+          </select>
         </div>
       </div>
 
