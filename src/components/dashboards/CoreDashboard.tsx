@@ -381,70 +381,72 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 auto-rows-[140px]">
-                {/* Card 1: Wide */}
-                <button onClick={() => setActiveTab('sales_landing')} className="col-span-2 bg-gradient-to-br from-rose-400 to-orange-400 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-lg border-none hover:scale-[1.02] transition-transform cursor-pointer">
-                  <Sparkles size={32} className="text-white mb-2" strokeWidth={1.5} />
-                  <div className="absolute bottom-5 left-5">
-                    <h4 className="text-white font-black text-lg">Presentación</h4>
-                    <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold">Landing Comercial</p>
-                  </div>
-                </button>
+              {exploreSubTab === 'descubrir' && (
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 auto-rows-[140px]">
+                  {/* Card 1: Wide */}
+                  <button onClick={() => setActiveTab('sales_landing')} className="col-span-2 bg-gradient-to-br from-rose-400 to-orange-400 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-lg border-none hover:scale-[1.02] transition-transform cursor-pointer">
+                    <Sparkles size={32} className="text-white mb-2" strokeWidth={1.5} />
+                    <div className="absolute bottom-5 left-5">
+                      <h4 className="text-white font-black text-lg">Presentación</h4>
+                      <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold">Landing Comercial</p>
+                    </div>
+                  </button>
 
-                {/* Card 2: Square */}
-                <button onClick={() => setActiveTab('red')} className="bg-gradient-to-br from-fuchsia-500 to-purple-600 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-lg border-none hover:scale-[1.02] transition-transform cursor-pointer">
-                  <Store size={32} className="text-white mb-2" strokeWidth={1.5} />
-                  <div className="absolute bottom-5 left-5">
-                    <h4 className="text-white font-black text-lg">Red {KFS_BRAND.productAcronym}</h4>
-                    <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold">Comercios</p>
-                  </div>
-                </button>
+                  {/* Card 2: Square */}
+                  <button onClick={() => setActiveTab('red')} className="bg-gradient-to-br from-fuchsia-500 to-purple-600 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-lg border-none hover:scale-[1.02] transition-transform cursor-pointer">
+                    <Store size={32} className="text-white mb-2" strokeWidth={1.5} />
+                    <div className="absolute bottom-5 left-5">
+                      <h4 className="text-white font-black text-lg">Red {KFS_BRAND.productAcronym}</h4>
+                      <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold">Comercios</p>
+                    </div>
+                  </button>
 
-                {/* Card 3: Tall (row-span-2) */}
-                <button onClick={() => setActiveTab('soporte')} className="row-span-2 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-lg border-none hover:scale-[1.02] transition-transform cursor-pointer">
-                  <Bell size={32} className="text-white mb-2" strokeWidth={1.5} />
-                  <div className="absolute bottom-5 left-5">
-                    <h4 className="text-white font-black text-lg">Soporte</h4>
-                    <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold">Tickets & Ayuda</p>
-                  </div>
-                </button>
+                  {/* Card 3: Tall (row-span-2) */}
+                  <button onClick={() => setActiveTab('soporte')} className="row-span-2 bg-gradient-to-br from-violet-500 to-indigo-600 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-lg border-none hover:scale-[1.02] transition-transform cursor-pointer">
+                    <Bell size={32} className="text-white mb-2" strokeWidth={1.5} />
+                    <div className="absolute bottom-5 left-5">
+                      <h4 className="text-white font-black text-lg">Soporte</h4>
+                      <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold">Tickets & Ayuda</p>
+                    </div>
+                  </button>
 
-                {/* Card 4: Tall (row-span-2) */}
-                <button onClick={() => setActiveTab('vista_dios')} className="row-span-2 bg-gradient-to-br from-indigo-400 to-blue-500 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-lg border-none hover:scale-[1.02] transition-transform cursor-pointer">
-                  <Eye size={32} className="text-white mb-2" strokeWidth={1.5} />
-                  <div className="absolute bottom-5 left-5">
-                    <h4 className="text-white font-black text-lg">Vista Dios</h4>
-                    <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold">Control Total</p>
-                  </div>
-                </button>
+                  {/* Card 4: Tall (row-span-2) */}
+                  <button onClick={() => setActiveTab('vista_dios')} className="row-span-2 bg-gradient-to-br from-indigo-400 to-blue-500 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-lg border-none hover:scale-[1.02] transition-transform cursor-pointer">
+                    <Eye size={32} className="text-white mb-2" strokeWidth={1.5} />
+                    <div className="absolute bottom-5 left-5">
+                      <h4 className="text-white font-black text-lg">Vista Dios</h4>
+                      <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold">Control Total</p>
+                    </div>
+                  </button>
 
-                {/* Card 5: Square */}
-                <button onClick={() => setActiveTab('kyc')} className="bg-gradient-to-br from-blue-400 to-cyan-500 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-lg border-none hover:scale-[1.02] transition-transform cursor-pointer">
-                  <FileText size={32} className="text-white mb-2" strokeWidth={1.5} />
-                  <div className="absolute bottom-5 left-5">
-                    <h4 className="text-white font-black text-lg">Bóveda KYC</h4>
-                    <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold">Documentos</p>
-                  </div>
-                </button>
-                
-                {/* Card 6: Square */}
-                <button onClick={() => setActiveTab('tienda_oficial')} className="bg-gradient-to-br from-emerald-400 to-teal-500 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-lg border-none hover:scale-[1.02] transition-transform cursor-pointer">
-                  <Tag size={32} className="text-white mb-2" strokeWidth={1.5} />
-                  <div className="absolute bottom-5 left-5">
-                    <h4 className="text-white font-black text-lg">Tienda Oficial</h4>
-                    <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold">Marketplace</p>
-                  </div>
-                </button>
+                  {/* Card 5: Square */}
+                  <button onClick={() => setActiveTab('kyc')} className="bg-gradient-to-br from-blue-400 to-cyan-500 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-lg border-none hover:scale-[1.02] transition-transform cursor-pointer">
+                    <FileText size={32} className="text-white mb-2" strokeWidth={1.5} />
+                    <div className="absolute bottom-5 left-5">
+                      <h4 className="text-white font-black text-lg">Bóveda KYC</h4>
+                      <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold">Documentos</p>
+                    </div>
+                  </button>
+                  
+                  {/* Card 6: Square */}
+                  <button onClick={() => setActiveTab('tienda_oficial')} className="bg-gradient-to-br from-emerald-400 to-teal-500 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-lg border-none hover:scale-[1.02] transition-transform cursor-pointer">
+                    <Tag size={32} className="text-white mb-2" strokeWidth={1.5} />
+                    <div className="absolute bottom-5 left-5">
+                      <h4 className="text-white font-black text-lg">Tienda Oficial</h4>
+                      <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold">Marketplace</p>
+                    </div>
+                  </button>
 
-                {/* Card 7: Wide */}
-                <button onClick={() => setActiveTab('descargas_apk')} className="col-span-2 bg-gradient-to-br from-slate-700 to-slate-900 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-lg border-none hover:scale-[1.02] transition-transform cursor-pointer">
-                  <Smartphone size={32} className="text-white mb-2" strokeWidth={1.5} />
-                  <div className="absolute bottom-5 left-5">
-                    <h4 className="text-white font-black text-lg">Descarga APK</h4>
-                    <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold">Instaladores</p>
-                  </div>
-                </button>
-              </div>
+                  {/* Card 7: Wide */}
+                  <button onClick={() => setActiveTab('descargas_apk')} className="col-span-2 bg-gradient-to-br from-slate-700 to-slate-900 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-lg border-none hover:scale-[1.02] transition-transform cursor-pointer">
+                    <Smartphone size={32} className="text-white mb-2" strokeWidth={1.5} />
+                    <div className="absolute bottom-5 left-5">
+                      <h4 className="text-white font-black text-lg">Descarga APK</h4>
+                      <p className="text-white/70 text-[10px] uppercase tracking-widest font-bold">Instaladores</p>
+                    </div>
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* PDF Presentation Banner */}
@@ -472,8 +474,9 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
             <ReferralLinksWidget userId={currentUser.id} showToast={showToast} />
 
-            {/* Centro de Mando Telemétrico en Vivo (Control Directo del Ecosistema) */}
-            <div className="bg-slate-900 border border-violet-500/30 rounded-[2.5rem] p-6 sm:p-8 shadow-2xl text-white relative overflow-hidden animate-fade-in">
+            {exploreSubTab === 'actividades' && (
+              /* Centro de Mando Telemétrico en Vivo (Control Directo del Ecosistema) */
+              <div className="bg-slate-900 border border-violet-500/30 rounded-[2.5rem] p-6 sm:p-8 shadow-2xl text-white relative overflow-hidden animate-fade-in">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-6 border-b border-white/10">
                 <div>
                   <div className="flex items-center gap-2">
@@ -631,6 +634,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
               </div>
             </div>
+          )}
 
             <KPointsIssuerWidget db={db} transferKFSPoints={transferKFSPoints} />
             <OracleControlSlider db={db} setDb={setDb} showToast={showToast} onOpenCreateMerchantModal={() => setActiveModal("register")} />
