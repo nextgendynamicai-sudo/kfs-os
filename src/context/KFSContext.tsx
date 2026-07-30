@@ -37,8 +37,8 @@ const VENEZUELAN_PRODUCTS_CATALOG: Record<string, { name: string; imgUrl: string
 };
 
 const MOCK_BCV_RATES = {
-  USD: 36.45,
-  EUR: 39.20,
+  USD: 745.64,
+  EUR: 805.29,
   isWeekend: false
 };
 

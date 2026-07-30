@@ -83,5 +83,5 @@ export async function GET() {
   }
 
   // Fallback Baseline if BCV servers are down
-  return NextResponse.json({ USD: 36.45, EUR: 39.20, fallback: true });
+  return NextResponse.json({ USD: 745.64, EUR: 805.29, fallback: true });
 }
