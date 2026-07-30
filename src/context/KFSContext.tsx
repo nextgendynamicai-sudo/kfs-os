@@ -68,27 +68,6 @@ const initialDB = {
         layoutType: "grid",
         profilePicUrl: "https://cdn-icons-png.flaticon.com/512/3063/3063822.png"
       }
-    },
-    {
-      id: "c_test1",
-      company: "test 1",
-      name: "Comercio Real Test 1",
-      email: "test1@kfs-os.com",
-      password: "05c7a8802c74b9f7ed07821d82015d1178ca3e5ed1e708bb5246ec01f635b7a6", // Hash for '000'
-      address: "Av. Principal Test 1, Caracas, Venezuela",
-      phone: "04140000001",
-      idCard: "J-500000001",
-      rating: 5.0,
-      reviewCount: 1,
-      kfsFeePercentage: 0.03,
-      fee_tier: "3%",
-      is_founder: false,
-      kfsFeesOwedUSD: 0,
-      isOnboarded: true,
-      kyc_status: "verified",
-      walletBalanceUSD: 150.00,
-      salesUSD: 500.00,
-      enabledServices: ["pos_checkout", "inventory_management", "online_marketplace", "delivery_rider", "vales_payroll", "crm_express", "fiscal_printer"]
     }
   ] as any[],
   vendedores: [] as any[],
