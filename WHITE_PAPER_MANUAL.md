@@ -1,184 +1,313 @@
-# 📘 WHITE PAPER & MANUAL OPERATIVO INTEGRAL
-## KFS OS (Kreatek Flow Systems) & Axis Nitro Core
+# 📘 DOCUMENTO MAESTRO — WHITE PAPER & MANUAL OPERATIVO INTEGRAL
+## KFS OS (Kreatek Flow Systems) — "KAN CGOS" & Axis Nitro Core
 
-**Versión del Sistema:** 8.0.0 (Edición Producción)  
-**Fecha de Publicación:** 29 de Julio, 2026  
-**Código Maestro del Arquitecto:** `199521`  
-**Dominio Oficial en Vivo:** `https://axisnitro.store`  
+**Código de Proyecto:** KFS-OS-WP-2026  
+**Clasificación de Documento:** Confidencial / Corporativo & Operativo  
+**Holding Propietario:** Kreatek Holding S.A.  
+**Versión:** 8.0.0 (Lanzamiento y Producción)  
+**Fecha de Emisión:** 29 de Julio de 2026  
+**Código Maestro del Arquitecto Core:** `199521`  
+**Dominio Principal:** `https://axisnitro.store`  
 **Repositorio GitHub:** `https://github.com/nextgendynamicai-sudo/kfs-os.git`
 
 ---
 
-## 🏛️ CAPÍTULO I: WHITE PAPER & ARQUITECTURA TÉCNICA
+## 📑 TABLA DE CONTENIDOS MAESTRA
 
-### 1.1 Definición y Visión del Ecosistema
-**KFS OS (Kreatek Flow Systems)** es un **Sistema Operativo para Redes Comerciales (CGOS - Commercial Grid Operating System)** diseñado para conectar comercios, consumidores, promotoras, vendedores y riders de delivery bajo un único ecosistema transaccional unificado. 
-
-**Axis Nitro Core** constituye la capa de fidelización y liquidación financiera. Permite a los comercios eliminar los altos costos de adquisición y alquiler de equipos de punto de venta (POS) tradicionales de banca, reemplazándolos por una suite basada en la nube y la tecnología Web PWA accesible desde cualquier teléfono inteligente, tablet o laptop.
-
----
-
-### 1.2 El Modelo Económico de Axis Points (AP)
-El **Banco Central de Axis Points** gestiona la emisión, circulación y canje de la moneda de fidelización de la red: **Axis Points (AP)**.
-
-- **Paridad de Valor:**  
-  $$\text{1,000 Axis Points (AP)} = \$1.00\text{ USD}$$
-- **Circulación Transaccional:**  
-  Los clientes acumulan **Axis Points** por realizar compras en comercios afiliados o por cumplir **Acciones Físicas en la Vida Real** (escaneo de códigos QR en mostradores, visitas presenciales verificadas por GPS y subida de comprobantes de pago).
-- **Liquidez y Canje:**  
-  Los puntos acumulados en la Billetera Universal pueden convertirse instantáneamente en **vales de descuento real** en cualquier tienda física o digital de la red KFS.
+1. [CAPÍTULO I: RESUMEN EJECUTIVO & VISIÓN CGOS](#1-resumen-ejecutivo--visión-cgos)
+2. [CAPÍTULO II: ARQUITECTURA DETALLADA DE MÓDULOS DEL SISTEMA](#2-arquitectura-detallada-de-módulos-del-sistema)
+3. [CAPÍTULO III: LA ECONOMÍA DE AXIS POINTS (TOKENOMICS & AOF)](#3-la-economía-de-axis-points-tokenomics--aof)
+4. [CAPÍTULO IV: PROTOCOLOS DE SEGURIDAD OPERATIVA Y ANTIFRAUDE](#4-protocolos-de-seguridad-operativa-y-antifraude)
+5. [CAPÍTULO V: DIRECTORIO COMPLETO DE RUTAS Y SUBDOMINIOS](#5-directorio-completo-de-rutas-y-subdominios)
+6. [CAPÍTULO VI: NÚCLEOS DE NEGOCIO, SPLITS EN CALIENTE Y PROYECCIONES](#6-núcleos-de-negocio-splits-en-caliente-y-proyecciones)
+7. [CAPÍTULO VII: GUÍA PASO A PASO POR ROL DEL ECOSISTEMA](#7-guía-paso-a-paso-por-rol-del-ecosistema)
+8. [CAPÍTULO VIII: MANUAL COMERCIAL & ESTRATEGIA DE VENTAS ("MODO VENTAS")](#8-manual-comercial--estrategia-de-ventas-modo-ventas)
+9. [CAPÍTULO IX: GUÍA DE CONFIGURACIÓN E INFRAESTRUCTURA TÉCNICA](#9-guía-de-configuración-e-infraestructura-técnica)
 
 ---
 
-### 1.3 Algoritmo de Persistencia Indestructible (Regla 1)
-Toda la base de datos de cuentas de usuario, comercios, balances de **Axis Points**, historial de transacciones y tareas de recompensas se gestiona bajo el protocolo de fusión incremental `mergeDB` (`KFSContext.tsx`).
+<a id="1-resumen-ejecutivo--visión-cgos"></a>
+## 🏛️ CAPÍTULO I: RESUMEN EJECUTIVO & VISIÓN CGOS
 
-> [!IMPORTANT]
-> **Garantía Invariable de Datos (Regla 1):**  
-> Ninguna actualización de versión del software, despliegue en Vercel o sincronización en Supabase borra o resetea la información registrada por usuarios reales. El estado local en IndexedDB/LocalStorage y la nube en Supabase (`kfs_store_states`) se fusionan primero preservando siempre el conjunto existente.
+### 1.1 La Revolución del CGOS (Commercial Growth Operating System)
+**Kreatek Flow Systems (KFS)** introduce la categoría disruptiva **CGOS (Commercial Growth Operating System)**. A diferencia de los sistemas ERP rígidos y costosos del mercado tradicional, KAN CGOS funciona como un ecosistema comercial todo-en-uno diseñado específicamente para economías emergentes y redes comerciales dinámicas.
+
+La plataforma unifica en un solo entorno **PWA (Progressive Web App)** de ultra-alto rendimiento:
+- El punto de venta físico en caja registradora (**Axis Nitro POS**).
+- La vitrina y comercio electrónico instantáneo (**Nitro Market**).
+- La red logística y geolocalización de repartidores a domicilio (**Nitro Squad**).
+- El centro de inteligencia administrativa y financiera (**Axis OS**).
+- La economía universal de fidelización tokenizada (**Axis Points AP**).
+
+```mermaid
+graph TD
+    KFS[KFS KAN CGOS Core]
+    
+    KFS --> AXIS_OS[1. Axis OS: Cerebro Administrativo]
+    KFS --> NITRO_MKT[2. Nitro Market: Tienda E-Commerce]
+    KFS --> NITRO_SQD[3. Nitro Squad: Logística & Riders]
+    KFS --> NITRO_POS[4. Axis Nitro POS: Punto de Venta]
+
+    style KFS fill:#4c1d95,stroke:#7c3aed,stroke-width:3px,color:#fff
+    style AXIS_OS fill:#1e1b4b,stroke:#4338ca,stroke-width:2px,color:#fff
+    style NITRO_MKT fill:#1e1b4b,stroke:#4338ca,stroke-width:2px,color:#fff
+    style NITRO_SQD fill:#1e1b4b,stroke:#4338ca,stroke-width:2px,color:#fff
+    style NITRO_POS fill:#1e1b4b,stroke:#4338ca,stroke-width:2px,color:#fff
+```
 
 ---
 
-## 🌐 CAPÍTULO II: DIRECTORIO OFICIAL DE RUTAS Y SUBDOMINIOS
+### 1.2 El Problema de la Fragmentación y la Solución KFS
 
-Todas las aplicaciones del ecosistema están divididas en rutas dedicadas e independientes que pueden ser accedidas mediante subdominios DNS en Vercel o mediante rutas directas de carpeta:
+#### El Problema del Comercio Tradicional
+1. **Pasarelas de Pago Ineficientes:** Comisiones del 3% al 8% en transferencias y retenedores bancarios que retrasan la liquidez inmediata del negocio.
+2. **Puntos de Venta Rígidos:** Alquileres de equipos POS físicos costosos que no se comunican con los inventarios de las tiendas virtuales.
+3. **Logística Desconectada:** Plataformas de delivery de terceros que cobran comisiones de hasta un 30% por pedido, destruyendo el margen de ganancia de los negocios locales.
+4. **Ausencia de Fidelización Viable:** Imposibilidad técnica y financiera de implementar un programa de recompensas para atraer clientes recurrentes.
+5. **Vulnerabilidad a Estafas:** Cajeros expuestos a comprobantes y capturas de pantalla de Pago Móvil falsas.
 
-| Subdominio Oficial | URL Directa por Carpeta | Perfil / Rol | Descripción y Función de la Aplicación |
+#### La Solución KFS CGOS
+- **Arquitectura Offline-First:** Operatividad ininterrumpida en caja local con sincronización en tiempo real vía Supabase e IndexedDB.
+- **Mercado de Comisión Cero:** Tiendas virtuales autogeneradas en milisegundos con comisiones mínimas.
+- **Logística Geogestionada Directa:** Asignación inteligente de motorizados propios sin peajes intermediarios.
+- **Fidelización Tokenizada Universales:** Moneda interna **Axis Points (AP)** compartida por toda la red comercial.
+
+---
+
+<a id="2-arquitectura-detallada-de-módulos-del-sistema"></a>
+## 📱 CAPÍTULO II: ARQUITECTURA DETALLADA DE MÓDULOS DEL SISTEMA
+
+### 2.1 Axis OS (El Cerebro Administrativo)
+- **Propósito:** Centro de control telemétrico y financiero para el Kreatek Operator (Dueño del Comercio).
+- **Prestaciones Destacadas:**
+  - Control de inventarios multimoneda (USD / Bolívares) con compresión automática de imágenes en Base64.
+  - Gestión de tasas de cambio diarias del Banco Central de Venezuela (BCV) con conversión dinámica en caliente.
+  - Conciliación de caja dual (Efectivo, Pago Móvil, Binance Pay, Axis Points).
+  - Configuración de roles de cajeros y terminales móviles autorizados.
+
+---
+
+### 2.2 Nitro Market (La Vitrina Digital)
+- **Propósito:** Tienda virtual instantánea autogenerada bajo la ruta `/nitro/[slug]`.
+- **Prestaciones Destacadas:**
+  - Sincronización automática del catálogo en tiempo real.
+  - Cálculo de tarifa de despacho (delivery) en base al radio kilométrico y distancia GPS (latitud y longitud).
+  - Checkout optimizado para pedidos por WhatsApp o Pago Móvil directo.
+
+---
+
+### 2.3 Nitro Squad (La Red Logística Geogestionada)
+- **Propósito:** Gestión y seguimiento georreferenciado de motorizados y repartidores (Riders).
+- **Prestaciones Destacadas:**
+  - Registro y validación KYC de Riders locales.
+  - Mapas vectoriales interactivos en tiempo real con la API de Leaflet y CartoDB Voyager.
+  - Cálculo dinámico de ETA (Tiempo Estimado de Arribo) y tracking del paquete.
+
+---
+
+### 2.4 Axis Nitro POS (El Punto de Venta Inteligente)
+- **Propósito:** Facturación táctil ultrarrápida en caja registradora.
+- **Presets por Industria (Feature Flags):**
+  - **Preset Retail / Quick Store:** Habilita el escáner de código de barras. Al escanear, consulta el Catálogo Nacional y hace fallback a Open Food Facts para autocompletar foto y descripción del producto en milisegundos.
+  - **Preset Restaurantes / Escandallos:** Control de mesas físicas y recetas de ingredientes pesados.
+  - **Preset Balanzas IoT:** Conexión websocket directa con balanzas digitales de peso bruto/neto.
+  - **Preset Hoteles / Hospedaje:** Control de habitaciones y consumos acumulados.
+
+---
+
+<a id="3-la-economía-de-axis-points-tokenomics--aof"></a>
+## 🪙 CAPÍTULO III: LA ECONOMÍA DE AXIS POINTS (TOKENOMICS & AOF)
+
+El ecosistema financiero de KFS se apoya en un programa de incentivos universales tokenizados, diseñado para retener al cliente dentro de la red local:
+
+$$\mathbf{1,000\ Axis\ Points\ (AP) = \$1.00\ USD}$$
+
+### 3.1 Reglas de Emisión (Minting)
+1. **Cashback de Compra:** Los clientes acumulan el **1.0%** del total de sus compras físicas u online en saldo equivalente de **Axis Points**.
+2. **Loyalty Comercio:** Si el local tiene activo el programa de lealtad, se genera adicionalmente **0.5 AP por cada $1.00 USD** de consumo.
+3. **Bono Viral de Referidos (Referral Rewards):**
+   - Al registrarse con un código amigo, el nuevo usuario recibe **+100 AP ($0.10 USD)**.
+   - Cuando el referido realiza su primera recargas de al menos **$5.00 USD**, el recomendador recibe un bono de **+500 AP ($0.50 USD)**.
+
+---
+
+### 3.2 Reglas de Degradación de Saldo (Mecanismo Anti-Inflacionario AOF)
+Para evitar que los puntos se acumulen indefinitivamente y pierdan velocidad de circulación, se aplica la tasa de penalización por inactividad **AOF (Asset Outflow Fee)**:
+- Si una cuenta permanece inactiva por más de **15 días**, su saldo sufre una degradación progresiva del **0.5% cada 5 días**.
+- El sistema emite alertas móviles advirtiendo de la degradación inminente para forzar al cliente a consumir sus puntos en los comercios de la red.
+
+---
+
+### 3.3 El Rango FlowMaster (Inmunidad Financiera)
+Los clientes más leales pueden lograr **inmunidad vitalicia frente al AOF** al alcanzar el rango **FlowMaster**. Requisitos:
+1. Haber completado un mínimo de **10 transacciones reales** en la red.
+2. Haber comprado en al menos **4 comercios diferentes**.
+3. Haber movilizado un volumen transaccional de al menos **50,000 Axis Points ($50.00 USD)** acumulados.
+
+---
+
+<a id="4-protocolos-de-seguridad-operativa-y-antifraude"></a>
+## 🛡️ CAPÍTULO IV: PROTOCOLOS DE SEGURIDAD OPERATIVA Y ANTIFRAUDE
+
+### 4.1 Conciliador Inteligente SMS (SMS Conciliator)
+- **Mecanismo:** Intercepta y procesa notificaciones SMS bancarias recibidas en el dispositivo del comercio.
+- **Algoritmo de Parseo:** Utiliza expresiones regulares para extraer Número de Referencia, Monto en Bolívares y Teléfono Emisor.
+- **Validación Automática:** Compara la referencia y monto contra la orden en cola. Si coinciden con la tasa BCV del momento, la orden pasa a estado "Pagado", dispara el sonido `Premium Cash Chime` y emite el ticket de despacho sin intervención humana.
+
+---
+
+### 4.2 Protocolo Ghost Trap (Bloqueo Antifraude de Caja)
+- **Mecanismo:** Detecta intentos deshonestos de anulación de tickets o borrado de productos una vez ingresados a la venta.
+- **Acción:** El terminal POS **se bloquea automáticamente** e interrumpe la pantalla de cobro, registrando un log forense (`ghostLogs`).
+- **Desbloqueo Requerido:** Clave del Supervisor local, Clave Maestra del Dueño del Negocio o Clave del Arquitecto Core (`199521`).
+
+---
+
+### 4.3 Sincro-Shield Fiscal Proxy
+Conexión directa por agente local a impresoras fiscales homologadas por el SENIAT mediante comandos a puertos serie (RS232/USB), reduciendo a cero dólares el costo de licenciamiento fiscal.
+
+---
+
+<a id="5-directorio-completo-de-rutas-y-subdominios"></a>
+## 🌐 CAPÍTULO V: DIRECTORIO COMPLETO DE RUTAS Y SUBDOMINIOS
+
+| Subdominio Oficial en Vercel | Ruta Directa por Carpeta | Perfil / Rol Asignado | Función Operativa del Módulo |
 | :--- | :--- | :--- | :--- |
-| **`axisnitro.store`** | `https://axisnitro.store/` | **Público General** | **Portal Matriz & Landing Comercial:** Presentación del negocio, simulador de ganancias y formulario de registro B2B. |
-| **`rewards.axisnitro.store`** | `https://axisnitro.store/rewards` | **Consumidor / Cliente** | **App PWA de Recompensas:** Billetera de Axis Points (AP), cumplimiento de tareas físicas y catálogo de vales. |
-| **`arquitecto.axisnitro.store`** | `https://axisnitro.store/arquitecto` *(o `/core`)* | **El Arquitecto (`199521`)** | **Centro de Mando Core:** Vista de Dios, telemétrica, cotización BCV, gestor de recompensas y control de base de datos. |
-| **`comercio.axisnitro.store`** | `https://axisnitro.store/comercio` *(o `/client`)* | **Comercios / Dueños** | **Dashboard del Negocio:** Carga de productos en USD, personalización de tienda Nitro, CRM y Pago Móvil/Binance. |
-| **`promotora.axisnitro.store`** | `https://axisnitro.store/promotora` | **Promotoras Digitales** | **Consola de Referidos:** Reclutamiento de nuevos comercios y cobro de comisiones pasivas en dólares. |
-| **`vendedor.axisnitro.store`** | `https://axisnitro.store/vendedor` | **Vendedores de Caja** | **Terminal Táctico POS:** Lector de código de barras, venta rápida de mostrador y trampa de seguridad Ghost Trap. |
-| **`rider.axisnitro.store`** | `https://axisnitro.store/rider` | **Riders de Delivery** | **Panel Logístico:** Recepción de pedidos a domicilio, confirmación de retiro en local y navegación GPS de entrega. |
-| **`pos.axisnitro.store`** | `https://axisnitro.store/pos` | **Cajeros / Mostrador** | **Punto de Venta POS Simplificado:** Cobro rápido en pantalla táctil sin menú ERP. |
-| **`download.axisnitro.store`** | `https://axisnitro.store/download-apk` | **Público General** | **Centro de Descargas PWA / APK:** Instalador oficial para dispositivos Android e iOS. |
+| **`axisnitro.store`** | `https://axisnitro.store/` | **Público General** | **Portal Matriz & Landing Comercial:** Presentación del negocio, simulador de ganancias y formulario B2B. |
+| **`rewards.axisnitro.store`** | `https://axisnitro.store/rewards` | **Cliente / Consumidor** | **App PWA de Recompensas:** Billetera de Axis Points (AP), tareas físicas y catálogo de vales. |
+| **`arquitecto.axisnitro.store`** | `https://axisnitro.store/arquitecto` *(o `/core`)* | **El Arquitecto (`199521`)** | **Centro de Mando Core:** Vista de Dios, telemétrica, cotización BCV, gestor de recompensas e impresión QR. |
+| **`comercio.axisnitro.store`** | `https://axisnitro.store/comercio` *(o `/client`)* | **Comercios / Dueños** | **Dashboard del Negocio:** Carga de productos en USD, tienda Nitro, CRM y Pago Móvil. |
+| **`promotora.axisnitro.store`** | `https://axisnitro.store/promotora` | **Promotoras Digitales** | **Consola de Referidos:** Reclutamiento de comercios y cobro de comisiones pasivas en USD. |
+| **`vendedor.axisnitro.store`** | `https://axisnitro.store/vendedor` | **Vendedores de Caja** | **Terminal Táctico POS:** Lector de código de barras, venta de mostrador y Ghost Trap. |
+| **`rider.axisnitro.store`** | `https://axisnitro.store/rider` | **Riders de Delivery** | **Panel Logístico:** Recepción de pedidos a domicilio, confirmación de retiro y navegación GPS. |
+| **`pos.axisnitro.store`** | `https://axisnitro.store/pos` | **Cajeros / Mostrador** | **Punto de Venta POS Simplificado:** Cobro directo en pantalla táctil. |
+| **`download.axisnitro.store`** | `https://axisnitro.store/download-apk` | **Público General** | **Centro de Descargas PWA / APK:** Instalador oficial para Android e iOS. |
 
 ---
 
-## 💼 CAPÍTULO III: MANUAL COMERCIAL & ESTRATEGIA DE VENTAS ("MODO VENTAS")
+<a id="6-núcleos-de-negocio-splits-en-caliente-y-proyecciones"></a>
+## 📊 CAPÍTULO VI: NÚCLEOS DE NEGOCIO, SPLITS EN CALIENTE Y PROYECCIONES
+
+El motor financiero distribuye los ingresos de forma inmediata mediante un modelo de **Splits en Caliente**:
+
+| Concepto de Transacción | Costo Total | Comisión Promotora (Captadora) | Destino Core KFS | Objetivo del Split |
+| :--- | :--- | :--- | :--- | :--- |
+| **Setup de Comercio** | $75.00 USD *(Único)* | **$37.50 USD (50%)** *(Retiro Inmediato)* | $37.50 USD (50%) | Aprovisionamiento de base de datos Supabase y subdominio. |
+| **Mantenimiento Nube** | $6.00 USD *(Mensual)* | **$3.00 USD (50%)** *(Residual)* | $3.00 USD (50%) | Servidores Vercel, logs de auditoría y webhooks SMS. |
+| **Regalías de Caja (POS)** | 3% / 5% / 8% por venta | **20%** de la comisión recaudada | 80% KFS Core | Sustento de software. 20% del Core va directo a Ads locales. |
+| **Desbloqueo KYC RRHH** | $10.00 USD *(Talento)* | **$2.00 USD (20%)** | $8.00 USD (80%) | Verificación de referencias de candidatos. |
+| **Venta Axis Nitro Hub** | $20.00 USD *(Único)* | **$10.00 USD (50%)** | $10.00 USD (50%) | Habilitación de tienda E-Commerce independiente. |
 
 ---
 
-### 3.1 Argumentario de Ventas B2B para Afiliar Negocios
-Al comercializar **Axis Nitro** con dueños de comercios (restaurantes, farmacias, panaderías, tiendas de ropa, supermercados), les presentas una solución 4 en 1 que elimina los costos operativos:
-
-1. **Sin Alquiler de Equipos POS:** Tu teléfono o tablet se convierte en un punto de venta profesional con escáner de código de barras.
-2. **Tienda Digital Nitro Instantánea:** Tu catálogo publicado en vivo en `axisnitro.store/nitro/[tu-nombre]`.
-3. **Fidelización Automática:** Tus clientes ganan **Axis Points (AP)** y regresan a comprar a tu local.
-4. **Protección Contra Estafas:** Validación automática de transferencias de Pago Móvil y Binance por lectura inteligente de SMS.
-
----
-
-### 3.2 Planes y Estructura de Precios
-
-- **Plan Estándar Axis Nitro B2B:**
-  - **Inversión Inicial:** $0.00 USD.
-  - **Mensualidad:** **$20.00 USD / mes**.
-  - **Comisión por Transacción:** **3.0%**.
-  - *Incluye:* POS Digital, Catálogo en línea, CRM de clientes y sistema de fidelización en Axis Points.
-- **Oferta Comerciales Pioneros (Promoción de Lanzamiento):**
-  - **$10.00 USD / mes** (50% de descuento durante los primeros 3 meses para los primeros 50 comercios de la ciudad).
-- **Prueba Demo Gratuita (7 Días):**
-  - **$0.00 USD** durante 7 días para probar el POS de caja con hasta 10 productos.
+### 6.1 Proyección Financiera para una Promotora Senior
+Considerando una Promotora activa con una cartera madura de **22 comercios afiliados** en 12 meses:
+- **15 Comercios Pequeños** (Venta promedio $5,000/mes a 3% fee) ➔ $450.00 USD/mes.
+- **5 Comercios Medianos** (Venta promedio $25,000/mes a 5% fee) ➔ $1,265.00 USD/mes.
+- **2 Cadenas Grandes** (Venta promedio $120,000/mes a 8% fee) ➔ $3,840.00 USD/mes.
+- **SaaS Residual:** 22 × $3.00 = $66.00 USD/mes.
+- **TOTAL INGRESOS RESIDUALES:** **$5,621.00 USD / mes de ganancia pasiva recurrente.**
 
 ---
 
-### 3.3 Escalera de Recargas de Usuarios y Comisiones Pasivas
-Cuando un cliente recarga su billetera en la app, la plataforma distribuye comisiones automáticas a la promotora que lo reclutó:
+<a id="7-guía-paso-a-paso-por-rol-del-ecosistema"></a>
+## 🛠️ CAPÍTULO VII: GUÍA PASO A PASO POR ROL DEL ECOSISTEMA
 
-- 💵 **Recarga de $5.00 USD:** Cliente obtiene $5.00 USD + **2,000 Axis Points de Bono**. Promotora gana **$1.00 USD pasivo**.
-- 💵 **Recarga de $10.00 USD:** Cliente obtiene $10.00 USD + **5,000 Axis Points de Bono**. Promotora gana **$1.50 USD pasivo**.
-- 💵 **Recarga de $20.00 USD:** Cliente obtiene $20.00 USD + **12,000 Axis Points de Bono**. Promotora gana **$2.00 USD pasivo**.
-
----
-
-## 🛠️ CAPÍTULO IV: GUÍA OPERATIVA PASO A PASO POR ROL
-
----
-
-### 4.1 El Arquitecto Core (Código Maestro `199521`)
+### 7.1 El Arquitecto Core (Código Maestro `199521`)
 - **Acceso:** `https://axisnitro.store/arquitecto` ➔ Clave: **`199521`**.
 - **Operaciones:**
-  1. **Ajuste de Tasa BCV:** Ingresa la tasa diaria oficial en Bolívares por Dólar/Euro en la barra superior.
-  2. **Configurar Tareas de Recompensas (`⚡ Recompensas Nitro`):** Define el nombre de la acción física, los Axis Points de recompensa (ej: `250 AP`) y la clave secreta QR o coordenadas GPS.
-  3. **Imprimir Códigos QR:** Presiona **`🖨️ Ver QR`** para generar el código SVG vectorizado e imprimir la ficha del comercio.
-  4. **Aprobar Entregas de Usuarios:** En `📥 Entregas Recibidas`, examina las fotos o datos enviados y presiona **`🟢 Aprobar y Desembolsar +AP`** para acreditar los puntos con 1 solo clic.
+  1. **Cotización BCV:** Ajustar el valor del Dólar/Euro en la barra superior.
+  2. **Configurar Tareas de Recompensas (`⚡ Recompensas Nitro`):** Definir el nombre de la acción física, los Axis Points de recompensa (ej: `250 AP`) y la clave secreta QR o coordenadas GPS.
+  3. **Imprimir Códigos QR:** Presionar **`🖨️ Ver QR`** para generar el gráfico SVG vectorizado e imprimir la ficha del comercio.
+  4. **Aprobar Entregas de Usuarios:** En `📥 Entregas Recibidas`, revisar las fotos o datos y presionar **`🟢 Aprobar y Desembolsar +AP`** para acreditar los puntos atómicamente a la cuenta del usuario.
 
 ---
 
-### 4.2 El Consumidor / Cliente (App PWA de Recompensas)
+### 7.2 El Consumidor / Cliente (App PWA de Recompensas)
 - **Acceso:** `https://axisnitro.store/rewards`.
 - **Operaciones:**
-  1. **Instalación PWA:** Presiona *"Añadir a la Pantalla de Inicio"* para instalar el acceso directo en el celular.
-  2. **Saldo de Billetera:** Consulta su balance en vivo de **Axis Points (AP)** y rango.
-  3. **Cumplir Tareas Físicas (`⚡ Acciones`):**
-     - *Escaneo QR:* Abre la cámara y escanea el QR en el mostrador de la tienda.
-     - *Visita GPS:* Presiona *"Obtener Ubicación GPS"* para validar presencia en el local.
-     - *Subida de Recibo:* Toma foto a la factura de compra y la envía a revisión.
-  4. **Canjear Vales (`🎁 Canjes`):** Canjea sus **Axis Points** por cupones de descuento.
+  1. **Instalar PWA:** Presionar *"Añadir a la Pantalla de Inicio"*.
+  2. **Consultar Saldo:** Ver balance en vivo de **Axis Points (AP)**.
+  3. **Cumplir Tareas (`⚡ Acciones`):** Escanear el QR en caja, verificar ubicación GPS o subir foto de la factura.
+  4. **Canjear Vales (`🎁 Canjes`):** Convertir puntos en cupones de descuento.
 
 ---
 
-### 4.3 El Comercio / Dueño de Negocio (`/comercio`)
+### 7.3 El Comercio / Dueño de Negocio (`/comercio`)
 - **Acceso:** `https://axisnitro.store/comercio`.
 - **Operaciones:**
-  1. **Cargar Inventario:** Agrega productos con su costo en USD, fotos, categorías y stock.
-  2. **Vincular Cuentas de Cobro:** Configura los datos de tu Pago Móvil y Binance Pay para recibir pagos directos.
-  3. **CRM & Fidelización:** Activa el programa de puntos para tus clientes frecuentes.
+  1. **Inventario:** Cargar productos con precio en USD y stock.
+  2. **Cobro:** Vincular cuenta de Pago Móvil y Binance Pay.
 
 ---
 
-### 4.4 La Promotora Digital (`/promotora`)
+### 7.4 La Promotora Digital (`/promotora`)
 - **Acceso:** `https://axisnitro.store/promotora`.
 - **Operaciones:**
-  1. **Compartir Enlace Único:** Copia tu enlace personal de referidos.
-  2. **Comisiones Pasivas:** Revisa en tiempo real el dinero acumulado por las ventas y recargas de tus comercios afiliados.
-  3. **Solicitar Retiro:** Envía solicitudes de pago a tu cuenta bancaria o Pago Móvil.
+  1. **Reclutar:** Compartir su enlace personal con dueños de tiendas.
+  2. **Cobrar Comisiones:** Solicitar retiros a su cuenta bancaria.
 
 ---
 
-### 4.5 El Vendedor de Caja (`/vendedor`)
+### 7.5 El Vendedor de Caja (`/vendedor`)
 - **Acceso:** `https://axisnitro.store/vendedor`.
 - **Operaciones:**
-  1. **Escaneo de Código de Barras:** Usa la cámara o lector físico para agregar productos al carrito.
-  2. **Cobrar:** Selecciona Pago Móvil, Efectivo, Binance o Axis Points y emite el recibo digital.
-  3. **Seguridad Ghost Trap:** Protocolo de bloqueo en caso de descuadre en caja.
+  1. **Facturación:** Escanear códigos de barras o seleccionar ítems.
+  2. **Procesar Pago:** Emitir recibo digital de cobro.
 
 ---
 
-### 4.6 El Rider de Delivery (`/rider`)
-- **Acceso:** `https://axisnitro.store/rider`.
-- **Operaciones:**
-  1. Recibir alertas de pedidos listos para despacho.
-  2. Confirmar retiro en el comercio y entrega en la dirección del cliente con firma o foto.
+<a id="8-manual-comercial--estrategia-de-ventas-modo-ventas"></a>
+## 💵 CAPÍTULO VIII: MANUAL COMERCIAL & ESTRATEGIA DE VENTAS ("MODO VENTAS")
+
+### 8.1 Ofertas Comerciales Activas
+- **Plan Estándar Axis Nitro B2B:** **$20.00 USD / mes** + **3.0% por transacción**.
+- **Oferta Comerciales Pioneros:** **$10.00 USD / mes** *(50% de descuento durante los primeros 3 meses)*.
+- **Prueba Demo Gratuita:** **7 Días sin costo**.
 
 ---
 
-## ⚙️ CAPÍTULO V: GUÍA DE MANTENIMIENTO TÉCNICO & SERVIDORES
+<a id="9-guía-de-configuración-e-infraestructura-técnica"></a>
+## ⚙️ CAPÍTULO IX: GUÍA DE CONFIGURACIÓN E INFRAESTRUCTURA TÉCNICA
 
----
+### 9.1 Esquema de Base de Datos PostgreSQL Supabase
+La migración oficial `supabase/migrations/20260730000000_create_axis_nitro_rewards.sql` define la estructura SQL:
 
-### 5.1 Despliegue en Vercel & Configuración DNS
-El proyecto está vinculado al dominio principal `axisnitro.store` en Vercel. 
+```sql
+-- 1. Tabla de Estados Globales del CGOS (Offline Sync)
+CREATE TABLE kfs_store_states (
+  id TEXT PRIMARY KEY,
+  db_state JSONB NOT NULL,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW() NOT NULL
+);
 
-Para habilitar subdominios adicionales vía Vercel CLI o interfaz web:
-- **Comando Vercel CLI:**
-  ```bash
-  npx vercel domains add rewards.axisnitro.store kfs-os
-  ```
-- **Registro DNS CNAME en Vercel:**
-  - **Name:** `*`
-  - **Type:** `CNAME`
-  - **Value:** `cname.vercel-dns.com`
+-- 2. Tabla para Nodos de E-Commerce (Axis Nitro Hubs)
+CREATE TABLE axis_nitro_hubs (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    owner_id UUID REFERENCES auth.users(id),
+    store_name TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    logo_url TEXT,
+    is_active BOOLEAN DEFAULT true,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
 
----
-
-### 5.2 Esquema de Base de Datos Supabase SQL
-La migración de la base de datos se encuentra archivada en `supabase/migrations/20260730000000_create_axis_nitro_rewards.sql` y crea las tablas `kfs_reward_tasks` y `kfs_reward_submissions` con políticas de seguridad RLS habilitadas.
+-- 3. Tabla para Tareas de Recompensas
+CREATE TABLE kfs_reward_tasks (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT NOT NULL,
+    points_reward INT NOT NULL DEFAULT 100,
+    category TEXT NOT NULL DEFAULT 'SCAN_QR',
+    verification_type TEXT NOT NULL DEFAULT 'AUTOMATIC_QR',
+    status TEXT NOT NULL DEFAULT 'ACTIVE',
+    target_audience TEXT NOT NULL DEFAULT 'ALL',
+    qr_code_secret TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+```
 
 ---
 
 > [!NOTE]
-> Este documento constituye el White Paper y Manual Técnico Completo de Operaciones para KFS OS & Axis Nitro Core. Toda la plataforma está verificada, compilada en producción y lista para operar al 100%.
+> Este documento representa el Manual Maestro e Informe White Paper Oficial de KFS OS & Axis Nitro Core. Todo el código fuente y las rutas de producción han sido compilados y verificados exitosamente para su funcionamiento comercial inmediato.
