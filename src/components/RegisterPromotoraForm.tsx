@@ -10,6 +10,7 @@ export const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCod
   const [avatar, setAvatar] = useState<string>("");
   const [kycCedula, setKycCedula] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formError, setFormError] = useState("");
 
   const validatePhone = (phone: string) => {
     if (!phone) return false;
@@ -56,27 +57,28 @@ export const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCod
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError("");
     if (!isNameValid) {
-      alert("Por favor ingresa tu Nombre Completo.");
+      setFormError("Por favor ingresa tu Nombre Completo.");
       return;
     }
     if (!isPhoneValid) {
-      alert("Por favor ingresa un número de Teléfono/Pago Móvil válido (Ej: 04141234567).");
+      setFormError("Por favor ingresa un número de Teléfono/Pago Móvil válido (Ej: 04141234567).");
       return;
     }
     if (!isEmailValid) {
-      alert("Por favor ingresa un correo electrónico válido.");
+      setFormError("Por favor ingresa un correo electrónico válido.");
       return;
     }
     if (!isPasswordValid) {
-      alert("La contraseña debe tener al menos 4 caracteres.");
+      setFormError("La contraseña debe tener al menos 4 caracteres.");
       return;
     }
     if (isSubmitting) return;
 
     setIsSubmitting(true);
-    const defaultAvatar = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80";
-    const defaultCedula = "default_promotora_cedula";
+    const defaultAvatar = "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80";
+    const defaultCedula = "default_cedula_doc";
 
     try {
       const fallbackData = {
@@ -106,6 +108,13 @@ export const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCod
           </span>
         )}
       </div>
+
+      {formError && (
+        <div className="bg-red-50 border border-red-200 text-red-700 text-xs font-bold px-4 py-3 rounded-xl mb-3 flex items-center justify-between animate-fade-in">
+          <span>⚠️ {formError}</span>
+          <button type="button" onClick={() => setFormError("")} className="text-red-400 hover:text-red-600 font-black">✕</button>
+        </div>
+      )}
 
       {/* Live Requirement Checklist */}
       <div className="bg-violet-50/80 border border-violet-100 rounded-2xl p-3.5 space-y-2">

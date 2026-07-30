@@ -241,9 +241,17 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
             <h1 className="font-black text-xl tracking-tight">{KFS_BRAND.productAcronym} Customer</h1>
           </div>
           <div className="flex items-center gap-2">
+              <button 
+                onClick={() => setView ? setView("rewards") : window.location.href = "/rewards"} 
+                className="bg-amber-400 hover:bg-amber-300 text-slate-950 px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 shadow-md border border-amber-300 font-black text-xs cursor-pointer transition-all hover:scale-105" 
+                title="App de Recompensas Nitro Points"
+              >
+                <Zap size={14} className="fill-slate-950 text-slate-950" />
+                <span>Gana Puntos</span>
+              </button>
               <div className="bg-white/20 px-3 py-1.5 rounded-xl flex items-center gap-1.5 shadow-sm border border-white/30 backdrop-blur-md" title="Billetera Axis Points">
                 <span className="text-[10px] font-black uppercase tracking-wider text-violet-100">Axis Pts</span>
-                <span className="font-black text-white text-sm">{currentUser?.kfsPoints || 0}</span>
+                <span className="font-black text-white text-sm">{currentUser?.kfsPoints || currentUser?.k_points_balance || 0}</span>
               </div>
               <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
                 <LogOut size={16} />

@@ -44,6 +44,8 @@ const CustomerDashboard = dynamic(() => import("../components/dashboards/Custome
 const LoginView = dynamic(() => import("../components/dashboards/LoginView").then(mod => mod.LoginView), { ssr: false });
 const MarketplaceView = dynamic(() => import("../components/dashboards/MarketplaceView").then(mod => mod.MarketplaceView), { ssr: false });
 const LandingPageView = dynamic(() => import("../components/dashboards/LandingPageView").then(mod => mod.LandingPageView), { ssr: false });
+const SelfCheckoutKioskView = dynamic(() => import("../components/SelfCheckoutKioskView").then(mod => mod.SelfCheckoutKioskView), { ssr: false });
+const AxisNitroRewardsApp = dynamic(() => import("../components/rewards/AxisNitroRewardsApp").then(mod => mod.AxisNitroRewardsApp), { ssr: false });
 import { AxisNitroPOS } from "../components/AxisNitroPOS";
 
 
@@ -341,7 +343,7 @@ export default function Home() {
     }
   }, [currentUser, isUserValid, logout, setView, showToast, setCurrentUser]);
 
-  const validViews = ["landing", "axis_nitro_pos", "b2b-onboarding", "login", "marketplace", "customer", "core", "promotora", "client", "vendedor", "rider"];
+  const validViews = ["landing", "axis_nitro_pos", "b2b-onboarding", "login", "marketplace", "customer", "core", "promotora", "client", "vendedor", "rider", "self-checkout-kiosk"];
   let normalizedView = view === "dueño" ? "client" : view;
   if (!validViews.includes(normalizedView)) {
     normalizedView = currentUser ? (currentUser.role === "dueño" ? "client" : (currentUser.role || "landing")) : "landing";
@@ -483,8 +485,10 @@ export default function Home() {
           className="flex-1 flex flex-col"
         >
           {safeView === "landing" && <LandingPageView setView={setView} />}
+          {safeView === "rewards" && <AxisNitroRewardsApp />}
           {safeView === "axis_nitro_pos" && <AxisNitroPOS />}
           {safeView === "b2b-onboarding" && <B2BSelfOnboarding setView={setView} />}
+          {safeView === "self-checkout-kiosk" && <SelfCheckoutKioskView onExitKiosk={() => setView("client")} />}
 
           {safeView === "login" && (
             <LoginView

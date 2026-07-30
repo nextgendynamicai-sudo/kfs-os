@@ -57,6 +57,7 @@ const AxisNitroPOS = dynamic(() => import("../AxisNitroPOS").then(m => m.AxisNit
 const SalesLandingWidget = dynamic(() => import("../SalesLandingWidget").then(m => m.SalesLandingWidget), { ssr: false });
 const StorefrontCustomizer = dynamic(() => import("../StorefrontCustomizer").then(m => m.StorefrontCustomizer), { ssr: false });
 const OnboardingWizard = dynamic(() => import("../OnboardingWizard").then(m => m.OnboardingWizard), { ssr: false });
+const ArchitectRewardsManager = dynamic(() => import("../rewards/ArchitectRewardsManager").then(m => m.ArchitectRewardsManager), { ssr: false });
 
 // Theme and Global Constants
 const KREATEK_COLORS = {
@@ -495,6 +496,16 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                     <RefreshCw size={14} className="animate-spin" /> Sincronizar Nube
                   </button>
                   <button 
+                    onClick={() => setActiveTab("rewards")}
+                    className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border cursor-pointer flex items-center gap-1.5 ${
+                      activeTab === "rewards"
+                        ? "bg-amber-500 text-slate-950 border-amber-400 font-black shadow-lg shadow-amber-500/20"
+                        : "bg-slate-800 hover:bg-slate-700 text-white border-slate-700"
+                    }`}
+                  >
+                    <Zap size={14} className="fill-amber-400 text-amber-400" /> Recompensas Nitro
+                  </button>
+                  <button 
                     onClick={() => setActiveTab("db_manager")}
                     className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-all border border-slate-700 cursor-pointer flex items-center gap-1.5"
                   >
@@ -833,6 +844,18 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                 </ResponsiveContainer>
               </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === "rewards" && (
+          <div className="space-y-6 animate-fade-in">
+            <ArchitectRewardsManager />
+          </div>
+        )}
+
+        {activeTab === "db_manager" && (
+          <div className="space-y-6 animate-fade-in">
+            <DatabaseManagerWidget />
           </div>
         )}
 

@@ -11,6 +11,7 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
   const [avatar, setAvatar] = useState<string>("");
   const [kycCedula, setKycCedula] = useState<string>("");
   const [acceptedToS, setAcceptedToS] = useState(false);
+  const [formError, setFormError] = useState("");
 
   const validatePhone = (phone: string) => {
     if (!phone) return false;
@@ -87,28 +88,29 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError("");
     if (!formData.company.trim()) {
-      alert("Por favor ingresa el Nombre Comercial / Empresa.");
+      setFormError("Por favor ingresa el Nombre Comercial / Empresa.");
       return;
     }
     if (!isNameValid) {
-      alert("Por favor ingresa el Nombre del Representante Legal.");
+      setFormError("Por favor ingresa el Nombre del Representante Legal.");
       return;
     }
     if (!isPhoneValid) {
-      alert("Por favor ingresa un número de teléfono válido (Ej: 04141234567).");
+      setFormError("Por favor ingresa un número de teléfono válido (Ej: 04141234567).");
       return;
     }
     if (!isEmailValid) {
-      alert("Por favor ingresa un correo electrónico válido.");
+      setFormError("Por favor ingresa un correo electrónico válido.");
       return;
     }
     if (!isPasswordValid) {
-      alert("La contraseña debe tener al menos 4 caracteres.");
+      setFormError("La contraseña debe tener al menos 6 caracteres.");
       return;
     }
     if (!acceptedToS) {
-      alert("Debes aceptar los Términos de Servicio para registrar tu comercio.");
+      setFormError("Debes aceptar los Términos de Servicio para registrar tu comercio.");
       return;
     }
 
@@ -130,6 +132,13 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
   return (
     <form onSubmit={handleSubmit} className={`space-y-3 ${standalone ? "text-violet-950 animate-fade-in" : "text-violet-950"}`}>
       <h3 className={`text-lg font-black mb-4 border-b pb-2 ${standalone ? "text-violet-700 border-violet-100" : "text-violet-900 border-violet-100"}`}>Setup de Nuevo Comercio</h3>
+
+      {formError && (
+        <div className="bg-red-50 border border-red-200 text-red-700 text-xs font-bold px-4 py-3 rounded-xl mb-3 flex items-center justify-between animate-fade-in">
+          <span>⚠️ {formError}</span>
+          <button type="button" onClick={() => setFormError("")} className="text-red-400 hover:text-red-600 font-black">✕</button>
+        </div>
+      )}
 
       <div className="flex flex-col items-center gap-2 mb-4 relative">
         <div className="relative w-20 h-20">

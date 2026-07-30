@@ -7,6 +7,7 @@ import { CvViewerModal } from "../CvViewerModal";
 import { SMSConciliatorSimulator } from "../SMSConciliatorSimulator";
 import { KFSFinancialSplitCalculator } from "../KFSFinancialSplitCalculator";
 import { FiscalPrinterSetupWidget } from "../FiscalPrinterSetupWidget";
+import { HardwareDriverSuite } from "../HardwareDriverSuite";
 import { KFSIoTEdgeConsole } from "../KFSIoTEdgeConsole";
 import { KreatekLogo } from "../KreatekLogo";
 import { Navbar } from "../Navbar";
@@ -109,7 +110,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
   const [fundAmount, setFundAmount] = useState("");
   const [isTopUpOpen, setIsTopUpOpen] = useState(false);
   const [payValeModal, setPayValeModal] = useState<{ vale: any; amount: string } | null>(null);
-  const { editProduct, createTicket, fundWallet, processMonthlyBilling, createVale, payVale, processPayroll, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating, registerPosTerminal, deletePosTerminal, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, toggleBusinessOpen, updateBusinessConfig, createCoupon, deleteCoupon, toggleCouponActive } = useKFS() as any;
+  const { setView, editProduct, createTicket, fundWallet, processMonthlyBilling, createVale, payVale, processPayroll, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating, registerPosTerminal, deletePosTerminal, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, toggleBusinessOpen, updateBusinessConfig, createCoupon, deleteCoupon, toggleCouponActive } = useKFS() as any;
   const [deliveryRadiusKm, setDeliveryRadiusKm] = useState(clientInfo?.deliveryRadiusKm || 5);
 
   useEffect(() => {
@@ -562,9 +563,37 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
           </div>
         )}
 
-        {activeTab === 'config' && businessPreset !== "AXIS-ONLY" && <FiscalPrinterSetupWidget />}
+        {activeTab === 'config' && businessPreset !== "AXIS-ONLY" && (
+          <div className="space-y-6">
+            <FiscalPrinterSetupWidget />
+            <HardwareDriverSuite showToast={showToast} />
+          </div>
+        )}
 
         {activeTab === 'personal' && <RecruitmentWidget db={db} currentUser={currentUser} formatUSD={formatUSD} />}
+
+        {/* KIOSK SELF-CHECKOUT LAUNCHER CARD */}
+        {activeTab === 'resumen' && (
+          <div className="bg-gradient-to-r from-amber-500 via-amber-600 to-emerald-600 text-slate-950 p-6 md:p-8 rounded-[2rem] shadow-xl shadow-amber-500/20 relative overflow-hidden border border-amber-400 flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="space-y-2 text-center md:text-left">
+              <span className="bg-slate-950 text-amber-400 font-mono text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider inline-block">
+                🆕 Módulo Kiosko Autoservicio
+              </span>
+              <h3 className="text-xl md:text-2xl font-black tracking-tight">
+                Lanzar Terminal Kiosko Self-Checkout
+              </h3>
+              <p className="text-xs font-bold text-slate-900/90 max-w-xl">
+                Transforma cualquier pantalla o tablet en un punto de autoservicio para tus clientes con lectura de peso en vivo, cobro QR Pago Móvil/Binance y emisión instantánea de ticket.
+              </p>
+            </div>
+            <button
+              onClick={() => setView('self-checkout-kiosk')}
+              className="py-4 px-8 bg-slate-950 hover:bg-slate-900 text-amber-400 font-black rounded-2xl text-xs uppercase tracking-widest transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-2xl shrink-0 flex items-center gap-2"
+            >
+              🚀 Iniciar Kiosko Autoservicio
+            </button>
+          </div>
+        )}
 
         {/* Manuals Section for Client (Owner) */}
         {activeTab === 'resumen' && (
@@ -1465,6 +1494,12 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                   <p className="text-[11px] text-violet-200/90 leading-relaxed">
                     Tu comercio está operando bajo el preset digital de Axis Nitro. Tus clientes acumulan puntos y realizan canjes a través de tus enlaces y códigos de referidos sin requerir hardware de POS físico.
                   </p>
+                  <button 
+                    onClick={() => setView ? setView("rewards") : window.location.href = "/rewards"} 
+                    className="mt-4 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs cursor-pointer transition-all hover:scale-105 shadow-md shadow-amber-400/20 w-fit"
+                  >
+                    <Zap size={14} className="fill-slate-950 text-slate-950" /> Ver App de Recompensas PWA
+                  </button>
                 </div>
               )}
 

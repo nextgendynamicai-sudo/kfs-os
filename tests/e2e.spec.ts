@@ -60,4 +60,12 @@ test.describe('KFS OS Security & Role Authentication Suite', () => {
     // Verificar que carga el panel de promotora
     await expect(page.locator('text=Referidos Activos')).toBeVisible({ timeout: 10000 });
   });
+
+  test('Escenario 6: Acceso Directo a la App PWA de Recompensas Axis Nitro', async ({ page }) => {
+    await page.goto('/rewards');
+    
+    // Verificar que carga la App PWA de Recompensas
+    await expect(page.locator('text=Axis Nitro Rewards')).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('text=Saldo Axis Nitro Points')).toBeVisible();
+  });
 });

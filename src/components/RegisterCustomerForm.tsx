@@ -15,6 +15,7 @@ export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCanc
   const [kycCedula, setKycCedula] = useState<string>("");
   const [kycAddress, setKycAddress] = useState("");
   const [promoCode, setPromoCode] = useState("1000");
+  const [formError, setFormError] = useState("");
   const { registerCustomer } = useKFS() as any;
 
   const validatePhone = (phone: string, prefix: string) => {
@@ -24,14 +25,11 @@ export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCanc
     if (rawBody.startsWith('0')) {
       rawBody = rawBody.slice(1);
     }
-    if (prefix === "+58") {
-      return /^(412|414|424|416|426|415|425)\d{7}$/.test(rawBody);
-    }
-    return rawBody.length >= 7 && rawBody.length <= 12;
+    return /^(412|414|424|416|426|415|425)\d{7}$/.test(rawBody) || (rawBody.length >= 7 && rawBody.length <= 12);
   };
 
+  const isNameValid = name.trim().length >= 3;
   const isPhoneValid = validatePhone(phoneBody, phonePrefix);
-  const isNameValid = name.trim().length >= 2;
   const isPasswordValid = password.length >= 6;
   const isAddressValid = kycAddress.trim().length >= 3;
   const isKycComplete = !!kycPhoto && !!kycCedula;
@@ -47,16 +45,17 @@ export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCanc
 
   const handleSubmit = (e: any) => {
     e.preventDefault();
+    setFormError("");
     if (!isNameValid) {
-      alert("Por favor ingresa tu Nombre Completo.");
+      setFormError("Por favor ingresa tu Nombre Completo.");
       return;
     }
     if (!isPhoneValid) {
-      alert("Por favor ingresa un número de teléfono celular válido (Ej: 04141234567).");
+      setFormError("Por favor ingresa un número de teléfono celular válido (Ej: 04141234567).");
       return;
     }
     if (!isPasswordValid) {
-      alert("La contraseña debe tener al menos 6 caracteres.");
+      setFormError("La contraseña debe tener al menos 6 caracteres.");
       return;
     }
 
@@ -83,6 +82,13 @@ export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCanc
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 animate-fade-in">
+      {formError && (
+        <div className="bg-red-50 border border-red-200 text-red-700 text-xs font-bold px-4 py-3 rounded-xl mb-3 flex items-center justify-between animate-fade-in">
+          <span>⚠️ {formError}</span>
+          <button type="button" onClick={() => setFormError("")} className="text-red-400 hover:text-red-600 font-black">✕</button>
+        </div>
+      )}
+
       {/* Promo Code Input */}
       <div className="relative bg-gradient-to-r from-amber-500/10 to-emerald-500/10 p-3 rounded-2xl border border-amber-300">
         <label className="block text-xs font-black text-amber-700 uppercase tracking-widest mb-1 flex items-center gap-1">

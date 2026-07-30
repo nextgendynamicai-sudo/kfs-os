@@ -219,6 +219,49 @@ const initialDB = {
   riders: [] as any[],
   coupons: [] as any[],
   fiscalLogs: [] as any[],
+  rewardTasks: [
+    {
+      id: "task_starter_1",
+      title: "Escaneo QR en Tienda Axis Nitro",
+      description: "Visita un comercio afiliado de la red Axis Nitro y escanea el código QR del punto de venta.",
+      pointsReward: 250,
+      category: "SCAN_QR",
+      verificationType: "AUTOMATIC_QR",
+      status: "ACTIVE",
+      targetAudience: "ALL",
+      requirements: "Escanear el QR físico en el comercio",
+      qrCodeSecret: "AXIS-NITRO-OFFICIAL-STORE-QR",
+      createdAt: new Date().toISOString(),
+      createdBy: "System Core"
+    },
+    {
+      id: "task_starter_2",
+      title: "Check-in Presencial por GPS",
+      description: "Confirma tu visita presencial a uno de los comercios afiliados verificando tu ubicación GPS.",
+      pointsReward: 150,
+      category: "VISIT_MERCHANT",
+      verificationType: "LOCATION_GPS",
+      status: "ACTIVE",
+      targetAudience: "ALL",
+      requirements: "Ubicación GPS a menos de 50 metros",
+      createdAt: new Date().toISOString(),
+      createdBy: "System Core"
+    },
+    {
+      id: "task_starter_3",
+      title: "Subida de Comprobante de Compra",
+      description: "Realiza una compra superior a $5 en cualquier comercio KFS y sube la foto de tu factura.",
+      pointsReward: 500,
+      category: "BUY_PRODUCT",
+      verificationType: "RECEIPT_UPLOAD",
+      status: "ACTIVE",
+      targetAudience: "CUSTOMERS",
+      requirements: "Adjuntar foto clara del ticket de compra",
+      createdAt: new Date().toISOString(),
+      createdBy: "System Core"
+    }
+  ] as any[],
+  rewardSubmissions: [] as any[],
   notifications: [
     {
       id: "notif_welcome_1",
@@ -253,6 +296,13 @@ interface KFSContextType {
   updateBcvRates: (usd: number, eur: number) => void;
   db: typeof initialDB;
   setDb: React.Dispatch<React.SetStateAction<typeof initialDB>>;
+  createRewardTask: (taskData: any) => Promise<void>;
+  updateRewardTask: (taskId: string, updates: any) => Promise<void>;
+  deleteRewardTask: (taskId: string) => Promise<void>;
+  toggleRewardTaskStatus: (taskId: string) => Promise<void>;
+  submitRewardTaskProof: (taskId: string, proofData: any) => Promise<void>;
+  approveRewardSubmission: (submissionId: string, reviewerId?: string) => Promise<void>;
+  rejectRewardSubmission: (submissionId: string, reason: string, reviewerId?: string) => Promise<void>;
   formatUSD: (val: number) => string;
   formatEUR: (val: number) => string;
   handleLogin: (role: string, password: string, email?: string | null) => void;
@@ -602,6 +652,8 @@ const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
   mergedDb.candidates = mergeArrayIncoming(localDb.candidates, remoteDb.candidates, checkCandidateAuthority);
   mergedDb.unlockedContacts = mergeArrayIncoming(localDb.unlockedContacts, remoteDb.unlockedContacts, checkUnlockAuthority);
   mergedDb.coupons = mergeArrayIncoming(localDb.coupons || [], remoteDb.coupons || []);
+  mergedDb.rewardTasks = mergeArrayIncoming(localDb.rewardTasks || [], remoteDb.rewardTasks || []);
+  mergedDb.rewardSubmissions = mergeArrayIncoming(localDb.rewardSubmissions || [], remoteDb.rewardSubmissions || []);
   
   // merge kreatekCore with max-value safety
   const localCore = localDb.kreatekCore || {};
@@ -4589,6 +4641,156 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast("✅ Producto modificado exitosamente.", "success");
   };
 
+  const createRewardTask = async (taskData: any) => {
+    const newTask = {
+      id: `task_${Date.now()}`,
+      status: "ACTIVE",
+      createdAt: new Date().toISOString(),
+      createdBy: currentUser?.name || currentUser?.company || "Arquitecto Core",
+      ...taskData
+    };
+    setDb((prev: any) => ({
+      ...prev,
+      rewardTasks: [newTask, ...(prev.rewardTasks || [])]
+    }));
+    showToast("✅ Tarea de recompensa creada y desplegada", "success");
+  };
+
+  const updateRewardTask = async (taskId: string, updates: any) => {
+    setDb((prev: any) => ({
+      ...prev,
+      rewardTasks: (prev.rewardTasks || []).map((t: any) => t.id === taskId ? { ...t, ...updates } : t)
+    }));
+    showToast("Tarea actualizada", "success");
+  };
+
+  const deleteRewardTask = async (taskId: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      rewardTasks: (prev.rewardTasks || []).filter((t: any) => t.id !== taskId)
+    }));
+    showToast("Tarea eliminada", "success");
+  };
+
+  const toggleRewardTaskStatus = async (taskId: string) => {
+    setDb((prev: any) => ({
+      ...prev,
+      rewardTasks: (prev.rewardTasks || []).map((t: any) => {
+        if (t.id === taskId) {
+          const nextStatus = t.status === "ACTIVE" ? "PAUSED" : "ACTIVE";
+          return { ...t, status: nextStatus };
+        }
+        return t;
+      })
+    }));
+    showToast("Estado de tarea modificado", "success");
+  };
+
+  const submitRewardTaskProof = async (taskId: string, proofData: any) => {
+    const targetTask = (db.rewardTasks || []).find((t: any) => t.id === taskId);
+    if (!targetTask) throw new Error("Tarea no encontrada");
+
+    const newSub = {
+      id: `sub_${Date.now()}`,
+      taskId,
+      taskTitle: targetTask.title,
+      userId: currentUser?.id || currentUser?.phone || currentUser?.email || "anon",
+      userName: currentUser?.name || currentUser?.company || "Usuario Nitro",
+      userRole: currentUser?.role || "CUSTOMER",
+      userEmail: currentUser?.email || "",
+      pointsAwarded: targetTask.pointsReward,
+      submissionData: proofData,
+      status: "PENDING",
+      submittedAt: new Date().toISOString()
+    };
+
+    setDb((prev: any) => ({
+      ...prev,
+      rewardSubmissions: [newSub, ...(prev.rewardSubmissions || [])]
+    }));
+
+    showToast("🚀 Entrega enviada a revisión del Arquitecto", "success");
+  };
+
+  const approveRewardSubmission = async (submissionId: string, reviewerId: string = "Arquitecto Core") => {
+    setDb((prev: any) => {
+      const submissions = prev.rewardSubmissions || [];
+      const subIndex = submissions.findIndex((s: any) => s.id === submissionId);
+      if (subIndex === -1) return prev;
+
+      const targetSub = submissions[subIndex];
+      if (targetSub.status === "APPROVED") return prev;
+
+      const updatedSubmissions = [...submissions];
+      updatedSubmissions[subIndex] = {
+        ...targetSub,
+        status: "APPROVED",
+        reviewedBy: reviewerId,
+        reviewedAt: new Date().toISOString()
+      };
+
+      const updatedCustomers = (prev.customers || []).map((c: any) => {
+        if (c.id === targetSub.userId || c.phone === targetSub.userId || c.email === targetSub.userEmail) {
+          return {
+            ...c,
+            k_points_balance: (c.k_points_balance || 0) + (targetSub.pointsAwarded || 0)
+          };
+        }
+        return c;
+      });
+
+      if (currentUser && (currentUser.id === targetSub.userId || currentUser.phone === targetSub.userId)) {
+        setCurrentUser((curr: any) => ({
+          ...curr,
+          k_points_balance: (curr.k_points_balance || 0) + (targetSub.pointsAwarded || 0)
+        }));
+      }
+
+      return {
+        ...prev,
+        rewardSubmissions: updatedSubmissions,
+        customers: updatedCustomers,
+        notifications: [
+          {
+            id: `notif_reward_${Date.now()}`,
+            audience: "all",
+            title: "🎉 ¡Entrega Aprobada!",
+            message: `Se han acreditado +${targetSub.pointsAwarded} Axis Nitro Points a ${targetSub.userName} por completar "${targetSub.taskTitle}".`,
+            date: new Date().toISOString(),
+            destType: "none"
+          },
+          ...(prev.notifications || [])
+        ]
+      };
+    });
+
+    showToast("🎉 ¡Entrega Aprobada y Axis Nitro Points acreditados!", "success");
+  };
+
+  const rejectRewardSubmission = async (submissionId: string, reason: string, reviewerId: string = "Arquitecto Core") => {
+    setDb((prev: any) => {
+      const submissions = prev.rewardSubmissions || [];
+      const subIndex = submissions.findIndex((s: any) => s.id === submissionId);
+      if (subIndex === -1) return prev;
+
+      const updatedSubmissions = [...submissions];
+      updatedSubmissions[subIndex] = {
+        ...submissions[subIndex],
+        status: "REJECTED",
+        rejectionReason: reason,
+        reviewedBy: reviewerId,
+        reviewedAt: new Date().toISOString()
+      };
+
+      return {
+        ...prev,
+        rewardSubmissions: updatedSubmissions
+      };
+    });
+
+    showToast("Entrega rechazada", "error");
+  };
+
   const contextValue = useMemo(() => ({
     isClient, isBooting, view, setView, currentUser, setCurrentUser, updateUserAvatar,
     toast, showToast, rates, updateBcvRates, db, setDb, formatUSD, formatEUR,
@@ -4601,7 +4803,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     sendNotification, requestNotificationPermission, assignPromotoraToClient, addGlobalProduct, paySubscription, approveSubscription, finishOnboarding, hashPassword, logAction, createTicket, replyTicket, closeTicket, fundWallet, transferKFSPoints, fundCustomerWallet, requestTopUp, requestPayout, validateTopUp, processMonthlyBilling, convertAsset, claimFlowMaster, trimLocalDatabase, registerCustomer, blockClient, releaseClient, deleteClient, deleteCustomer, deletePromotora, deleteVendedor, deleteRider,
     registerCandidate, unlockCandidateContact, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, hireCandidate, releaseCandidate, toggleCandidateBacking, markNotificationsAsRead, updateCvBuilderOption,
     registerRider, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, updateRiderPagoMovil, confirmDelivery, markAsPickedUp, rateRider, updateRiderGPS, riderCheckIn, riderCheckOut,
-    toggleBusinessOpen, updateBusinessConfig, createCoupon, deleteCoupon, toggleCouponActive, logFiscalAction
+    toggleBusinessOpen, updateBusinessConfig, createCoupon, deleteCoupon, toggleCouponActive, logFiscalAction,
+    createRewardTask, updateRewardTask, deleteRewardTask, toggleRewardTaskStatus, submitRewardTaskProof, approveRewardSubmission, rejectRewardSubmission
   }), [
     isClient, isBooting, view, currentUser, toast, rates, db, originalUser, networkState, ghostTrapLocked, isDataLoaded
   ]);

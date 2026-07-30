@@ -16,18 +16,16 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
     pagoMovil: { banco: "", telefono: "", cedula: "" }
   });
   const [uploading, setUploading] = useState({ cedula: false, med: false, license: false });
+  const [formError, setFormError] = useState("");
 
   const validatePhone = (phone: string) => {
     if (!phone) return false;
     const clean = phone.replace(/[^0-9]/g, "");
     let rawBody = clean;
-    if (rawBody.startsWith('58')) {
-      rawBody = rawBody.slice(2);
-    }
     if (rawBody.startsWith('0')) {
       rawBody = rawBody.slice(1);
     }
-    return /^(412|414|424|416|426|415|425)\d{7}$/.test(rawBody) || (rawBody.length >= 7 && rawBody.length <= 13);
+    return /^(412|414|424|416|426|415|425)\d{7}$/.test(rawBody) || (rawBody.length >= 7 && rawBody.length <= 12);
   };
 
   const validateEmail = (email: string) => {
@@ -37,7 +35,7 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
   const isPhoneValid = validatePhone(formData.phone);
   const isPmPhoneValid = validatePhone(formData.pagoMovil.telefono);
   const isEmailValid = validateEmail(formData.email);
-  const isNameValid = formData.name.trim().length >= 2;
+  const isNameValid = formData.name.trim().length >= 3;
   const isPasswordValid = formData.password.length >= 4;
 
   const isFormValid = isNameValid && isPhoneValid && isEmailValid && isPasswordValid;
@@ -57,20 +55,21 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setFormError("");
     if (!isNameValid) {
-      alert("Por favor ingresa tu Nombre Completo.");
+      setFormError("Por favor ingresa tu Nombre Completo.");
       return;
     }
     if (!isPhoneValid) {
-      alert("Por favor ingresa un número de Teléfono celular válido.");
+      setFormError("Por favor ingresa un número de Teléfono celular válido.");
       return;
     }
     if (!isEmailValid) {
-      alert("Por favor ingresa un correo electrónico válido.");
+      setFormError("Por favor ingresa un correo electrónico válido.");
       return;
     }
     if (!isPasswordValid) {
-      alert("La contraseña debe tener al menos 4 caracteres.");
+      setFormError("La contraseña debe tener al menos 4 caracteres.");
       return;
     }
 
@@ -80,7 +79,7 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
       medCertImg: formData.medCertImg || "default_med",
       licenseImg: formData.licenseImg || "default_license",
       pagoMovil: {
-        banco: formData.pagoMovil.banco || "Banesco",
+        banco: formData.pagoMovil.banco || "0102 - Banco de Venezuela",
         telefono: formData.pagoMovil.telefono || formData.phone,
         cedula: formData.pagoMovil.cedula || "V00000000"
       },
@@ -113,7 +112,13 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
   );
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 animate-fade-in w-full pb-4">
+    <form onSubmit={handleSubmit} className="space-y-4 text-violet-950 animate-fade-in pb-4">
+      {formError && (
+        <div className="bg-red-50 border border-red-200 text-red-700 text-xs font-bold px-4 py-3 rounded-xl mb-3 flex items-center justify-between animate-fade-in">
+          <span>⚠️ {formError}</span>
+          <button type="button" onClick={() => setFormError("")} className="text-red-400 hover:text-red-600 font-black">✕</button>
+        </div>
+      )}
       <div className="text-center pb-2 border-b border-violet-100">
         <div className="w-12 h-12 bg-violet-50 rounded-full flex items-center justify-center mx-auto mb-2 border border-violet-200">
           <Truck className="text-violet-600" size={24} />
