@@ -311,7 +311,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setView ? setView("rewards") : window.open("/rewards", "_blank")}
+              onClick={() => { window.location.href = "/rewards"; }}
               className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-slate-950 font-black text-xs flex items-center gap-2 shadow-lg shadow-amber-400/20 cursor-pointer transition-all hover:scale-105 border border-amber-300"
               title="Abrir la App PWA de Recompensas Axis Nitro Points"
             >

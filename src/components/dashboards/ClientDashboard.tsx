@@ -1495,7 +1495,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                     Tu comercio está operando bajo el preset digital de Axis Nitro. Tus clientes acumulan puntos y realizan canjes a través de tus enlaces y códigos de referidos sin requerir hardware de POS físico.
                   </p>
                   <button 
-                    onClick={() => setView ? setView("rewards") : window.location.href = "/rewards"} 
+                    onClick={() => { window.location.href = "/rewards"; }} 
                     className="mt-4 inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs cursor-pointer transition-all hover:scale-105 shadow-md shadow-amber-400/20 w-fit"
                   >
                     <Zap size={14} className="fill-slate-950 text-slate-950" /> Ver App de Recompensas PWA
