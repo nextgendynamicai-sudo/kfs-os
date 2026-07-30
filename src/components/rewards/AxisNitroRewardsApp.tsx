@@ -369,7 +369,7 @@ export const AxisNitroRewardsApp: React.FC = () => {
 
                         <div className="text-right shrink-0">
                           <div className="inline-flex items-center gap-1 bg-amber-500/10 border border-amber-500/30 text-amber-400 px-2.5 py-1 rounded-xl font-black text-xs">
-                            <Zap size={13} className="fill-amber-400" /> +{task.pointsReward} NP
+                            <Zap size={13} className="fill-amber-400" /> +{task.pointsReward} AP
                           </div>
                         </div>
                       </div>
@@ -470,7 +470,7 @@ export const AxisNitroRewardsApp: React.FC = () => {
                     <div>
                       <span className="text-[10px] font-bold uppercase text-slate-400 tracking-wider">{item.type}</span>
                       <h4 className="text-sm font-bold text-white">{item.title}</h4>
-                      <span className="text-xs font-black text-amber-400">{item.cost.toLocaleString()} Nitro Points</span>
+                      <span className="text-xs font-black text-amber-400">{item.cost.toLocaleString()} Axis Points</span>
                     </div>
                   </div>
 
@@ -479,7 +479,7 @@ export const AxisNitroRewardsApp: React.FC = () => {
                       if (userPoints >= item.cost) {
                         showToast(`¡Solicitud de canje enviada para "${item.title}"!`, "success");
                       } else {
-                        showToast(`No tienes suficientes Nitro Points (requieres ${item.cost.toLocaleString()})`, "error");
+                        showToast(`No tienes suficientes Axis Points (requieres ${item.cost.toLocaleString()})`, "error");
                       }
                     }}
                     className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all ${
