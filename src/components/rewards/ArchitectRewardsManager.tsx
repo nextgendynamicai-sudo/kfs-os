@@ -133,10 +133,10 @@ export const ArchitectRewardsManager: React.FC = () => {
           </div>
           <div>
             <h2 className="text-lg font-black tracking-tight text-white flex items-center gap-2">
-              Gestor de Recompensas Axis Nitro <span className="text-xs font-bold uppercase bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2.5 py-0.5 rounded-full">Arquitecto Engine</span>
+              Gestor de Recompensas Axis Points <span className="text-xs font-bold uppercase bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2.5 py-0.5 rounded-full">Arquitecto Engine</span>
             </h2>
             <p className="text-xs text-slate-400">
-              Configuración de acciones físicas, aprobación de entregas y desembolso automático de Nitro Points.
+              Configuración de acciones físicas, aprobación de entregas y desembolso automático de Axis Points.
             </p>
           </div>
         </div>
@@ -152,10 +152,10 @@ export const ArchitectRewardsManager: React.FC = () => {
       {/* Stats Header Bar */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <div className="p-4 rounded-2xl bg-slate-900/80 border border-slate-800">
-          <span className="text-xs font-bold uppercase text-slate-400">Nitro Points Desembolsados</span>
+          <span className="text-xs font-bold uppercase text-slate-400">Axis Points Desembolsados</span>
           <div className="text-2xl font-black text-amber-400 mt-1 flex items-baseline gap-1">
             <span>{stats.totalPointsDisbursed.toLocaleString()}</span>
-            <span className="text-xs font-bold text-amber-500">NP</span>
+            <span className="text-xs font-bold text-amber-500">AP</span>
           </div>
         </div>
 
@@ -399,7 +399,7 @@ export const ArchitectRewardsManager: React.FC = () => {
                     </div>
                     <p className="text-xs text-slate-400 mt-0.5">{task.description}</p>
                     <span className="text-[11px] font-mono text-amber-400 block mt-1">
-                      Recompensa: +{task.pointsReward} Nitro Points | Público: {task.targetAudience}
+                      Recompensa: +{task.pointsReward} Axis Points | Público: {task.targetAudience}
                     </span>
                   </div>
                 </div>
@@ -486,7 +486,7 @@ export const ArchitectRewardsManager: React.FC = () => {
 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="font-bold text-slate-300 block mb-1">Recompensa (Axis Nitro Points):</label>
+                    <label className="font-bold text-slate-300 block mb-1">Recompensa (Axis Points):</label>
                     <input
                       type="number"
                       required

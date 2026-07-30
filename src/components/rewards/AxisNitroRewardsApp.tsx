@@ -31,8 +31,9 @@ export const AxisNitroRewardsApp: React.FC = () => {
   const userPoints = useMemo(() => {
     if (!currentUser) return 0;
     if (currentUser.k_points_balance !== undefined) return currentUser.k_points_balance;
+    if (currentUser.kfsPoints !== undefined) return currentUser.kfsPoints;
     if (currentUser.points !== undefined) return currentUser.points;
-    return 1250; // Default demo balance
+    return 0;
   }, [currentUser]);
 
   // Active tasks list
@@ -194,24 +195,30 @@ export const AxisNitroRewardsApp: React.FC = () => {
             </div>
             <div>
               <h1 className="text-base font-black tracking-tight text-white flex items-center gap-1.5">
-                Axis Nitro Rewards <span className="text-[10px] uppercase font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full">PWA</span>
+                Axis Rewards <span className="text-[10px] uppercase font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full">PWA</span>
               </h1>
               <p className="text-xs text-slate-400 font-medium">
-                {currentUser?.name || currentUser?.company || "Usuario Nitro"}
+                {currentUser ? (currentUser.name || currentUser.company || currentUser.email || "Cliente Registrado") : "Inicia Sesión para Acumular Puntos"}
               </p>
             </div>
           </div>
 
           <button
-            onClick={() => setView && setView("landing")}
-            className="p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 transition-colors border border-slate-700/50"
-            title="Volver"
+            onClick={() => {
+              if (typeof window !== "undefined" && window.history.length > 1) {
+                window.history.back();
+              } else {
+                window.location.href = "/";
+              }
+            }}
+            className="p-2.5 rounded-2xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 transition-all border border-slate-700/50 cursor-pointer hover:scale-105 active:scale-95 shadow-md"
+            title="Volver atrás"
           >
-            <ArrowLeft size={18} />
+            <ArrowLeft size={20} />
           </button>
         </div>
 
-        {/* User Nitro Points Hero Card */}
+        {/* User Axis Points Hero Card */}
         <div className="max-w-md mx-auto mt-4 p-4 rounded-3xl bg-gradient-to-br from-violet-950/80 via-slate-900 to-slate-950 border border-violet-500/30 shadow-xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-32 h-32 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -219,32 +226,35 @@ export const AxisNitroRewardsApp: React.FC = () => {
           <div className="flex items-center justify-between relative z-10">
             <div>
               <span className="text-xs font-bold uppercase tracking-wider text-amber-400/90 flex items-center gap-1">
-                <Sparkles size={14} className="text-amber-400" /> Saldo Axis Nitro Points
+                <Sparkles size={14} className="text-amber-400" /> Saldo Axis Points
               </span>
               <div className="text-3xl font-black text-white tracking-tight mt-1 flex items-baseline gap-2">
                 <span>{userPoints.toLocaleString()}</span>
                 <span className="text-xs font-bold text-amber-400 uppercase tracking-widest bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">
-                  NP
+                  AP
                 </span>
               </div>
             </div>
 
             <div className="text-right">
               <div className="inline-flex items-center gap-1 px-3 py-1 rounded-xl bg-violet-500/20 border border-violet-500/40 text-violet-300 text-xs font-bold">
-                <Flame size={14} className="text-amber-400 fill-amber-400" /> Racha: 5 días
+                <Flame size={14} className="text-amber-400 fill-amber-400" /> Racha: 0 días
               </div>
-              <p className="text-[11px] text-slate-400 mt-1 font-medium">Nivel: <span className="text-amber-400 font-bold">Nitro Gold ⚡</span></p>
+              <p className="text-[11px] text-slate-400 mt-1 font-medium">Nivel: <span className="text-amber-400 font-bold">Axis Gold ⚡</span></p>
             </div>
           </div>
 
           {/* Level Progress Bar */}
           <div className="mt-4 relative z-10">
             <div className="flex justify-between text-[11px] font-bold text-slate-400 mb-1">
-              <span>Siguiente Nivel: Platinum</span>
-              <span>750 / 1000 NP</span>
+              <span>Siguiente Nivel: Axis Platinum</span>
+              <span>{userPoints} / 1000 AP</span>
             </div>
             <div className="w-full h-2.5 bg-slate-950/80 rounded-full overflow-hidden border border-slate-800">
-              <div className="h-full bg-gradient-to-r from-amber-500 to-violet-500 rounded-full w-3/4 shadow-lg shadow-amber-500/50" />
+              <div 
+                className="h-full bg-gradient-to-r from-amber-500 to-violet-500 rounded-full transition-all duration-500 shadow-lg shadow-amber-500/50" 
+                style={{ width: `${Math.min(100, (userPoints / 1000) * 100)}%` }}
+              />
             </div>
           </div>
         </div>
@@ -392,7 +402,7 @@ export const AxisNitroRewardsApp: React.FC = () => {
                 <Clock size={40} className="mx-auto text-slate-600 mb-3" />
                 <h3 className="text-sm font-bold text-slate-300">Aún no has completado acciones</h3>
                 <p className="text-xs text-slate-500 mt-1">
-                  Elige una tarea de la pestaña "Acciones" y sube tu comprobante para ganar Axis Nitro Points.
+                  Elige una tarea de la pestaña "Acciones" y sube tu comprobante para ganar Axis Points.
                 </p>
               </div>
             ) : (
@@ -429,7 +439,7 @@ export const AxisNitroRewardsApp: React.FC = () => {
 
                   <div className="flex items-center justify-between text-xs pt-1 border-t border-slate-800/50">
                     <span className="text-slate-400">Recompensa:</span>
-                    <span className="font-bold text-amber-400">+{sub.pointsAwarded} Axis Nitro Points</span>
+                    <span className="font-bold text-amber-400">+{sub.pointsAwarded} Axis Points</span>
                   </div>
                 </div>
               ))
@@ -442,7 +452,7 @@ export const AxisNitroRewardsApp: React.FC = () => {
           <div className="space-y-4">
             <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-500/10 to-violet-500/10 border border-amber-500/30 text-xs text-amber-300 flex items-center gap-2">
               <Sparkles size={18} className="text-amber-400 shrink-0" />
-              <span>Canjea tus Axis Nitro Points por beneficios exclusivos en comercios afiliados del ecosistema KFS OS.</span>
+              <span>Canjea tus Axis Points por beneficios exclusivos en comercios afiliados del ecosistema KFS OS.</span>
             </div>
 
             <div className="grid gap-3">
@@ -514,7 +524,7 @@ export const AxisNitroRewardsApp: React.FC = () => {
                 <h4 className="text-base font-bold text-amber-400">{selectedTask.title}</h4>
                 <p className="text-xs text-slate-300 mt-1">{selectedTask.description}</p>
                 <div className="mt-2 inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs font-black">
-                  Recompensa: +{selectedTask.pointsReward} Axis Nitro Points
+                  Recompensa: +{selectedTask.pointsReward} Axis Points
                 </div>
               </div>
 
