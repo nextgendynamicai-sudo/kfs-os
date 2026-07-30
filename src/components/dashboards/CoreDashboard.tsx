@@ -309,9 +309,20 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             <span className="bg-violet-900/50 border border-violet-500/30 p-2.5 rounded-2xl text-violet-300 shadow-lg"><Shield size={20} /></span>
             <h1 className="font-black text-xl tracking-tight bg-gradient-to-r from-violet-200 via-white to-indigo-200 bg-clip-text text-transparent">{KFS_BRAND.productAcronym} OS (Arquitecto)</h1>
           </div>
-          <button onClick={logout} className="p-2.5 bg-white/10 hover:bg-red-500/20 border border-white/10 rounded-2xl text-slate-300 hover:text-red-400 transition-all cursor-pointer">
-            <LogOut size={18} />
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setView ? setView("rewards") : window.open("/rewards", "_blank")}
+              className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-slate-950 font-black text-xs flex items-center gap-2 shadow-lg shadow-amber-400/20 cursor-pointer transition-all hover:scale-105 border border-amber-300"
+              title="Abrir la App PWA de Recompensas Axis Nitro Points"
+            >
+              <Zap size={16} className="fill-slate-950 text-slate-950 animate-bounce" />
+              <span className="hidden sm:inline">Ver App de Recompensas PWA</span>
+              <span className="sm:hidden">App PWA</span>
+            </button>
+            <button onClick={logout} className="p-2.5 bg-white/10 hover:bg-red-500/20 border border-white/10 rounded-2xl text-slate-300 hover:text-red-400 transition-all cursor-pointer">
+              <LogOut size={18} />
+            </button>
+          </div>
         </div>
 
         <div className="flex items-center justify-between gap-4 max-w-7xl mx-auto">
