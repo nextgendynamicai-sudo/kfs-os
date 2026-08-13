@@ -345,16 +345,33 @@ export default function Home() {
 
   const validViews = ["landing", "axis_nitro_pos", "b2b-onboarding", "login", "marketplace", "customer", "core", "promotora", "client", "vendedor", "rider", "self-checkout-kiosk"];
   let normalizedView = view === "dueño" ? "client" : view;
+  
   if (!validViews.includes(normalizedView)) {
     normalizedView = currentUser ? (currentUser.role === "dueño" ? "client" : (currentUser.role || "landing")) : "landing";
   }
 
-  const safeView = (!currentUser || !isUserValid) && protectedViews.includes(normalizedView) ? "landing" : normalizedView;
+  // Force landing if not logged in and trying to access a protected view, 
+  // OR if we are explicitly on the landing view, don't let it become a protected view unexpectedly.
+  let safeView = normalizedView;
+  if (protectedViews.includes(normalizedView)) {
+    if (!currentUser || !isUserValid) {
+      safeView = "landing";
+    }
+  }
 
+  // If the user visits the root without a hash, enforce landing page
   useEffect(() => {
-    window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
+    if (typeof window !== "undefined") {
+      if (!window.location.hash && window.location.pathname === "/") {
+         if (view !== "landing" && !currentUser) {
+           setView("landing");
+         }
+      }
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' as any });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [safeView, view]);
 
   if (isBooting || !isClient) {

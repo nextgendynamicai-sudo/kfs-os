@@ -54,7 +54,7 @@ export function useP2PTransfer() {
     let success = false;
 
     setDb((prev: any) => {
-      const updatedCustomers = prev.customers.map((c: any) => {
+      const updatedCustomers = (prev.customers || []).map((c: any) => {
         if (c.phone === sender.phone) {
           if (type === "real_balance") {
             const currentReal = c.real_balance || 0;

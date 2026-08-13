@@ -72,7 +72,7 @@ export function PresetProvider({ children }: { children: React.ReactNode }) {
     return db.clients.find((c: any) => c.id === merchantId);
   }, [merchantId, db.clients]);
 
-  const refreshPreset = async () => {
+  const refreshPreset = React.useCallback(async () => {
     if (!merchantId) {
       setBusinessPreset(DEFAULT_PRESET);
       setPresetMetadata(DEFAULT_METADATA);
@@ -144,11 +144,12 @@ export function PresetProvider({ children }: { children: React.ReactNode }) {
     }
 
     setIsLoadingPreset(false);
-  };
+  }, [merchantId, localClientData]);
 
   useEffect(() => {
+    // eslint-disable-next-line
     refreshPreset();
-  }, [merchantId, localClientData]);
+  }, [refreshPreset]);
 
   const value = useMemo(
     () => ({
@@ -157,7 +158,7 @@ export function PresetProvider({ children }: { children: React.ReactNode }) {
       isLoadingPreset,
       refreshPreset,
     }),
-    [businessPreset, presetMetadata, isLoadingPreset]
+    [businessPreset, presetMetadata, isLoadingPreset, refreshPreset]
   );
 
   return <PresetContext.Provider value={value}>{children}</PresetContext.Provider>;

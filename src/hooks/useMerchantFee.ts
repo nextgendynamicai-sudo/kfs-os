@@ -87,7 +87,7 @@ export function useMerchantFee() {
 
     setDb((prev: any) => {
       // 1. Deduct customer balances
-      const updatedCustomers = prev.customers.map((c: any) => {
+      const updatedCustomers = (prev.customers || []).map((c: any) => {
         if (c.phone === customerPhone) {
           const newKP = (c.k_points_balance || 0) - kPointsToUse;
           return {
@@ -118,11 +118,11 @@ export function useMerchantFee() {
       const kfsNetEUR = feeEUR * 0.45; // 45% KFS Holding
 
       let updatedPromotoras = prev.promotoras;
-      const customerObj = prev.customers.find((c: any) => c.phone === customerPhone);
+      const customerObj = (prev.customers || []).find((c: any) => c.phone === customerPhone);
       const targetPromoterId = merchant?.referred_by_promoter_id || customerObj?.referred_by_promoter_id;
 
       if (targetPromoterId) {
-        updatedPromotoras = prev.promotoras.map((p: any) => {
+        updatedPromotoras = (prev.promotoras || []).map((p: any) => {
           if (p.id === targetPromoterId) {
             return {
               ...p,
@@ -148,7 +148,7 @@ export function useMerchantFee() {
       }
 
       // 3. Update merchant sales volume and local ads budget. 
-      const updatedClients = prev.clients.map((c: any) => {
+      const updatedClients = (prev.clients || []).map((c: any) => {
         if (c.id === merchantId) {
           return {
             ...c,

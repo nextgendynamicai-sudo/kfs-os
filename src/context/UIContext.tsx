@@ -31,6 +31,22 @@ export const UIProvider = ({ children }: { children: ReactNode }) => {
   const [networkState, setNetworkState] = useState<"online" | "offline" | "syncing" | "mesh">("online");
   const [ghostTrapLocked, setGhostTrapLocked] = useState(false);
 
+  const showToast = React.useCallback((message: string, type: "success" | "error" | "info" | "warning" = "success") => {
+    setToast({ show: true, message, type });
+    setTimeout(() => {
+      setToast({ show: false, message: "", type: "success" });
+    }, 3000);
+    
+    // Native Push Notification Support
+    if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted" && type === "success") {
+      try {
+        new Notification(`KFS OS`, { body: message, icon: "/kfs-logo.png" });
+      } catch (e) {
+        console.warn("Native notification failed", e);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     const handleOnline = async () => {
       setNetworkState("syncing");
@@ -57,23 +73,7 @@ export const UIProvider = ({ children }: { children: ReactNode }) => {
         window.removeEventListener("offline", handleOffline);
       };
     }
-  }, []);
-
-  const showToast = (message: string, type: "success" | "error" | "info" | "warning" = "success") => {
-    setToast({ show: true, message, type });
-    setTimeout(() => {
-      setToast({ show: false, message: "", type: "success" });
-    }, 3000);
-    
-    // Native Push Notification Support
-    if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted" && type === "success") {
-      try {
-        new Notification(`KFS OS`, { body: message, icon: "/kfs-logo.png" });
-      } catch (e) {
-        console.warn("Native notification failed", e);
-      }
-    }
-  };
+  }, [showToast]);
 
   return (
     <UIContext.Provider value={{

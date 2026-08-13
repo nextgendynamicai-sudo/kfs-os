@@ -327,12 +327,12 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
 
   return (
     <ModalPortal>
-      <div className="fixed inset-0 bg-violet-950/60 backdrop-blur-xl z-[99999] flex items-center justify-center p-4 overflow-y-auto">
+      <div className="fixed inset-0 bg-violet-950/60 backdrop-blur-xl z-[99999] flex items-center justify-center p-4 overflow-hidden">
         <motion.div 
           initial={{ y: 50, opacity: 0, scale: 0.95 }}
           animate={{ y: 0, opacity: 1, scale: 1 }}
           transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          className="bg-white/95 backdrop-blur-2xl rounded-[2rem] w-full max-w-md p-8 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/20"
+          className="bg-white/95 backdrop-blur-2xl rounded-[2rem] w-full max-w-md p-6 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/20 max-h-[90vh] overflow-y-auto"
         >
           <h3 className="text-2xl font-black mb-2 text-[#0A1128]">{isOnline ? "Comprar Online" : "Caja Registradora"}</h3>
           <p className="text-sm text-gray-500 mb-6">{product.name}</p>

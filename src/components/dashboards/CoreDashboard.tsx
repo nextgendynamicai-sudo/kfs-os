@@ -121,7 +121,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
     setViewingProofMedia({ src: mediaSrc, title });
   };
 
-  const [activeTab, setActiveTab] = useState("panel"); // panel | red | soporte | auditoria
+  const [activeTab, setActiveTab] = useState<string>("panel"); // panel | red | soporte | auditoria
   const [exploreSubTab, setExploreSubTab] = useState<"descubrir" | "actividades">("descubrir");
   const [showCoreNotifDrawer, setShowCoreNotifDrawer] = useState(false);
   const [newMemberName, setNewMemberName] = useState("");
@@ -509,7 +509,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                   <button 
                     onClick={() => setActiveTab("rewards")}
                     className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border cursor-pointer flex items-center gap-1.5 ${
-                      activeTab === "rewards"
+                      (activeTab as any) === "rewards"
                         ? "bg-amber-500 text-slate-950 border-amber-400 font-black shadow-lg shadow-amber-500/20"
                         : "bg-slate-800 hover:bg-slate-700 text-white border-slate-700"
                     }`}
@@ -948,7 +948,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                         </td>
                       </tr>
                     ))}
-                    {(!db.promotoras || db.promotoras.length === 0) && <tr><td colSpan={5} className="text-center py-10 text-slate-400 font-bold">No hay promotoras registradas aún.</td></tr>}
+                    {(!db.promotoras || (db.promotoras || []).length === 0) && <tr><td colSpan={5} className="text-center py-10 text-slate-400 font-bold">No hay promotoras registradas aún.</td></tr>}
                   </tbody>
                 </table>
               </div>
@@ -975,7 +975,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    {db.clients.filter((c: any) => c.company.toLowerCase().includes(searchClient.toLowerCase()) || c.name.toLowerCase().includes(searchClient.toLowerCase())).map((c: any) => {
+                    {(db.clients || []).filter((c: any) => c.company.toLowerCase().includes(searchClient.toLowerCase()) || c.name.toLowerCase().includes(searchClient.toLowerCase())).map((c: any) => {
                       const isBlocked = c.subscription?.status === 'past_due';
                       return (
                         <tr key={c.id} className="border-b border-violet-100 hover:bg-violet-50/50 transition-colors">
@@ -1041,7 +1041,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                         </tr>
                       );
                     })}
-                    {db.clients.length === 0 && <tr><td colSpan={5} className="text-center py-10 text-gray-400 font-bold">No hay comercios en la red para cobrar.</td></tr>}
+                    {(db.clients || []).length === 0 && <tr><td colSpan={5} className="text-center py-10 text-gray-400 font-bold">No hay comercios en la red para cobrar.</td></tr>}
                   </tbody>
                 </table>
               </div>
@@ -1067,7 +1067,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                   </thead>
                   <tbody className="bg-white">
                     {(db.vendedores || []).filter((v: any) => v.name.toLowerCase().includes(searchVendedor.toLowerCase()) || v.email.toLowerCase().includes(searchVendedor.toLowerCase())).map((vend: any) => {
-                      const client = db.clients.find((c: any) => c.id === vend.clientId);
+                      const client = (db.clients || []).find((c: any) => c.id === vend.clientId);
                       return (
                         <tr key={vend.id} className="border-b border-violet-100 hover:bg-violet-50/50 transition-colors">
                           <td className="py-4 px-4 font-bold text-violet-950">{vend.name}</td>
@@ -1254,7 +1254,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
               <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-violet-400"><Bell className="text-violet-400" /> Help Desk (Tickets de Soporte Global)</h3>
               <div className="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
                 {(db.supportTickets || []).slice().reverse().map((ticket: any) => {
-                  const client = db.clients.find((c: any) => c.id === ticket.clientId);
+                  const client = (db.clients || []).find((c: any) => c.id === ticket.clientId);
                   return (
                     <div key={ticket.id} className="bg-white/5 border border-white/10 p-4 rounded-xl flex flex-col gap-2">
                       <div className="flex justify-between items-center">
@@ -1293,11 +1293,11 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             </div>
 
             {/* Suscripciones Pendientes */}
-            {db.clients.filter((c: any) => c.subscription?.status === 'pending_verification').length > 0 && (
+            {(db.clients || []).filter((c: any) => c.subscription?.status === 'pending_verification').length > 0 && (
               <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 rounded-[2rem] p-8 mb-8">
                 <h3 className="text-xl font-black mb-6 text-violet-950 flex items-center gap-2"><CreditCard className="text-emerald-500" /> Suscripciones por Aprobar ($6)</h3>
                 <div className="space-y-4">
-                  {db.clients.filter((c: any) => c.subscription?.status === 'pending_verification').map((c: any) => (
+                  {(db.clients || []).filter((c: any) => c.subscription?.status === 'pending_verification').map((c: any) => (
                     <div key={c.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-emerald-50/50 rounded-2xl border border-emerald-100 shadow-sm gap-4">
                       <div>
                         <h4 className="font-bold text-violet-950">{c.company}</h4>
@@ -1319,7 +1319,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                   <Briefcase className="text-emerald-500" /> Registraciones de Bolsa de Empleo por Aprobar ($1)
                 </h3>
                 <div className="space-y-4">
-                  {db.candidates.filter((c: any) => c.registrationPaymentStatus === 'pending_approval').map((cand: any) => (
+                  {(db.candidates || []).filter((c: any) => c.registrationPaymentStatus === 'pending_approval').map((cand: any) => (
                     <div key={cand.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-emerald-50/50 rounded-2xl border border-emerald-100 shadow-sm gap-4">
                       <div>
                         <h4 className="font-black text-violet-950">Candidato: {cand.name}</h4>
@@ -1381,7 +1381,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                   <CreditCard className="text-emerald-500" /> Desbloqueos de Bolsa de Empleo por Aprobar ($10)
                 </h3>
                 <div className="space-y-4">
-                  {db.unlockedContacts.filter((u: any) => u.status === 'pending_approval').map((u: any) => {
+                  {(db.unlockedContacts || []).filter((u: any) => u.status === 'pending_approval').map((u: any) => {
                     const candidate = db.candidates?.find((cand: any) => cand.id === u.candidateId);
                     const client = db.clients?.find((c: any) => c.id === u.clientId);
                     return (
@@ -1498,7 +1498,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                         </td>
                       </tr>
                     ))}
-                    {(!db.candidates || db.candidates.length === 0) && (
+                    {(!db.candidates || (db.candidates || []).length === 0) && (
                       <tr>
                         <td colSpan={5} className="text-center py-8 text-slate-400 font-bold">
                           No hay candidatos registrados en la bolsa de empleo.
@@ -1643,7 +1643,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                   </thead>
                   <tbody className="bg-white">
                     {(db.zReports || []).map((z: any) => {
-                      const client = db.clients.find((c: any) => c.id === z.clientId);
+                      const client = (db.clients || []).find((c: any) => c.id === z.clientId);
                       const vendedor = db.vendedores?.find((v: any) => v.id === z.vendedorId);
                       return (
                         <tr key={z.id} className="border-b border-violet-100 hover:bg-violet-50/50 transition-colors">
@@ -1699,8 +1699,8 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                     </tr>
                   </thead>
                   <tbody className="bg-white">
-                    {db.products.map((prod: any) => {
-                      const client = db.clients.find((c: any) => c.id === prod.clientId);
+                    {(db.products || []).map((prod: any) => {
+                      const client = (db.clients || []).find((c: any) => c.id === prod.clientId);
                       return (
                         <tr key={prod.id} className="border-b border-violet-100 hover:bg-violet-50/50 transition-colors">
                           <td className="py-4 px-4 font-bold text-violet-950">{prod.name}</td>
@@ -1710,7 +1710,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                         </tr>
                       );
                     })}
-                    {db.products.length === 0 && <tr><td colSpan={4} className="text-center py-10 text-slate-400 font-bold">No hay productos en el ecosistema.</td></tr>}
+                    {(db.products || []).length === 0 && <tr><td colSpan={4} className="text-center py-10 text-slate-400 font-bold">No hay productos en el ecosistema.</td></tr>}
                   </tbody>
                 </table>
               </div>
@@ -1929,7 +1929,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                   <label className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1 block">Comercio (Target)</label>
                   <select value={targetClientId} onChange={e => setTargetClientId(e.target.value)} className="w-full bg-white border border-violet-200 rounded-xl p-3 font-bold text-violet-950 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 transition-all placeholder:text-slate-400">
                     <option value="">Seleccione Comercio...</option>
-                    {db.clients.map((c: any) => <option key={c.id} value={c.id}>{c.company}</option>)}
+                    {(db.clients || []).map((c: any) => <option key={c.id} value={c.id}>{c.company}</option>)}
                   </select>
                 </div>
                 <div>
@@ -1937,7 +1937,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                   <select value={targetPromotoraId} onChange={e => setTargetPromotoraId(e.target.value)} className="w-full bg-white border border-violet-200 rounded-xl p-3 font-bold text-violet-950 focus:outline-none focus:ring-2 focus:ring-violet-300 focus:border-violet-400 transition-all placeholder:text-slate-400">
                     <option value="">Seleccione Promotora...</option>
                     <option value="none">Sin Promotora (100% {KFS_BRAND.productAcronym})</option>
-                    {db.promotoras.filter((p: any) => p.status !== 'pending').map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
+                    {(db.promotoras || []).filter((p: any) => p.status !== 'pending').map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
                   </select>
                 </div>
                 <button onClick={() => { if (targetClientId && targetPromotoraId) { assignPromotoraToClient(targetClientId, targetPromotoraId === 'none' ? '' : targetPromotoraId); setActiveModal(null); } }} className="w-full bg-violet-600 hover:bg-violet-700 text-white py-4 rounded-xl font-black shadow-lg shadow-violet-600/30 transition-colors cursor-pointer">Aplicar Reasignación</button>
@@ -2075,7 +2075,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                     className="w-full bg-white border border-violet-200 rounded-xl p-3 font-bold text-violet-950 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400 transition-all placeholder:text-slate-400"
                   >
                     <option value="">Seleccione un Comercio...</option>
-                    {db.clients.map((c: any) => {
+                    {(db.clients || []).map((c: any) => {
                       const bizRiderCount = (db.riders || []).filter((r: any) => (r.associatedBusinesses || []).includes(c.id)).length;
                       const alreadyAssigned = assignRiderModal.riderId && (db.riders || []).find((r: any) => r.id === assignRiderModal.riderId)?.associatedBusinesses?.includes(c.id);
                       return (

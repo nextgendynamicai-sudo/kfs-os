@@ -545,31 +545,7 @@ export const LandingPageView = ({ setView }: any) => {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Plan 1: Piloto Gratis */}
-          <div className="bg-slate-950/80 border border-slate-800 rounded-[2.5rem] p-8 flex flex-col justify-between hover:border-violet-500/40 transition-all relative">
-            <div>
-              <span className="text-xs font-black text-violet-400 uppercase tracking-widest block mb-2">Comercio Inicial</span>
-              <h3 className="text-2xl font-black text-white">Plan Piloto Gratuito</h3>
-              <div className="text-4xl font-black text-emerald-400 my-4">$0 USD <span className="text-xs text-slate-400 font-normal">/ setup inicial</span></div>
-              <p className="text-xs text-slate-400 leading-relaxed mb-6">
-                Ideal para pequeñas bodegas o tiendas que desean probar la caja registradora POS y catálogo online sin inversión previa.
-              </p>
-              <ul className="space-y-3 text-xs text-slate-300 border-t border-slate-800 pt-6">
-                <li className="flex items-center gap-2"><Check size={14} className="text-emerald-400" /> POS Físico Móvil WebUSB</li>
-                <li className="flex items-center gap-2"><Check size={14} className="text-emerald-400" /> Catálogo Nitro Market 24/7</li>
-                <li className="flex items-center gap-2"><Check size={14} className="text-emerald-400" /> Conciliador SMS de Pago Móvil</li>
-                <li className="flex items-center gap-2"><Check size={14} className="text-emerald-400" /> 5% Comisión estándar por venta</li>
-              </ul>
-            </div>
-            <button 
-              onClick={() => setView("b2b-onboarding")}
-              className="w-full mt-8 py-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-black text-xs transition-colors border border-slate-700 cursor-pointer"
-            >
-              Iniciar Piloto Gratis
-            </button>
-          </div>
-
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {/* Plan 2: Pro B2B (Destacado) */}
           <div className="bg-gradient-to-b from-violet-900/90 to-slate-950 border-2 border-amber-500/80 rounded-[2.5rem] p-8 flex flex-col justify-between shadow-2xl relative transform hover:scale-105 transition-all">
             <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-amber-500 to-amber-600 text-slate-950 font-black text-[10px] uppercase tracking-widest px-4 py-1 rounded-full shadow-md">

@@ -20,12 +20,12 @@ export const PayoutModal = ({ maxAmount, currency, onConfirm, onCancel, formatMo
 
   return (
     <ModalPortal>
-      <div className="fixed inset-0 bg-violet-950/60 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-fade-in">
+      <div className="fixed inset-0 bg-violet-950/60 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-fade-in overflow-hidden">
       <motion.div 
         initial={{ y: 50, opacity: 0, scale: 0.95 }}
         animate={{ y: 0, opacity: 1, scale: 1 }}
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
-        className="bg-gradient-to-br from-white to-violet-50 border border-violet-200 rounded-[2rem] w-full max-w-md p-8 shadow-2xl relative overflow-hidden"
+        className="bg-gradient-to-br from-white to-violet-50 border border-violet-200 rounded-[2rem] w-full max-w-md p-6 sm:p-8 shadow-2xl relative overflow-y-auto max-h-[90vh]"
       >
         <div className="absolute top-0 right-0 w-40 h-40 bg-violet-600/10 rounded-full blur-3xl -z-10"></div>
         <div className="absolute bottom-0 left-0 w-32 h-32 bg-purple-900/20 rounded-full blur-2xl -z-10"></div>

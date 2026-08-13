@@ -21,7 +21,7 @@ export function useWalletEngine() {
 
     const newCustomers = (db.customers || []).map((c: any) => {
       let hasChanges = false;
-      let newC = { ...c };
+      const newC = { ...c };
 
       // 1. Axis Bonus Expiry (7 days irreversible)
       if (newC.k_point_bonus_expiry && newC.k_point_bonus_balance > 0) {
@@ -103,7 +103,7 @@ export function useWalletEngine() {
         const rateEUR = rates.EUR || 39.20;
         const commissionEUR = (promoterCommissionUSD * rateUSD) / rateEUR;
 
-        updatedPromotoras = prev.promotoras.map((p: any) => {
+        updatedPromotoras = (prev.promotoras || []).map((p: any) => {
           if (p.id === targetPromoterId) {
             return {
               ...p,

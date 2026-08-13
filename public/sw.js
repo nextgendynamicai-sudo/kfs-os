@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kfs-os-v1';
+const CACHE_NAME = 'kfs-os-v2';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
@@ -13,7 +13,7 @@ self.addEventListener('install', (event) => {
       return cache.addAll(STATIC_ASSETS);
     })
   );
-  // self.skipWaiting(); // Removed to wait for user approval
+  self.skipWaiting();
 });
 
 self.addEventListener('message', (event) => {
@@ -38,22 +38,57 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   
-  // Ignore non-GET requests and external domains (unless Supabase, but we let browser handle that)
   if (request.method !== 'GET' || !request.url.startsWith(self.location.origin)) {
     return;
   }
 
+  // Network-first strategy for navigation/HTML, JS code chunks and API calls
+  if (
+    request.mode === 'navigate' ||
+    request.headers.get('accept')?.includes('text/html') ||
+    request.url.includes('/_next/') ||
+    request.url.includes('/api/')
+  ) {
+    event.respondWith(
+      fetch(request)
+        .then((response) => {
+          if (response && response.status === 200 && response.type === 'basic') {
+            const responseToCache = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, responseToCache);
+            });
+          }
+          return response;
+        })
+        .catch(() => {
+          return caches.match(request);
+        })
+    );
+    return;
+  }
+
+  // Cache-first strategy for static images and assets with network update
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
-      const fetchPromise = fetch(request).then((networkResponse) => {
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(request, networkResponse.clone());
-        });
+      if (cachedResponse) {
+        fetch(request).then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, networkResponse);
+            });
+          }
+        }).catch(() => {});
+        return cachedResponse;
+      }
+      return fetch(request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(request, responseToCache);
+          });
+        }
         return networkResponse;
-      }).catch(() => {
-        // network failed, return cached response if exists
       });
-      return cachedResponse || fetchPromise;
     })
   );
 });

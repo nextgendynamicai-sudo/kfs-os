@@ -8,39 +8,57 @@ export function PwaUpdater() {
   const [waitingWorker, setWaitingWorker] = useState<ServiceWorker | null>(null);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && "serviceWorker" in navigator) {
-      navigator.serviceWorker.register("/sw.js").then((registration) => {
-        
-        // If there's already a waiting worker, an update is ready
-        if (registration.waiting) {
-          setWaitingWorker(registration.waiting);
-          setShowUpdate(true);
-        }
-
-        // Listen for new updates finding their way
-        registration.addEventListener("updatefound", () => {
-          const newWorker = registration.installing;
-          if (newWorker) {
-            newWorker.addEventListener("statechange", () => {
-              if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
-                // There is a new service worker waiting to activate
-                setWaitingWorker(newWorker);
-                setShowUpdate(true);
-              }
+    if (typeof window !== "undefined") {
+      const handleChunkError = (event: ErrorEvent) => {
+        const msg = event.message || "";
+        if (
+          msg.includes("Loading chunk") ||
+          msg.includes("Unexpected token") ||
+          msg.includes("Failed to fetch dynamically imported module")
+        ) {
+          console.warn("[PWA] Chunk de código obsoleto detectado. Actualizando caché...");
+          if ("caches" in window) {
+            caches.keys().then((names) => {
+              names.forEach((name) => caches.delete(name));
             });
           }
-        });
-      }).catch((err) => console.error("SW Registration Failed:", err));
-
-      // Listen for the controlling service worker changing
-      // This fires when the waiting worker becomes active after skipWaiting()
-      let refreshing = false;
-      navigator.serviceWorker.addEventListener("controllerchange", () => {
-        if (!refreshing) {
-          refreshing = true;
           window.location.reload();
         }
-      });
+      };
+      window.addEventListener("error", handleChunkError);
+
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("/sw.js").then((registration) => {
+          if (registration.waiting) {
+            setWaitingWorker(registration.waiting);
+            setShowUpdate(true);
+          }
+
+          registration.addEventListener("updatefound", () => {
+            const newWorker = registration.installing;
+            if (newWorker) {
+              newWorker.addEventListener("statechange", () => {
+                if (newWorker.state === "installed" && navigator.serviceWorker.controller) {
+                  setWaitingWorker(newWorker);
+                  setShowUpdate(true);
+                }
+              });
+            }
+          });
+        }).catch((err) => console.error("SW Registration Failed:", err));
+
+        let refreshing = false;
+        navigator.serviceWorker.addEventListener("controllerchange", () => {
+          if (!refreshing) {
+            refreshing = true;
+            window.location.reload();
+          }
+        });
+      }
+
+      return () => {
+        window.removeEventListener("error", handleChunkError);
+      };
     }
   }, []);
 

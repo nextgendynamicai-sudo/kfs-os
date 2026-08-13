@@ -84,7 +84,7 @@ export async function POST(req: Request) {
         }
       }
 
-      let updatedClients = db.clients.map((c: any) => {
+      let updatedClients = (db.clients || []).map((c: any) => {
         if (c.id === clientId) {
           return {
             ...c,

@@ -415,15 +415,7 @@ const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
         map.set(key, i);
       }
     });
-    // Handle deletions: if item is remote but not local, and current user has authority, remove it
-    if (checkAuthority) {
-      (remoteArr || []).forEach(i => {
-        const key = i.id || i.barcode || JSON.stringify(i);
-        if (!localKeys.has(key) && checkAuthority(i)) {
-          map.delete(key);
-        }
-      });
-    }
+    // Deletions are securely handled by deletedKeys at the end of the merge process.
     return Array.from(map.values());
   };
 
@@ -457,20 +449,7 @@ const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
         }
       }
     });
-    // Handle client deletions
-    (remoteClients || []).forEach(c => {
-      if (!localKeys.has(c.id)) {
-        const isAuthority = currentUser && (
-          currentUser.role === "core" ||
-          (currentUser.role === "dueño" && c.id === currentUser.id) ||
-          (currentUser.role === "vendedor" && c.id === currentUser.clientId) ||
-          (currentUser.role === "promotora" && c.promotoraId === currentUser.id)
-        );
-        if (isAuthority) {
-          map.delete(c.id);
-        }
-      }
-    });
+    // Deletions are securely handled by deletedKeys at the end of the merge process.
     return Array.from(map.values());
   };
 
@@ -492,19 +471,7 @@ const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
         map.set(p.id, p);
       }
     });
-    // Handle product deletions
-    (remoteProducts || []).forEach(p => {
-      if (!localKeys.has(p.id)) {
-        const isAuthority = currentUser && (
-          currentUser.role === "core" ||
-          (currentUser.role === "dueño" && p.clientId === currentUser.id) ||
-          (currentUser.role === "vendedor" && p.clientId === currentUser.clientId)
-        );
-        if (isAuthority) {
-          map.delete(p.id);
-        }
-      }
-    });
+    // Deletions are securely handled by deletedKeys at the end of the merge process.
     return Array.from(map.values());
   };
 
@@ -789,6 +756,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
   // Hydration and Boot timer
   useEffect(() => {
+    let channel: any = null;
+    let pollingInterval: any = null;
     setIsClient(true);
     
     if (typeof window !== "undefined") {
@@ -796,8 +765,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       if (hash) {
         setView(hash);
       } else {
-        setView("vendedor");
-        window.history.replaceState({ view: "vendedor" }, "", "#vendedor");
+        setView("landing");
+        window.history.replaceState({ view: "landing" }, "", "");
       }
     }
 
@@ -809,7 +778,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         if (hash) {
           setView(hash);
         } else {
-          setView("vendedor");
+          setView("landing");
         }
       }
     };
@@ -943,7 +912,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       }
       hasRestoredRef.current = true;
       
-      getIndexedDBValue("kfs_os_db_prod")
+      const getDbPromise = getIndexedDBValue("kfs_os_db_prod");
+      const dbTimeoutPromise = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error("IndexedDB load timeout")), 1500)
+      );
+
+      Promise.race([getDbPromise, dbTimeoutPromise])
         .then((savedDb) => {
           let parsed = savedDb;
           if (!parsed) {
@@ -986,15 +960,20 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
             }
           }
 
-          // Next, run Supabase initial sync if online & configured
           if (isSupabaseConfigured && navigator.onLine) {
             const syncId = "kfs-general-db-prod";
             
-            supabase
+            const supabasePromise = supabase
               .from("kfs_store_states")
               .select("db_state, updated_at")
               .eq( "id", syncId)
-              .single()
+              .single();
+
+            const timeoutPromise = new Promise((_, reject) =>
+              setTimeout(() => reject(new Error("Supabase initial sync timeout")), 2500)
+            );
+
+            Promise.race([supabasePromise, timeoutPromise])
               .then(({ data, error }: any) => {
                 if (data && data.db_state) {
                   lastRemoteUpdatedAtRef.current = data.updated_at;
@@ -1043,7 +1022,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                 
                 // Subscribe to real-time updates
                 if (isSupabaseConfigured) {
-                  const channel = supabase.channel('public:kfs_store_states');
+                  channel = supabase.channel('public:kfs_store_states');
                   channel
                     .on('postgres_changes', { event: '*', schema: 'public', table: 'kfs_store_states', filter: `id=eq.${syncId}` }, (payload: any) => {
                       if (payload.new && payload.new.db_state) {
@@ -1085,7 +1064,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                     .subscribe();
 
                   // Polling Fallback para Móviles (Garantiza 100% Real-Time si fallan WebSockets)
-                  setInterval(() => {
+                  pollingInterval = setInterval(() => {
                     supabase.from("kfs_store_states").select("updated_at").eq("id", syncId).single().then(({ data, error }: any) => {
                       if (error) {
                         if (error.code === '42501') {
@@ -1243,6 +1222,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       clearInterval(expiryInterval);
       clearInterval(bcvInterval);
       if (typeof riderSimInterval !== "undefined") clearInterval(riderSimInterval);
+      if (typeof pollingInterval !== "undefined" && pollingInterval) clearInterval(pollingInterval);
+      if (typeof channel !== "undefined" && channel) {
+        channel.unsubscribe();
+      }
     };
   }, []);
 
@@ -1677,7 +1660,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const fundWallet = (clientId: string, amountUSD: number) => {
     setDb((prev: any) => ({
       ...prev,
-      clients: prev.clients.map((c: any) => 
+      clients: (prev.clients || []).map((c: any) => 
         c.id === clientId ? { ...c, walletBalanceUSD: (c.walletBalanceUSD || 0) + amountUSD } : c
       )
     }));
@@ -1735,7 +1718,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
       if (status === 'approved') {
         if (topup.userType === 'client') {
-          prev.clients = prev.clients.map((c: any) => 
+          prev.clients = (prev.clients || []).map((c: any) => 
             c.id === topup.userId ? { ...c, walletBalanceUSD: (c.walletBalanceUSD || 0) + topup.amountUSD } : c
           );
         } else {
@@ -1755,7 +1738,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           }
           const expiryDateStr = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString();
 
-          prev.customers = prev.customers.map((c: any) => {
+          prev.customers = (prev.customers || []).map((c: any) => {
             if (c.id === topup.userId) {
               const targetPromoterId = c.referred_by_promoter_id;
               if (targetPromoterId && promoterCommissionUSD > 0) {
@@ -2059,12 +2042,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
   const processMonthlyBilling = (clientId: string) => {
     setDb((prev: any) => {
-      const client = prev.clients.find((c: any) => c.id === clientId);
+      const client = (prev.clients || []).find((c: any) => c.id === clientId);
       const costUSD = client?.subscription?.costUSD !== undefined ? client.subscription.costUSD : 6;
       if (!client || (client.walletBalanceUSD || 0) < costUSD) {
         return {
           ...prev,
-          clients: prev.clients.map((c: any) => c.id === clientId ? { ...c, subscription: { ...c.subscription, status: "past_due" } } : c)
+          clients: (prev.clients || []).map((c: any) => c.id === clientId ? { ...c, subscription: { ...c.subscription, status: "past_due" } } : c)
         };
       }
       
@@ -2074,11 +2057,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       const splitUSD = costUSD / 2;
       const splitEUR = (splitUSD * rates.USD) / rates.EUR;
 
-      const updatedPromotoras = prev.promotoras.map((p: any) => 
+      const updatedPromotoras = (prev.promotoras || []).map((p: any) => 
         p.id === client.promotoraId ? { ...p, passiveEarningsEUR: (p.passiveEarningsEUR || 0) + splitEUR } : p
       );
 
-      const updatedClients = prev.clients.map((c: any) => 
+      const updatedClients = (prev.clients || []).map((c: any) => 
         c.id === clientId ? { 
           ...c, 
           walletBalanceUSD: c.walletBalanceUSD - costUSD,
@@ -2238,7 +2221,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     logAction("System", "PREMIUM_UPGRADE", `Usuario ${clientId} ascendido a Premium por Promotora ${promotoraId}`);
 
     setDb((prev: any) => {
-      const updatedClients = prev.clients.map((c: any) => {
+      const updatedClients = (prev.clients || []).map((c: any) => {
         if (c.id === clientId) {
           return {
             ...c,
@@ -2250,7 +2233,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         return c;
       });
 
-      const updatedPromotoras = prev.promotoras.map((p: any) => {
+      const updatedPromotoras = (prev.promotoras || []).map((p: any) => {
         if (p.id === promotoraId) {
           return {
             ...p,
@@ -2465,7 +2448,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       const setupBonusEUR = (32.50 * rates.USD) / rates.EUR;
       const coreSetupEUR = (32.50 * rates.USD) / rates.EUR;
 
-      const updatedPromotoras = prev.promotoras.map((p: any) => {
+      const updatedPromotoras = (prev.promotoras || []).map((p: any) => {
         if (p.id === promotoraId) {
           return { 
             ...p, 
@@ -2576,7 +2559,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const approvePromotora = (id: string) => {
     setDb((prev: any) => ({
       ...prev,
-      promotoras: prev.promotoras.map((p: any) => p.id === id ? { ...p, status: 'active' } : p)
+      promotoras: (prev.promotoras || []).map((p: any) => p.id === id ? { ...p, status: 'active' } : p)
     }));
     showToast("Promotora activada.");
   };
@@ -2584,7 +2567,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const rejectPromotora = (id: string) => {
     setDb((prev: any) => ({
       ...prev,
-      promotoras: prev.promotoras.filter((p: any) => p.id !== id),
+      promotoras: (prev.promotoras || []).filter((p: any) => p.id !== id),
       kreatekCore: {
         ...(prev.kreatekCore || {}),
         deletedKeys: [...(prev.kreatekCore?.deletedKeys || []), id]
@@ -2596,7 +2579,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const settlePromotoraEarnings = (promotoraId: string) => {
     setDb((prev: any) => ({
       ...prev,
-      promotoras: prev.promotoras.map((p: any) => 
+      promotoras: (prev.promotoras || []).map((p: any) => 
         p.id === promotoraId ? { ...p, passiveEarningsEUR: 0 } : p
       )
     }));
@@ -2661,7 +2644,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const assignPromotoraToClient = (clientId: string, promotoraId: string) => {
     setDb((prev: any) => ({
       ...prev,
-      clients: prev.clients.map((c: any) => c.id === clientId ? { ...c, promotoraId } : c)
+      clients: (prev.clients || []).map((c: any) => c.id === clientId ? { ...c, promotoraId } : c)
     }));
     showToast("Promotora reasignada con éxito al comercio.");
   };
@@ -2688,7 +2671,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
     setDb((prev: any) => ({
       ...prev,
-      clients: prev.clients.map((c: any) => 
+      clients: (prev.clients || []).map((c: any) => 
         c.id === clientId ? { ...c, isOnboarded: true, kycDocumentUrl: kycUrl || c.kycDocumentUrl || "" } : c
       )
     }));
@@ -2698,7 +2681,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const paySubscription = (clientId: string, reference: string) => {
     setDb((prev: any) => ({
       ...prev,
-      clients: prev.clients.map((c: any) => 
+      clients: (prev.clients || []).map((c: any) => 
         c.id === clientId ? { 
           ...c, 
           subscription: { ...c.subscription, status: 'pending_verification', lastPaymentRef: reference } 
@@ -2710,7 +2693,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
   const approveSubscription = (clientId: string) => {
     setDb((prev: any) => {
-      const client = prev.clients.find((c: any) => c.id === clientId);
+      const client = (prev.clients || []).find((c: any) => c.id === clientId);
       if (!client) return prev;
       
       const nextMonth = new Date();
@@ -2721,7 +2704,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       const coreCut = costEUR * 0.5;
       const promoCut = costEUR * 0.5;
       
-      const updatedPromotoras = prev.promotoras.map((p: any) => 
+      const updatedPromotoras = (prev.promotoras || []).map((p: any) => 
         p.id === client.promotoraId ? { ...p, passiveEarningsEUR: (p.passiveEarningsEUR || 0) + promoCut } : p
       );
       
@@ -2735,7 +2718,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         ...prev,
         promotoras: updatedPromotoras,
         kreatekCore: updatedCore,
-        clients: prev.clients.map((c: any) => 
+        clients: (prev.clients || []).map((c: any) => 
           c.id === clientId ? { 
             ...c, 
             subscription: { ...c.subscription, status: 'active', nextBillingDate: nextMonth.toISOString(), lastPaymentRef: null } 
@@ -2749,7 +2732,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const blockClient = (clientId: string) => {
     setDb((prev: any) => ({
       ...prev,
-      clients: prev.clients.map((c: any) => 
+      clients: (prev.clients || []).map((c: any) => 
         c.id === clientId ? { ...c, subscription: { ...c.subscription, status: "past_due" } } : c
       )
     }));
@@ -2762,7 +2745,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     nextMonth.setMonth(nextMonth.getMonth() + 1);
     setDb((prev: any) => ({
       ...prev,
-      clients: prev.clients.map((c: any) => 
+      clients: (prev.clients || []).map((c: any) => 
         c.id === clientId ? { ...c, subscription: { ...c.subscription, status: "active", nextBillingDate: nextMonth.toISOString() } } : c
       )
     }));
@@ -2851,7 +2834,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const deleteRider = (riderId: string) => {
     setDb((prev: any) => ({
       ...prev,
-      riders: Array.isArray(prev.riders) ? prev.riders.filter((r: any) => r.id !== riderId) : [],
+      riders: Array.isArray(prev.riders) ? (prev.riders || []).filter((r: any) => r.id !== riderId) : [],
     }));
     logAction("System", "DELETE_RIDER", `Motorizado ${riderId} eliminado.`);
     showToast("Motorizado eliminado del sistema.", "error");
@@ -2969,7 +2952,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     let transactionObj: any = null;
 
     setDb((prev: any) => {
-      const client = prev.clients.find((c: any) => c.id === product.clientId);
+      const client = (prev.clients || []).find((c: any) => c.id === product.clientId);
       
       const updatedCoupons = (prev.coupons || []).map((c: any) => 
         c.id === targetCouponId ? { 
@@ -2987,7 +2970,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       } else if (client?.onboardedUsers >= 50) {
         kfsFeePercentage = 0.03; // Peaje Gamificado permanente por traer 50 usuarios
       } else if (customerPhone) {
-        const customer = prev.customers?.find((c: any) => c.phone === customerPhone);
+        const customer = (prev.customers || []).find((c: any) => c.phone === customerPhone);
         if (customer && customer.referred_by_merchant_id === client?.id) {
           kfsFeePercentage = 0.03; // Descuento específico para ventas al propio referido
         } else if (client?.fee_tier) {
@@ -3035,7 +3018,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       let realNeeded = 0;
 
       if (customerPhone && ['real_balance', 'k_points', 'hybrid'].includes(paymentMethod)) {
-        const customer = prev.customers?.find((c: any) => c.phone === customerPhone);
+        const customer = (prev.customers || []).find((c: any) => c.phone === customerPhone);
         if (customer) {
           if (paymentMethod === "real_balance") {
             realUSDSpent = totalUSD;
@@ -3091,7 +3074,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       let guardianCommissionEUR = 0;
       let guardianPromoterId = null;
       if (customerPhone && realUSDSpent > 0) {
-        const customerObj = prev.customers?.find((c: any) => c.phone === customerPhone);
+        const customerObj = (prev.customers || []).find((c: any) => c.phone === customerPhone);
         if (customerObj && customerObj.referred_by_promoter_id) {
           const createdAtTime = new Date(customerObj.createdAt || Date.now()).getTime();
           const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
@@ -3105,7 +3088,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      const updatedClients = prev.clients.map((c: any) => 
+      const updatedClients = (prev.clients || []).map((c: any) => 
         c.id === product.clientId ? { 
           ...c, 
           salesUSD: (c.salesUSD || 0) + (paymentMethod === "hybrid" ? realNeeded : basePriceUSD),
@@ -3113,7 +3096,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         } : c
       );
 
-      const updatedPromotoras = prev.promotoras.map((p: any) => {
+      const updatedPromotoras = (prev.promotoras || []).map((p: any) => {
         let earn = 0;
         if (p.id === client?.promotoraId) {
           earn += promotoraFeeEUR;
@@ -3130,7 +3113,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         return p;
       });
 
-      const updatedProducts = prev.products.map((p: any) => 
+      const updatedProducts = (prev.products || []).map((p: any) => 
         p.id === product.id ? { ...p, stock: p.stock !== undefined ? p.stock - 1 : p.stock, lastSoldAt: new Date().toISOString() } : p
       );
 
@@ -3253,8 +3236,22 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         buyers: updatedBuyers,
         coupons: updatedCoupons,
         fiscalLogs: updatedFiscalLogs,
-        transactions: [...prev.transactions, transactionObj],
+        customers: updatedCustomers,
+        vendedores: (() => {
+          if (currentUser?.role === 'vendedor') {
+            const cashierBonusUSD = kreatekTotalFeeUSD * 0.05;
+            return (prev.vendedores || []).map((v: any) => {
+              if (v.id === currentUser.id) {
+                return { ...v, accumulated_bonus: (v.accumulated_bonus || 0) + cashierBonusUSD };
+              }
+              return v;
+            });
+          }
+          return prev.vendedores;
+        })(),
+        transactions: [...(prev.transactions || []), transactionObj],
         kreatekCore: {
+          ...prev.kreatekCore,
           totalTransactions: (prev.kreatekCore.totalTransactions || 0) + 1,
           earningsEUR: (prev.kreatekCore.earningsEUR || 0) + kreatekTotalFeeEUR,
           netEarningsEUR: (prev.kreatekCore.netEarningsEUR || 0) + finalNetEUR,
@@ -3295,7 +3292,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         if (data.status === "success") {
           setDb((prev: any) => ({
             ...prev,
-            transactions: prev.transactions.map((tx: any) => 
+            transactions: (prev.transactions || []).map((tx: any) => 
               tx.id === transactionObj.id 
                 ? { ...tx, fiscalSerial: data.machineSerial, fiscalInvoiceNumber: data.invoiceNumber } 
                 : tx
@@ -3349,7 +3346,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     const totalUSD = Math.max(0, priceAfterCoupon + ivaUSD + igtfUSD - discountUSD);
 
     setDb((prev: any) => {
-      const updatedProducts = prev.products.map((p: any) => 
+      const updatedProducts = (prev.products || []).map((p: any) => 
         p.id === product.id && p.stock !== undefined ? { ...p, stock: p.stock - 1 } : p
       );
       
@@ -3400,7 +3397,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     const receiptNumber = `ONL-${Date.now().toString().slice(-4)}`;
 
     setDb((prev: any) => {
-      const client = prev.clients.find((c: any) => c.id === order.clientId);
+      const client = (prev.clients || []).find((c: any) => c.id === order.clientId);
       const kfsFeePercentage = client?.kfsFeePercentage || 0.03;
       const kreatekTotalFeeUSD = order.subtotalUSD * kfsFeePercentage; // Online orders do NOT have the $0.04 POS fee
       const kreatekTotalFeeEUR = (kreatekTotalFeeUSD * rates.USD) / rates.EUR;
@@ -3410,7 +3407,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       const adBudgetEUR = kreatekNetEUR * 0.20;
       const finalNetEUR = kreatekNetEUR - adBudgetEUR;
 
-      const updatedClients = prev.clients.map((c: any) => 
+      const updatedClients = (prev.clients || []).map((c: any) => 
         c.id === order.clientId ? { 
           ...c, 
           salesUSD: (c.salesUSD || 0) + order.subtotalUSD,
@@ -3418,7 +3415,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         } : c
       );
 
-      const updatedPromotoras = prev.promotoras.map((p: any) => 
+      const updatedPromotoras = (prev.promotoras || []).map((p: any) => 
         p.id === client?.promotoraId ? {
           ...p,
           passiveEarningsEUR: (p.passiveEarningsEUR || 0) + promotoraFeeEUR
@@ -3522,7 +3519,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       const order = prev.orders.find((o: any) => o.id === orderId);
       if (!order) return prev;
       
-      const updatedProducts = prev.products.map((p: any) => 
+      const updatedProducts = (prev.products || []).map((p: any) => 
         p.id === order.productId && p.stock !== undefined ? { ...p, stock: p.stock + 1 } : p
       );
       
@@ -3546,7 +3543,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
   const dispatchOrder = (txId: string, riderId?: string) => {
     setDb((prev: any) => {
-      const updatedTxs = prev.transactions.map((tx: any) => 
+      const updatedTxs = (prev.transactions || []).map((tx: any) => 
         tx.id === txId ? { ...tx, shippingStatus: 'dispatched', riderId: riderId || tx.riderId } : tx
       );
       return { ...prev, transactions: updatedTxs };
@@ -3556,7 +3553,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
   const generateZReport = (vendedorId: string, clientId: string) => {
     setDb((prev: any) => {
-      const shiftTxs = prev.transactions.filter((tx: any) => tx.vendedorId === vendedorId && tx.clientId === clientId && !tx.zReported);
+      const shiftTxs = (prev.transactions || []).filter((tx: any) => tx.vendedorId === vendedorId && tx.clientId === clientId && !tx.zReported);
       
       if (shiftTxs.length === 0) {
         showToast("No hay transacciones nuevas para cerrar turno.", "error");
@@ -3580,7 +3577,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         timestamp: new Date().toISOString()
       };
 
-      const cashierObj = prev.vendedores?.find((v: any) => v.id === vendedorId) || prev.clients?.find((c: any) => c.id === vendedorId);
+      const cashierObj = (prev.vendedores || []).find((v: any) => v.id === vendedorId) || (prev.clients || []).find((c: any) => c.id === vendedorId);
       const logObj = {
         id: `flog_${Date.now()}_${Math.floor(1000 + Math.random() * 9000)}`,
         timestamp: new Date().toISOString(),
@@ -3591,7 +3588,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         details: `Corte de caja Z realizado. Transacciones: ${shiftTxs.length}. Total facturado: ${totalUSD} USD.`
       };
       
-      const updatedTxs = prev.transactions.map((tx: any) => 
+      const updatedTxs = (prev.transactions || []).map((tx: any) => 
         (tx.vendedorId === vendedorId && tx.clientId === clientId && !tx.zReported) 
           ? { ...tx, zReported: true } 
           : tx
@@ -3819,7 +3816,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const toggleLoyaltyProgram = (clientId: string, isActive: boolean) => {
     setDb((prev: any) => ({
       ...prev,
-      clients: prev.clients.map((c: any) => c.id === clientId ? { ...c, loyaltyProgramActive: isActive } : c)
+      clients: (prev.clients || []).map((c: any) => c.id === clientId ? { ...c, loyaltyProgramActive: isActive } : c)
     }));
     showToast(`Programa de Fidelización ${isActive ? "Activado" : "Desactivado"}.`, "success");
   };
@@ -3884,7 +3881,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const updateStoreSettings = (clientId: string, settings: any) => {
     setDb((prev: any) => ({
       ...prev,
-      clients: prev.clients.map((c: any) => 
+      clients: (prev.clients || []).map((c: any) => 
         c.id === clientId ? { ...c, storeSettings: { ...(c.storeSettings || {}), ...settings } } : c
       )
     }));
@@ -3903,7 +3900,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const toggleProductFeatured = (productId: string, isFeatured: boolean) => {
     setDb((prev: any) => ({
       ...prev,
-      products: prev.products.map((p: any) => 
+      products: (prev.products || []).map((p: any) => 
         p.id === productId ? { ...p, isFeatured } : p
       )
     }));
@@ -3913,7 +3910,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const updatePaymentMethods = (clientId: string, methods: any) => {
     setDb((prev: any) => ({
       ...prev,
-      clients: prev.clients.map((c: any) => c.id === clientId ? { ...c, paymentMethods: methods } : c)
+      clients: (prev.clients || []).map((c: any) => c.id === clientId ? { ...c, paymentMethods: methods } : c)
     }));
     setCurrentUser((prev: any) => {
       if (prev && prev.id === clientId) {
@@ -4019,7 +4016,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       const promoCut = feeEUR * 0.20;
       const finalNetEUR = feeEUR - promoCut;
 
-      const updatedPromotoras = prev.promotoras.map((p: any) =>
+      const updatedPromotoras = (prev.promotoras || []).map((p: any) =>
         p.id === updatedClients[clientIdx].promotoraId
           ? { ...p, passiveEarningsEUR: (p.passiveEarningsEUR || 0) + promoCut }
           : p
@@ -4062,12 +4059,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       const unlock = prev.unlockedContacts?.find((u: any) => u.id === unlockId);
       if (!unlock) return prev;
 
-      const client = prev.clients.find((c: any) => c.id === unlock.clientId);
+      const client = (prev.clients || []).find((c: any) => c.id === unlock.clientId);
       const feeEUR = (10 * rates.USD) / rates.EUR;
       const promoCut = feeEUR * 0.20;
       const finalNetEUR = feeEUR - promoCut;
 
-      const updatedPromotoras = prev.promotoras.map((p: any) =>
+      const updatedPromotoras = (prev.promotoras || []).map((p: any) =>
         p.id === client?.promotoraId ? { ...p, passiveEarningsEUR: (p.passiveEarningsEUR || 0) + promoCut } : p
       );
 
@@ -4192,7 +4189,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
   const hireCandidate = (candidateId: string, clientId: string) => {
     setDb((prev: any) => {
-      const client = prev.clients.find((cl: any) => cl.id === clientId);
+      const client = (prev.clients || []).find((cl: any) => cl.id === clientId);
       const updatedCandidates = prev.candidates.map((c: any) => {
         if (c.id === candidateId) {
           const updated = { ...c, hiringState: "hired", interviewingClientId: clientId };
@@ -4217,7 +4214,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       const candidate = prev.candidates.find((c: any) => c.id === candidateId);
       if (!candidate) return prev;
 
-      const client = prev.clients.find((cl: any) => cl.id === clientId);
+      const client = (prev.clients || []).find((cl: any) => cl.id === clientId);
       
       let updatedReviews = candidate.reviews || [];
       if (reviewData && reviewData.rating > 0) {
@@ -4355,7 +4352,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const rejectRider = (riderId: string) => {
     setDb((prev: any) => ({
       ...prev,
-      riders: Array.isArray(prev.riders) ? prev.riders.filter((r: any) => r?.id !== riderId) : [],
+      riders: Array.isArray(prev.riders) ? (prev.riders || []).filter((r: any) => r?.id !== riderId) : [],
       kreatekCore: {
         ...(prev.kreatekCore || {}),
         deletedKeys: Array.isArray(prev.kreatekCore?.deletedKeys) ? [...new Set([...prev.kreatekCore.deletedKeys, riderId])] : [riderId]
@@ -4413,16 +4410,16 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         return prev;
       }
       // Get current round-robin index for this client
-      const client = prev.clients.find((c: any) => c.id === clientId);
+      const client = (prev.clients || []).find((c: any) => c.id === clientId);
       const currentIndex = client?.deliveryRoundRobinIndex || 0;
       const assignedRider = businessRiders[currentIndex % businessRiders.length];
       const nextIndex = currentIndex + 1;
 
-      const updatedClients = prev.clients.map((c: any) =>
+      const updatedClients = (prev.clients || []).map((c: any) =>
         c.id === clientId ? { ...c, deliveryRoundRobinIndex: nextIndex } : c
       );
 
-      const updatedTransactions = prev.transactions.map((tx: any) =>
+      const updatedTransactions = (prev.transactions || []).map((tx: any) =>
         tx.id === txId ? {
           ...tx,
           assignedRiderId: assignedRider.id,
@@ -4543,7 +4540,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const toggleBusinessOpen = (clientId: string) => {
     setDb((prev: any) => ({
       ...prev,
-      clients: prev.clients.map((c: any) =>
+      clients: (prev.clients || []).map((c: any) =>
         c.id === clientId ? { ...c, isOpen: !c.isOpen } : c
       )
     }));
@@ -4552,7 +4549,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const updateBusinessConfig = (clientId: string, config: { schedule?: any; deliveryRadiusKm?: number }) => {
     setDb((prev: any) => ({
       ...prev,
-      clients: prev.clients.map((c: any) =>
+      clients: (prev.clients || []).map((c: any) =>
         c.id === clientId ? { ...c, ...config } : c
       )
     }));

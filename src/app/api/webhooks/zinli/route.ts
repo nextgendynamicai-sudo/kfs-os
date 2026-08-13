@@ -60,7 +60,7 @@ export async function POST(req: Request) {
       else if (amountUSD >= 10 && amountUSD < 20) kPointsBonus = 300;
       else if (amountUSD >= 20) kPointsBonus = 800;
 
-      let updatedCustomers = [...db.customers];
+      let updatedCustomers = [...(db.customers || [])];
       updatedCustomers[customerIdx] = {
         ...customer,
         real_balance: (customer.real_balance || 0) + amountUSD,
