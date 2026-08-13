@@ -7,7 +7,7 @@ import { AppEnforcer } from "../../components/AppEnforcer";
 
 export default function ComercioPage() {
   const kfs = useKFS() as any;
-  const { db, setDb, currentUser, addProduct, addExpense, processPurchase, generateZReport, originalUser, stopImpersonating, registerPosTerminal, deletePosTerminal, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, createCoupon, deleteCoupon, toggleCouponActive, logout, requestTopUp, requestPayout } = kfs;
+  const { db, setDb, currentUser, addProduct, addExpense, processPurchase, generateZReport, originalUser, stopImpersonating, registerPosTerminal, deletePosTerminal, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, createCoupon, deleteCoupon, toggleCouponActive, logout, requestTopUp, requestPayout, showToast, formatUSD, formatEUR } = kfs;
 
   return (
     <AppEnforcer currentUser={currentUser} updatePwaStatus={() => {}}>
@@ -33,6 +33,9 @@ export default function ComercioPage() {
         logout={logout}
         requestTopUp={requestTopUp}
         requestPayout={requestPayout}
+        showToast={showToast}
+        formatUSD={formatUSD}
+        formatEUR={formatEUR}
       />
     </AppEnforcer>
   );
