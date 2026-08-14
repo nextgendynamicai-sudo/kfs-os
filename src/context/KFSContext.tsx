@@ -385,6 +385,35 @@ interface KFSContextType {
   logFiscalAction: (clientId: string, cashierId: string, cashierName: string, command: string, details: string) => void;
 }
 
+const upgradeToNewBaseline = (oldDb: any, baselineDb: any) => {
+  if (!oldDb) return baselineDb;
+  return {
+    ...baselineDb,
+    kreatekCore: {
+      ...(baselineDb.kreatekCore || {}),
+      wipeVersion: baselineDb.kreatekCore?.wipeVersion || 0
+    },
+    orders: oldDb.orders || [],
+    transactions: oldDb.transactions || [],
+    auditLogs: oldDb.auditLogs || [],
+    supportTickets: oldDb.supportTickets || [],
+    products: oldDb.products || [],
+    clients: oldDb.clients || [],
+    promotoras: oldDb.promotoras || [],
+    vendedores: oldDb.vendedores || [],
+    customers: oldDb.customers || [],
+    riders: oldDb.riders || [],
+    expenses: oldDb.expenses || [],
+    posTerminals: oldDb.posTerminals || [],
+    zReports: oldDb.zReports || [],
+    vales: oldDb.vales || [],
+    candidates: oldDb.candidates || [],
+    unlockedContacts: oldDb.unlockedContacts || [],
+    coupons: oldDb.coupons || [],
+    kfsNetworkLedger: oldDb.kfsNetworkLedger || []
+  };
+};
+
 const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
   if (!remoteDb) return localDb;
   if (!localDb) return remoteDb;
@@ -939,9 +968,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           if (parsed) {
             parsed = cleanupOldDemos(parsed);
             if (parsed.kreatekCore?.wipeVersion !== CURRENT_WIPE_VERSION) {
-              console.log(`[${KFS_BRAND.productAcronym}] Database version mismatch. Resetting database to 0.`);
-              setDb(initialDB);
-              setIndexedDBValue("kfs_os_db_prod", initialDB);
+              console.log(`[${KFS_BRAND.productAcronym}] Database version mismatch. Upgrading database while preserving user data.`);
+              const upgradedDb = upgradeToNewBaseline(parsed, initialDB);
+              setDb(upgradedDb);
+              setIndexedDBValue("kfs_os_db_prod", upgradedDb);
             } else {
               // Ensure kfs-express client exists in stored DB only if not deleted
               if (!parsed.clients) parsed.clients = [];
@@ -985,12 +1015,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                   } else if (remoteVersion < CURRENT_WIPE_VERSION) {
                     setDb((prevDb: any) => {
                       if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION) return prevDb;
-                      console.log("[Supabase Cloud] Versión de BD antigua detectada. Forzando reinicio local y en la nube.");
-                      localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
-                      setCurrentUser(null);
-                      setOriginalUser(null);
-                      if (currentUserRef.current) setView("landing");
-                      return initialDB;
+                      console.log("[Supabase Cloud] Versión de BD antigua detectada. Forzando actualización con preservación de datos.");
+                      const upgradedDb = upgradeToNewBaseline(prevDb, initialDB);
+                      localStorage.setItem("kfs_os_db_prod", JSON.stringify(upgradedDb));
+                      // We don't log out the user, we just upgraded the database structurally
+                      return upgradedDb;
                     });
                   } else {
                     setDb((prevDb: any) => {
@@ -1035,12 +1064,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                         } else if (remoteVersion < CURRENT_WIPE_VERSION) {
                           setDb((prevDb: any) => {
                             if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION) return prevDb;
-                            console.log("[Supabase Realtime] Versión de BD antigua recibida. Forzando reinicio.");
-                            localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
-                            setCurrentUser(null);
-                            setOriginalUser(null);
-                            if (currentUserRef.current) setView("landing");
-                            return initialDB;
+                            console.log("[Supabase Realtime] Versión de BD antigua recibida. Forzando actualización con preservación de datos.");
+                            const upgradedDb = upgradeToNewBaseline(prevDb, initialDB);
+                            localStorage.setItem("kfs_os_db_prod", JSON.stringify(upgradedDb));
+                            return upgradedDb;
                           });
                         } else {
                           isRemoteUpdate.current = true;
@@ -1098,12 +1125,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                             } else if (remoteVersion < CURRENT_WIPE_VERSION) {
                               setDb((prevDb: any) => {
                                 if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION) return prevDb;
-                                console.log("[Supabase Polling Fallback] Versión de BD antigua detectada. Forzando reinicio.");
-                                localStorage.setItem("kfs_os_db_prod", JSON.stringify(initialDB));
-                                setCurrentUser(null);
-                                setOriginalUser(null);
-                                if (currentUserRef.current) setView("landing");
-                                return initialDB;
+                                console.log("[Supabase Polling Fallback] Versión de BD antigua detectada. Forzando actualización con preservación de datos.");
+                                const upgradedDb = upgradeToNewBaseline(prevDb, initialDB);
+                                localStorage.setItem("kfs_os_db_prod", JSON.stringify(upgradedDb));
+                                return upgradedDb;
                               });
                             } else {
                               setDb((prevDb: any) => {
