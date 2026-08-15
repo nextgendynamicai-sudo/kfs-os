@@ -18,198 +18,210 @@ const cleanBase64 = (obj: any): any => {
   return obj;
 };
 
+// Enterprise Phase 4: Sync Logic updated to map to strict Relational Schema
 export const syncToRelational = async (db: any) => {
   if (!supabase) return;
   try {
-    // Sync Clients
+    // 1. Sync Clients
     if (db.clients && db.clients.length > 0) {
       const clientsPayload = db.clients.map((c: any) => ({
         id: c.id,
-        business_name: c.company || c.name || "KFS Business",
+        company: c.company || c.name || "KFS Business",
+        email: c.email || `${c.id}@kfs.com`,
+        password_hash: c.password || "000",
+        address: c.address || "N/A",
+        rating: c.rating || 5.0,
+        review_count: c.reviewCount || 0,
+        kfs_fee_percentage: c.kfsFeePercentage || 0.05,
+        fee_tier: c.fee_tier || "5%",
+        is_founder: !!c.is_founder,
+        kfs_fees_owed_usd: c.kfsFeesOwedUSD || 0,
+        is_onboarded: !!c.isOnboarded,
         wallet_balance_usd: c.walletBalanceUSD || 0,
-        k_points_balance: 0,
-        raw_data: cleanBase64(c)
+        sales_usd: c.salesUSD || 0,
+        store_bio: c.storeSettings?.bioText || "",
+        store_theme_color: c.storeSettings?.themeColor || "",
+        store_typography: c.storeSettings?.typography || "",
+        store_layout_type: c.storeSettings?.layoutType || "",
+        store_profile_pic_url: c.storeSettings?.profilePicUrl || "",
+        created_at: new Date().toISOString()
       }));
       await supabase.from('kfs_clients').upsert(clientsPayload, { onConflict: 'id' });
     }
     
-    // Sync Customers
+    // 2. Sync Customers
     if (db.customers && db.customers.length > 0) {
       const customersPayload = db.customers.map((c: any) => ({
         id: c.id,
+        name: c.name || "Cliente KFS",
+        email: c.email || `${c.id}@kfs.com`,
         phone: c.phone || "",
-        name: c.name || "Customer",
-        wallet_balance_usd: c.walletUSD || 0,
-        k_points_balance: c.k_points_balance || 0,
-        raw_data: cleanBase64(c)
+        referred_by: c.referredBy || "",
+        kpoints_balance: c.kpointsBalance || c.k_points_balance || 0,
+        created_at: new Date().toISOString()
       }));
       await supabase.from('kfs_customers').upsert(customersPayload, { onConflict: 'id' });
     }
 
-    // Sync Promotoras
-    if (db.promotoras && db.promotoras.length > 0) {
-      const promoPayload = db.promotoras.map((c: any) => ({
-        id: c.id,
-        name: c.name || "Promotora",
-        passive_earnings_eur: c.passiveEarningsEUR || 0,
-        pending_payout_eur: c.pendingPayoutEUR || 0,
-        raw_data: cleanBase64(c)
+    // 3. Sync Products
+    if (db.products && db.products.length > 0) {
+      const productsPayload = db.products.map((p: any) => ({
+        id: p.id,
+        seller_id: p.clientId,
+        name: p.name || "Producto KFS",
+        price_usd: p.priceUSD || 0,
+        stock: p.stock || 0,
+        description: p.description || "",
+        image: typeof p.image === 'string' && p.image.startsWith('data:') ? '[BASE64]' : (p.image || ""),
+        category: p.category || "General",
+        cost_usd: p.costUSD || 0,
+        created_at: new Date().toISOString()
       }));
-      await supabase.from('kfs_promotoras').upsert(promoPayload, { onConflict: 'id' });
+      await supabase.from('kfs_products').upsert(productsPayload, { onConflict: 'id' });
     }
 
-    // Sync Riders
+    // 4. Sync Promotoras
+    if (db.promotoras && db.promotoras.length > 0) {
+      const promosPayload = db.promotoras.map((p: any) => ({
+        id: p.id,
+        name: p.name || "Promotora KFS",
+        email: p.email || `${p.id}@kfs.com`,
+        pago_movil: p.pagoMovil || "",
+        binance_id: p.binanceId || "",
+        avatar: typeof p.avatar === 'string' && p.avatar.startsWith('data:') ? '[BASE64]' : (p.avatar || ""),
+        kyc_cedula: p.kycCedula || "",
+        kyc_address: p.kycAddress || "",
+        referred_by: p.referredBy || "",
+        earnings: p.passiveEarningsEUR || 0,
+        referrals_count: p.setups || 0,
+        created_at: new Date().toISOString()
+      }));
+      await supabase.from('kfs_promotoras').upsert(promosPayload, { onConflict: 'id' });
+    }
+
+    // 5. Sync Riders
     if (db.riders && db.riders.length > 0) {
-      const ridersPayload = db.riders.map((c: any) => ({
-        id: c.id,
-        name: c.name || "Rider",
-        wallet_balance_usd: c.walletBalanceUSD || 0,
-        raw_data: cleanBase64(c)
+      const ridersPayload = db.riders.map((r: any) => ({
+        id: r.id,
+        name: r.name || "Rider KFS",
+        email: r.email || `${r.id}@kfs.com`,
+        phone: r.phone || "",
+        vehicle_type: r.vehicleType || "Moto",
+        cedula_img: r.kycCedula || "",
+        pago_movil_banco: r.pagoMovilBanco || "",
+        pago_movil_telefono: r.pagoMovilTelefono || "",
+        pago_movil_cedula: r.pagoMovilCedula || "",
+        referred_by: r.referredBy || "",
+        deliveries: r.deliveries || 0,
+        earnings: r.earningsUSD || 0,
+        kpoints_balance: r.kpointsBalance || 0,
+        created_at: new Date().toISOString()
       }));
       await supabase.from('kfs_riders').upsert(ridersPayload, { onConflict: 'id' });
     }
 
-    // Sync Transactions (only recent ones)
+    // 6. Sync Transactions
     if (db.transactions && db.transactions.length > 0) {
-      const txPayload = db.transactions.slice(-50).map((c: any) => ({
-        id: c.id,
-        client_id: c.clientId || null,
-        customer_id: c.customerId || null,
-        amount_usd: c.amount || 0,
-        fee_collected_usd: 0.04, // Default per your spec
-        k_points_burned: 0,
-        type: c.type || "standard",
-        status: c.status || "completed",
-        raw_data: cleanBase64(c)
+      const txPayload = db.transactions.map((t: any) => ({
+        id: t.id,
+        type: t.type || "SALE",
+        amount_usd: t.amountUSD || t.amount || 0,
+        currency: t.currency || "USD",
+        status: t.status || "COMPLETED",
+        sender_id: t.senderId || t.clientId || t.customerId || "System",
+        receiver_id: t.receiverId || t.clientId || "System",
+        metadata: cleanBase64(t),
+        created_at: t.date || new Date().toISOString()
       }));
       await supabase.from('kfs_transactions').upsert(txPayload, { onConflict: 'id' });
     }
-
-    // Products
-    if (db.products && db.products.length > 0) {
-      const prodPayload = db.products.map((c: any) => ({
-        id: c.id,
-        client_id: c.clientId || null,
-        name: c.name || "Producto",
-        price_usd: c.price || 0,
-        image_url: c.photoUrl || "",
-        stock: c.stock || 0,
-        raw_data: cleanBase64(c)
-      }));
-      await supabase.from('kfs_products').upsert(prodPayload, { onConflict: 'id' });
-    }
-
-    console.log('[Supabase Relational Sync] Tablas normalizadas kfs_ actualizadas con éxito.');
   } catch (error) {
-    console.error('[Supabase Relational Sync] Error sincronizando tablas:', error);
+    console.warn("syncToRelational failed:", error);
   }
 };
 
-export const fetchFromRelational = async () => {
-  if (!supabase) return null;
-  try {
-    const [
-      { data: clients },
-      { data: customers },
-      { data: promotoras },
-      { data: riders },
-      { data: transactions },
-      { data: products }
-    ] = await Promise.all([
-      supabase.from('kfs_clients').select('raw_data'),
-      supabase.from('kfs_customers').select('raw_data'),
-      supabase.from('kfs_promotoras').select('raw_data'),
-      supabase.from('kfs_riders').select('raw_data'),
-      supabase.from('kfs_transactions').select('raw_data'),
-      supabase.from('kfs_products').select('raw_data')
-    ]);
-
-    const remoteDb: any = {};
-    if (clients) remoteDb.clients = clients.map((r: any) => r.raw_data);
-    if (customers) remoteDb.customers = customers.map((r: any) => r.raw_data);
-    if (promotoras) remoteDb.promotoras = promotoras.map((r: any) => r.raw_data);
-    if (riders) remoteDb.riders = riders.map((r: any) => r.raw_data);
-    if (transactions) remoteDb.transactions = transactions.map((r: any) => r.raw_data);
-    if (products) remoteDb.products = products.map((r: any) => r.raw_data);
-
-    return remoteDb;
-  } catch (error) {
-    console.error('[Supabase Relational Sync] Error bajando datos kfs_:', error);
-    return null;
-  }
-};
-
-export const syncSingleTransaction = async (tx: any) => {
+export const syncSingleTransaction = async (t: any) => {
   if (!supabase) return;
   try {
     const payload = {
-      id: tx.id || `tx_${Date.now()}`,
-      client_id: tx.clientId || null,
-      customer_id: tx.customerId || null,
-      amount_usd: tx.amountUSD || tx.amount || tx.subtotalUSD || 0,
-      fee_collected_usd: tx.kfsFeeUSD || tx.kfsFee || 0.04,
-      k_points_burned: tx.kPointsBurned || 0,
-      type: tx.type || 'sale',
-      status: tx.status || 'completed',
-      raw_data: cleanBase64(tx)
+      id: t.id,
+      type: t.type || "SALE",
+      amount_usd: t.amountUSD || t.amount || 0,
+      currency: t.currency || "USD",
+      status: t.status || "COMPLETED",
+      sender_id: t.senderId || t.clientId || t.customerId || "System",
+      receiver_id: t.receiverId || t.clientId || "System",
+      metadata: cleanBase64(t),
+      created_at: t.date || new Date().toISOString()
     };
-    await supabase.from('kfs_transactions').upsert([payload], { onConflict: 'id' });
-    console.log('[Supabase Write-Through] Transacción espejo sincronizada con éxito:', tx.id);
-  } catch (e) {
-    console.warn('[Supabase Write-Through Bypass] Error en sync de transacción:', e);
+    await supabase.from('kfs_transactions').upsert(payload);
+  } catch (err) {
+    console.warn("syncSingleTransaction bypass:", err);
   }
 };
 
-export const syncSingleClient = async (client: any) => {
+export const syncSingleClient = async (c: any) => {
   if (!supabase) return;
   try {
     const payload = {
-      id: client.id,
-      business_name: client.company || client.name || 'KFS Business',
-      wallet_balance_usd: client.walletBalanceUSD || client.wallet_balance || 0,
-      k_points_balance: client.kPoints || 0,
-      raw_data: cleanBase64(client)
+      id: c.id,
+      company: c.company || c.name || "KFS Business",
+      email: c.email || `${c.id}@kfs.com`,
+      password_hash: c.password || "000",
+      address: c.address || "N/A",
+      rating: c.rating || 5.0,
+      review_count: c.reviewCount || 0,
+      kfs_fee_percentage: c.kfsFeePercentage || 0.05,
+      fee_tier: c.fee_tier || "5%",
+      is_founder: !!c.is_founder,
+      kfs_fees_owed_usd: c.kfsFeesOwedUSD || 0,
+      is_onboarded: !!c.isOnboarded,
+      wallet_balance_usd: c.walletBalanceUSD || 0,
+      sales_usd: c.salesUSD || 0,
+      store_bio: c.storeSettings?.bioText || "",
+      created_at: new Date().toISOString()
     };
-    await supabase.from('kfs_clients').upsert([payload], { onConflict: 'id' });
-    console.log('[Supabase Write-Through] Cliente espejo sincronizado con éxito:', client.id);
-  } catch (e) {
-    console.warn('[Supabase Write-Through Bypass] Error en sync de cliente:', e);
+    await supabase.from('kfs_clients').upsert(payload);
+  } catch (err) {
+    console.warn("syncSingleClient bypass:", err);
   }
 };
 
-export const syncSingleCustomer = async (customer: any) => {
+export const syncSingleCustomer = async (c: any) => {
   if (!supabase) return;
   try {
     const payload = {
-      id: customer.id,
-      phone: customer.phone || '',
-      name: customer.name || 'Customer',
-      wallet_balance_usd: customer.real_balance || customer.walletUSD || 0,
-      k_points_balance: customer.k_points_balance || customer.kPoints || 0,
-      raw_data: cleanBase64(customer)
+      id: c.id,
+      name: c.name || "Cliente KFS",
+      email: c.email || `${c.id}@kfs.com`,
+      phone: c.phone || "",
+      referred_by: c.referredBy || "",
+      kpoints_balance: c.kpointsBalance || c.k_points_balance || 0,
+      created_at: new Date().toISOString()
     };
-    await supabase.from('kfs_customers').upsert([payload], { onConflict: 'id' });
-    console.log('[Supabase Write-Through] Consumidor espejo sincronizado con éxito:', customer.id);
-  } catch (e) {
-    console.warn('[Supabase Write-Through Bypass] Error en sync de consumidor:', e);
+    await supabase.from('kfs_customers').upsert(payload);
+  } catch (err) {
+    console.warn("syncSingleCustomer bypass:", err);
   }
 };
 
-export const syncSingleProduct = async (product: any) => {
+export const syncSingleProduct = async (p: any) => {
   if (!supabase) return;
   try {
     const payload = {
-      id: product.id,
-      client_id: product.clientId || null,
-      name: product.name || 'Producto',
-      price_usd: typeof product.price === 'number' ? product.price : parseFloat(product.price || 0),
-      image_url: product.photoUrl || product.image || '',
-      stock: product.stock || 0,
-      raw_data: cleanBase64(product)
+      id: p.id,
+      seller_id: p.clientId,
+      name: p.name || "Producto KFS",
+      price_usd: p.priceUSD || 0,
+      stock: p.stock || 0,
+      description: p.description || "",
+      image: typeof p.image === 'string' && p.image.startsWith('data:') ? '[BASE64]' : (p.image || ""),
+      category: p.category || "General",
+      cost_usd: p.costUSD || 0,
+      created_at: new Date().toISOString()
     };
-    await supabase.from('kfs_products').upsert([payload], { onConflict: 'id' });
-    console.log('[Supabase Write-Through] Producto espejo sincronizado con éxito:', product.id);
-  } catch (e) {
-    console.warn('[Supabase Write-Through Bypass] Error en sync de producto:', e);
+    await supabase.from('kfs_products').upsert(payload);
+  } catch (err) {
+    console.warn("syncSingleProduct bypass:", err);
   }
 };
