@@ -17,6 +17,7 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
   });
   const [uploading, setUploading] = useState({ cedula: false, med: false, license: false });
   const [formError, setFormError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validatePhone = (phone: string) => {
     if (!phone) return false;
@@ -53,7 +54,7 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
     setUploading(prev => ({ ...prev, [key]: false }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError("");
     if (!isNameValid) {
@@ -72,21 +73,27 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
       setFormError("La contraseña debe tener al menos 4 caracteres.");
       return;
     }
+    if (isSubmitting) return;
 
-    const fallbackData = {
-      ...formData,
-      cedulaImg: formData.cedulaImg || "default_rider_cedula",
-      medCertImg: formData.medCertImg || "default_med",
-      licenseImg: formData.licenseImg || "default_license",
-      pagoMovil: {
-        banco: formData.pagoMovil.banco || "0102 - Banco de Venezuela",
-        telefono: formData.pagoMovil.telefono || formData.phone,
-        cedula: formData.pagoMovil.cedula || "V00000000"
-      },
-      referredBy: defaultReferralCode
-    };
+    setIsSubmitting(true);
+    try {
+      const fallbackData = {
+        ...formData,
+        cedulaImg: formData.cedulaImg || "default_rider_cedula",
+        medCertImg: formData.medCertImg || "default_med",
+        licenseImg: formData.licenseImg || "default_license",
+        pagoMovil: {
+          banco: formData.pagoMovil.banco || "0102 - Banco de Venezuela",
+          telefono: formData.pagoMovil.telefono || formData.phone,
+          cedula: formData.pagoMovil.cedula || "V00000000"
+        },
+        referredBy: defaultReferralCode
+      };
 
-    registerRider(fallbackData);
+      await Promise.resolve(registerRider(fallbackData));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const DocUploadField = ({ label, icon, field, fileKey, uploaded }: { label: string; icon: string; field: "cedulaImg" | "medCertImg" | "licenseImg"; fileKey: "cedula" | "med" | "license"; uploaded: boolean }) => (
@@ -224,13 +231,13 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
 
       <div className="flex gap-3 pt-2">
         <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl border border-violet-200 text-slate-500 font-bold hover:bg-violet-50 transition-all text-sm cursor-pointer bg-transparent">Atrás</button>
-        <button 
-          type="submit" 
-          disabled={!isFormValid}
-          className="w-2/3 py-3 rounded-xl bg-violet-600 text-white font-black hover:scale-[1.02] active:scale-95 transition-all text-sm cursor-pointer flex items-center justify-center gap-2 border-none shadow-md shadow-violet-600/30 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100"
-          title={isFormValid ? "Enviar solicitud de Rider" : "Por favor, completa todos los campos requeridos y sube tus documentos KYC"}
+        <button
+          type="submit"
+          disabled={!isFormValid || isSubmitting}
+          className="w-2/3 py-3 rounded-xl font-black text-white text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-md shadow-violet-600/30 border-none cursor-pointer bg-violet-600 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100"
+          title={isFormValid ? "Registrar cuenta" : "Por favor, completa todos los campos requeridos"}
         >
-          <Truck size={16} /> {isFormValid ? "Enviar Solicitud" : "Faltan Campos / KYC"}
+          {isSubmitting ? "Registrando..." : isFormValid ? "Registrarse como Rider" : "Campos Incompletos"}
         </button>
       </div>
     </form>

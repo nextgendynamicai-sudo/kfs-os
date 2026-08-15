@@ -55,7 +55,7 @@ export const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCod
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError("");
     if (!isNameValid) {
@@ -89,7 +89,7 @@ export const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCod
         kycCedula: kycCedula || defaultCedula,
         referralCode: defaultReferralCode
       };
-      onRegister(fallbackData);
+      await Promise.resolve(onRegister(fallbackData));
     } finally {
       setIsSubmitting(false);
     }

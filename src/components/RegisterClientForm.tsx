@@ -12,6 +12,7 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
   const [kycCedula, setKycCedula] = useState<string>("");
   const [acceptedToS, setAcceptedToS] = useState(false);
   const [formError, setFormError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validatePhone = (phone: string) => {
     if (!phone) return false;
@@ -86,7 +87,7 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
     );
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError("");
     if (!formData.company.trim()) {
@@ -113,20 +114,26 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
       setFormError("Debes aceptar los Términos de Servicio para registrar tu comercio.");
       return;
     }
+    if (isSubmitting) return;
 
-    const defaultAvatar = "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=150&auto=format&fit=crop&q=80";
-    const defaultCedula = "default_cedula_doc";
+    setIsSubmitting(true);
+    try {
+      const defaultAvatar = "https://images.unsplash.com/photo-1578575437130-527eed3abbec?w=150&auto=format&fit=crop&q=80";
+      const defaultCedula = "default_cedula_doc";
 
-    const fallbackData = {
-      ...formData,
-      enabledServices,
-      idCard: formData.idCard.trim() || "V00000000",
-      address: formData.address.trim() || "Dirección Comercial Principal",
-      avatar: avatar || defaultAvatar,
-      kycCedula: kycCedula || defaultCedula
-    };
+      const fallbackData = {
+        ...formData,
+        enabledServices,
+        idCard: formData.idCard.trim() || "V00000000",
+        address: formData.address.trim() || "Dirección Comercial Principal",
+        avatar: avatar || defaultAvatar,
+        kycCedula: kycCedula || defaultCedula
+      };
 
-    onRegister(fallbackData, defaultReferralCode, 0.03);
+      await Promise.resolve(onRegister(fallbackData, defaultReferralCode, 0.03));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -336,11 +343,11 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
         <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl border border-violet-200 text-slate-500 font-bold hover:bg-violet-50 transition-all text-sm cursor-pointer">Cancelar</button>
         <button 
           type="submit" 
-          disabled={!isFormValid}
-          className="w-2/3 py-3 rounded-xl font-black text-white text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-md shadow-violet-600/30 border-none cursor-pointer bg-violet-600 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100"
-          title={isFormValid ? "Aprobar Setup y registrar comercio" : "Por favor, completa todos los campos requeridos y acepta los términos"}
+          disabled={!isFormValid || isSubmitting}
+          className="w-2/3 py-3.5 rounded-xl font-black text-white text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-md shadow-violet-600/30 cursor-pointer bg-violet-600 border-none disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100"
+          title={isFormValid ? "Completar registro" : "Por favor, completa todos los requisitos mostrados en la lista"}
         >
-          {isFormValid ? "Aprobar Setup" : "Faltan Campos / KYC"}
+          {isSubmitting ? "Registrando..." : isFormValid ? "Finalizar Setup de Tienda" : "Requisitos Incompletos"}
         </button>
       </div>
     </form>
