@@ -2,7 +2,7 @@ const { createClient } = require('@supabase/supabase-js');
 require('dotenv').config({ path: '.env.local' });
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
 if (!supabaseUrl || !supabaseKey) {
   console.error("Missing Supabase credentials in .env.local");
@@ -29,8 +29,10 @@ async function migrateData() {
       return;
     }
 
-    const currentState = statesData[0].state;
-    console.log(`Loaded JSON Blob version: ${currentState.kreatekCore?.wipeVersion}`);
+    console.log("Blob keys:", Object.keys(statesData[0]));
+    const currentState = statesData[0].db_state;
+    console.log(`Loaded JSON Blob version:`, currentState.kreatekCore?.wipeVersion);
+    console.log(`CurrentState Keys:`, Object.keys(currentState));
 
     // 2. Migrate Clients
     if (currentState.clients && currentState.clients.length > 0) {
