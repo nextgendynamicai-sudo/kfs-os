@@ -42,7 +42,7 @@ const MOCK_BCV_RATES = {
   isWeekend: false
 };
 
-const CURRENT_WIPE_VERSION = 9;
+const CURRENT_WIPE_VERSION = 10;
 
 const initialDB = {
   clients: [
