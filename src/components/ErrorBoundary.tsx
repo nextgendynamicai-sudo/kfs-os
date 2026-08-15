@@ -26,6 +26,14 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("Uncaught error in React Component:", error, errorInfo);
+    try {
+      const Sentry = require("@sentry/nextjs");
+      if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+        Sentry.captureException(error, { extra: { errorInfo } });
+      }
+    } catch (e) {
+      // Sentry not available
+    }
   }
 
   public componentDidUpdate(prevProps: Props) {
