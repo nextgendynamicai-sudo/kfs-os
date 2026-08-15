@@ -2204,7 +2204,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     });
 
     showToast("Comercio Freemium registrado con éxito. Bono de 2000 Axis Points otorgado (Bloqueado).", "success");
-    if (view !== "promotora") setView("login");
+    if (view !== "promotora" && view !== "core") {
+      setCurrentUser({ ...newClient, role: "dueño" });
+      setView("client");
+    } else if (view !== "promotora") {
+      setView("login");
+    }
     return newClient;
   };
 
@@ -2430,7 +2435,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       auth_user_id: authUserId,
       avatar: avatarUrl,
       password: await hashPassword(clientData.password),
-      id: `c${Date.now()}`, 
+      id: clientData.id || `c${Date.now()}`, 
       salesUSD: 0, 
       promotoraId, 
       rating: 5.0, 
@@ -2502,7 +2507,16 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     syncSingleClient(newClient);
 
     showToast("Setup de Cliente completado con éxito. Bono de Instalación ($37.50) liquidado a la Promotora.");
-    if (view !== "promotora") setView("login");
+    
+    // Auto-login the new merchant (unless registration was initiated from promotora dashboard)
+    if (view !== "promotora" && view !== "core") {
+      setCurrentUser({ ...newClient, role: "dueño" });
+      setView("client");
+    } else if (view !== "promotora") {
+      setView("login");
+    }
+    
+    return newClient;
   };
 
   const registerPromotora = async (promoData: any) => {

@@ -36,7 +36,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
     }
   };
 
-  const handleOnboardSubmit = (e: React.FormEvent) => {
+  const handleOnboardSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!agreedToContract) {
       showToast("Debes aceptar el contrato de regalías del 5% para continuar.", "error");
@@ -58,11 +58,14 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
     };
 
     // Register merchant in DB using KFSContext handler
-    registerClient(clientData, promoterId || "core-self", 0.05);
+    const result = await registerClient(clientData, promoterId || "core-self", 0.05);
 
-    setNewMerchantId(merchantId);
-    setStep(3);
-    showToast("¡Onboarding completado con éxito! Comercio registrado.", "success");
+    // If registration returned an existing user (login redirect), don't show step 3
+    if (result && result.id) {
+      setNewMerchantId(result.id);
+      setStep(3);
+      showToast("¡Onboarding completado con éxito! Comercio registrado.", "success");
+    }
   };
 
   return (
