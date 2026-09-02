@@ -1024,9 +1024,20 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                         <tr key={c.id} className="border-b border-violet-100 hover:bg-violet-50/50 transition-colors">
                           <td className="py-4 px-4">
                             <span className="font-bold text-violet-950 block">{c.company}</span>
-                            <span className={`inline-block text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full mt-1 ${isBlocked ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-emerald-50 text-emerald-600 border border-emerald-200'}`}>
-                              {isBlocked ? '🔴 Bloqueado' : '🟢 Activo'}
-                            </span>
+                            <div className="flex items-center gap-1 mt-1 flex-wrap">
+                              <span className={`inline-block text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${isBlocked ? 'bg-red-50 text-red-600 border border-red-200' : 'bg-emerald-50 text-emerald-600 border border-emerald-200'}`}>
+                                {isBlocked ? '🔴 Bloqueado' : '🟢 Activo'}
+                              </span>
+                              {c.hasCompletedOnboardingTour ? (
+                                <span className="inline-block text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-200" title="Completó Tour Inicial">
+                                  🧭 Tour Listo
+                                </span>
+                              ) : (
+                                <span className="inline-block text-[9px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-50 text-slate-500 border border-slate-200" title="Tour Inicial Pendiente">
+                                  ⏳ Sin Tour
+                                </span>
+                              )}
+                            </div>
                             {c.promotoraId && (
                               <span className="block mt-2 text-[10px] text-slate-500 font-bold bg-slate-50 border border-slate-200 px-2 py-1 rounded-md inline-block">
                                 Ref: {db.promotoras?.find((p: any) => p.id === c.promotoraId)?.name || c.promotoraId}

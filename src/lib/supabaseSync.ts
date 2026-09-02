@@ -49,7 +49,7 @@ export const syncToRelational = async (db: any) => {
         raw_data: cleanBase64(c)
       }));
 
-      await supabase.from('clients').upsert(standardClients, { onConflict: 'id' }).catch((e: any) => console.warn('[Supabase Sync] clients table upsert notice:', e.message));
+      await supabase.from('clients').upsert(standardClients, { onConflict: 'id' });
 
       const kfsClients = db.clients.map((c: any) => ({
         id: c.id,
@@ -60,7 +60,7 @@ export const syncToRelational = async (db: any) => {
         raw_data: cleanBase64(c),
         created_at: c.created_at || new Date().toISOString()
       }));
-      await supabase.from('kfs_clients').upsert(kfsClients, { onConflict: 'id' }).catch(() => {});
+      await supabase.from('kfs_clients').upsert(kfsClients, { onConflict: 'id' });
     }
     
     // 2. Sync Customers
@@ -79,7 +79,7 @@ export const syncToRelational = async (db: any) => {
         created_at: c.created_at || new Date().toISOString(),
         raw_data: cleanBase64(c)
       }));
-      await supabase.from('customers').upsert(standardCustomers, { onConflict: 'id' }).catch((e: any) => console.warn('[Supabase Sync] customers table upsert notice:', e.message));
+      await supabase.from('customers').upsert(standardCustomers, { onConflict: 'id' });
 
       const kfsCustomers = db.customers.map((c: any) => ({
         id: c.id,
@@ -90,7 +90,7 @@ export const syncToRelational = async (db: any) => {
         kpoints_balance: c.kpointsBalance || c.k_points_balance || 0,
         created_at: c.created_at || new Date().toISOString()
       }));
-      await supabase.from('kfs_customers').upsert(kfsCustomers, { onConflict: 'id' }).catch(() => {});
+      await supabase.from('kfs_customers').upsert(kfsCustomers, { onConflict: 'id' });
     }
 
     // 3. Sync Products
@@ -110,7 +110,7 @@ export const syncToRelational = async (db: any) => {
         created_at: p.created_at || new Date().toISOString(),
         raw_data: cleanBase64(p)
       }));
-      await supabase.from('products').upsert(standardProducts, { onConflict: 'id' }).catch((e: any) => console.warn('[Supabase Sync] products table upsert notice:', e.message));
+      await supabase.from('products').upsert(standardProducts, { onConflict: 'id' });
 
       const kfsProducts = db.products.map((p: any) => ({
         id: p.id,
@@ -124,7 +124,7 @@ export const syncToRelational = async (db: any) => {
         cost_usd: p.costUSD || p.cost || 0,
         created_at: p.created_at || new Date().toISOString()
       }));
-      await supabase.from('kfs_products').upsert(kfsProducts, { onConflict: 'id' }).catch(() => {});
+      await supabase.from('kfs_products').upsert(kfsProducts, { onConflict: 'id' });
     }
 
     // 4. Sync Promotoras
@@ -143,7 +143,7 @@ export const syncToRelational = async (db: any) => {
         created_at: p.created_at || new Date().toISOString(),
         raw_data: cleanBase64(p)
       }));
-      await supabase.from('promotoras').upsert(standardPromos, { onConflict: 'id' }).catch((e: any) => console.warn('[Supabase Sync] promotoras table upsert notice:', e.message));
+      await supabase.from('promotoras').upsert(standardPromos, { onConflict: 'id' });
     }
 
     // 5. Sync Riders
@@ -162,7 +162,7 @@ export const syncToRelational = async (db: any) => {
         created_at: r.created_at || new Date().toISOString(),
         raw_data: cleanBase64(r)
       }));
-      await supabase.from('riders').upsert(standardRiders, { onConflict: 'id' }).catch((e: any) => console.warn('[Supabase Sync] riders table upsert notice:', e.message));
+      await supabase.from('riders').upsert(standardRiders, { onConflict: 'id' });
     }
 
     // 6. Sync Transactions
@@ -180,7 +180,7 @@ export const syncToRelational = async (db: any) => {
         items: cleanBase64(t.items || []),
         raw_data: cleanBase64(t)
       }));
-      await supabase.from('transactions').upsert(standardTx, { onConflict: 'id' }).catch((e: any) => console.warn('[Supabase Sync] transactions table upsert notice:', e.message));
+      await supabase.from('transactions').upsert(standardTx, { onConflict: 'id' });
     }
   } catch (error) {
     console.warn("[Supabase Sync] syncToRelational general error:", error);
@@ -247,7 +247,7 @@ export const syncSingleClient = async (c: any) => {
       subscription: c.subscription || null,
       raw_data: cleanBase64(c),
       created_at: c.created_at || new Date().toISOString()
-    }, { onConflict: 'id' }).catch(() => {});
+    }, { onConflict: 'id' });
   } catch (err) {
     console.warn("[Supabase Sync] syncSingleClient notice:", err);
   }
@@ -308,7 +308,7 @@ export const syncSingleProduct = async (p: any) => {
       category: p.category || "General",
       cost_usd: p.costUSD || p.cost || 0,
       created_at: p.created_at || new Date().toISOString()
-    }, { onConflict: 'id' }).catch(() => {});
+    }, { onConflict: 'id' });
   } catch (err) {
     console.warn("[Supabase Sync] syncSingleProduct notice:", err);
   }
