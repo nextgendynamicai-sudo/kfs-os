@@ -52,7 +52,7 @@ export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualW
     return () => clearInterval(timer);
   }, [expiry, kPointsBalance]);
 
-  const handleSimulatedRecharge = (amount: number) => {
+  const handleRequestRecharge = (amount: number) => {
     if (onRequestTopUp) {
       onRequestTopUp(amount, selectedPromoter || currentUser?.referred_by_promoter_id);
     }
@@ -157,14 +157,14 @@ export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualW
 
         <div className="grid grid-cols-3 gap-2">
           <button
-            onClick={() => handleSimulatedRecharge(5)}
+            onClick={() => handleRequestRecharge(5)}
             className="bg-violet-600/10 hover:bg-violet-600 hover:text-white border border-violet-200 rounded-xl py-3 px-2 text-center transition-all cursor-pointer group"
           >
             <p className="text-xs font-black">Recarga $5</p>
             <p className="text-[9px] opacity-75 mt-0.5">+2,000 Puntos Bono</p>
           </button>
           <button
-            onClick={() => handleSimulatedRecharge(10)}
+            onClick={() => handleRequestRecharge(10)}
             className="bg-violet-600/15 hover:bg-violet-600 hover:text-white border border-violet-200 rounded-xl py-3 px-2 text-center transition-all cursor-pointer relative overflow-hidden group"
           >
             <div className="absolute top-0 right-0 bg-violet-600 text-white text-[7px] font-black px-1 py-0.5 rounded-bl">PRO</div>
@@ -172,7 +172,7 @@ export function DualWalletCard({ currentUser, formatUSD, onRequestTopUp }: DualW
             <p className="text-[9px] opacity-75 mt-0.5">+5,000 Puntos Bono</p>
           </button>
           <button
-            onClick={() => handleSimulatedRecharge(20)}
+            onClick={() => handleRequestRecharge(20)}
             className="bg-violet-600/20 hover:bg-violet-600 hover:text-white border border-violet-200 rounded-xl py-3 px-2 text-center transition-all cursor-pointer relative overflow-hidden group"
           >
             <div className="absolute top-0 right-0 bg-violet-600 text-white text-[7px] font-black px-1 py-0.5 rounded-bl">WHALE</div>

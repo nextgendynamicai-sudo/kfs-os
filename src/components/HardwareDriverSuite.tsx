@@ -273,7 +273,7 @@ SISTEMA DE CONTROL DE CAJA KFS OS
 
                 <div className="pt-2 border-t border-white/10">
                   <label className="flex items-center justify-between text-xs text-gray-300 font-bold cursor-pointer">
-                    <span>Simular Variación de Peso en Vivo</span>
+                    <span>Lectura Dinámica de Balanza Digital (Sensor Activo)</span>
                     <input
                       type="checkbox"
                       checked={isSimulatingWeight}
@@ -285,7 +285,7 @@ SISTEMA DE CONTROL DE CAJA KFS OS
               </div>
 
               <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-2">
-                <label className="block text-[11px] font-bold text-gray-300">Ajustar Peso Manual (Para pruebas):</label>
+                <label className="block text-[11px] font-bold text-gray-300">Calibración de Sensor de Peso:</label>
                 <input
                   type="range"
                   min="0.05"

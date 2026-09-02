@@ -47,7 +47,7 @@ export const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }
           }
         );
       } catch (err) {
-        console.warn(`Cámara física no disponible o error iniciando escáner. Se activa el simulador interactivo ${KFS_BRAND.productAcronym}.`, err);
+        console.warn(`Cámara física no disponible o permiso no concedido. Se habilita entrada por teclado y códigos ${KFS_BRAND.productAcronym}.`, err);
       }
     };
 
@@ -61,7 +61,7 @@ export const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }
     };
   }, [onScan]);
 
-  const handleSimulatedScan = () => {
+  const handleManualScan = () => {
     triggerHapticFeedback([100, 50, 100]);
     playScannerBeep();
     if (selectedScanType === "product") {
@@ -136,7 +136,7 @@ export const ScannerView = ({ videoRef, onClose, onScan, myProducts, formatUSD }
 
           <button
             type="button"
-            onClick={handleSimulatedScan}
+            onClick={handleManualScan}
             className="w-full py-3 bg-violet-600 hover:bg-violet-500 text-white font-black rounded-xl text-xs hover:scale-[1.02] active:scale-95 transition-all shadow-lg shadow-violet-600/30 border-none cursor-pointer"
           >
             ✓ Confirmar e Ingresar Manualmente

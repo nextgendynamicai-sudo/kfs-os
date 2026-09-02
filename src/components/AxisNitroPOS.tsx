@@ -128,7 +128,7 @@ export function AxisNitroPOS() {
         <div className="lg:col-span-4 space-y-6 bg-slate-900/50 border border-violet-900/25 p-5 rounded-3xl">
           <div className="flex items-center gap-2 mb-2">
             <Sliders className="text-violet-400 w-4 h-4" />
-            <h3 className="font-bold text-sm text-slate-200">Panel de Control de Flags (Simulado)</h3>
+            <h3 className="font-bold text-sm text-slate-200">Panel de Control de Módulos Operativos</h3>
           </div>
           
           <p className="text-[10px] text-slate-400 leading-relaxed">

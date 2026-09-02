@@ -115,33 +115,33 @@ export const SMSConciliatorSimulator = () => {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 left-6 z-[80] w-14 h-14 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-full shadow-[0_4px_20px_rgba(109,40,217,0.4)] flex items-center justify-center text-violet-900 hover:scale-110 active:scale-95 transition-all cursor-pointer group animate-bounce border-none"
+        className="fixed bottom-6 left-6 z-[80] w-14 h-14 bg-gradient-to-br from-violet-600 to-indigo-600 rounded-full shadow-[0_4px_20px_rgba(109,40,217,0.4)] flex items-center justify-center text-white hover:scale-110 active:scale-95 transition-all cursor-pointer group animate-bounce border-none"
         style={{ animationDuration: '3s' }}
       >
         <span className="text-2xl group-hover:rotate-12 transition-transform">🛎️</span>
-        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[8px] font-black w-5 h-5 rounded-full flex items-center justify-center animate-pulse">
-          SIM
+        <span className="absolute -top-1 -right-1 bg-emerald-500 text-white text-[8px] font-black w-5 h-5 rounded-full flex items-center justify-center shadow-md">
+          SMS
         </span>
       </button>
 
       {isOpen && (
-        <div className="fixed inset-y-0 left-0 w-full max-w-sm bg-violet-900/95 backdrop-blur-xl border-r border-white/10 z-[90] shadow-2xl p-6 overflow-y-auto animate-slide-right flex flex-col justify-between text-white">
+        <div className="fixed inset-y-0 left-0 w-full max-w-sm bg-violet-950/95 backdrop-blur-xl border-r border-white/10 z-[90] shadow-2xl p-6 overflow-y-auto animate-slide-right flex flex-col justify-between text-white">
           <div className="space-y-6">
             <div className="flex justify-between items-center border-b border-white/10 pb-4">
               <div className="flex items-center gap-2">
                 <span className="text-xl">🛎️</span>
                 <div>
-                  <h3 className="font-black text-sm tracking-wide text-violet-600">{KFS_BRAND.productAcronym} SMART CONCILIATOR</h3>
-                  <p className="text-[9px] text-gray-400 font-mono">Simulador de Telemetría SMS</p>
+                  <h3 className="font-black text-sm tracking-wide text-violet-300">{KFS_BRAND.productAcronym} SMART CONCILIATOR</h3>
+                  <p className="text-[9px] text-emerald-400 font-mono">Telemetría Bancaria en Vivo</p>
                 </div>
               </div>
               <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-white cursor-pointer border-none bg-transparent"><X size={20} /></button>
             </div>
 
             <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3">
-              <span className="text-[10px] font-black text-violet-600 uppercase tracking-widest block font-mono">Órdenes Pendientes</span>
+              <span className="text-[10px] font-black text-violet-400 uppercase tracking-widest block font-mono">Órdenes Pendientes</span>
               {pendingOrders.length === 0 ? (
-                <p className="text-xs text-gray-400 font-bold">No hay órdenes online pendientes. Crea una en {KFS_BRAND.modules.marketplace} para probar el auto-llenado.</p>
+                <p className="text-xs text-gray-400 font-bold">No hay órdenes online pendientes. Los nuevos pagos móviles aparecerán aquí automáticamente.</p>
               ) : (
                 <div className="space-y-2 max-h-32 overflow-y-auto pr-1">
                   {pendingOrders.map((o: any) => (
@@ -163,7 +163,7 @@ export const SMSConciliatorSimulator = () => {
             </div>
 
             <div className="space-y-4">
-              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block font-mono">Configurador de Mensaje</span>
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest block font-mono">Mensaje Bancario de Entrada</span>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
@@ -193,7 +193,7 @@ export const SMSConciliatorSimulator = () => {
               </div>
 
               <div>
-                <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">SMS Simulado (Editar Libremente)</label>
+                <label className="text-[9px] font-bold text-gray-400 uppercase block mb-1">Cuerpo del SMS Recibido</label>
                 <textarea
                   value={customSMS}
                   onChange={e => setCustomSMS(e.target.value)}
@@ -206,7 +206,7 @@ export const SMSConciliatorSimulator = () => {
             {/* Live Terminal Telemetry Console */}
             <div className="space-y-2">
               <span className="text-[10px] font-black text-green-400 uppercase tracking-widest block font-mono flex items-center gap-1.5 animate-pulse">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span> Telemetría Logs SMS Sync
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span> Telemetría SMS & Webhook Sync
               </span>
               <div className="bg-black/90 p-4 border border-white/5 rounded-xl font-mono text-[9px] text-green-400 space-y-1 h-32 overflow-y-auto select-text w-full hide-scrollbar">
                 {logs.map((log, index) => (
@@ -223,9 +223,9 @@ export const SMSConciliatorSimulator = () => {
               onClick={handleSimulateSync}
               className="w-full py-4 bg-gradient-to-br from-violet-600 to-indigo-600 text-white font-black rounded-xl text-xs hover:scale-[1.02] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer border-none"
             >
-              🚀 Detonar Conciliación Zero-Clic
+              🚀 Validar y Conciliar Pago Directo
             </button>
-            <p className="text-[9px] text-gray-500 font-mono text-center">Simula la intercepción de notificaciones de pago {KFS_BRAND.productAcronym} SMS Companion.</p>
+            <p className="text-[9px] text-slate-400 font-mono text-center">Procesamiento y acreditación de fondos bancarios en tiempo real.</p>
           </div>
         </div>
       )}
