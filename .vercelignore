@@ -1,0 +1,11 @@
+node_modules
+builds
+dist
+kfs-os-sandbox
+playwright-report
+test-results
+scratch
+*.exe
+*.apk
+.next
+.git
