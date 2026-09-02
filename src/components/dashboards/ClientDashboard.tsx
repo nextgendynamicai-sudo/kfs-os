@@ -22,6 +22,7 @@ import { RecruitmentWidget } from "../RecruitmentWidget";
 import { ScannerView } from "../ScannerView";
 import { LowStockAlertsWidget } from "../LowStockAlertsWidget";
 import { ComboBuilderModal } from "../ComboBuilderModal";
+import { MerchantOnboardingTour } from "../MerchantOnboardingTour";
 
 import React, { useState, useEffect, useRef } from "react";
 import {
@@ -125,6 +126,25 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
     Boolean(currentUser?.mustChangePassword || currentUser?.requirePasswordChangeOnFirstLogin || clientInfo?.mustChangePassword || clientInfo?.requirePasswordChangeOnFirstLogin)
   );
 
+  // Onboarding Guided Tour State (Paso 4: Tour Guiado Interactivo)
+  const [showOnboardingTour, setShowOnboardingTour] = useState(
+    Boolean(!clientInfo?.hasCompletedOnboardingTour && !currentUser?.hasCompletedOnboardingTour && !clientInfo?.mustChangePassword && !currentUser?.mustChangePassword)
+  );
+
+  const handleCompleteOnboardingTour = () => {
+    setShowOnboardingTour(false);
+    setDb((prev: any) => ({
+      ...prev,
+      clients: (prev.clients || []).map((c: any) => 
+        c.id === clientInfo.id 
+          ? { ...c, hasCompletedOnboardingTour: true } 
+          : c
+      )
+    }));
+    if (currentUser) currentUser.hasCompletedOnboardingTour = true;
+    showToast("🎉 ¡Guía completada! Tu negocio está listo para facturar.", "success");
+  };
+
   const handleSaveFirstTimePassword = (e: React.FormEvent) => {
     e.preventDefault();
     if (!firstTimeNewPass || firstTimeNewPass.length < 4) {
@@ -159,6 +179,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
     }
 
     setShowFirstTimePassModal(false);
+    setShowOnboardingTour(true);
     showToast("🔒 ¡Contraseña privada guardada con éxito! Tu cuenta está protegida.", "success");
   };
 
@@ -459,9 +480,18 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
             <span className="bg-white/20 p-2 rounded-xl text-white"><Store size={20} /></span>
             <h1 className="font-black text-xl tracking-tight text-white">{KFS_BRAND.productAcronym} Negocio</h1>
           </div>
-          <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
-            <LogOut size={16} />
-          </button>
+          <div className="flex items-center gap-2">
+            <button 
+              type="button"
+              onClick={() => setShowOnboardingTour(true)} 
+              className="px-3 py-1.5 bg-white/15 hover:bg-white/25 rounded-xl text-white text-xs font-bold transition-all cursor-pointer border border-white/20 flex items-center gap-1.5 shadow-sm active:scale-95"
+            >
+              🧭 Guía de Inicio
+            </button>
+            <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
+              <LogOut size={16} />
+            </button>
+          </div>
         </div>
 
         <div className="flex items-center gap-4">
@@ -2500,6 +2530,17 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
             </form>
           </div>
         </div>
+      )}
+
+      {/* Interactive 3-Step Merchant Onboarding Tour */}
+      {showOnboardingTour && (
+        <MerchantOnboardingTour
+          clientInfo={clientInfo}
+          onComplete={handleCompleteOnboardingTour}
+          onClose={() => setShowOnboardingTour(false)}
+          setActiveTab={setActiveTab}
+          showToast={showToast}
+        />
       )}
 
     </div>
