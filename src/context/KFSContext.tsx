@@ -1374,11 +1374,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     let detectedRole = role;
 
     const findInRole = (targetRole: string) => {
-      if (targetRole === "promotora") return (db.promotoras || []).find((p: any) => (p.email && p.email.toLowerCase() === safeEmail) && matchesPass(p.password));
-      if (targetRole === "dueño") return (db.clients || []).find((c: any) => (c.email && c.email.toLowerCase() === safeEmail) && matchesPass(c.password));
-      if (targetRole === "vendedor") return (db.vendedores || []).find((v: any) => (v.email && v.email.toLowerCase() === safeEmail) && matchesPass(v.password));
-      if (targetRole === "rider") return (db.riders || []).find((r: any) => ((r.email && r.email.toLowerCase() === safeEmail) || matchPhone(r.phone, rawEmail)) && matchesPass(r.password));
-      if (targetRole === "customer") return (db.customers || []).find((c: any) => (matchPhone(c.phone, rawEmail) || (c.email && c.email.toLowerCase() === safeEmail)) && matchesPass(c.password));
+      const matchPass = (item: any) => matchesPass(item.password) || (item.tempPassword && item.tempPassword === safePass);
+      if (targetRole === "promotora") return (db.promotoras || []).find((p: any) => ((p.email && p.email.toLowerCase() === safeEmail) || matchPhone(p.phone, rawEmail)) && matchPass(p));
+      if (targetRole === "dueño") return (db.clients || []).find((c: any) => ((c.email && c.email.toLowerCase() === safeEmail) || matchPhone(c.phone, rawEmail)) && matchPass(c));
+      if (targetRole === "vendedor") return (db.vendedores || []).find((v: any) => ((v.email && v.email.toLowerCase() === safeEmail) || matchPhone(v.phone, rawEmail)) && matchPass(v));
+      if (targetRole === "rider") return (db.riders || []).find((r: any) => ((r.email && r.email.toLowerCase() === safeEmail) || matchPhone(r.phone, rawEmail)) && matchPass(r));
+      if (targetRole === "customer") return (db.customers || []).find((c: any) => (matchPhone(c.phone, rawEmail) || (c.email && c.email.toLowerCase() === safeEmail)) && matchPass(c));
       return null;
     };
 

@@ -24,7 +24,7 @@ import {
   ChevronRight, CheckCircle, CreditCard, Bell, X, Info,
   Store, Star, ChevronLeft, Clock, UserCheck, Palette, RefreshCw, Send,
   Zap, BookOpen, Printer, Smartphone, Settings, DownloadCloud, Terminal, Truck,
-  Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database, Trash2, Sparkles, Tag, Building2
+  Briefcase, FileText, Award, Check, ArrowUpRight, ArrowRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database, Trash2, Sparkles, Tag, Building2
 } from "lucide-react";
 import { useKFS } from "../../context/KFSContext";
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from "recharts";
@@ -59,6 +59,7 @@ const StorefrontCustomizer = dynamic(() => import("../StorefrontCustomizer").the
 const OnboardingWizard = dynamic(() => import("../OnboardingWizard").then(m => m.OnboardingWizard), { ssr: false });
 const ArchitectRewardsManager = dynamic(() => import("../rewards/ArchitectRewardsManager").then(m => m.ArchitectRewardsManager), { ssr: false });
 const MultiTenantManager = dynamic(() => import("../MultiTenantManager").then(m => m.MultiTenantManager), { ssr: false });
+const LiveDemoPitchManager = dynamic(() => import("../LiveDemoPitchManager").then(m => m.LiveDemoPitchManager), { ssr: false });
 
 // Theme and Global Constants
 const KREATEK_COLORS = {
@@ -125,6 +126,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
   const [activeTab, setActiveTab] = useState<string>("panel"); // panel | red | soporte | auditoria
   const [exploreSubTab, setExploreSubTab] = useState<"descubrir" | "actividades">("descubrir");
   const [showCoreNotifDrawer, setShowCoreNotifDrawer] = useState(false);
+  const [showLiveDemoPitch, setShowLiveDemoPitch] = useState(false);
   const [newMemberName, setNewMemberName] = useState("");
   const [newMemberPass, setNewMemberPass] = useState("");
   const [newMemberPermissions, setNewMemberPermissions] = useState<string[]>([]);
@@ -312,6 +314,15 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
           </div>
           <div className="flex items-center gap-3">
             <button
+              onClick={() => setShowLiveDemoPitch(true)}
+              className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-400 to-teal-500 hover:from-emerald-300 hover:to-teal-400 text-slate-950 font-black text-xs flex items-center gap-2 shadow-lg shadow-emerald-400/20 cursor-pointer transition-all hover:scale-105 border border-emerald-300"
+              title="Modo Demostración en Vivo & Activación de Negocio"
+            >
+              <Sparkles size={16} className="fill-slate-950 text-slate-950 animate-pulse" />
+              <span className="hidden sm:inline">Demostración en Vivo</span>
+              <span className="sm:hidden">Demo</span>
+            </button>
+            <button
               onClick={() => { window.location.href = "/rewards"; }}
               className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-amber-400 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-slate-950 font-black text-xs flex items-center gap-2 shadow-lg shadow-amber-400/20 cursor-pointer transition-all hover:scale-105 border border-amber-300"
               title="Abrir la App PWA de Recompensas Axis Nitro Points"
@@ -388,6 +399,27 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
               {exploreSubTab === 'descubrir' && (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 auto-rows-[140px]">
+                  {/* Card 0: Wide Banner - Demostración en Vivo & Activación */}
+                  <button 
+                    onClick={() => setShowLiveDemoPitch(true)} 
+                    className="col-span-2 md:col-span-3 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-600 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-xl border-none hover:scale-[1.01] transition-transform cursor-pointer group"
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Sparkles size={26} className="text-white animate-pulse" />
+                        <span className="text-[10px] font-black uppercase tracking-widest text-slate-950 bg-white/90 px-2.5 py-0.5 rounded-full shadow-sm">
+                          Motor de Venta & Cierre
+                        </span>
+                      </div>
+                      <span className="text-white/80 text-xs font-black group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                        Abrir Demo <ArrowRight size={14} />
+                      </span>
+                    </div>
+                    <div>
+                      <h4 className="text-white font-black text-xl">Demostración en Vivo & Activación</h4>
+                      <p className="text-white/90 text-xs font-semibold mt-0.5">Configura una tienda frente al prospecto y activa su cuenta oficial con su modelo de cobro en 1 clic.</p>
+                    </div>
+                  </button>
                   {/* Card 1: Wide */}
                   <button onClick={() => setActiveTab('sales_landing')} className="col-span-2 bg-gradient-to-br from-rose-400 to-orange-400 rounded-[2rem] p-5 text-left relative overflow-hidden shadow-lg border-none hover:scale-[1.02] transition-transform cursor-pointer">
                     <Sparkles size={32} className="text-white mb-2" strokeWidth={1.5} />
@@ -3365,6 +3397,14 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                 ✓ Inyectar Puntos
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {/* Live Demo Pitch & Business Activation Modal */}
+      {showLiveDemoPitch && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[9999] flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-fade-in">
+          <div className="w-full max-w-5xl my-auto">
+            <LiveDemoPitchManager onClose={() => setShowLiveDemoPitch(false)} />
           </div>
         </div>
       )}

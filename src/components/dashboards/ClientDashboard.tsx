@@ -118,6 +118,50 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
   const { setView, editProduct, createTicket, fundWallet, processMonthlyBilling, requestSubscriptionCancellation, createVale, payVale, processPayroll, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating, registerPosTerminal, deletePosTerminal, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, toggleBusinessOpen, updateBusinessConfig, createCoupon, deleteCoupon, toggleCouponActive } = useKFS() as any;
   const [deliveryRadiusKm, setDeliveryRadiusKm] = useState(clientInfo?.deliveryRadiusKm || 5);
 
+  // First-time Password Change State
+  const [firstTimeNewPass, setFirstTimeNewPass] = useState("");
+  const [firstTimeConfirmPass, setFirstTimeConfirmPass] = useState("");
+  const [showFirstTimePassModal, setShowFirstTimePassModal] = useState(
+    Boolean(currentUser?.mustChangePassword || currentUser?.requirePasswordChangeOnFirstLogin || clientInfo?.mustChangePassword || clientInfo?.requirePasswordChangeOnFirstLogin)
+  );
+
+  const handleSaveFirstTimePassword = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!firstTimeNewPass || firstTimeNewPass.length < 4) {
+      showToast("La nueva contraseña debe tener al menos 4 caracteres.", "error");
+      return;
+    }
+    if (firstTimeNewPass !== firstTimeConfirmPass) {
+      showToast("Las contraseñas no coinciden. Verifícalas.", "error");
+      return;
+    }
+
+    setDb((prev: any) => ({
+      ...prev,
+      clients: (prev.clients || []).map((c: any) => 
+        c.id === clientInfo.id 
+          ? { 
+              ...c, 
+              password: firstTimeNewPass, 
+              tempPassword: null, 
+              mustChangePassword: false, 
+              requirePasswordChangeOnFirstLogin: false 
+            } 
+          : c
+      )
+    }));
+
+    if (currentUser) {
+      currentUser.password = firstTimeNewPass;
+      currentUser.tempPassword = null;
+      currentUser.mustChangePassword = false;
+      currentUser.requirePasswordChangeOnFirstLogin = false;
+    }
+
+    setShowFirstTimePassModal(false);
+    showToast("🔒 ¡Contraseña privada guardada con éxito! Tu cuenta está protegida.", "success");
+  };
+
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     document.documentElement.scrollTop = 0;
@@ -2394,6 +2438,66 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                 Confirmar Cancelación
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* First-Time Password Change Modal */}
+      {showFirstTimePassModal && (
+        <div className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-slate-900 border-2 border-amber-400/50 rounded-[2.5rem] shadow-2xl w-full max-w-md p-6 sm:p-8 space-y-6 text-white text-center">
+            <div className="w-16 h-16 bg-amber-400/20 border border-amber-400/40 rounded-3xl flex items-center justify-center mx-auto text-amber-400 shadow-inner">
+              <Lock size={32} className="animate-pulse" />
+            </div>
+
+            <div className="space-y-1">
+              <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 bg-amber-400/10 px-3 py-0.5 rounded-full border border-amber-400/20 inline-block">
+                Seguridad de Cuenta Comercial
+              </span>
+              <h3 className="text-xl font-black text-white">
+                ¡Bienvenido a {clientInfo.company || "tu Negocio"}!
+              </h3>
+              <p className="text-xs text-slate-300">
+                Por motivos de seguridad, por favor define tu contraseña privada y personal para continuar administrando tu punto de venta.
+              </p>
+            </div>
+
+            <form onSubmit={handleSaveFirstTimePassword} className="space-y-4 text-left">
+              <div>
+                <label className="text-[11px] font-bold text-slate-300 block mb-1">
+                  Nueva Contraseña Privada:
+                </label>
+                <input
+                  type="password"
+                  required
+                  value={firstTimeNewPass}
+                  onChange={e => setFirstTimeNewPass(e.target.value)}
+                  placeholder="Mínimo 4 caracteres"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-amber-400 font-mono tracking-widest"
+                />
+              </div>
+
+              <div>
+                <label className="text-[11px] font-bold text-slate-300 block mb-1">
+                  Confirmar Contraseña:
+                </label>
+                <input
+                  type="password"
+                  required
+                  value={firstTimeConfirmPass}
+                  onChange={e => setFirstTimeConfirmPass(e.target.value)}
+                  placeholder="Repite tu contraseña"
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-amber-400 font-mono tracking-widest"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-2xl shadow-xl shadow-amber-500/30 transition-all cursor-pointer border-none flex items-center justify-center gap-2 active:scale-95"
+              >
+                <CheckCircle size={16} /> Establecer Contraseña y Entrar
+              </button>
+            </form>
           </div>
         </div>
       )}
