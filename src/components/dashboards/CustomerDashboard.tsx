@@ -52,6 +52,7 @@ import { PushCommandCenter } from "../PushCommandCenter";
 import { supabase } from "../../context/supabase";
 import { motion, AnimatePresence } from "framer-motion";
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 
 const LiveMap = dynamic(() => import("../LiveMap"), { ssr: false });
 
@@ -80,6 +81,7 @@ const KREATEK_COLORS = {
 // Toast Component
 
 export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
+  const router = useRouter();
   const { formatUSD, registerCandidate, showToast, markNotificationsAsRead, requestTopUp, claimFlowMaster } = useKFS() as any;
   const [subTab, setSubTab] = useState("profile"); // profile | jobs
   const [isTopUpOpen, setIsTopUpOpen] = useState(false);
@@ -242,7 +244,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
           </div>
           <div className="flex items-center gap-2">
               <button 
-                onClick={() => { window.location.href = "/rewards"; }} 
+                onClick={() => router.push("/rewards")} 
                 className="bg-amber-400 hover:bg-amber-300 text-slate-950 px-3.5 py-1.5 rounded-xl flex items-center gap-1.5 shadow-md border border-amber-300 font-black text-xs cursor-pointer transition-all hover:scale-105" 
                 title="App de Recompensas Nitro Points"
               >

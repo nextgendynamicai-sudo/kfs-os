@@ -2,6 +2,7 @@
 
 import React, { useState, useMemo } from "react";
 import { useKFS } from "../../context/KFSContext";
+import { useRouter } from "next/navigation";
 import { RewardTask, RewardSubmission, RewardCategory } from "../../types/rewards";
 import {
   Zap, Award, CheckCircle, Clock, XCircle, MapPin, QrCode, Upload,
@@ -12,6 +13,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export const AxisNitroRewardsApp: React.FC = () => {
   const { currentUser, db, submitRewardTaskProof, showToast, setView } = useKFS() as any;
+  const router = useRouter();
 
   // Active tab state
   const [activeTab, setActiveTab] = useState<"tasks" | "my_submissions" | "leaderboard" | "catalog">("tasks");
@@ -204,13 +206,7 @@ export const AxisNitroRewardsApp: React.FC = () => {
           </div>
 
           <button
-            onClick={() => {
-              if (typeof window !== "undefined" && window.history.length > 1) {
-                window.history.back();
-              } else {
-                window.location.href = "/";
-              }
-            }}
+            onClick={() => router.push('/')}
             className="p-2.5 rounded-2xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 transition-all border border-slate-700/50 cursor-pointer hover:scale-105 active:scale-95 shadow-md"
             title="Volver atrás"
           >
