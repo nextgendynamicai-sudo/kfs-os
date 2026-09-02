@@ -1,4 +1,4 @@
-import { supabase } from '../context/supabase';
+import { supabase, isSupabaseConfigured } from '../context/supabase';
 
 const cleanBase64 = (obj: any): any => {
   if (!obj) return obj;
@@ -18,210 +18,371 @@ const cleanBase64 = (obj: any): any => {
   return obj;
 };
 
-// Enterprise Phase 4: Sync Logic updated to map to strict Relational Schema
+// Enterprise Multi-Layer Relational Sync Engine
 export const syncToRelational = async (db: any) => {
-  if (!supabase) return;
+  if (!supabase || !isSupabaseConfigured) return;
   try {
-    // 1. Sync Clients
+    // 1. Sync Clients (Both tables for universal compatibility)
     if (db.clients && db.clients.length > 0) {
-      const clientsPayload = db.clients.map((c: any) => ({
+      const standardClients = db.clients.map((c: any) => ({
         id: c.id,
+        promotoraId: c.promotoraId || null,
         company: c.company || c.name || "KFS Business",
+        name: c.name || c.company || "KFS Business",
         email: c.email || `${c.id}@kfs.com`,
-        password_hash: c.password || "000",
+        phone: c.phone || "",
+        password: c.password || "000",
         address: c.address || "N/A",
         rating: c.rating || 5.0,
-        review_count: c.reviewCount || 0,
-        kfs_fee_percentage: c.kfsFeePercentage || 0.05,
+        reviewCount: c.reviewCount || 0,
+        kfsFeePercentage: c.kfsFeePercentage || 0.05,
         fee_tier: c.fee_tier || "5%",
         is_founder: !!c.is_founder,
-        kfs_fees_owed_usd: c.kfsFeesOwedUSD || 0,
-        is_onboarded: !!c.isOnboarded,
-        wallet_balance_usd: c.walletBalanceUSD || 0,
-        sales_usd: c.salesUSD || 0,
-        store_bio: c.storeSettings?.bioText || "",
-        store_theme_color: c.storeSettings?.themeColor || "",
-        store_typography: c.storeSettings?.typography || "",
-        store_layout_type: c.storeSettings?.layoutType || "",
-        store_profile_pic_url: c.storeSettings?.profilePicUrl || "",
-        created_at: new Date().toISOString()
+        kfsFeesOwedUSD: c.kfsFeesOwedUSD || 0,
+        isOnboarded: !!c.isOnboarded,
+        walletBalanceUSD: c.walletBalanceUSD || 0,
+        salesUSD: c.salesUSD || 0,
+        pendingPayoutUSD: c.pendingPayoutUSD || 0,
+        subscription: c.subscription || null,
+        storeSettings: c.storeSettings || {},
+        created_at: c.created_at || new Date().toISOString(),
+        raw_data: cleanBase64(c)
       }));
-      await supabase.from('kfs_clients').upsert(clientsPayload, { onConflict: 'id' });
+
+      await supabase.from('clients').upsert(standardClients, { onConflict: 'id' }).catch((e: any) => console.warn('[Supabase Sync] clients table upsert notice:', e.message));
+
+      const kfsClients = db.clients.map((c: any) => ({
+        id: c.id,
+        business_name: c.company || c.name || "KFS Business",
+        wallet_balance_usd: c.walletBalanceUSD || 0,
+        k_points_balance: c.k_points_balance || 0,
+        subscription: c.subscription || null,
+        raw_data: cleanBase64(c),
+        created_at: c.created_at || new Date().toISOString()
+      }));
+      await supabase.from('kfs_clients').upsert(kfsClients, { onConflict: 'id' }).catch(() => {});
     }
     
     // 2. Sync Customers
     if (db.customers && db.customers.length > 0) {
-      const customersPayload = db.customers.map((c: any) => ({
+      const standardCustomers = db.customers.map((c: any) => ({
+        id: c.id,
+        phone: c.phone || "",
+        name: c.name || "Cliente KFS",
+        email: c.email || `${c.id}@kfs.com`,
+        password: c.password || "000",
+        walletUSD: c.walletUSD || c.walletBalanceUSD || 0,
+        k_points_balance: c.kpointsBalance || c.k_points_balance || 0,
+        referralCode: c.referralCode || "",
+        referredBy: c.referredBy || "",
+        avatar: typeof c.avatar === 'string' && c.avatar.startsWith('data:') ? '[BASE64]' : (c.avatar || ""),
+        created_at: c.created_at || new Date().toISOString(),
+        raw_data: cleanBase64(c)
+      }));
+      await supabase.from('customers').upsert(standardCustomers, { onConflict: 'id' }).catch((e: any) => console.warn('[Supabase Sync] customers table upsert notice:', e.message));
+
+      const kfsCustomers = db.customers.map((c: any) => ({
         id: c.id,
         name: c.name || "Cliente KFS",
         email: c.email || `${c.id}@kfs.com`,
         phone: c.phone || "",
         referred_by: c.referredBy || "",
         kpoints_balance: c.kpointsBalance || c.k_points_balance || 0,
-        created_at: new Date().toISOString()
+        created_at: c.created_at || new Date().toISOString()
       }));
-      await supabase.from('kfs_customers').upsert(customersPayload, { onConflict: 'id' });
+      await supabase.from('kfs_customers').upsert(kfsCustomers, { onConflict: 'id' }).catch(() => {});
     }
 
     // 3. Sync Products
     if (db.products && db.products.length > 0) {
-      const productsPayload = db.products.map((p: any) => ({
+      const standardProducts = db.products.map((p: any) => ({
         id: p.id,
-        seller_id: p.clientId,
+        clientId: p.clientId || p.seller_id || "kfs-express",
         name: p.name || "Producto KFS",
-        price_usd: p.priceUSD || 0,
-        stock: p.stock || 0,
+        price: p.priceUSD || p.price || 0,
+        cost: p.costUSD || p.cost || 0,
+        stock: p.stock ?? 0,
+        category: p.category || "General",
+        barcode: p.barcode || "",
+        image: typeof p.image === 'string' && p.image.startsWith('data:') ? '[BASE64]' : (p.image || ""),
+        isDigital: !!p.isDigital,
+        isFeatured: !!p.isFeatured,
+        created_at: p.created_at || new Date().toISOString(),
+        raw_data: cleanBase64(p)
+      }));
+      await supabase.from('products').upsert(standardProducts, { onConflict: 'id' }).catch((e: any) => console.warn('[Supabase Sync] products table upsert notice:', e.message));
+
+      const kfsProducts = db.products.map((p: any) => ({
+        id: p.id,
+        seller_id: p.clientId || p.seller_id || "kfs-express",
+        name: p.name || "Producto KFS",
+        price_usd: p.priceUSD || p.price || 0,
+        stock: p.stock ?? 0,
         description: p.description || "",
         image: typeof p.image === 'string' && p.image.startsWith('data:') ? '[BASE64]' : (p.image || ""),
         category: p.category || "General",
-        cost_usd: p.costUSD || 0,
-        created_at: new Date().toISOString()
+        cost_usd: p.costUSD || p.cost || 0,
+        created_at: p.created_at || new Date().toISOString()
       }));
-      await supabase.from('kfs_products').upsert(productsPayload, { onConflict: 'id' });
+      await supabase.from('kfs_products').upsert(kfsProducts, { onConflict: 'id' }).catch(() => {});
     }
 
     // 4. Sync Promotoras
     if (db.promotoras && db.promotoras.length > 0) {
-      const promosPayload = db.promotoras.map((p: any) => ({
+      const standardPromos = db.promotoras.map((p: any) => ({
         id: p.id,
         name: p.name || "Promotora KFS",
         email: p.email || `${p.id}@kfs.com`,
-        pago_movil: p.pagoMovil || "",
-        binance_id: p.binanceId || "",
-        avatar: typeof p.avatar === 'string' && p.avatar.startsWith('data:') ? '[BASE64]' : (p.avatar || ""),
-        kyc_cedula: p.kycCedula || "",
-        kyc_address: p.kycAddress || "",
-        referred_by: p.referredBy || "",
-        earnings: p.passiveEarningsEUR || 0,
-        referrals_count: p.setups || 0,
-        created_at: new Date().toISOString()
+        phone: p.phone || "",
+        password: p.password || "000",
+        kycStatus: p.kycStatus || "approved",
+        kycCedula: p.kycCedula || "",
+        kycPhoto: typeof p.avatar === 'string' && p.avatar.startsWith('data:') ? '[BASE64]' : (p.avatar || ""),
+        passiveEarningsEUR: p.passiveEarningsEUR || p.earnings || 0,
+        pendingPayoutEUR: p.pendingPayoutEUR || 0,
+        created_at: p.created_at || new Date().toISOString(),
+        raw_data: cleanBase64(p)
       }));
-      await supabase.from('kfs_promotoras').upsert(promosPayload, { onConflict: 'id' });
+      await supabase.from('promotoras').upsert(standardPromos, { onConflict: 'id' }).catch((e: any) => console.warn('[Supabase Sync] promotoras table upsert notice:', e.message));
     }
 
     // 5. Sync Riders
     if (db.riders && db.riders.length > 0) {
-      const ridersPayload = db.riders.map((r: any) => ({
+      const standardRiders = db.riders.map((r: any) => ({
         id: r.id,
         name: r.name || "Rider KFS",
         email: r.email || `${r.id}@kfs.com`,
         phone: r.phone || "",
-        vehicle_type: r.vehicleType || "Moto",
-        cedula_img: r.kycCedula || "",
-        pago_movil_banco: r.pagoMovilBanco || "",
-        pago_movil_telefono: r.pagoMovilTelefono || "",
-        pago_movil_cedula: r.pagoMovilCedula || "",
-        referred_by: r.referredBy || "",
-        deliveries: r.deliveries || 0,
-        earnings: r.earningsUSD || 0,
-        kpoints_balance: r.kpointsBalance || 0,
-        created_at: new Date().toISOString()
+        password: r.password || "000",
+        vehicleType: r.vehicleType || "Moto",
+        status: r.status || "available",
+        walletBalanceUSD: r.earningsUSD || r.walletBalanceUSD || 0,
+        assignedToBusiness: r.assignedToBusiness || null,
+        currentLocation: r.currentLocation || null,
+        created_at: r.created_at || new Date().toISOString(),
+        raw_data: cleanBase64(r)
       }));
-      await supabase.from('kfs_riders').upsert(ridersPayload, { onConflict: 'id' });
+      await supabase.from('riders').upsert(standardRiders, { onConflict: 'id' }).catch((e: any) => console.warn('[Supabase Sync] riders table upsert notice:', e.message));
     }
 
     // 6. Sync Transactions
     if (db.transactions && db.transactions.length > 0) {
-      const txPayload = db.transactions.map((t: any) => ({
+      const standardTx = db.transactions.map((t: any) => ({
         id: t.id,
+        clientId: t.clientId || t.senderId || "System",
+        vendedorId: t.vendedorId || null,
+        customerId: t.customerId || null,
         type: t.type || "SALE",
-        amount_usd: t.amountUSD || t.amount || 0,
-        currency: t.currency || "USD",
+        amount: t.amountUSD || t.amount || 0,
+        paymentMethod: t.paymentMethod || t.currency || "USD",
         status: t.status || "COMPLETED",
-        sender_id: t.senderId || t.clientId || t.customerId || "System",
-        receiver_id: t.receiverId || t.clientId || "System",
-        metadata: cleanBase64(t),
-        created_at: t.date || new Date().toISOString()
+        timestamp: t.date || t.timestamp || new Date().toISOString(),
+        items: cleanBase64(t.items || []),
+        raw_data: cleanBase64(t)
       }));
-      await supabase.from('kfs_transactions').upsert(txPayload, { onConflict: 'id' });
+      await supabase.from('transactions').upsert(standardTx, { onConflict: 'id' }).catch((e: any) => console.warn('[Supabase Sync] transactions table upsert notice:', e.message));
     }
   } catch (error) {
-    console.warn("syncToRelational failed:", error);
+    console.warn("[Supabase Sync] syncToRelational general error:", error);
   }
 };
 
 export const syncSingleTransaction = async (t: any) => {
-  if (!supabase) return;
+  if (!supabase || !isSupabaseConfigured) return;
   try {
     const payload = {
       id: t.id,
+      clientId: t.clientId || t.senderId || "System",
+      vendedorId: t.vendedorId || null,
+      customerId: t.customerId || null,
       type: t.type || "SALE",
-      amount_usd: t.amountUSD || t.amount || 0,
-      currency: t.currency || "USD",
+      amount: t.amountUSD || t.amount || 0,
+      paymentMethod: t.paymentMethod || t.currency || "USD",
       status: t.status || "COMPLETED",
-      sender_id: t.senderId || t.clientId || t.customerId || "System",
-      receiver_id: t.receiverId || t.clientId || "System",
-      metadata: cleanBase64(t),
-      created_at: t.date || new Date().toISOString()
+      timestamp: t.date || t.timestamp || new Date().toISOString(),
+      items: cleanBase64(t.items || []),
+      raw_data: cleanBase64(t)
     };
-    await supabase.from('kfs_transactions').upsert(payload);
+    await supabase.from('transactions').upsert(payload, { onConflict: 'id' });
   } catch (err) {
-    console.warn("syncSingleTransaction bypass:", err);
+    console.warn("[Supabase Sync] syncSingleTransaction notice:", err);
   }
 };
 
 export const syncSingleClient = async (c: any) => {
-  if (!supabase) return;
+  if (!supabase || !isSupabaseConfigured) return;
   try {
     const payload = {
       id: c.id,
+      promotoraId: c.promotoraId || null,
       company: c.company || c.name || "KFS Business",
+      name: c.name || c.company || "KFS Business",
       email: c.email || `${c.id}@kfs.com`,
-      password_hash: c.password || "000",
+      phone: c.phone || "",
+      password: c.password || "000",
       address: c.address || "N/A",
       rating: c.rating || 5.0,
-      review_count: c.reviewCount || 0,
-      kfs_fee_percentage: c.kfsFeePercentage || 0.05,
+      reviewCount: c.reviewCount || 0,
+      kfsFeePercentage: c.kfsFeePercentage || 0.05,
       fee_tier: c.fee_tier || "5%",
       is_founder: !!c.is_founder,
-      kfs_fees_owed_usd: c.kfsFeesOwedUSD || 0,
-      is_onboarded: !!c.isOnboarded,
-      wallet_balance_usd: c.walletBalanceUSD || 0,
-      sales_usd: c.salesUSD || 0,
-      store_bio: c.storeSettings?.bioText || "",
-      created_at: new Date().toISOString()
+      kfsFeesOwedUSD: c.kfsFeesOwedUSD || 0,
+      isOnboarded: !!c.isOnboarded,
+      walletBalanceUSD: c.walletBalanceUSD || 0,
+      salesUSD: c.salesUSD || 0,
+      pendingPayoutUSD: c.pendingPayoutUSD || 0,
+      subscription: c.subscription || null,
+      storeSettings: c.storeSettings || {},
+      created_at: c.created_at || new Date().toISOString(),
+      raw_data: cleanBase64(c)
     };
-    await supabase.from('kfs_clients').upsert(payload);
+    await supabase.from('clients').upsert(payload, { onConflict: 'id' });
+
+    // Also sync to kfs_clients for multi-system compatibility
+    await supabase.from('kfs_clients').upsert({
+      id: c.id,
+      business_name: c.company || c.name || "KFS Business",
+      wallet_balance_usd: c.walletBalanceUSD || 0,
+      k_points_balance: c.k_points_balance || 0,
+      subscription: c.subscription || null,
+      raw_data: cleanBase64(c),
+      created_at: c.created_at || new Date().toISOString()
+    }, { onConflict: 'id' }).catch(() => {});
   } catch (err) {
-    console.warn("syncSingleClient bypass:", err);
+    console.warn("[Supabase Sync] syncSingleClient notice:", err);
   }
 };
 
 export const syncSingleCustomer = async (c: any) => {
-  if (!supabase) return;
+  if (!supabase || !isSupabaseConfigured) return;
   try {
     const payload = {
       id: c.id,
+      phone: c.phone || "",
       name: c.name || "Cliente KFS",
       email: c.email || `${c.id}@kfs.com`,
-      phone: c.phone || "",
-      referred_by: c.referredBy || "",
-      kpoints_balance: c.kpointsBalance || c.k_points_balance || 0,
-      created_at: new Date().toISOString()
+      password: c.password || "000",
+      walletUSD: c.walletUSD || c.walletBalanceUSD || 0,
+      k_points_balance: c.kpointsBalance || c.k_points_balance || 0,
+      referralCode: c.referralCode || "",
+      referredBy: c.referredBy || "",
+      avatar: typeof c.avatar === 'string' && c.avatar.startsWith('data:') ? '[BASE64]' : (c.avatar || ""),
+      created_at: c.created_at || new Date().toISOString(),
+      raw_data: cleanBase64(c)
     };
-    await supabase.from('kfs_customers').upsert(payload);
+    await supabase.from('customers').upsert(payload, { onConflict: 'id' });
   } catch (err) {
-    console.warn("syncSingleCustomer bypass:", err);
+    console.warn("[Supabase Sync] syncSingleCustomer notice:", err);
   }
 };
 
 export const syncSingleProduct = async (p: any) => {
-  if (!supabase) return;
+  if (!supabase || !isSupabaseConfigured) return;
   try {
     const payload = {
       id: p.id,
-      seller_id: p.clientId,
+      clientId: p.clientId || p.seller_id || "kfs-express",
       name: p.name || "Producto KFS",
-      price_usd: p.priceUSD || 0,
-      stock: p.stock || 0,
+      price: p.priceUSD || p.price || 0,
+      cost: p.costUSD || p.cost || 0,
+      stock: p.stock ?? 0,
+      category: p.category || "General",
+      barcode: p.barcode || "",
+      image: typeof p.image === 'string' && p.image.startsWith('data:') ? '[BASE64]' : (p.image || ""),
+      isDigital: !!p.isDigital,
+      isFeatured: !!p.isFeatured,
+      created_at: p.created_at || new Date().toISOString(),
+      raw_data: cleanBase64(p)
+    };
+    await supabase.from('products').upsert(payload, { onConflict: 'id' });
+
+    // Also sync to kfs_products
+    await supabase.from('kfs_products').upsert({
+      id: p.id,
+      seller_id: p.clientId || p.seller_id || "kfs-express",
+      name: p.name || "Producto KFS",
+      price_usd: p.priceUSD || p.price || 0,
+      stock: p.stock ?? 0,
       description: p.description || "",
       image: typeof p.image === 'string' && p.image.startsWith('data:') ? '[BASE64]' : (p.image || ""),
       category: p.category || "General",
-      cost_usd: p.costUSD || 0,
-      created_at: new Date().toISOString()
-    };
-    await supabase.from('kfs_products').upsert(payload);
+      cost_usd: p.costUSD || p.cost || 0,
+      created_at: p.created_at || new Date().toISOString()
+    }, { onConflict: 'id' }).catch(() => {});
   } catch (err) {
-    console.warn("syncSingleProduct bypass:", err);
+    console.warn("[Supabase Sync] syncSingleProduct notice:", err);
+  }
+};
+
+export const syncSinglePromotora = async (p: any) => {
+  if (!supabase || !isSupabaseConfigured) return;
+  try {
+    const payload = {
+      id: p.id,
+      name: p.name || "Promotora KFS",
+      email: p.email || `${p.id}@kfs.com`,
+      phone: p.phone || "",
+      password: p.password || "000",
+      kycStatus: p.kycStatus || "approved",
+      kycCedula: p.kycCedula || "",
+      kycPhoto: typeof p.avatar === 'string' && p.avatar.startsWith('data:') ? '[BASE64]' : (p.avatar || ""),
+      passiveEarningsEUR: p.passiveEarningsEUR || p.earnings || 0,
+      pendingPayoutEUR: p.pendingPayoutEUR || 0,
+      created_at: p.created_at || new Date().toISOString(),
+      raw_data: cleanBase64(p)
+    };
+    await supabase.from('promotoras').upsert(payload, { onConflict: 'id' });
+  } catch (err) {
+    console.warn("[Supabase Sync] syncSinglePromotora notice:", err);
+  }
+};
+
+export const syncSingleRider = async (r: any) => {
+  if (!supabase || !isSupabaseConfigured) return;
+  try {
+    const payload = {
+      id: r.id,
+      name: r.name || "Rider KFS",
+      email: r.email || `${r.id}@kfs.com`,
+      phone: r.phone || "",
+      password: r.password || "000",
+      vehicleType: r.vehicleType || "Moto",
+      status: r.status || "available",
+      walletBalanceUSD: r.earningsUSD || r.walletBalanceUSD || 0,
+      assignedToBusiness: r.assignedToBusiness || null,
+      currentLocation: r.currentLocation || null,
+      created_at: r.created_at || new Date().toISOString(),
+      raw_data: cleanBase64(r)
+    };
+    await supabase.from('riders').upsert(payload, { onConflict: 'id' });
+  } catch (err) {
+    console.warn("[Supabase Sync] syncSingleRider notice:", err);
+  }
+};
+
+export const forceDirectCloudSync = async (database: any) => {
+  if (!supabase || !isSupabaseConfigured || !database) return;
+  const syncId = "kfs-general-db-prod";
+  try {
+    const compressed = {
+      ...database,
+      transactions: database.transactions?.slice(-50) || [],
+      auditLogs: database.auditLogs?.slice(-50) || [],
+      zReports: database.zReports?.slice(-50) || [],
+      ghostLogs: database.ghostLogs?.slice(-50) || [],
+      orders: database.orders?.slice(-50) || [],
+      expenses: database.expenses?.slice(-50) || []
+    };
+    
+    await supabase.from('kfs_store_states').upsert({
+      id: syncId,
+      db_state: compressed,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'id' });
+
+    // Also trigger relational sync in background
+    syncToRelational(database);
+  } catch (err) {
+    console.warn("[Supabase Sync] forceDirectCloudSync error:", err);
   }
 };

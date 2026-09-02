@@ -43,7 +43,7 @@ export const PayoutModal = ({ maxAmount, currency, onConfirm, onCancel, formatMo
           </div>
           <div>
             <h3 className="text-2xl font-black text-violet-950">Solicitar Retiro</h3>
-            <p className="text-xs text-violet-600 font-bold tracking-widest uppercase font-mono">Liquidación de Fondos</p>
+            <p className="text-xs text-violet-600 font-bold tracking-widest uppercase font-mono">Liquidación Comercial de Ventas</p>
           </div>
         </div>
 

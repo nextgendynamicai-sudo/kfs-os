@@ -27,7 +27,8 @@ export async function POST(req: Request) {
     }
 
     if (!supabase) {
-      const payoutId = `payout_${Date.now()}`;
+      // In local/mock mode without Supabase, acknowledge success with ledger compliance
+      const payoutId = `vault_payout_${Date.now()}`;
       return NextResponse.json({
         success: true,
         payoutId,
@@ -92,7 +93,7 @@ export async function POST(req: Request) {
         return NextResponse.json({ error: 'Fondos insuficientes o usuario no encontrado' }, { status: 400 });
       }
 
-      payoutId = `payout_${Date.now()}`;
+      payoutId = `vault_payout_${Date.now()}`;
       const newPayout = {
         id: payoutId,
         userId,
@@ -145,7 +146,7 @@ export async function POST(req: Request) {
       if (!updateError && updateData && updateData.length > 0) {
         writeSuccess = true;
       } else {
-        console.warn(`[Collision Detectado] Intento ${attempts}/${maxAttempts} para payout de ${userId}. Reintentando...`);
+        console.warn(`[Collision Detectado] Intento ${attempts}/${maxAttempts} para vault payout de ${userId}. Reintentando...`);
         await new Promise(r => setTimeout(r, 50 + Math.floor(Math.random() * 100)));
       }
     }

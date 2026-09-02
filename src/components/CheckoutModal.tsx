@@ -144,9 +144,12 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
   const iva = applyIva ? priceAfterCoupon * 0.16 : 0;
   const igtf = isForeign ? (priceAfterCoupon + iva) * 0.03 : 0;
   
-  // Calcular descuento por {KFS_BRAND.economy.currency} (100 puntos = $0.10 -> 1 punto = $0.001)
-  const discountUSD = kPointsToBurn * 0.001;
-  const total = Math.max(0, priceAfterCoupon + iva + igtf - discountUSD);
+  // SUDEBAN & Tokenomics Invariant: Points can only subsidize up to max 50% of order value (1000 points = $1.00 USD)
+  const orderGross = priceAfterCoupon + iva + igtf;
+  const maxOrderPointsAllowed = Math.floor((orderGross * 0.5) / 0.001);
+  const effectiveKPointsToBurn = Math.min(kPointsToBurn, maxOrderPointsAllowed);
+  const discountUSD = effectiveKPointsToBurn * 0.001;
+  const total = Math.max(orderGross * 0.5, orderGross - discountUSD);
   
   const totalBs = total * (rates?.USD || 36.45);
   const resolvedStoreOwner = storeOwner || db.clients?.find((c: any) => c.id === product?.clientId);
@@ -499,20 +502,20 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
             {availableKPoints > 0 && product.allowKPoints !== false && (
               <div className="bg-purple-50 p-4 rounded-xl border border-purple-200 space-y-2 animate-fade-in">
                 <label className="text-[10px] font-black text-purple-900 uppercase tracking-widest flex justify-between">
-                  <span>Quemar {KFS_BRAND.economy.currency} Disponibles</span>
-                  <span>Max: {availableKPoints}</span>
+                  <span>Quemar {KFS_BRAND.economy.currency} Disponibles (Máx 50%)</span>
+                  <span>Límite: {Math.min(availableKPoints, maxOrderPointsAllowed)}</span>
                 </label>
                 <input 
                   type="range" 
                   min="0" 
-                  max={Math.min(availableKPoints, (price + iva + igtf) / 0.001)} 
+                  max={Math.min(availableKPoints, maxOrderPointsAllowed)} 
                   step="10" 
-                  value={kPointsToBurn} 
-                  onChange={(e) => setKPointsToBurn(parseInt(e.target.value) || 0)}
+                  value={effectiveKPointsToBurn} 
+                  onChange={(e) => setKPointsToBurn(Math.min(parseInt(e.target.value) || 0, maxOrderPointsAllowed))}
                   className="w-full accent-purple-600"
                 />
                 <div className="flex justify-between text-xs font-bold text-purple-800">
-                  <span>{kPointsToBurn} {KFS_BRAND.economy.currency}</span>
+                  <span>{effectiveKPointsToBurn} {KFS_BRAND.economy.currency}</span>
                   <span>Descuento: -${discountUSD.toFixed(2)}</span>
                 </div>
               </div>

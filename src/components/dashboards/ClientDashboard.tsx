@@ -20,6 +20,8 @@ import { StorefrontCustomizer } from "../StorefrontCustomizer";
 import { OnboardingWizard } from "../OnboardingWizard";
 import { RecruitmentWidget } from "../RecruitmentWidget";
 import { ScannerView } from "../ScannerView";
+import { LowStockAlertsWidget } from "../LowStockAlertsWidget";
+import { ComboBuilderModal } from "../ComboBuilderModal";
 
 import React, { useState, useEffect, useRef } from "react";
 import {
@@ -96,6 +98,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
   const [showPayrollModal, setShowPayrollModal] = useState<any>(null); // Holds vendedor obj
   const [payrollBaseSalary, setPayrollBaseSalary] = useState("");
   const [searchVendedor, setSearchVendedor] = useState("");
+  const [showComboModal, setShowComboModal] = useState(false);
 
   const [newProd, setNewProd] = useState({ name: "", price: "", cost: "", stock: "", imgUrl: "", category: "Alimentos", barcode: "", description: "" });
   const [isFetchingBarcode, setIsFetchingBarcode] = useState(false);
@@ -109,8 +112,10 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
   const [ticketMsg, setTicketMsg] = useState("");
   const [fundAmount, setFundAmount] = useState("");
   const [isTopUpOpen, setIsTopUpOpen] = useState(false);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
   const [payValeModal, setPayValeModal] = useState<{ vale: any; amount: string } | null>(null);
-  const { setView, editProduct, createTicket, fundWallet, processMonthlyBilling, createVale, payVale, processPayroll, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating, registerPosTerminal, deletePosTerminal, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, toggleBusinessOpen, updateBusinessConfig, createCoupon, deleteCoupon, toggleCouponActive } = useKFS() as any;
+  const { setView, editProduct, createTicket, fundWallet, processMonthlyBilling, requestSubscriptionCancellation, createVale, payVale, processPayroll, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating, registerPosTerminal, deletePosTerminal, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, toggleBusinessOpen, updateBusinessConfig, createCoupon, deleteCoupon, toggleCouponActive } = useKFS() as any;
   const [deliveryRadiusKm, setDeliveryRadiusKm] = useState(clientInfo?.deliveryRadiusKm || 5);
 
   useEffect(() => {
@@ -626,6 +631,13 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                 <span className="font-black text-lg text-violet-950">Subir Producto</span>
               </button>
 
+              <button onClick={() => setShowComboModal(true)} className="bg-gradient-to-br from-amber-500 to-rose-500 text-white p-8 rounded-[2rem] shadow-xl shadow-amber-500/30 hover:shadow-2xl hover:shadow-amber-500/40 flex flex-col items-center justify-center gap-5 transition-all cursor-pointer border-none">
+                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                  <Gift size={32} className="text-white" />
+                </div>
+                <span className="font-black text-lg text-white">🎁 Crear Combo / Pack</span>
+              </button>
+
               <div className="bg-white border border-violet-100 p-8 rounded-[2rem] shadow-xl shadow-violet-200/50 hover:shadow-2xl hover:shadow-violet-300/50 flex flex-col items-center justify-center gap-5 transition-all relative overflow-hidden">
                 <input type="file" accept=".csv" ref={fileInputRef} onChange={handleCSVUpload} className="hidden" />
                 <div className="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center border border-emerald-200">
@@ -644,6 +656,11 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
             </>
           )}
         </div>
+
+        {/* ALERTA DE STOCK CRÍTICO */}
+        {(activeTab === 'inventario' || activeTab === 'resumen') && (
+          <LowStockAlertsWidget products={myProducts} />
+        )}
 
         {activeTab === 'resumen' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
@@ -699,31 +716,93 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
             </div>
         )}
 
-        {activeTab === 'resumen' && (
-            <UniversalWalletWidget currentUser={clientInfo} formatUSD={formatUSD}>
-              <div className="flex flex-col gap-4 mt-2">
-                <p className="text-xs text-gray-400 mb-2">Suscripción SaaS Activa: $6/mes. Próximo cobro: {new Date(clientInfo.subscription?.nextBillingDate).toLocaleDateString()}</p>
-                <div className="flex gap-2">
-                  <input type="number" placeholder="Monto $USD" value={fundAmount} onChange={e => setFundAmount(e.target.value)} className="w-1/2 bg-white/5 border border-white/10 rounded-xl px-4 py-2 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white placeholder:text-gray-500" />
-                  <button onClick={() => { if (fundAmount) { setIsTopUpOpen(true); } }} className="w-1/2 bg-emerald-500 text-white font-black rounded-xl cursor-pointer hover:scale-105 shadow-[0_5px_15px_rgba(16,185,129,0.3)] transition-transform border-none text-xs">Recargar Saldo</button>
-                  <TopUpModal
-                    isOpen={isTopUpOpen}
-                    onClose={() => setIsTopUpOpen(false)}
-                    amount={fundAmount}
-                    setAmount={setFundAmount}
-                    onSubmit={(amount: number, ref: string, img: string) => {
-                      requestTopUp(currentUser.id, 'client', amount, ref, img);
-                    }}
-                    userType="client"
-                  />
+        {activeTab === 'resumen' && (() => {
+          const sub = clientInfo.subscription || {};
+          const startDate = sub.contract_start_date || clientInfo.createdAt || clientInfo.created_at;
+          const isWithin7Days = sub.is_trial_active ?? (startDate ? Date.now() <= new Date(startDate).getTime() + 7 * 24 * 60 * 60 * 1000 : false);
+          const isCancellationPending = !!sub.cancellation_pending;
+          const monthlyFee = sub.monthly_fee_usd || 100.00;
+          const contractDays = sub.contract_duration_days || 90;
+          const billingDay = sub.billing_day_of_month || 5;
+
+          return (
+            <div className="space-y-6">
+              <UniversalWalletWidget currentUser={clientInfo} formatUSD={formatUSD}>
+                <div className="flex flex-col gap-4 mt-2">
+                  {/* Commercial Contract Banner */}
+                  <div className="bg-slate-900 text-white p-4 rounded-2xl border border-violet-800/40 space-y-3">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-black uppercase px-2.5 py-0.5 bg-violet-600/30 text-violet-300 border border-violet-500/30 rounded-full">
+                          Contrato Comercial B2B (${monthlyFee} USD/Mes)
+                        </span>
+                        <span className="text-[10px] font-black text-slate-400 font-mono">
+                          Duración: {contractDays} Días
+                        </span>
+                      </div>
+                      <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                        Cobro: Días 1 al {billingDay} de cada mes
+                      </span>
+                    </div>
+
+                    {/* 7-Day Guarantee Window Banner */}
+                    {isWithin7Days && !isCancellationPending && (
+                      <div className="bg-gradient-to-r from-violet-950/80 to-indigo-950/80 border border-violet-700/50 p-3 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                        <div>
+                          <p className="text-xs font-bold text-violet-200 flex items-center gap-1.5">
+                            🛡️ Ventana de Garantía Activa (7 Días Continuos)
+                          </p>
+                          <p className="text-[10px] text-slate-400 mt-0.5">
+                            Cláusula Tercera: Puedes solicitar cancelación con reembolso íntegro de $100 USD sin pérdida de registros.
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => setShowCancelModal(true)}
+                          className="bg-rose-600 hover:bg-rose-500 text-white text-[11px] font-black px-4 py-2 rounded-xl transition-colors cursor-pointer border-none shrink-0 shadow-md shadow-rose-600/30"
+                        >
+                          Solicitar Cancelación en Garantía
+                        </button>
+                      </div>
+                    )}
+
+                    {isCancellationPending && (
+                      <div className="bg-rose-950/50 border border-rose-600/50 p-3 rounded-xl flex items-center gap-3">
+                        <span className="text-xl">⏳</span>
+                        <div>
+                          <p className="text-xs font-bold text-rose-300">
+                            Solicitud de Garantía Enviada (TAG: REEMBOLSO_GARANTIZADO_100_USD)
+                          </p>
+                          <p className="text-[10px] text-rose-200/70">
+                            Ticket de conciliación prioritario en revisión por KFS Central. Tu base de datos y operaciones continúan protegidas.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="flex gap-2">
+                    <input type="number" placeholder="Monto $USD" value={fundAmount} onChange={e => setFundAmount(e.target.value)} className="w-1/2 bg-white/5 border border-white/10 rounded-xl px-4 py-2 font-bold focus:outline-none focus:ring-2 focus:ring-emerald-500 text-white placeholder:text-gray-500" />
+                    <button onClick={() => { if (fundAmount) { setIsTopUpOpen(true); } }} className="w-1/2 bg-emerald-500 text-white font-black rounded-xl cursor-pointer hover:scale-105 shadow-[0_5px_15px_rgba(16,185,129,0.3)] transition-transform border-none text-xs">Recargar Saldo</button>
+                    <TopUpModal
+                      isOpen={isTopUpOpen}
+                      onClose={() => setIsTopUpOpen(false)}
+                      amount={fundAmount}
+                      setAmount={setFundAmount}
+                      onSubmit={(amount: number, ref: string, img: string) => {
+                        requestTopUp(currentUser.id, 'client', amount, ref, img);
+                      }}
+                      userType="client"
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <button onClick={() => setShowPayoutModal(true)} className="w-1/2 bg-white/10 text-white font-black py-2 rounded-xl cursor-pointer hover:bg-white/20 transition-colors border border-white/10 text-xs">Retirar Fondos (Liquidación B2B)</button>
+                    <button onClick={() => processMonthlyBilling(currentUser.id)} className="w-1/2 bg-red-500/20 text-red-400 font-bold py-2 rounded-xl border border-red-500/30 text-[10px] cursor-pointer hover:bg-red-500/30">Simular Cobro Mensual ($100)</button>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <button onClick={() => setShowPayoutModal(true)} className="w-1/2 bg-white/10 text-white font-black py-2 rounded-xl cursor-pointer hover:bg-white/20 transition-colors border border-white/10 text-xs">Retirar Fondos</button>
-                  <button onClick={() => processMonthlyBilling(currentUser.id)} className="w-1/2 bg-red-500/20 text-red-400 font-bold py-2 rounded-xl border border-red-500/30 text-[10px] cursor-pointer hover:bg-red-500/30">Simular Cobro</button>
-                </div>
-              </div>
-            </UniversalWalletWidget>
-        )}
+              </UniversalWalletWidget>
+            </div>
+          );
+        })()}
 
         {activeTab === 'personal' && (
           <div className="bg-white p-6 md:p-8 rounded-[2rem] shadow-xl shadow-violet-200/50 border border-violet-100 w-full">
@@ -2257,6 +2336,62 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                 className="flex-1 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-black text-sm shadow-lg shadow-emerald-500/30 transition-all cursor-pointer"
               >
                 ✓ Confirmar Abono
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal Creador de Combos y Paquetes */}
+      <ComboBuilderModal
+        isOpen={showComboModal}
+        onClose={() => setShowComboModal(false)}
+        clientId={currentUser?.id}
+      />
+
+      {/* Modal Solicitud de Garantía y Reembolso (7 Días) */}
+      {showCancelModal && (
+        <div className="fixed inset-0 z-[99999] bg-violet-950/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-md w-full border border-violet-100 shadow-2xl space-y-4">
+            <div className="flex justify-between items-center border-b border-gray-100 pb-3">
+              <h3 className="text-lg font-black text-rose-900 flex items-center gap-2">
+                🛡️ Garantía de 7 Días ($100 USD)
+              </h3>
+              <button onClick={() => setShowCancelModal(false)} className="text-gray-400 hover:text-gray-600 border-none bg-transparent cursor-pointer">
+                <X size={20} />
+              </button>
+            </div>
+            <p className="text-xs text-slate-600 leading-relaxed">
+              De acuerdo con la <strong>Cláusula Tercera</strong> del contrato comercial, si solicitas la cancelación dentro de los primeros 7 días continuos, se emitirá un reembolso garantizado de <strong>$100 USD</strong>.
+            </p>
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-3 text-[11px] text-amber-800 font-semibold">
+              ✓ Todos tus registros históricos de ventas, transacciones y productos permanecerán intactos y respaldados en Axis OS.
+            </div>
+            <div>
+              <label className="text-xs font-bold text-gray-500 block mb-1">Motivo de Cancelación (Opcional):</label>
+              <textarea
+                value={cancelReason}
+                onChange={(e) => setCancelReason(e.target.value)}
+                placeholder="Indícanos el motivo de tu solicitud..."
+                className="w-full bg-violet-50 border border-violet-100 rounded-xl p-3 text-xs text-violet-950 focus:outline-none focus:ring-1 focus:ring-violet-500 font-sans"
+                rows={3}
+              />
+            </div>
+            <div className="flex gap-2 pt-2">
+              <button
+                onClick={() => setShowCancelModal(false)}
+                className="w-1/2 py-2.5 rounded-xl border border-gray-200 text-xs font-bold text-gray-600 hover:bg-gray-50 cursor-pointer"
+              >
+                Volver
+              </button>
+              <button
+                onClick={() => {
+                  requestSubscriptionCancellation(clientInfo.id, cancelReason);
+                  setShowCancelModal(false);
+                }}
+                className="w-1/2 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-black transition-colors cursor-pointer shadow-md shadow-rose-600/30 border-none"
+              >
+                Confirmar Cancelación
               </button>
             </div>
           </div>

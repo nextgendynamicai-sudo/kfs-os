@@ -4,13 +4,32 @@ import { KFS_BRAND } from "../config/brandConfig";
 import React, { useState, useEffect } from "react";
 import { BellRing, Smartphone, ShieldAlert } from "lucide-react";
 
-export function AppEnforcer({ children, currentUser, updatePwaStatus }: { children: React.ReactNode, currentUser?: any, updatePwaStatus?: (status: boolean) => void }) {
+import { useKFS } from "../context/KFSContext";
+import { Lock, KeyRound, ArrowRight } from "lucide-react";
+
+export function AppEnforcer({ children, currentUser: propsUser, updatePwaStatus }: { children: React.ReactNode, currentUser?: any, updatePwaStatus?: (status: boolean) => void }) {
+  const kfsContext = useKFS() as any;
+  const currentUser = propsUser || kfsContext?.currentUser;
+  const db = kfsContext?.db;
+
   const [isStandalone, setIsStandalone] = useState(true);
   const [hasPermissions, setHasPermissions] = useState(true);
   const [isChecking, setIsChecking] = useState(true);
+  const [masterBypassed, setMasterBypassed] = useState(false);
+  const [bypassPin, setBypassPin] = useState("");
+  const [bypassError, setBypassError] = useState("");
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    // Check URL or storage for Master Architect god mode bypass
+    const hash = window.location.hash || "";
+    const search = window.location.search || "";
+    const storedBypass = sessionStorage.getItem("kfs_master_bypass") === "true";
+
+    if (hash.includes("mode=god#core") || search.includes("mode=god") || search.includes("bypass=199521") || storedBypass) {
+      setMasterBypassed(true);
+    }
 
     const checkStatus = () => {
       const isIosStandalone = (window.navigator as any).standalone === true;
@@ -54,88 +73,132 @@ export function AppEnforcer({ children, currentUser, updatePwaStatus }: { childr
   };
 
   // Cloud Bypass Logic
-  // Si está en PWA, dejamos pasar e informamos a la nube que la instaló (si no estaba marcada).
   useEffect(() => {
     if (!isChecking && isStandalone && hasPermissions && currentUser && !currentUser.pwaInstalled && updatePwaStatus) {
       updatePwaStatus(true);
     }
   }, [isChecking, isStandalone, hasPermissions, currentUser, updatePwaStatus]);
 
+  const handleUnlockPin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (bypassPin.trim() === "199521") {
+      setMasterBypassed(true);
+      sessionStorage.setItem("kfs_master_bypass", "true");
+      setBypassError("");
+    } else {
+      setBypassError("Código de Arquitecto Core inválido.");
+    }
+  };
+
   if (isChecking) return null;
 
-  const showPwaWarning = !isStandalone && !currentUser?.pwaInstalled;
-  const showNotificationWarning = !hasPermissions;
+  // Master Admin & Architect Roles always bypass suspension
+  const isMasterRole = currentUser?.role === "kreatekCore" || currentUser?.role === "core" || currentUser?.name === "Ivory21" || currentUser?.name === "gaby21" || currentUser?.name === "valle21.";
 
-  // Disabled for automated testing
-  if (true) {
-    return <>{children}</>;
+  // Commercial Subscription Enforcement Check
+  let isCommerceSuspended = false;
+  if (!masterBypassed && !isMasterRole && currentUser && db) {
+    const isCommerceRole = currentUser.role === "dueño" || currentUser.role === "client" || currentUser.role === "comercio";
+    const isSellerRole = currentUser.role === "vendedor";
+
+    let targetClient: any = null;
+    if (isCommerceRole) {
+      targetClient = (db.clients || []).find((c: any) => c.id === currentUser.id) || currentUser;
+    } else if (isSellerRole) {
+      targetClient = (db.clients || []).find((c: any) => c.id === currentUser.clientId);
+    }
+
+    if (targetClient && targetClient.subscription) {
+      const sub = targetClient.subscription;
+      const currentDay = new Date().getDate();
+      
+      // Check 7-day guarantee window / trial
+      const createdAt = sub.contract_start_date || targetClient.createdAt || targetClient.created_at;
+      const isTrial = sub.is_trial_active ?? (createdAt ? Date.now() <= new Date(createdAt).getTime() + 7 * 24 * 60 * 60 * 1000 : false);
+      
+      const paymentStatus = sub.payment_status || (sub.status === "active" ? "settled" : "pending");
+      
+      // If current date > day 5 of billing cycle and payment is not settled and trial is not active
+      if (!isTrial && currentDay > 5 && paymentStatus !== "settled") {
+        isCommerceSuspended = true;
+      }
+      
+      // Explicit past due flag
+      if (sub.status === "past_due" && !isTrial) {
+        isCommerceSuspended = true;
+      }
+    }
   }
 
-  return (
-    <div className="min-h-screen bg-[#EEF2F5] flex flex-col items-center justify-center p-6 font-sans">
-      <div className="max-w-md w-full bg-[#EEF2F5] shadow-[10px_10px_20px_#d1d9e6,-10px_-10px_20px_#ffffff] border-none rounded-[2.5rem] p-8 text-center space-y-8 animate-fade-in">
-        <div className="w-24 h-24 bg-violet-100 rounded-full flex items-center justify-center mx-auto shadow-inner border border-violet-200">
-          <ShieldAlert size={40} className="text-violet-600" />
-        </div>
-        
-        <div>
-          <h2 className="text-2xl font-black text-violet-900 mb-3">Acceso Restringido</h2>
-          <p className="text-sm text-gray-500 leading-relaxed">
-            Por protocolos de seguridad, para operar en la nube web primero debes haber completado los requisitos del sistema en tu dispositivo principal.
-          </p>
-        </div>
+  // Render Suspension Screen if suspended
+  if (isCommerceSuspended) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex flex-col items-center justify-center p-6 font-sans relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-red-600/10 rounded-full blur-[100px] pointer-events-none -z-10"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-violet-600/10 rounded-full blur-[100px] pointer-events-none -z-10"></div>
 
-        <div className="space-y-4">
-          {showPwaWarning && (
-            <div className="bg-white rounded-2xl p-4 flex items-center justify-between shadow-sm border border-gray-100">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-amber-100 text-amber-600 rounded-xl">
-                  <Smartphone size={20} />
-                </div>
-                <div className="text-left">
-                  <p className="font-bold text-sm text-violet-900">App No Instalada</p>
-                  <p className="text-[10px] text-gray-400">Añade {KFS_BRAND.productAcronym} a tu pantalla de inicio</p>
-                </div>
-              </div>
-              <button 
-                onClick={() => alert("Toca el menú de tu navegador y selecciona 'Añadir a la pantalla de inicio' o 'Instalar aplicación'")}
-                className="text-xs bg-[#EEF2F5] shadow-[inset_2px_2px_5px_#d1d9e6,inset_-2px_-2px_5px_#ffffff] text-violet-600 px-4 py-2 rounded-xl font-bold cursor-pointer"
+        <div className="max-w-lg w-full bg-slate-900/90 backdrop-blur-xl border border-red-500/30 rounded-[2.5rem] p-8 md:p-10 text-center space-y-6 shadow-[0_25px_60px_rgba(0,0,0,0.8)] animate-fade-in">
+          <div className="w-20 h-20 bg-red-500/10 border border-red-500/30 rounded-3xl flex items-center justify-center mx-auto text-red-500 shadow-inner">
+            <Lock size={36} className="animate-pulse" />
+          </div>
+
+          <div className="space-y-2">
+            <span className="text-[10px] font-black uppercase tracking-widest text-red-400 bg-red-950/60 border border-red-800/60 px-3 py-1 rounded-full inline-block">
+              Control de Acceso Operativo
+            </span>
+            <h2 className="text-2xl font-black tracking-tight text-white">Acceso Suspendido</h2>
+          </div>
+
+          <div className="bg-red-950/30 border border-red-900/50 rounded-2xl p-5 text-slate-200 text-sm leading-relaxed text-left space-y-3">
+            <p className="font-semibold text-red-200">
+              Acceso suspendido temporalmente por conciliación de cuota mensual de mantenimiento ($100 USD). Comuníquese con Kreatek Central para reactivación inmediata.
+            </p>
+            <div className="text-[11px] text-slate-400 font-mono pt-2 border-t border-red-900/40 flex justify-between items-center">
+              <span>Ciclo de cobro: Días 1 al 5</span>
+              <span className="text-red-400 font-bold">Estado: Pendiente</span>
+            </div>
+          </div>
+
+          {/* Master Architect Bypass Input */}
+          <form onSubmit={handleUnlockPin} className="space-y-3 pt-2">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 block text-left flex items-center gap-1.5">
+              <KeyRound size={12} className="text-violet-400" /> Desbloqueo Maestro (Arquitecto Core / Supervisor)
+            </label>
+            <div className="flex gap-2">
+              <input
+                type="password"
+                maxLength={8}
+                placeholder="Código de Arquitecto (199521)"
+                value={bypassPin}
+                onChange={(e) => setBypassPin(e.target.value)}
+                className="flex-1 bg-black/50 border border-violet-900/50 rounded-xl px-4 py-3 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-violet-500 font-mono tracking-widest"
+              />
+              <button
+                type="submit"
+                className="bg-violet-600 hover:bg-violet-500 text-white px-5 rounded-xl font-black text-xs transition-colors cursor-pointer flex items-center gap-1 border-none shadow-md shadow-violet-600/30"
               >
-                Guía
+                <span>Acceder</span>
+                <ArrowRight size={14} />
               </button>
             </div>
-          )}
+            {bypassError && <p className="text-xs text-red-400 text-left font-bold">{bypassError}</p>}
+          </form>
 
-          {!hasPermissions && (
-            <div className="bg-white rounded-2xl p-4 flex items-center justify-between shadow-sm border border-gray-100">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-red-100 text-red-600 rounded-xl">
-                  <BellRing size={20} />
-                </div>
-                <div className="text-left">
-                  <p className="font-bold text-sm text-violet-900">Notificaciones Off</p>
-                  <p className="text-[10px] text-gray-400">Requeridas para operar caja</p>
-                </div>
-              </div>
-              <button 
-                onClick={requestNotificationPermission}
-                className="text-xs bg-violet-600 shadow-[0_5px_15px_rgba(139,92,246,0.2)] text-white px-4 py-2 rounded-xl font-bold cursor-pointer hover:bg-violet-700 transition-colors"
-              >
-                Activar
-              </button>
-            </div>
-          )}
-        </div>
-
-        <div className="pt-4 border-t border-gray-200">
-          <button 
-            onClick={() => window.location.reload()}
-            className="text-[10px] text-gray-400 underline hover:text-violet-600 cursor-pointer border-none bg-transparent"
-          >
-            Refrescar página una vez completado
-          </button>
+          <div className="pt-4 border-t border-slate-800 flex justify-between items-center text-xs">
+            <span className="text-slate-500 text-[10px]">KFS OS Enterprise Security</span>
+            <a
+              href="https://wa.me/584141234567?text=Hola,%20requiero%20asistencia%20con%20la%20conciliación%20de%20mantenimiento%20KFS%20OS."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-violet-400 hover:text-violet-300 font-bold underline"
+            >
+              Contactar Soporte Central
+            </a>
+          </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  return <>{children}</>;
 }

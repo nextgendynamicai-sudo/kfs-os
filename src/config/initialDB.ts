@@ -19,6 +19,18 @@ export const initialDB = {
       isOnboarded: true,
       walletBalanceUSD: 0,
       salesUSD: 0,
+      subscription: {
+        plan_type: 'contract_b2b_chacao',
+        monthly_fee_usd: 100.00,
+        contract_duration_days: 90,
+        billing_day_of_month: 5,
+        contract_start_date: new Date().toISOString(),
+        contract_end_date: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
+        is_trial_active: true,
+        payment_status: 'settled',
+        cancellation_pending: false,
+        status: 'active'
+      },
       storeSettings: {
         bioText: "En esta tienda podrás canjear tus Axis Points. Mira todo lo que tenemos para ti",
         themeColor: "#C5A184",

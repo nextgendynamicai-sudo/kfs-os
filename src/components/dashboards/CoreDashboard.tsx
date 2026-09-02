@@ -24,7 +24,7 @@ import {
   ChevronRight, CheckCircle, CreditCard, Bell, X, Info,
   Store, Star, ChevronLeft, Clock, UserCheck, Palette, RefreshCw, Send,
   Zap, BookOpen, Printer, Smartphone, Settings, DownloadCloud, Terminal, Truck,
-  Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database, Trash2, Sparkles, Tag
+  Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database, Trash2, Sparkles, Tag, Building2
 } from "lucide-react";
 import { useKFS } from "../../context/KFSContext";
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from "recharts";
@@ -58,6 +58,7 @@ const SalesLandingWidget = dynamic(() => import("../SalesLandingWidget").then(m 
 const StorefrontCustomizer = dynamic(() => import("../StorefrontCustomizer").then(m => m.StorefrontCustomizer), { ssr: false });
 const OnboardingWizard = dynamic(() => import("../OnboardingWizard").then(m => m.OnboardingWizard), { ssr: false });
 const ArchitectRewardsManager = dynamic(() => import("../rewards/ArchitectRewardsManager").then(m => m.ArchitectRewardsManager), { ssr: false });
+const MultiTenantManager = dynamic(() => import("../MultiTenantManager").then(m => m.MultiTenantManager), { ssr: false });
 
 // Theme and Global Constants
 const KREATEK_COLORS = {
@@ -505,6 +506,16 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                     className="px-4 py-2.5 rounded-xl bg-violet-600 hover:bg-violet-500 text-white font-black text-xs transition-all shadow-lg shadow-violet-600/30 border-none cursor-pointer flex items-center gap-1.5"
                   >
                     <RefreshCw size={14} className="animate-spin" /> Sincronizar Nube
+                  </button>
+                  <button 
+                    onClick={() => setActiveTab("multi_tenant")}
+                    className={`px-4 py-2.5 rounded-xl text-xs font-bold transition-all border cursor-pointer flex items-center gap-1.5 ${
+                      (activeTab as any) === "multi_tenant"
+                        ? "bg-indigo-600 text-white border-indigo-500 font-black shadow-lg shadow-indigo-600/30"
+                        : "bg-slate-800 hover:bg-slate-700 text-white border-slate-700"
+                    }`}
+                  >
+                    <Building2 size={14} className="text-indigo-400" /> Hub Multi-Tenant
                   </button>
                   <button 
                     onClick={() => setActiveTab("rewards")}
@@ -1252,15 +1263,41 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             {/* Help Desk */}
             <div className="bg-violet-950 rounded-[2rem] shadow-xl shadow-violet-200/50 border border-violet-800 p-8 text-white mt-8">
               <h3 className="text-xl font-black mb-6 flex items-center gap-2 text-violet-400"><Bell className="text-violet-400" /> Help Desk (Tickets de Soporte Global)</h3>
-              <div className="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+              <div className="space-y-3 max-h-96 overflow-y-auto pr-2 custom-scrollbar">
                 {(db.supportTickets || []).slice().reverse().map((ticket: any) => {
                   const client = (db.clients || []).find((c: any) => c.id === ticket.clientId);
+                  const isRefundGuarantee = ticket.tag === 'REEMBOLSO_GARANTIZADO_100_USD' || ticket.subject?.includes('REEMBOLSO_GARANTIZADO_100_USD');
+
                   return (
-                    <div key={ticket.id} className="bg-white/5 border border-white/10 p-4 rounded-xl flex flex-col gap-2">
-                      <div className="flex justify-between items-center">
-                        <p className="text-sm font-bold text-slate-200">[{ticket.status === 'open' ? '🔴 ABIERTO' : '🟢 CERRADO'}] {client?.company || "Comercio"} - {ticket.subject}</p>
+                    <div 
+                      key={ticket.id} 
+                      className={`p-4 rounded-xl flex flex-col gap-2 border transition-all ${
+                        isRefundGuarantee 
+                          ? "bg-rose-950/40 border-rose-500/60 shadow-[0_0_20px_rgba(244,63,94,0.2)]" 
+                          : "bg-white/5 border-white/10"
+                      }`}
+                    >
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <span className={`text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full ${ticket.status === 'open' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-green-500/20 text-green-400 border border-green-500/30'}`}>
+                            {ticket.status === 'open' ? '🔴 ABIERTO' : '🟢 CERRADO'}
+                          </span>
+                          {isRefundGuarantee && (
+                            <span className="text-[10px] font-black uppercase px-2.5 py-0.5 rounded-full bg-rose-500 text-white animate-pulse">
+                              ⚡ REEMBOLSO_GARANTIZADO_100_USD
+                            </span>
+                          )}
+                          <p className="text-sm font-bold text-slate-200">{client?.company || "Comercio"} - {ticket.subject}</p>
+                        </div>
                         <span className="text-[10px] text-slate-400 font-mono">{new Date(ticket.createdAt).toLocaleString()}</span>
                       </div>
+                      
+                      {isRefundGuarantee && (
+                        <div className="bg-rose-900/30 border border-rose-700/50 p-2.5 rounded-lg text-xs text-rose-200 font-mono">
+                          🛡️ <strong>Cláusula Tercera:</strong> Solicitud de cancelación en primeros 7 días de garantía. Reembolso estipulado de $100 USD. Registros transaccionales del comercio preservados íntegramente.
+                        </div>
+                      )}
+
                       <div className="space-y-2 mt-2 pl-4 border-l-2 border-violet-500/30">
                         {ticket.messages.map((m: any, i: number) => (
                           <div key={i} className="text-xs">
@@ -1295,16 +1332,21 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             {/* Suscripciones Pendientes */}
             {(db.clients || []).filter((c: any) => c.subscription?.status === 'pending_verification').length > 0 && (
               <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 rounded-[2rem] p-8 mb-8">
-                <h3 className="text-xl font-black mb-6 text-violet-950 flex items-center gap-2"><CreditCard className="text-emerald-500" /> Suscripciones por Aprobar ($6)</h3>
+                <h3 className="text-xl font-black mb-6 text-violet-950 flex items-center gap-2"><CreditCard className="text-emerald-500" /> Suscripciones por Conciliar ($100 USD / Mes)</h3>
                 <div className="space-y-4">
                   {(db.clients || []).filter((c: any) => c.subscription?.status === 'pending_verification').map((c: any) => (
                     <div key={c.id} className="flex flex-col md:flex-row justify-between items-start md:items-center p-5 bg-emerald-50/50 rounded-2xl border border-emerald-100 shadow-sm gap-4">
                       <div>
-                        <h4 className="font-bold text-violet-950">{c.company}</h4>
-                        <p className="text-sm text-slate-500 font-mono mt-1">Ref Bancaria Enviada: <span className="font-black text-emerald-600">{c.subscription.lastPaymentRef}</span></p>
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-bold text-violet-950">{c.company}</h4>
+                          <span className="text-[10px] font-black px-2 py-0.5 bg-violet-100 text-violet-800 rounded-full font-mono">
+                            Plan: {c.subscription?.plan_type || "contract_b2b_chacao"} (${c.subscription?.monthly_fee_usd || 100} USD/mes)
+                          </span>
+                        </div>
+                        <p className="text-sm text-slate-500 font-mono mt-1">Ref Bancaria Enviada: <span className="font-black text-emerald-600">{c.subscription.lastPaymentRef || c.subscription.last_payment_reference}</span></p>
                       </div>
                       <button onClick={() => approveSubscription(c.id)} className="w-full md:w-auto px-6 py-2 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition-colors cursor-pointer flex items-center justify-center gap-2 font-bold shadow-md shadow-emerald-500/30">
-                        <CheckCircle size={18} /> Aprobar Pago y Reactivar
+                        <CheckCircle size={18} /> Conciliar Cuota ($100 USD)
                       </button>
                     </div>
                   ))}
@@ -2868,6 +2910,12 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
                 </div>
               </div>
             </div>
+          </div>
+        )}
+
+        {activeTab === "multi_tenant" && (
+          <div className="space-y-8 flex flex-col animate-fade-in pb-20">
+            <MultiTenantManager isArchitect={true} />
           </div>
         )}
       </div>

@@ -1,6 +1,25 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
+const RESERVED_SUBDOMAINS = new Set([
+  'rewards',
+  'promotora',
+  'arquitecto',
+  'core',
+  'comercio',
+  'client',
+  'vendedor',
+  'rider',
+  'pos',
+  'hub',
+  'apk',
+  'download',
+  'www',
+  'api',
+  'app',
+  'admin'
+]);
+
 export function middleware(request: NextRequest) {
   const url = request.nextUrl.clone();
   const hostname = request.headers.get('host') || '';
@@ -9,7 +28,7 @@ export function middleware(request: NextRequest) {
   if (hostname.includes('axisnitro.store')) {
     const parts = hostname.split('.');
     
-    // If there is a subdomain (e.g. promotora.axisnitro.store)
+    // If there is a subdomain (e.g. promotora.axisnitro.store or mitienda.axisnitro.store)
     if (parts.length > 2) {
       const subdomain = parts[0].toLowerCase();
 
@@ -68,6 +87,17 @@ export function middleware(request: NextRequest) {
           return NextResponse.rewrite(url);
         }
       }
+
+      // Enrutamiento Multi-Tenant para Subdominios de Comercios Independientes
+      // Ej: mitienda.axisnitro.store -> /nitro/mitienda
+      if (!RESERVED_SUBDOMAINS.has(subdomain)) {
+        if (url.pathname === '/' || url.pathname === '') {
+          url.pathname = `/nitro/${subdomain}`;
+          const response = NextResponse.rewrite(url);
+          response.headers.set('x-tenant-slug', subdomain);
+          return response;
+        }
+      }
     }
   }
 
@@ -79,3 +109,4 @@ export const config = {
     '/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)',
   ],
 };
+

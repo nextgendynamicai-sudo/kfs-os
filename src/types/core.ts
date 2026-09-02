@@ -1,3 +1,19 @@
+export interface CommerceSubscription {
+  plan_type?: 'standard_kfs' | 'contract_b2b_chacao';
+  monthly_fee_usd: number; // Default: 100.00
+  contract_duration_days: number; // Default: 90
+  billing_day_of_month: number; // Rango: 1 al 5
+  contract_start_date: string;
+  contract_end_date: string; // created_at + 90 days
+  is_trial_active: boolean; // true si actual <= created_at + 7 days
+  payment_status: 'settled' | 'pending' | 'overdue';
+  cancellation_pending?: boolean;
+  lastPaymentRef?: string | null;
+  status?: string;
+  nextBillingDate?: string;
+  costUSD?: number;
+}
+
 export interface Client {
   id: string;
   name: string;
@@ -15,6 +31,27 @@ export interface Client {
   vales?: any[];
   kpointsBalance?: number;
   salesVolume?: number;
+  slug?: string;
+  tenant_id?: string;
+  storeSettings?: any;
+  status?: string;
+  plan?: string;
+  rating?: number;
+  reviewCount?: number;
+  isArchitectStore?: boolean;
+  created_by?: string;
+  subscription?: CommerceSubscription;
+  digitalCardSettings?: {
+    enableNfcCard?: boolean;
+    showWhatsApp?: boolean;
+    showMaps?: boolean;
+    showPagoMovil?: boolean;
+    customBio?: string;
+    customTitle?: string;
+    instagramUrl?: string;
+    tiktokUrl?: string;
+    facebookUrl?: string;
+  };
 }
 
 export interface Promotora {
@@ -51,6 +88,7 @@ export interface Rider {
   deliveries?: number;
   earnings?: number;
   kpointsBalance?: number;
+  tenantId?: string;
 }
 
 export interface Customer {
@@ -61,6 +99,14 @@ export interface Customer {
   referredBy?: string;
   createdAt: string;
   kpointsBalance: number;
+  tenantId?: string;
+}
+
+export interface BundleItem {
+  productId: string;
+  qty: number;
+  name?: string;
+  priceUSD?: number;
 }
 
 export interface Product {
@@ -72,6 +118,14 @@ export interface Product {
   description?: string;
   image?: string;
   createdAt: string;
+  clientId?: string;
+  tenantId?: string;
+  priceUSD?: number;
+  costUSD?: number;
+  category?: string;
+  minStockAlert?: number;
+  isBundle?: boolean;
+  bundleItems?: BundleItem[];
 }
 
 export interface KFSDBState {
@@ -84,3 +138,4 @@ export interface KFSDBState {
   vales: any[];
   version: number;
 }
+

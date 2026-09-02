@@ -7,12 +7,14 @@ import { FeatureFlag } from "./FeatureFlag";
 import { 
   Flame, Cpu, Database, DollarSign, Gift, Layers, CheckCircle2, 
   PlusCircle, Sliders, ToggleLeft, ToggleRight, Sparkles, Scale,
-  Calendar, TableProperties, Binary
+  Calendar, TableProperties, Binary, Calculator
 } from "lucide-react";
+import { SmartChangeCalculator } from "./SmartChangeCalculator";
 
 export function AxisNitroPOS() {
   const { db, formatUSD, rates, showToast, processPurchase } = useKFS() as any;
   const { businessPreset, presetMetadata, refreshPreset } = usePreset();
+  const [showChangeCalculator, setShowChangeCalculator] = useState(false);
 
   // Mock controls so the user can test the visual flags in real-time in the demo
   const [demoFeatures, setDemoFeatures] = useState({
@@ -51,8 +53,12 @@ export function AxisNitroPOS() {
   const netStoreUSD = basePrice - flatRateFee;
   
   const iva = applyIva ? basePrice * 0.16 : 0;
-  const pointsDiscount = axisPointsToBurn * 0.001; // 1000 points = $1.00 USD
-  const totalDueUSD = Math.max(0, basePrice + iva - pointsDiscount);
+  // SUDEBAN & Tokenomics Invariant: Points can only subsidize up to max 50% of order value
+  const orderSubtotal = basePrice + iva;
+  const maxPointsAllowed = Math.floor((orderSubtotal * 0.5) / 0.001);
+  const effectivePointsToBurn = Math.min(axisPointsToBurn, maxPointsAllowed);
+  const pointsDiscount = effectivePointsToBurn * 0.001; // 1000 points = $1.00 USD
+  const totalDueUSD = Math.max(orderSubtotal * 0.5, orderSubtotal - pointsDiscount);
 
   // Ghost Trap calculations (Hybrid payments simulation)
   const ghostTrapSplit = useMemo(() => {
@@ -60,14 +66,14 @@ export function AxisNitroPOS() {
       const pointsUSDValue = pointsDiscount;
       const cashNeededUSD = Math.max(0, totalDueUSD);
       return {
-        pointsBurned: axisPointsToBurn,
+        pointsBurned: effectivePointsToBurn,
         pointsUSD: pointsUSDValue,
         cashUSD: cashNeededUSD,
         cashBs: cashNeededUSD * (rates?.USD || 36.45)
       };
     }
     return null;
-  }, [paymentMethod, totalDueUSD, axisPointsToBurn, rates]);
+  }, [paymentMethod, totalDueUSD, effectivePointsToBurn, pointsDiscount, rates]);
 
   const handleChargeSubmit = () => {
     // Triggering mock transaction or real purchase
@@ -308,20 +314,20 @@ export function AxisNitroPOS() {
               {/* Accumulation/Redemption Slider */}
               <div className="space-y-2">
                 <div className="flex justify-between text-xs font-bold">
-                  <span className="text-violet-300">Canjear Axis Points</span>
-                  <span className="text-slate-400">Disponible: 15,000 AP</span>
+                  <span className="text-violet-300">Canjear Axis Points (Máx 50%)</span>
+                  <span className="text-slate-400">Límite: {maxPointsAllowed} AP</span>
                 </div>
                 <input 
                   type="range"
                   min="0"
-                  max="1500"
-                  step="100"
-                  value={axisPointsToBurn}
-                  onChange={(e) => setAxisPointsToBurn(parseInt(e.target.value) || 0)}
+                  max={maxPointsAllowed}
+                  step="50"
+                  value={effectivePointsToBurn}
+                  onChange={(e) => setAxisPointsToBurn(Math.min(parseInt(e.target.value) || 0, maxPointsAllowed))}
                   className="w-full accent-violet-500"
                 />
                 <div className="flex justify-between text-[11px] font-black text-violet-400">
-                  <span>{axisPointsToBurn} Axis Points</span>
+                  <span>{effectivePointsToBurn} Axis Points</span>
                   <span>Descuento: -{formatUSD(pointsDiscount)}</span>
                 </div>
               </div>
@@ -354,17 +360,29 @@ export function AxisNitroPOS() {
               )}
 
               {/* Totals */}
-              <div className="flex justify-between items-center pt-3 border-t border-violet-950 font-black">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pt-3 border-t border-violet-950 font-black">
                 <div>
                   <p className="text-[10px] text-slate-500 uppercase">Monto Total a Recibir</p>
                   <p className="text-2xl text-white">{formatUSD(totalDueUSD)}</p>
                 </div>
-                <button 
-                  onClick={handleChargeSubmit}
-                  className="bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black px-6 py-3.5 rounded-xl text-xs hover:scale-[1.02] active:scale-95 transition-all shadow-[0_5px_15px_rgba(16,185,129,0.3)] cursor-pointer border-none uppercase tracking-wider"
-                >
-                  Confirmar Cobro
-                </button>
+                
+                <div className="flex items-center gap-2 w-full sm:w-auto">
+                  <button
+                    onClick={() => setShowChangeCalculator(true)}
+                    className="flex-1 sm:flex-initial bg-violet-900/60 hover:bg-violet-800 text-violet-200 hover:text-white font-bold px-4 py-3.5 rounded-xl text-xs transition-all border border-violet-700/50 cursor-pointer flex items-center justify-center gap-1.5"
+                    title="Calcular Vueltos en $ y Bs"
+                  >
+                    <Calculator size={16} className="text-amber-400" />
+                    Vuelto Mixto
+                  </button>
+
+                  <button 
+                    onClick={handleChargeSubmit}
+                    className="flex-1 sm:flex-initial bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black px-6 py-3.5 rounded-xl text-xs hover:scale-[1.02] active:scale-95 transition-all shadow-[0_5px_15px_rgba(16,185,129,0.3)] cursor-pointer border-none uppercase tracking-wider text-center"
+                  >
+                    Confirmar Cobro
+                  </button>
+                </div>
               </div>
 
             </div>
@@ -374,6 +392,21 @@ export function AxisNitroPOS() {
         </div>
 
       </div>
+
+      {/* Modal de Calculadora de Vueltos Mixtos */}
+      {showChangeCalculator && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-fade-in">
+          <SmartChangeCalculator
+            totalDueUSD={totalDueUSD}
+            bcvRate={rates?.USD || 36.45}
+            onClose={() => setShowChangeCalculator(false)}
+            onApplyChange={(chUSD, chVES) => {
+              showToast(`Vuelto registrado: $${chUSD.toFixed(2)} USD (Bs. ${chVES.toFixed(2)})`, "success");
+              setShowChangeCalculator(false);
+            }}
+          />
+        </div>
+      )}
 
     </div>
   );

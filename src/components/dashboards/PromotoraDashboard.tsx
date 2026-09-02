@@ -25,9 +25,14 @@ import {
   ChevronRight, CheckCircle, CreditCard, Bell, X, Info,
   Store, Star, ChevronLeft, Clock, UserCheck, Palette,
   Zap, BookOpen, Printer, Smartphone, Settings, DownloadCloud, Terminal, Truck,
-  Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database, Trash2
+  Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database, Trash2, Sparkles, MessageCircle, ExternalLink
 } from "lucide-react";
 import { useKFS } from "../../context/KFSContext";
+import { InstantDemoGenerator } from "../promotora/InstantDemoGenerator";
+import { MerchantSavingsPitchCalculator } from "../promotora/MerchantSavingsPitchCalculator";
+import { ObjectionKillerGuide } from "../promotora/ObjectionKillerGuide";
+import { PromoterWhatsAppPitchKit } from "../promotora/PromoterWhatsAppPitchKit";
+import { ExpressMerchantOnboardingModal } from "../promotora/ExpressMerchantOnboardingModal";
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { CheckoutModal } from "../CheckoutModal";
 import { TopUpModal } from "../TopUpModal";
@@ -81,8 +86,10 @@ const KREATEK_COLORS = {
 
 export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upgradeToPremium, settlePromotoraEarnings, formatUSD, formatEUR, logout, registerVendedor }: any) => {
   const [showRegister, setShowRegister] = useState(false);
+  const [showExpressRegister, setShowExpressRegister] = useState(false);
   const [showRegisterVendedor, setShowRegisterVendedor] = useState(false);
   const [showCustomerRegister, setShowCustomerRegister] = useState(false);
+  const [salesSubTab, setSalesSubTab] = useState<"demo" | "pitch" | "calc" | "objeciones">("demo");
   const [searchClient, setSearchClient] = useState("");
   const [customizingClient, setCustomizingClient] = useState<any>(null);
   const { updateStoreSettings, replyTicket, validateTopUp, showToast } = useKFS() as any;
@@ -147,8 +154,104 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
       <div className="p-4 md:p-8 max-w-5xl mx-auto -mt-6 relative z-20 flex flex-col gap-8 animate-fade-in">
         <OracleInsightCard role="promoter" data={{ inactiveNode: myClients[0]?.company || 'N/A', remainingPioneerNodes: 100 - (db.clients?.length || 0) }} />
 
+        {/* BANNER PRINCIPAL DE ARSENAL DE VENTAS Y ALTA RÁPIDA */}
+        <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-600 rounded-[2.5rem] p-6 md:p-8 text-slate-950 shadow-2xl shadow-amber-500/20 border border-amber-400 flex flex-col md:flex-row items-center justify-between gap-6 animate-fade-in">
+          <div className="space-y-2 text-center md:text-left">
+            <span className="bg-slate-950 text-amber-400 font-mono text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider inline-flex items-center gap-1.5 shadow">
+              <Sparkles size={12} className="text-amber-400" /> Kit Maestro de Ventas para Promotora
+            </span>
+            <h3 className="text-2xl md:text-3xl font-black tracking-tight text-white">
+              Cierra Afiliaciones en Minutos
+            </h3>
+            <p className="text-xs font-bold text-slate-950/90 max-w-xl">
+              Genera demostraciones en vivo en 60s, calcula el ahorro del comercio, envía guiones por WhatsApp y afilia negocios en 3 pasos.
+            </p>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-2.5 shrink-0 w-full md:w-auto">
+            <button
+              onClick={() => setShowExpressRegister(true)}
+              className="py-3.5 px-6 bg-slate-950 hover:bg-slate-900 text-amber-400 font-black rounded-2xl text-xs uppercase tracking-wider transition-all hover:scale-105 active:scale-95 cursor-pointer shadow-xl border-none flex items-center justify-center gap-2"
+            >
+              <UserPlus size={16} /> + Alta Exprés (3 Pasos)
+            </button>
+
+            <a
+              href="/beneficios"
+              target="_blank"
+              rel="noreferrer"
+              className="py-3.5 px-6 bg-white hover:bg-slate-100 text-slate-950 font-black rounded-2xl text-xs uppercase tracking-wider transition-all hover:scale-105 active:scale-95 shadow-xl no-underline flex items-center justify-center gap-2"
+            >
+              <ExternalLink size={16} /> Ver Presentación Web
+            </a>
+          </div>
+        </div>
+
         {activeTab === "panel" && (
           <div className="space-y-6">
+            {/* SUB-SELECTOR DE ARMAS DE VENTA EN EL PANEL */}
+            <div className="bg-white p-6 rounded-[2.5rem] shadow-xl shadow-violet-200/40 border border-violet-100 space-y-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-violet-100 pb-4">
+                <div>
+                  <h4 className="font-black text-lg text-violet-950 flex items-center gap-2">
+                    <Sparkles className="text-amber-500" size={20} /> Armas de Venta Activas
+                  </h4>
+                  <p className="text-xs text-slate-500">Selecciona la herramienta que necesitas usar con el cliente en la calle:</p>
+                </div>
+
+                <div className="flex flex-wrap gap-1.5 bg-violet-50 p-1 rounded-2xl border border-violet-200/60 w-full sm:w-auto">
+                  <button
+                    onClick={() => setSalesSubTab("demo")}
+                    className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border-none ${
+                      salesSubTab === "demo" ? "bg-violet-600 text-white shadow-md font-black" : "text-violet-700 hover:bg-violet-100 bg-transparent"
+                    }`}
+                  >
+                    1. Demo en 60s
+                  </button>
+                  <button
+                    onClick={() => setSalesSubTab("calc")}
+                    className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border-none ${
+                      salesSubTab === "calc" ? "bg-violet-600 text-white shadow-md font-black" : "text-violet-700 hover:bg-violet-100 bg-transparent"
+                    }`}
+                  >
+                    2. Calculadora Ahorro
+                  </button>
+                  <button
+                    onClick={() => setSalesSubTab("objeciones")}
+                    className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border-none ${
+                      salesSubTab === "objeciones" ? "bg-violet-600 text-white shadow-md font-black" : "text-violet-700 hover:bg-violet-100 bg-transparent"
+                    }`}
+                  >
+                    3. Mata-Objeciones
+                  </button>
+                  <button
+                    onClick={() => setSalesSubTab("pitch")}
+                    className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border-none ${
+                      salesSubTab === "pitch" ? "bg-violet-600 text-white shadow-md font-black" : "text-violet-700 hover:bg-violet-100 bg-transparent"
+                    }`}
+                  >
+                    4. Guiones WhatsApp
+                  </button>
+                </div>
+              </div>
+
+              {/* RENDERIZADO DEL ARMA DE VENTA SELECCIONADA */}
+              <div>
+                {salesSubTab === "demo" && (
+                  <InstantDemoGenerator promotoraId={currentUser.id} promotoraName={currentUser.name} />
+                )}
+                {salesSubTab === "calc" && (
+                  <MerchantSavingsPitchCalculator />
+                )}
+                {salesSubTab === "objeciones" && (
+                  <ObjectionKillerGuide />
+                )}
+                {salesSubTab === "pitch" && (
+                  <PromoterWhatsAppPitchKit promotoraId={currentUser.id} promotoraName={currentUser.name} />
+                )}
+              </div>
+            </div>
+
             <div className="flex justify-between items-center bg-gradient-to-r from-violet-900 to-violet-800 rounded-[2rem] p-6 text-white shadow-xl shadow-violet-900/20 border border-violet-700 animate-fade-in">
               <div>
                 <h3 className="font-black text-xl text-white">¿Tienes tu propio negocio?</h3>
@@ -307,6 +410,71 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
                   <FileText size={32} className="text-emerald-400" />
                   <span className="font-bold text-sm">Presentación KAN CGOS (PDF)</span>
                 </a>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {activeTab === "ventas" && (
+          <div className="space-y-6 animate-fade-in">
+            <div className="bg-white p-6 md:p-8 rounded-[2.5rem] shadow-xl shadow-violet-200/40 border border-violet-100 space-y-6">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-violet-100 pb-4">
+                <div>
+                  <h3 className="font-black text-2xl text-violet-950 flex items-center gap-2">
+                    <Sparkles className="text-amber-500" size={24} /> Arsenal de Ventas para la Calle
+                  </h3>
+                  <p className="text-xs text-slate-500">Herramientas maestras para prospectar, presentar y afiliar comercios sin fricción.</p>
+                </div>
+
+                <div className="flex flex-wrap gap-1.5 bg-violet-50 p-1 rounded-2xl border border-violet-200/60 w-full sm:w-auto">
+                  <button
+                    onClick={() => setSalesSubTab("demo")}
+                    className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border-none ${
+                      salesSubTab === "demo" ? "bg-violet-600 text-white shadow-md font-black" : "text-violet-700 hover:bg-violet-100 bg-transparent"
+                    }`}
+                  >
+                    1. Demo en 60s
+                  </button>
+                  <button
+                    onClick={() => setSalesSubTab("calc")}
+                    className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border-none ${
+                      salesSubTab === "calc" ? "bg-violet-600 text-white shadow-md font-black" : "text-violet-700 hover:bg-violet-100 bg-transparent"
+                    }`}
+                  >
+                    2. Calculadora Ahorro
+                  </button>
+                  <button
+                    onClick={() => setSalesSubTab("objeciones")}
+                    className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border-none ${
+                      salesSubTab === "objeciones" ? "bg-violet-600 text-white shadow-md font-black" : "text-violet-700 hover:bg-violet-100 bg-transparent"
+                    }`}
+                  >
+                    3. Mata-Objeciones
+                  </button>
+                  <button
+                    onClick={() => setSalesSubTab("pitch")}
+                    className={`px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border-none ${
+                      salesSubTab === "pitch" ? "bg-violet-600 text-white shadow-md font-black" : "text-violet-700 hover:bg-violet-100 bg-transparent"
+                    }`}
+                  >
+                    4. Guiones WhatsApp
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                {salesSubTab === "demo" && (
+                  <InstantDemoGenerator promotoraId={currentUser.id} promotoraName={currentUser.name} />
+                )}
+                {salesSubTab === "calc" && (
+                  <MerchantSavingsPitchCalculator />
+                )}
+                {salesSubTab === "objeciones" && (
+                  <ObjectionKillerGuide />
+                )}
+                {salesSubTab === "pitch" && (
+                  <PromoterWhatsAppPitchKit promotoraId={currentUser.id} promotoraName={currentUser.name} />
+                )}
               </div>
             </div>
           </div>
@@ -636,6 +804,7 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
         <div className="max-w-5xl mx-auto flex items-center justify-center gap-3 overflow-x-auto no-scrollbar py-1 px-2">
           {[
             { id: "panel", icon: Activity, label: "Panel" },
+            { id: "ventas", icon: Sparkles, label: "Kit Ventas" },
             { id: "negocios", icon: Store, label: "Comercios", badge: myClients.length },
             { id: "vendedores", icon: Briefcase, label: "Vendedores", badge: (db.vendedores || []).filter((v: any) => v.promotoraId === currentUser.id).length },
             { id: "afiliados", icon: Users, label: "Afiliados", badge: myCustomers.length }
@@ -668,6 +837,13 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
           })}
         </div>
       </div>
+      {/* Modal Alta Exprés en 3 Pasos */}
+      <ExpressMerchantOnboardingModal
+        isOpen={showExpressRegister}
+        onClose={() => setShowExpressRegister(false)}
+        promotoraId={currentUser.id}
+        promotoraName={currentUser.name}
+      />
     </div>
   );
 }

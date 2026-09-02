@@ -52,19 +52,33 @@ export function UniversalWalletWidget({ currentUser, formatUSD, children }: Univ
     return () => clearInterval(timer);
   }, [expiry, kPointsBalance]);
 
+  const isB2C = currentUser?.role === "customer" || currentUser?.role === "b2c" || !currentUser?.role;
+
   return (
     <div className="bg-white border border-[#3B82F6]/25 rounded-[2.5rem] p-6 md:p-8 shadow-[0_15px_50px_rgba(10,17,40,0.4)] text-violet-950 relative overflow-hidden space-y-6 animate-fade-in">
       {/* Background Decorative Rings */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-[#3B82F6]/5 rounded-full blur-[80px] -z-10 pointer-events-none"></div>
       <div className="absolute -bottom-20 -left-20 w-80 h-80 bg-violet-500/5 rounded-full blur-[100px] -z-10 pointer-events-none"></div>
 
-      <div className="flex flex-col md:flex-row justify-between gap-6 border-b border-white/5 pb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-slate-100 pb-6">
         <div>
-          <span className="text-[10px] font-black uppercase tracking-widest text-[#3B82F6]/80 flex items-center gap-1.5 mb-2">
+          <span className="text-[10px] font-black uppercase tracking-widest text-[#3B82F6] flex items-center gap-1.5 mb-2">
             <Zap size={10} className="text-[#3B82F6] animate-pulse" /> {KFS_BRAND.productAcronym} Universal Wallet
           </span>
-          <h2 className="text-2xl font-black tracking-tight text-gray-100">Mi Billetera</h2>
+          <h2 className="text-2xl font-black tracking-tight text-slate-900">Mi Billetera</h2>
           <p className="text-xs text-slate-500 mt-1">Gestión centralizada de activos Fiat y Cripto.</p>
+        </div>
+
+        <div className="flex items-center gap-2">
+          {isB2C ? (
+            <span className="text-[10px] font-black uppercase tracking-widest text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-full flex items-center gap-1.5">
+              🛡️ Circuito Cerrado SUDEBAN (B2C)
+            </span>
+          ) : (
+            <span className="text-[10px] font-black uppercase tracking-widest text-violet-700 bg-violet-50 border border-violet-200 px-3 py-1.5 rounded-full flex items-center gap-1.5">
+              💼 Canal Comercial B2B (Liquidación Activa)
+            </span>
+          )}
         </div>
       </div>
 
@@ -148,7 +162,7 @@ export function UniversalWalletWidget({ currentUser, formatUSD, children }: Univ
 
       {/* Children (Actions like TopUp, Transfer, etc) */}
       {children && (
-        <div className="pt-4 border-t border-white/5">
+        <div className="pt-4 border-t border-slate-100">
           {children}
         </div>
       )}

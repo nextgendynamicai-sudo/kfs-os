@@ -1,0 +1,8 @@
+* Host axisnitro.store:443 was resolved.
+* IPv6: (none)
+* IPv4: 198.54.117.242
+*   Trying 198.54.117.242:443...
+* connect to 198.54.117.242 port 443 from 0.0.0.0 port 49881 failed: Connection refused
+* Failed to connect to axisnitro.store:443 after 6586 ms: Could not connect to server
+* closing connection #0
+curl: (7) Failed to connect to axisnitro.store:443 after 6586 ms: Could not connect to server
