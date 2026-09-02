@@ -5,6 +5,7 @@ import { KFS_BRAND } from "../config/brandConfig";
 import { Camera, DollarSign, Lock, Info, Store, UserCheck, Smartphone, FileText, MapPin, Trash2 } from "lucide-react";
 import { compressImage } from "../lib/utils";
 import { PhoneInput } from "./PhoneInput";
+import { TermsAcceptance } from "./TermsAcceptance";
 
 export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, defaultReferralCode = "" }: any) => {
   const [formData, setFormData] = useState({ name: "", idCard: "", company: "", avgBilling: "", phone: "", email: "", password: "", address: "", kfsFeePercentage: 0.03, avatar: "", kycCedula: "", business_preset: "RETAIL-QUICK" });
@@ -332,12 +333,7 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
         </div>
       </div>
 
-      <div className="flex items-start gap-2 pt-2 mb-2">
-        <input type="checkbox" required checked={acceptedToS} onChange={(e) => setAcceptedToS(e.target.checked)} className="mt-1 cursor-pointer" />
-        <span className={`text-[10px] leading-tight ${standalone ? "text-slate-500" : "text-slate-500"}`}>
-          He leído y acepto los <strong className="text-violet-600 cursor-pointer hover:underline">Términos de Servicio (ToS)</strong>. Entiendo que {KFS_BRAND.productAcronym} cobra $6 mensuales por mantenimiento, y que Kreatek no asume responsabilidad financiera sobre el comercio frente al cliente final.
-        </span>
-      </div>
+      <TermsAcceptance accepted={acceptedToS} setAccepted={setAcceptedToS} variant={standalone ? "light" : "dark"} />
 
       <div className="flex gap-3 pt-4">
         <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl border border-violet-200 text-slate-500 font-bold hover:bg-violet-50 transition-all text-sm cursor-pointer">Cancelar</button>

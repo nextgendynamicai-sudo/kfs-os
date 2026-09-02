@@ -5,6 +5,7 @@ import { X, Store, User, Mail, Phone, Lock, FileText, ChevronRight } from "lucid
 import { useKFS } from "../context/KFSContext";
 import { ModalPortal } from "./ModalPortal";
 import { PhoneInput } from "./PhoneInput";
+import { TermsAcceptance } from "./TermsAcceptance";
 
 interface RegistrationModalProps {
   isOpen: boolean;
@@ -15,6 +16,7 @@ interface RegistrationModalProps {
 export function RegistrationModal({ isOpen, onClose, offerType }: RegistrationModalProps) {
   const { registerCommerceWithOffer } = useKFS() as any;
   const [loading, setLoading] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
 
   const [formData, setFormData] = useState({
     company: "",
@@ -145,23 +147,20 @@ export function RegistrationModal({ isOpen, onClose, offerType }: RegistrationMo
             </div>
           </div>
 
+          <TermsAcceptance accepted={termsAccepted} setAccepted={setTermsAccepted} variant="dark" />
+
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !termsAccepted}
             className={`w-full py-4 mt-2 font-black text-sm rounded-xl cursor-pointer hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-2 ${
               isDemo 
                 ? "bg-violet-600 hover:bg-violet-700 text-white shadow-lg shadow-violet-600/30" 
                 : "bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-slate-950 shadow-lg shadow-orange-500/20"
-            }`}
+            } disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             {loading ? "Validando Sistema..." : "Registrar y Entrar a la Consola"}
             {!loading && <ChevronRight size={18} />}
           </button>
-
-          <p className="text-[9px] text-center text-slate-500 mt-4 leading-relaxed">
-            Al registrarte aceptas los Términos de Servicio de la Red Monopoly OS. 
-            Este nodo comercial se enlazará automáticamente con el Master Core (El Arquitecto).
-          </p>
         </form>
       </div>
       </div>

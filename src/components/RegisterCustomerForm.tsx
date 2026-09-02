@@ -5,6 +5,7 @@ import { Camera, Lock, UserCheck, Smartphone, FileText, MapPin, Trash2, Tag } fr
 import { useKFS } from "../context/KFSContext";
 import { compressImage } from "../lib/utils";
 import { PhoneInput, parsePhoneNumber } from "./PhoneInput";
+import { TermsAcceptance } from "./TermsAcceptance";
 
 export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCancel: () => void, defaultReferralCode?: string }) => {
   const [name, setName] = useState("");
@@ -15,6 +16,7 @@ export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCanc
   const [kycCedula, setKycCedula] = useState<string>("");
   const [kycAddress, setKycAddress] = useState("");
   const [promoCode, setPromoCode] = useState("1000");
+  const [acceptedToS, setAcceptedToS] = useState(false);
   const [formError, setFormError] = useState("");
   const { registerCustomer } = useKFS() as any;
 
@@ -33,7 +35,7 @@ export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCanc
   const isPasswordValid = password.length >= 6;
   const isAddressValid = kycAddress.trim().length >= 3;
   const isKycComplete = !!kycPhoto && !!kycCedula;
-  const isFormValid = isNameValid && isPhoneValid && isPasswordValid && isAddressValid && isKycComplete;
+  const isFormValid = isNameValid && isPhoneValid && isPasswordValid && isAddressValid && isKycComplete && acceptedToS;
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>, setter: any) => {
     const file = e.target.files?.[0];
@@ -56,6 +58,10 @@ export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCanc
     }
     if (!isPasswordValid) {
       setFormError("La contraseña debe tener al menos 6 caracteres.");
+      return;
+    }
+    if (!acceptedToS) {
+      setFormError("Debes aceptar los Términos de Servicio para registrarte.");
       return;
     }
 
@@ -201,11 +207,14 @@ export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCanc
         </div>
       </div>
 
+      <TermsAcceptance accepted={acceptedToS} setAccepted={setAcceptedToS} variant="light" />
+
       <div className="flex gap-2 pt-2">
         <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl border border-violet-200 text-slate-500 font-bold hover:bg-violet-50 transition-all cursor-pointer">Atrás</button>
         <button 
           type="submit" 
-          className="w-2/3 py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-black hover:scale-[1.02] active:scale-95 transition-all shadow-md shadow-violet-600/30 border-none cursor-pointer"
+          disabled={!isFormValid}
+          className="w-2/3 py-3 rounded-xl bg-violet-600 hover:bg-violet-700 text-white font-black hover:scale-[1.02] active:scale-95 transition-all shadow-md shadow-violet-600/30 border-none cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Crear Cuenta
         </button>

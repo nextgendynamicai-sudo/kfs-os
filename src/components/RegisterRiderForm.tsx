@@ -6,6 +6,7 @@ import { Truck, Trash2 } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { compressImage } from "../lib/utils";
 import { PhoneInput } from "./PhoneInput";
+import { TermsAcceptance } from "./TermsAcceptance";
 
 export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCancel: () => void, defaultReferralCode?: string }) => {
   const { registerRider, showToast } = useKFS() as any;
@@ -16,6 +17,7 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
     pagoMovil: { banco: "", telefono: "", cedula: "" }
   });
   const [uploading, setUploading] = useState({ cedula: false, med: false, license: false });
+  const [acceptedToS, setAcceptedToS] = useState(false);
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -39,7 +41,7 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
   const isNameValid = formData.name.trim().length >= 3;
   const isPasswordValid = formData.password.length >= 4;
 
-  const isFormValid = isNameValid && isPhoneValid && isEmailValid && isPasswordValid;
+  const isFormValid = isNameValid && isPhoneValid && isEmailValid && isPasswordValid && acceptedToS;
 
   const handleDocUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: "cedulaImg" | "medCertImg" | "licenseImg", key: "cedula" | "med" | "license") => {
     const file = e.target.files?.[0];
@@ -71,6 +73,10 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
     }
     if (!isPasswordValid) {
       setFormError("La contraseña debe tener al menos 4 caracteres.");
+      return;
+    }
+    if (!acceptedToS) {
+      setFormError("Debes aceptar los Términos de Servicio para registrarte.");
       return;
     }
     if (isSubmitting) return;
@@ -228,6 +234,8 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
       <div className="bg-amber-50 border border-amber-200 rounded-xl p-3">
         <p className="text-[10px] text-amber-700 font-bold leading-relaxed">⚠️ Tu solicitud será revisada por el Arquitecto {KFS_BRAND.productAcronym}. Recibirás notificación de aprobación antes de poder operar.</p>
       </div>
+
+      <TermsAcceptance accepted={acceptedToS} setAccepted={setAcceptedToS} variant="light" />
 
       <div className="flex gap-3 pt-2">
         <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl border border-violet-200 text-slate-500 font-bold hover:bg-violet-50 transition-all text-sm cursor-pointer bg-transparent">Atrás</button>

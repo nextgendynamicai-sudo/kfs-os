@@ -23,7 +23,9 @@ export const UIProvider = ({ children }: { children: ReactNode }) => {
   const setView = (newView: ViewType | string) => {
     setViewInternal(newView);
     if (typeof window !== "undefined" && window.history) {
-      window.history.pushState({ view: newView }, "", `#${newView}`);
+      if (window.location.pathname === "/" || window.location.pathname === "") {
+        window.history.pushState({ view: newView }, "", `#${newView}`);
+      }
     }
   };
 

@@ -106,8 +106,23 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
 
             {/* Financial Ledger Details */}
             <div className="space-y-1 text-[11px] font-bold text-gray-700 border-b border-dashed border-gray-300 pb-3 mt-3">
-              <div className="flex justify-between"><span>PRODUCTO:</span> <span className="text-gray-900 font-black uppercase text-right truncate max-w-[130px]">{product?.name} {tx.isFiscal ? "(G)" : "(E)"}</span></div>
-              <div className="flex justify-between"><span>{tx.isFiscal ? "BASE IMPONIBLE:" : "SUBTOTAL:"}</span> <span className="text-gray-900">{formatUSD(tx.baseUSD || tx.amountUSD)}</span></div>
+              {tx.cartItems && tx.cartItems.length > 0 ? (
+                tx.cartItems.map((item: any, index: number) => (
+                  <div key={index} className="flex justify-between">
+                    <span className="truncate max-w-[120px]">{item.quantity}x {item.name}</span>
+                    <span className="text-gray-900 font-black text-right">{tx.isFiscal ? "(G)" : "(E)"}</span>
+                  </div>
+                ))
+              ) : (
+                <div className="flex justify-between">
+                  <span>PRODUCTO:</span> 
+                  <span className="text-gray-900 font-black uppercase text-right truncate max-w-[130px]">{product?.name} {tx.isFiscal ? "(G)" : "(E)"}</span>
+                </div>
+              )}
+              <div className="flex justify-between mt-2 pt-2 border-t border-dashed border-gray-200">
+                <span>{tx.isFiscal ? "BASE IMPONIBLE:" : "SUBTOTAL:"}</span> 
+                <span className="text-gray-900">{formatUSD(tx.baseUSD || tx.amountUSD)}</span>
+              </div>
               {tx.isFiscal && <div className="flex justify-between"><span>EXENTO (E):</span> <span className="text-gray-900 font-black">$0.00</span></div>}
               {tx.ivaUSD > 0 && <div className="flex justify-between"><span>IVA (16%):</span> <span className="text-gray-900 font-black">+{formatUSD(tx.ivaUSD)}</span></div>}
               {tx.igtfUSD > 0 && <div className="flex justify-between"><span>IGTF (3%):</span> <span className="text-gray-900 font-black">+{formatUSD(tx.igtfUSD)}</span></div>}

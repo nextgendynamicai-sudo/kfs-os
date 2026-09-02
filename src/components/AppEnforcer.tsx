@@ -4,8 +4,8 @@ import { KFS_BRAND } from "../config/brandConfig";
 import React, { useState, useEffect } from "react";
 import { BellRing, Smartphone, ShieldAlert } from "lucide-react";
 
-import { useKFS } from "../context/KFSContext";
 import { Lock, KeyRound, ArrowRight } from "lucide-react";
+import { useKFS } from "../context/KFSContext";
 
 export function AppEnforcer({ children, currentUser: propsUser, updatePwaStatus }: { children: React.ReactNode, currentUser?: any, updatePwaStatus?: (status: boolean) => void }) {
   const kfsContext = useKFS() as any;

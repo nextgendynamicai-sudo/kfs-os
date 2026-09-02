@@ -655,7 +655,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       const hash = window.location.hash.replace("#", "");
       if (hash) {
         setView(hash);
-      } else {
+      } else if (window.location.pathname === "/" || window.location.pathname === "") {
         setView("landing");
         window.history.replaceState({ view: "landing" }, "", "");
       }
@@ -724,9 +724,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     // Sincronización con el Banco Central de Venezuela (API Route) con Polling de 30s
     const fetchBcvRates = () => {
       fetch("/api/bcv")
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) return null;
+          return res.json().catch(() => null);
+        })
         .then(data => {
-          if (data.USD && data.EUR) {
+          if (data && data.USD && data.EUR) {
             const isWeekend = new Date().getDay() === 0 || new Date().getDay() === 6;
             const finalUSD = data.USD; 
             const finalEUR = data.EUR;
@@ -2870,8 +2873,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       return null;
     }
 
-    const isWeekend = new Date().getDay() === 0 || new Date().getDay() === 6;
-    const basePriceUSD = isWeekend ? product.priceUSD * 1.10 : product.priceUSD; // Weekend Shield oculto
+    const basePriceUSD = product.priceUSD;
 
     // Calcular descuento de cupón
     let couponDiscountUSD = 0;
@@ -2889,9 +2891,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     }
 
     const priceAfterCoupon = Math.max(0, basePriceUSD - couponDiscountUSD);
-    const FEE = 0.04;
     const subtotal = priceAfterCoupon;
-    const totalBruto = subtotal + FEE;
+    const totalBruto = subtotal;
 
     const ivaUSD = applyIva ? totalBruto * 0.16 : 0;
     const isForeign = ['zinli', 'wally_tech', 'airtm', 'ubbi_app', 'cash_usd', 'cash_eur', 'binance', 'nfc_web'].includes(paymentMethod);
@@ -3117,11 +3118,31 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         return p;
       });
 
-      // Deducción de inventario inteligente (con soporte en cascada para Combos/Kits)
-      let updatedProducts = (prev.products || []).map((p: any) => 
-        p.id === product.id ? { ...p, stock: p.stock !== undefined ? Math.max(0, p.stock - 1) : p.stock, lastSoldAt: new Date().toISOString() } : p
-      );
+      // Deducción de inventario inteligente (con soporte en cascada para Combos/Kits y Carritos)
+      let updatedProducts = prev.products || [];
 
+      if (product.cartItems && Array.isArray(product.cartItems) && product.cartItems.length > 0) {
+        const cartMap = new Map<string, number>();
+        product.cartItems.forEach((ci: any) => {
+          cartMap.set(ci.id, (cartMap.get(ci.id) || 0) + (ci.quantity || 1));
+        });
+        
+        updatedProducts = updatedProducts.map((p: any) => {
+          if (cartMap.has(p.id)) {
+            const qtyToDeduct = cartMap.get(p.id) || 1;
+            return {
+              ...p,
+              stock: p.stock !== undefined ? Math.max(0, p.stock - qtyToDeduct) : p.stock,
+              lastSoldAt: new Date().toISOString()
+            };
+          }
+          return p;
+        });
+      } else {
+        updatedProducts = updatedProducts.map((p: any) => 
+          p.id === product.id ? { ...p, stock: p.stock !== undefined ? Math.max(0, p.stock - 1) : p.stock, lastSoldAt: new Date().toISOString() } : p
+        );
+      }
       if (product.isBundle && Array.isArray(product.bundleItems) && product.bundleItems.length > 0) {
         const bundleMap = new Map<string, number>();
         product.bundleItems.forEach((bi: any) => {
@@ -3174,7 +3195,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         timestamp: new Date().toISOString(),
         exchangeRateBCV: rates.USD,
         appliedCouponCode: appliedCouponCode || null,
-        couponDiscountUSD: couponDiscountUSD || 0
+        couponDiscountUSD: couponDiscountUSD || 0,
+        cartItems: product.cartItems || null
       };
 
       // Handle CRM and Buyers

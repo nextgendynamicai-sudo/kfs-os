@@ -4,12 +4,14 @@ import React, { useState } from "react";
 import { Camera, Trash2, ShieldCheck, CheckCircle2, AlertCircle, Info, Lock, Smartphone, Mail, User, MapPin, CreditCard } from "lucide-react";
 import { compressImage } from "../lib/utils";
 import { PhoneInput } from "./PhoneInput";
+import { TermsAcceptance } from "./TermsAcceptance";
 
 export const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCode = "" }: any) => {
   const [formData, setFormData] = useState({ name: "", email: "", password: "", binanceId: "", pagoMovil: "", avatar: "", kycCedula: "", kycAddress: "" });
   const [avatar, setAvatar] = useState<string>("");
   const [kycCedula, setKycCedula] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [acceptedToS, setAcceptedToS] = useState(false);
   const [formError, setFormError] = useState("");
 
   const validatePhone = (phone: string) => {
@@ -35,7 +37,7 @@ export const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCod
   const hasAvatar = !!avatar;
   const hasCedula = !!kycCedula;
 
-  const isFormValid = isNameValid && isEmailValid && isPasswordValid && isPhoneValid;
+  const isFormValid = isNameValid && isEmailValid && isPasswordValid && isPhoneValid && acceptedToS;
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -72,6 +74,10 @@ export const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCod
     }
     if (!isPasswordValid) {
       setFormError("La contraseña debe tener al menos 4 caracteres.");
+      return;
+    }
+    if (!acceptedToS) {
+      setFormError("Debes aceptar los Términos de Servicio para registrarte.");
       return;
     }
     if (isSubmitting) return;
@@ -256,6 +262,8 @@ export const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCod
           placeholder="04141234567"
         />
       </div>
+
+      <TermsAcceptance accepted={acceptedToS} setAccepted={setAcceptedToS} variant="light" />
 
       <div className="flex gap-3 pt-4">
         <button type="button" onClick={onCancel} className="w-1/3 py-3.5 rounded-xl border border-violet-200 hover:bg-violet-50 text-slate-500 font-bold transition-all text-sm cursor-pointer bg-transparent">
