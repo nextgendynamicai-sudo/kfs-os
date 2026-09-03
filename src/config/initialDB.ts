@@ -138,6 +138,7 @@ export const initialDB = {
   vales: [] as any[],
   posTerminals: [] as any[],
   zReports: [] as any[],
+  blindAudits: [] as any[],
   buyers: [] as any[],
   customers: [] as any[],
   kreatekCore: {

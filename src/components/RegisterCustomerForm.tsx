@@ -5,7 +5,7 @@ import { Camera, Lock, UserCheck, Smartphone, FileText, MapPin, Trash2, Tag } fr
 import { useKFS } from "../context/KFSContext";
 import { compressImage } from "../lib/utils";
 import { PhoneInput, parsePhoneNumber } from "./PhoneInput";
-import { TermsAcceptance } from "./TermsAcceptance";
+import { TermsAcceptance, generateLegalTermsAudit } from "./TermsAcceptance";
 
 export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCancel: () => void, defaultReferralCode?: string }) => {
   const [name, setName] = useState("");
@@ -82,7 +82,8 @@ export const RegisterCustomerForm = ({ onCancel, defaultReferralCode }: { onCanc
       kycPhoto || defaultSelfie,
       kycCedula || defaultCedula,
       kycAddress.trim() || "Caracas, Venezuela",
-      promoCode
+      promoCode,
+      generateLegalTermsAudit()
     );
   };
 

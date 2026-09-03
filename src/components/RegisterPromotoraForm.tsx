@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { Camera, Trash2, ShieldCheck, CheckCircle2, AlertCircle, Info, Lock, Smartphone, Mail, User, MapPin, CreditCard } from "lucide-react";
 import { compressImage } from "../lib/utils";
 import { PhoneInput } from "./PhoneInput";
-import { TermsAcceptance } from "./TermsAcceptance";
+import { TermsAcceptance, generateLegalTermsAudit } from "./TermsAcceptance";
 
 export const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCode = "" }: any) => {
   const [formData, setFormData] = useState({ name: "", email: "", password: "", binanceId: "", pagoMovil: "", avatar: "", kycCedula: "", kycAddress: "" });
@@ -93,7 +93,8 @@ export const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCod
         kycAddress: formData.kycAddress.trim() || "Dirección pendiente",
         avatar: avatar || defaultAvatar,
         kycCedula: kycCedula || defaultCedula,
-        referralCode: defaultReferralCode
+        referralCode: defaultReferralCode,
+        termsAudit: generateLegalTermsAudit()
       };
       await Promise.resolve(onRegister(fallbackData));
     } finally {

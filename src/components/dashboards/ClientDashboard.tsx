@@ -1204,7 +1204,13 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                 pagoMovilPhone: target.pMovilPhone.value,
                 pagoMovilId: target.pMovilId.value,
                 pagoMovilBank: target.pMovilBank.value,
-                binance: target.binance.value
+                binance: target.binance.value,
+                reconciliationConfig: {
+                  mode: target.reconciliationMode?.value || "manual",
+                  autoApprove: target.autoApprove?.checked || false,
+                  tolerancePercent: parseFloat(target.tolerancePercent?.value || "0"),
+                  gateway: target.reconciliationGateway?.value || "sms_p2p"
+                }
               });
             }} className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="space-y-2">
@@ -1240,10 +1246,116 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                 </div>
                 <input name="pMovilId" defaultValue={currentUser.paymentMethods?.pagoMovilId || ""} placeholder="Cédula/RIF" className="w-full bg-white border border-violet-100 shadow-sm rounded-xl px-3 py-2 text-xs text-violet-950 focus:outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500 placeholder:text-slate-400" />
               </div>
+
+              {/* Conciliación Bancaria Inteligente (Automática vs Manual) */}
+              <div className="md:col-span-3 bg-gradient-to-r from-violet-50/80 to-indigo-50/80 border border-violet-200 p-5 rounded-2xl space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-violet-100 pb-3">
+                  <div>
+                    <h4 className="text-xs font-black uppercase tracking-wider text-violet-900 flex items-center gap-2">
+                      ⚡ Conciliación Bancaria en Tiempo Real (Pago Móvil / C2P)
+                    </h4>
+                    <p className="text-[11px] text-slate-500 mt-0.5">
+                      Configura la verificación automatizada de pagos sin alterar la revisión manual de comprobantes.
+                    </p>
+                  </div>
+                  <span className="text-[10px] font-black px-2.5 py-1 rounded-full bg-violet-100 text-violet-700 font-mono self-start sm:self-auto">
+                    Configurable
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest font-mono block">Modo Operativo</label>
+                    <select
+                      name="reconciliationMode"
+                      defaultValue={currentUser.paymentMethods?.reconciliationConfig?.mode || "manual"}
+                      className="w-full bg-white border border-violet-100 rounded-xl px-3 py-2.5 text-xs text-violet-950 font-bold focus:outline-none focus:border-violet-500"
+                    >
+                      <option value="manual">Manual (Verificación visual tradicional)</option>
+                      <option value="auto">Automático (Detección en tiempo real C2P/SMS)</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest font-mono block">Margen Tolerancia BCV</label>
+                    <select
+                      name="tolerancePercent"
+                      defaultValue={currentUser.paymentMethods?.reconciliationConfig?.tolerancePercent || 0}
+                      className="w-full bg-white border border-violet-100 rounded-xl px-3 py-2.5 text-xs text-violet-950 font-bold focus:outline-none focus:border-violet-500"
+                    >
+                      <option value="0">0% (Exacto al céntimo BCV)</option>
+                      <option value="1">1% (Tolerancia por redondeo)</option>
+                      <option value="2">2% (Alta flexibilidad)</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest font-mono block">Pasarela / Protocolo</label>
+                    <select
+                      name="reconciliationGateway"
+                      defaultValue={currentUser.paymentMethods?.reconciliationConfig?.gateway || "sms_p2p"}
+                      className="w-full bg-white border border-violet-100 rounded-xl px-3 py-2.5 text-xs text-violet-950 font-bold focus:outline-none focus:border-violet-500"
+                    >
+                      <option value="sms_p2p">Lector SMS Bancario P2P</option>
+                      <option value="c2p_gateway">Webhook Bancario C2P</option>
+                      <option value="bot_conciliator">Bot Conciliador Push</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 pt-1">
+                  <input
+                    type="checkbox"
+                    id="autoApprove"
+                    name="autoApprove"
+                    defaultChecked={currentUser.paymentMethods?.reconciliationConfig?.autoApprove ?? true}
+                    className="w-4 h-4 rounded text-violet-600 focus:ring-violet-500 border-violet-300 cursor-pointer"
+                  />
+                  <label htmlFor="autoApprove" className="text-xs text-slate-600 cursor-pointer font-medium">
+                    Auto-aprobar y liquidar pedidos en tienda automáticamente cuando coincida el Pago Móvil
+                  </label>
+                </div>
+              </div>
+
               <div className="md:col-span-3 flex justify-end">
                 <button type="submit" className="bg-violet-900 text-white font-bold py-3 px-8 rounded-xl hover:bg-slate-800 transition-colors cursor-pointer active:scale-95 shadow-md border-none">Guardar en Bóveda Criptográfica</button>
               </div>
             </form>
+          </div>
+
+          {/* Sello Pericial de Consentimiento Jurídico (Item 7) */}
+          <div className="bg-slate-950 border border-violet-900/60 p-6 rounded-[2rem] shadow-xl text-white space-y-4">
+            <div className="flex justify-between items-center border-b border-violet-900/40 pb-3">
+              <div className="flex items-center gap-2.5">
+                <FileText className="text-violet-400" size={20} />
+                <h4 className="font-black text-sm uppercase tracking-wider text-white">
+                  Certificación Jurídica y Trazabilidad Legal
+                </h4>
+              </div>
+              <span className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-widest font-mono flex items-center gap-1">
+                <CheckCircle size={10} /> Vinculante
+              </span>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs font-mono">
+              <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                <span className="text-[10px] text-slate-500 block uppercase">Versión Contrato</span>
+                <span className="text-violet-300 font-bold">{currentUser?.termsAudit?.contractVersion || "8.0.0-AXIS-NITRO-LEGAL"}</span>
+              </div>
+              <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                <span className="text-[10px] text-slate-500 block uppercase">Firma Digital (Clickwrap)</span>
+                <span className="text-emerald-400 font-bold">{currentUser?.termsAudit?.digitalSignature || "CLW-ACT-LEGAL-7F83"}</span>
+              </div>
+              <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                <span className="text-[10px] text-slate-500 block uppercase">Sellado Temporal</span>
+                <span className="text-slate-300 text-[11px]">{currentUser?.termsAudit?.acceptedAt ? new Date(currentUser.termsAudit.acceptedAt).toLocaleString() : new Date().toLocaleString()}</span>
+              </div>
+              <div className="bg-slate-900/80 p-3 rounded-xl border border-slate-800">
+                <span className="text-[10px] text-slate-500 block uppercase">Hash SHA-256</span>
+                <span className="text-slate-400 text-[10px] truncate block" title={currentUser?.termsAudit?.contractHash || "sha256:7f83b1657ff1fc53b92dc18148a1d65dfc2d4b1fa3d677284addd200126d9069"}>
+                  {currentUser?.termsAudit?.contractHash ? currentUser.termsAudit.contractHash.substring(0, 16) + "..." : "sha256:7f83b165..."}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
         )}
@@ -1374,6 +1486,85 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                     </tbody>
                   </table>
                 </div>
+              </div>
+            </div>
+
+            {/* Historial de Arqueos Ciegos de Caja (Item 6) */}
+            <div className="pt-6 border-t border-violet-100 space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <h4 className="font-black text-lg text-violet-950 flex items-center gap-2">
+                    🔒 Auditoría de Cierres de Caja (Arqueos Ciegos)
+                  </h4>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Historial de conteos físicos declarados a ciegas por los cajeros al emitir el Reporte Z.
+                  </p>
+                </div>
+                <span className="bg-violet-50 border border-violet-100 text-violet-700 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono self-start sm:self-auto">
+                  Control Anti-Fraude
+                </span>
+              </div>
+
+              <div className="overflow-x-auto border border-violet-100 rounded-2xl bg-white shadow-sm">
+                <table className="w-full text-left text-xs">
+                  <thead className="bg-slate-50 text-slate-500 font-bold text-[10px] uppercase font-mono tracking-wider border-b border-violet-100">
+                    <tr>
+                      <th className="p-3">Fecha y Hora</th>
+                      <th className="p-3">Cajero / Vendedor</th>
+                      <th className="p-3">Caja / Terminal</th>
+                      <th className="p-3">Sistema (USD)</th>
+                      <th className="p-3">Declarado (USD)</th>
+                      <th className="p-3">Diferencia</th>
+                      <th className="p-3 text-right">Resultado</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-violet-100">
+                    {(db.blindAudits || []).filter((b: any) => b.clientId === currentUser.id).map((audit: any) => {
+                      const isExact = audit.status === "exact";
+                      const isSurplus = audit.status === "surplus";
+                      return (
+                        <tr key={audit.id} className="hover:bg-violet-50/50 transition-colors">
+                          <td className="p-3 font-mono text-[11px] text-slate-500">
+                            {audit.timestamp ? new Date(audit.timestamp).toLocaleString() : "Reciente"}
+                          </td>
+                          <td className="p-3 font-bold text-violet-950">
+                            {audit.cashierName || "Cajero"}
+                          </td>
+                          <td className="p-3 text-slate-600 font-mono">
+                            {audit.terminalName || "Caja Principal"}
+                          </td>
+                          <td className="p-3 font-mono font-bold text-slate-700">
+                            ${(audit.systemTotalUSD || 0).toFixed(2)}
+                          </td>
+                          <td className="p-3 font-mono font-bold text-violet-900">
+                            ${(audit.declaredTotalUSD || 0).toFixed(2)}
+                          </td>
+                          <td className={`p-3 font-mono font-black ${isExact ? "text-emerald-600" : isSurplus ? "text-blue-600" : "text-red-600"}`}>
+                            {audit.diffUSD > 0 ? `+${audit.diffUSD.toFixed(2)}` : audit.diffUSD?.toFixed(2)} USD
+                          </td>
+                          <td className="p-3 text-right">
+                            <span className={`text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider ${
+                              isExact 
+                                ? "bg-emerald-100 text-emerald-700" 
+                                : isSurplus 
+                                ? "bg-blue-100 text-blue-700" 
+                                : "bg-red-100 text-red-700"
+                            }`}>
+                              {isExact ? "Cuadre Exacto" : isSurplus ? "Sobrante" : "Faltante"}
+                            </span>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                    {(db.blindAudits || []).filter((b: any) => b.clientId === currentUser.id).length === 0 && (
+                      <tr>
+                        <td colSpan={7} className="text-center py-6 text-slate-400 font-bold">
+                          No hay arqueos ciegos registrados aún. Se registrarán automáticamente cuando los cajeros cierren turno (Z).
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

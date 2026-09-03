@@ -23,6 +23,7 @@ import { KFSIoTEdgeConsole } from "../KFSIoTEdgeConsole";
 import { ScannerView } from "../ScannerView";
 
 import { FlowExpressCatalog } from "../FlowExpressCatalog";
+import { BlindCashCountModal } from "../BlindCashCountModal";
 import { B2BSelfOnboarding } from "../B2BSelfOnboarding";
 import { DatabaseManagerWidget } from "../DatabaseManagerWidget";
 import { ReferralLinksWidget } from "../ReferralLinksWidget";
@@ -72,13 +73,14 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
   const videoRef = useRef<HTMLVideoElement>(null);
   const [checkoutProduct, setCheckoutProduct] = useState<any>(null);
   const [receiptTx, setReceiptTx] = useState<any>(null);
+  const [showBlindCountModal, setShowBlindCountModal] = useState(false);
 
   const clientInfo = db.clients?.find((c: any) => c.id === currentUser.merchantId) || null;
   const [scannedGlobalProduct, setScannedGlobalProduct] = useState<any>(null);
   const [smsInput, setSmsInput] = useState("");
   const [searchProduct, setSearchProduct] = useState("");
   const [activeScreenshot, setActiveScreenshot] = useState<string | null>(null);
-  const { queryGlobalBarcode, smsConciliator, rates, networkState, requestNotificationPermission } = useKFS() as any;
+  const { queryGlobalBarcode, smsConciliator, rates, networkState, requestNotificationPermission, processBlindCashCount } = useKFS() as any;
 
   // Hardware Barcode Scanner Listener
   useEffect(() => {
@@ -346,7 +348,7 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
             <button onClick={() => showToast("Comando TFHKA Reporte X enviado...", "success")} className="flex items-center gap-1.5 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 px-3 py-1.5 rounded-xl transition-colors text-xs font-bold">
               Reporte X
             </button>
-            <button onClick={() => { generateZReport(currentUser.id, currentUser.clientId); showToast("Comando TFHKA Z enviado. Sesión cerrada.", "success"); }} className="flex items-center gap-1.5 bg-red-500/10 text-red-400 hover:bg-red-500/20 px-3 py-1.5 rounded-xl transition-colors text-xs font-bold">
+            <button onClick={() => setShowBlindCountModal(true)} className="flex items-center gap-1.5 bg-red-500/10 text-red-400 hover:bg-red-500/20 px-3 py-1.5 rounded-xl transition-colors text-xs font-bold cursor-pointer">
               Cerrar Caja (Z)
             </button>
           </div>
@@ -778,6 +780,22 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
           </button>
         </div>
       </div>
+
+      <BlindCashCountModal
+        isOpen={showBlindCountModal}
+        onClose={() => setShowBlindCountModal(false)}
+        bcvRate={rates?.USD || 36.45}
+        cashierName={currentUser?.name || "Cajero"}
+        terminalName={currentUser?.terminalName || "Caja Principal POS"}
+        onConfirm={(auditData) => {
+          processBlindCashCount({
+            vendedorId: currentUser.id,
+            clientId: currentUser.clientId,
+            terminalName: currentUser?.terminalName || "Caja Principal POS",
+            ...auditData
+          });
+        }}
+      />
     </div>
   );
 }

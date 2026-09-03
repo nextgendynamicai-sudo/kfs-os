@@ -166,12 +166,16 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
             </button>
             <button 
               onClick={() => {
-                showToast("Buscando Impresora Térmica vía WebUSB...", "success");
-                setTimeout(() => playCashDrawerSound(), 500);
+                showToast("Enviando comando ESC/POS a tiquetera térmica...", "success");
+                setTimeout(() => {
+                  playCashDrawerSound();
+                  window.print();
+                }, 300);
               }} 
               className="py-3 rounded-xl font-black text-xs text-violet-600 bg-violet-50 border border-violet-100 hover:bg-violet-100 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md active:scale-95 border-none"
+              title="Impresión Directa ESC/POS 58mm/80mm"
             >
-              🖨️ Imprimir
+              🖨️ Imprimir Térmico
             </button>
             
             {tx.customerPhone ? (

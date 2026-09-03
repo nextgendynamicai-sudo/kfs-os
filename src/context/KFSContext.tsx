@@ -80,6 +80,7 @@ interface KFSContextType {
   rejectOrder: (orderId: string) => void;
   dispatchOrder: (txId: string) => void;
   generateZReport: (vendedorId: string, clientId: string) => void;
+  processBlindCashCount: (auditData: any) => any;
   originalUser: any;
   impersonateClient: (client: any) => void;
   stopImpersonating: () => void;
@@ -195,6 +196,7 @@ const upgradeToNewBaseline = (oldDb: any, baselineDb: any) => {
     expenses: oldDb.expenses || [],
     posTerminals: oldDb.posTerminals || [],
     zReports: oldDb.zReports || [],
+    blindAudits: oldDb.blindAudits || [],
     vales: oldDb.vales || [],
     candidates: oldDb.candidates || [],
     unlockedContacts: oldDb.unlockedContacts || [],
@@ -412,6 +414,7 @@ const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
   mergedDb.expenses = mergeArrayIncoming(localDb.expenses, remoteDb.expenses, checkExpenseAuthority);
   mergedDb.posTerminals = mergeArrayIncoming(localDb.posTerminals, remoteDb.posTerminals, checkPosAuthority);
   mergedDb.zReports = mergeArrayIncoming(localDb.zReports, remoteDb.zReports, checkZReportAuthority);
+  mergedDb.blindAudits = mergeArrayIncoming(localDb.blindAudits || [], remoteDb.blindAudits || []);
   mergedDb.vales = mergeArrayIncoming(localDb.vales, remoteDb.vales, checkValeAuthority);
   mergedDb.candidates = mergeArrayIncoming(localDb.candidates, remoteDb.candidates, checkCandidateAuthority);
   mergedDb.unlockedContacts = mergeArrayIncoming(localDb.unlockedContacts, remoteDb.unlockedContacts, checkUnlockAuthority);
@@ -1762,7 +1765,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
-  const registerCustomer = async (phone: string, password: string, name: string, referralCode?: string, kycPhoto?: string, kycCedula?: string, kycAddress?: string, promoCode?: string) => {
+  const registerCustomer = async (phone: string, password: string, name: string, referralCode?: string, kycPhoto?: string, kycCedula?: string, kycAddress?: string, promoCode?: string, termsAudit?: any) => {
     const cleanPhone = phone.replace(/[^0-9]/g, "");
     const existing = db.customers?.find((c: any) => {
       const cPhone = (c.phone || "").replace(/[^0-9]/g, "");
@@ -1837,6 +1840,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       promoCode: cleanPromoCode,
       promoBonusEligible: cleanPromoCode === "1000",
       promoBonusClaimed: false,
+      termsAudit: termsAudit || null,
       createdAt: new Date().toISOString()
     };
 
@@ -3663,6 +3667,80 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
+  const processBlindCashCount = (auditInput: {
+    vendedorId: string;
+    clientId: string;
+    terminalName?: string;
+    declaredUSD: number;
+    declaredBs: number;
+    declaredDigitalUSD: number;
+    notes?: string;
+  }) => {
+    let resultAudit: any = null;
+    setDb((prev: any) => {
+      const shiftTxs = (prev.transactions || []).filter(
+        (tx: any) => tx.vendedorId === auditInput.vendedorId && tx.clientId === auditInput.clientId && !tx.zReported
+      );
+
+      let systemUSD = 0;
+      shiftTxs.forEach((tx: any) => {
+        systemUSD += (tx.amountUSD || 0);
+      });
+
+      const bcvRate = rates?.USD || 36.45;
+      const bsInUSD = bcvRate > 0 ? (auditInput.declaredBs || 0) / bcvRate : 0;
+      const declaredTotalUSD = (auditInput.declaredUSD || 0) + bsInUSD + (auditInput.declaredDigitalUSD || 0);
+      const diffUSD = declaredTotalUSD - systemUSD;
+
+      const status = Math.abs(diffUSD) < 0.05 ? "exact" : diffUSD > 0 ? "surplus" : "shortage";
+
+      const cashierObj = (prev.vendedores || []).find((v: any) => v.id === auditInput.vendedorId) ||
+        (prev.clients || []).find((c: any) => c.id === auditInput.vendedorId);
+
+      resultAudit = {
+        id: `blind_${Date.now()}`,
+        vendedorId: auditInput.vendedorId,
+        cashierName: cashierObj?.name || "Cajero",
+        clientId: auditInput.clientId,
+        terminalName: auditInput.terminalName || "Caja Principal",
+        systemTotalUSD: Number(systemUSD.toFixed(2)),
+        declaredCashUSD: auditInput.declaredUSD,
+        declaredCashBs: auditInput.declaredBs,
+        declaredDigitalUSD: auditInput.declaredDigitalUSD,
+        declaredTotalUSD: Number(declaredTotalUSD.toFixed(2)),
+        diffUSD: Number(diffUSD.toFixed(2)),
+        status,
+        txCount: shiftTxs.length,
+        notes: auditInput.notes || "Sin novedades declaradas",
+        timestamp: new Date().toISOString()
+      };
+
+      return {
+        ...prev,
+        blindAudits: [resultAudit, ...(prev.blindAudits || [])]
+      };
+    });
+
+    logAction(
+      auditInput.vendedorId,
+      "BLIND_CASH_AUDIT",
+      `Arqueo ciego completado: Declarado $${resultAudit?.declaredTotalUSD || 0} vs Sistema $${resultAudit?.systemTotalUSD || 0}. Diferencia: $${resultAudit?.diffUSD || 0} (${resultAudit?.status})`
+    );
+
+    // Ejecuta el cierre Z de turno
+    generateZReport(auditInput.vendedorId, auditInput.clientId);
+
+    if (resultAudit?.status === "exact") {
+      showToast("¡Cuadre de caja perfecto! Reporte Z emitido sin discrepancias.", "success");
+    } else if (resultAudit?.status === "surplus") {
+      showToast(`Arqueo Z completado con SOBRANTE de +$${resultAudit?.diffUSD?.toFixed(2)} USD.`, "info");
+    } else {
+      showToast(`Arqueo Z completado con FALTANTE de -$${Math.abs(resultAudit?.diffUSD || 0).toFixed(2)} USD.`, "error");
+    }
+
+    return resultAudit;
+  };
+
   const smsConciliator = (smsText: string) => {
     let bank = "Pago Móvil";
     let amount = 0;
@@ -3731,14 +3809,19 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (pendingOrder) {
+      const merchant = (db.clients || []).find((c: any) => c.id === pendingOrder.clientId);
+      const reconConfig = merchant?.paymentMethods?.reconciliationConfig || {};
+      const tolerancePercent = reconConfig.tolerancePercent !== undefined ? (reconConfig.tolerancePercent / 100) : 0.01;
       const bcvRate = rates?.USD || 36.45;
       const orderDueBs = (pendingOrder.amountUSD || 0) * bcvRate;
-      // Compare transferred Bolívares with live BCV rate
-      const isAmountMatching = amount <= 0 || amount >= orderDueBs * 0.99;
+      // Compare transferred Bolívares with live BCV rate using configured tolerance
+      const isAmountMatching = amount <= 0 || amount >= orderDueBs * (1 - tolerancePercent);
 
       if (isAmountMatching) {
         speakText("Pago verificado.");
-        approveOrder(pendingOrder.id);
+        if (reconConfig.autoApprove !== false) {
+          approveOrder(pendingOrder.id);
+        }
         return {
           matched: true,
           order: pendingOrder,
@@ -4867,7 +4950,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     isClient, isBooting, view, setView, currentUser, setCurrentUser, updateUserAvatar,
     toast, showToast, rates, updateBcvRates, db, setDb, formatUSD, formatEUR,
     handleLogin, logout, registerClient, registerFreeUser, registerCommerceWithOffer, upgradeToPremium, registerPromotora, registerVendedor, approvePromotora, rejectPromotora, settlePromotoraEarnings,
-    addProduct, editProduct, addExpense, processPurchase, submitOnlineOrder, approveOrder, rejectOrder, dispatchOrder, generateZReport,
+    addProduct, editProduct, addExpense, processPurchase, submitOnlineOrder, approveOrder, rejectOrder, dispatchOrder, generateZReport, processBlindCashCount,
     originalUser, impersonateClient, stopImpersonating,
     networkState, setNetworkState, smsConciliator, registerCrmExpress,
     ghostTrapLocked, setGhostTrapLocked, createVale, payVale, processPayroll, registerPosTerminal, deletePosTerminal,

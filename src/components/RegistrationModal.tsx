@@ -5,7 +5,7 @@ import { X, Store, User, Mail, Phone, Lock, FileText, ChevronRight } from "lucid
 import { useKFS } from "../context/KFSContext";
 import { ModalPortal } from "./ModalPortal";
 import { PhoneInput } from "./PhoneInput";
-import { TermsAcceptance } from "./TermsAcceptance";
+import { TermsAcceptance, generateLegalTermsAudit } from "./TermsAcceptance";
 
 interface RegistrationModalProps {
   isOpen: boolean;
@@ -39,7 +39,10 @@ export function RegistrationModal({ isOpen, onClose, offerType }: RegistrationMo
     e.preventDefault();
     setLoading(true);
     try {
-      await registerCommerceWithOffer(formData, offerType);
+      await registerCommerceWithOffer({
+        ...formData,
+        termsAudit: generateLegalTermsAudit()
+      }, offerType);
       onClose();
     } catch (error) {
       console.error(error);

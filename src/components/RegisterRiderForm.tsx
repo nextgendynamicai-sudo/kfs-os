@@ -6,7 +6,7 @@ import { Truck, Trash2 } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { compressImage } from "../lib/utils";
 import { PhoneInput } from "./PhoneInput";
-import { TermsAcceptance } from "./TermsAcceptance";
+import { TermsAcceptance, generateLegalTermsAudit } from "./TermsAcceptance";
 
 export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCancel: () => void, defaultReferralCode?: string }) => {
   const { registerRider, showToast } = useKFS() as any;
@@ -93,7 +93,8 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
           telefono: formData.pagoMovil.telefono || formData.phone,
           cedula: formData.pagoMovil.cedula || "V00000000"
         },
-        referredBy: defaultReferralCode
+        referredBy: defaultReferralCode,
+        termsAudit: generateLegalTermsAudit()
       };
 
       await Promise.resolve(registerRider(fallbackData));

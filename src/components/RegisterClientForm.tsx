@@ -5,7 +5,7 @@ import { KFS_BRAND } from "../config/brandConfig";
 import { Camera, DollarSign, Lock, Info, Store, UserCheck, Smartphone, FileText, MapPin, Trash2 } from "lucide-react";
 import { compressImage } from "../lib/utils";
 import { PhoneInput } from "./PhoneInput";
-import { TermsAcceptance } from "./TermsAcceptance";
+import { TermsAcceptance, generateLegalTermsAudit } from "./TermsAcceptance";
 
 export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, defaultReferralCode = "" }: any) => {
   const [formData, setFormData] = useState({ name: "", idCard: "", company: "", avgBilling: "", phone: "", email: "", password: "", address: "", kfsFeePercentage: 0.03, avatar: "", kycCedula: "", business_preset: "RETAIL-QUICK" });
@@ -128,7 +128,8 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
         idCard: formData.idCard.trim() || "V00000000",
         address: formData.address.trim() || "Dirección Comercial Principal",
         avatar: avatar || defaultAvatar,
-        kycCedula: kycCedula || defaultCedula
+        kycCedula: kycCedula || defaultCedula,
+        termsAudit: generateLegalTermsAudit()
       };
 
       await Promise.resolve(onRegister(fallbackData, defaultReferralCode, 0.03));
