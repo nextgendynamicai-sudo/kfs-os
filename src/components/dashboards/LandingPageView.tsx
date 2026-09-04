@@ -83,19 +83,16 @@ export const LandingPageView = ({ setView }: any) => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#fcfaff] via-[#f2e6ff] to-[#d8beff] text-violet-950 font-sans overflow-x-hidden selection:bg-violet-600 selection:text-white">
       {/* Navbar */}
-      <nav className="fixed w-full z-50 bg-white/80 backdrop-blur-xl border-b border-violet-100 py-4 px-6 sm:px-10 flex justify-between items-center transition-all duration-300 shadow-sm">
+      <nav className="fixed w-full z-50 bg-white/90 backdrop-blur-xl border-b border-violet-100 py-3.5 px-4 sm:px-10 flex justify-between items-center transition-all duration-300 shadow-sm">
         <div className="flex items-center gap-3">
           <KreatekLogo className="h-8 w-auto text-violet-600" />
         </div>
-        <div className="flex gap-4">
-          <button onClick={() => setView("login")} className="text-sm font-bold text-violet-700 hover:text-violet-900 transition-colors cursor-pointer pt-2">
-            Soy Cliente
-          </button>
-          <button onClick={() => setView("login")} className="text-sm font-bold text-slate-500 hover:text-violet-600 transition-colors cursor-pointer hidden sm:block pt-2">
-            Soy {KFS_BRAND.modules.marketplace} / Promotora
-          </button>
-          <button onClick={() => setView("b2b-onboarding")} className="text-violet-600 text-sm font-bold hover:text-violet-800 transition-colors cursor-pointer hidden sm:block pt-2">
-            Afiliar Comercio (B2B)
+        <div className="flex items-center gap-2 sm:gap-3">
+          <button 
+            onClick={() => setView("b2b-onboarding")} 
+            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-black text-violet-700 hover:text-violet-900 bg-violet-50 hover:bg-violet-100 border border-violet-200/70 px-3 sm:px-4 py-2 rounded-xl transition-all cursor-pointer shadow-sm"
+          >
+            🏪 <span className="hidden xs:inline">Afiliar</span> Comercio
           </button>
           <button 
             onClick={() => {
@@ -103,12 +100,15 @@ export const LandingPageView = ({ setView }: any) => {
               if (el) el.scrollIntoView({ behavior: "smooth" });
               else setView("b2b-onboarding");
             }}
-            className="bg-gradient-to-r from-amber-500 to-amber-600 text-white px-4 py-2 rounded-xl font-black text-xs hover:scale-105 transition-all shadow-md cursor-pointer border-none flex items-center gap-1"
+            className="hidden md:inline-flex items-center gap-1 bg-gradient-to-r from-amber-500 to-amber-600 text-white px-3.5 py-2 rounded-xl font-black text-xs hover:scale-105 transition-all shadow-md cursor-pointer border-none"
           >
-            ⚡ Planes de Lanzamiento
+            ⚡ Planes
           </button>
-          <button onClick={() => setView("login")} className="bg-violet-600 text-white px-5 py-2 rounded-xl font-black text-sm hover:scale-105 active:scale-95 transition-all shadow-lg shadow-violet-600/30 cursor-pointer border-none">
-            Acceder
+          <button 
+            onClick={() => setView("login")} 
+            className="bg-violet-600 hover:bg-violet-700 text-white px-4 sm:px-5 py-2 rounded-xl font-black text-xs sm:text-sm hover:scale-105 active:scale-95 transition-all shadow-md shadow-violet-600/30 cursor-pointer border-none flex items-center gap-1.5"
+          >
+            <span>Acceder</span>
           </button>
         </div>
       </nav>

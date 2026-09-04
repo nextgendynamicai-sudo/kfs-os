@@ -1255,10 +1255,22 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     // MODO DEMOSTRACIÓN: Clave universal "000" para ingresos de prueba
     if (safePass === "000") {
       let demoUser = null;
-      if (role === "core") {
+      let targetRole = role;
+
+      if (targetRole === "universal") {
+        if (safeEmail.includes("client") || safeEmail.includes("comercio") || safeEmail.includes("tienda")) targetRole = "dueño";
+        else if (safeEmail.includes("pos") || safeEmail.includes("caja") || safeEmail.includes("vendedor")) targetRole = "vendedor";
+        else if (safeEmail.includes("promo")) targetRole = "promotora";
+        else if (safeEmail.includes("rider") || safeEmail.includes("delivery")) targetRole = "rider";
+        else if (safeEmail.includes("core") || safeEmail.includes("admin")) targetRole = "core";
+        else if (cleanPhone.length >= 7 || safeEmail.includes("customer") || safeEmail.includes("cliente")) targetRole = "customer";
+        else targetRole = "dueño"; // default demo persona
+      }
+
+      if (targetRole === "core") {
         demoUser = { role: "core", name: "El Arquitecto", avatar: db.kreatekCore?.avatar || "" };
       }
-      if (role === "promotora") {
+      if (targetRole === "promotora") {
         let list = db.promotoras || [];
         if (list.length === 0) {
           const newUser = { id: "demo-promotora", name: "Promotora Demo", email: safeEmail || "promotora@demo.com", password: "000", status: "active", walletBalanceUSD: 250 };
@@ -1267,7 +1279,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         }
         demoUser = list.find((p: any) => (p.email && p.email.toLowerCase() === safeEmail)) || list[0];
       }
-      if (role === "dueño") {
+      if (targetRole === "dueño") {
         let list = db.clients || [];
         if (list.length === 0) {
           const newUser = { id: "demo-client", company: "Comercio Demo S.A.", email: safeEmail || "comercio@demo.com", password: "000", isOnboarded: true, walletBalanceUSD: 1000, salesUSD: 0 };
@@ -1276,7 +1288,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         }
         demoUser = list.find((c: any) => (c.email && c.email.toLowerCase() === safeEmail)) || list[0];
       }
-      if (role === "vendedor") {
+      if (targetRole === "vendedor") {
         let list = db.vendedores || [];
         if (list.length === 0) {
           const newUser = { id: "demo-vendedor", name: "Vendedor Demo", email: safeEmail || "vendedor@demo.com", password: "000", clientId: "kfs-express" };
@@ -1288,7 +1300,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           demoUser = { ...demoUser, clientId: "kfs-express" };
         }
       }
-      if (role === "rider") {
+      if (targetRole === "rider") {
         let list = db.riders || [];
         if (list.length === 0) {
           const newUser = { id: "demo-rider", name: "Delivery Demo", email: safeEmail || "rider@demo.com", password: "000", status: "approved" };
@@ -1297,7 +1309,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         }
         demoUser = list.find((r: any) => (r.email && r.email.toLowerCase() === safeEmail)) || list[0];
       }
-      if (role === "customer") {
+      if (targetRole === "customer") {
         let list = db.customers || [];
         if (list.length === 0) {
           const newUser = { id: "demo-customer", name: "Cliente Demo", phone: rawEmail || "04141234567", password: "000" };
@@ -1308,8 +1320,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (demoUser) {
-        setCurrentUser({ ...demoUser, role });
-        setView(role === "dueño" ? "client" : role);
+        setCurrentUser({ ...demoUser, role: targetRole });
+        setView(targetRole === "dueño" ? "client" : targetRole);
         showToast(`Modo Demostración Activado: ${demoUser.name || demoUser.company || "Test User"}`, "warning");
         return;
       }
@@ -1317,7 +1329,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    if (role === "core") {
+    if (role === "core" || ((role === "universal" || !role) && (safePass === (process.env.NEXT_PUBLIC_CORE_PASSWORD || "199521") || safePass === "199521" || safePass === "199521." || safePass === "ivory21"))) {
       const corePass = process.env.NEXT_PUBLIC_CORE_PASSWORD || "199521";
       if (safePass === corePass || safePass === "199521" || safePass === "199521." || safePass === "ivory21") {
         setCurrentUser({ role: "core", name: "El Arquitecto", avatar: db.kreatekCore?.avatar || "" });
@@ -1342,8 +1354,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         return;
       }
       
-      showToast("Credenciales de Arquitecto/Equipo incorrectas.", "error");
-      return;
+      if (role === "core") {
+        showToast("Credenciales de Arquitecto/Equipo incorrectas.", "error");
+        return;
+      }
     }
 
     // Determine candidate login email for Supabase Auth
