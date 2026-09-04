@@ -181,7 +181,8 @@ const upgradeToNewBaseline = (oldDb: any, baselineDb: any) => {
     ...baselineDb,
     kreatekCore: {
       ...(baselineDb.kreatekCore || {}),
-      wipeVersion: baselineDb.kreatekCore?.wipeVersion || 0
+      ...(oldDb.kreatekCore || {}),
+      wipeVersion: CURRENT_WIPE_VERSION
     },
     orders: oldDb.orders || [],
     transactions: oldDb.transactions || [],
@@ -209,7 +210,7 @@ const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
   if (!remoteDb) return localDb;
   if (!localDb) return remoteDb;
   
-  let mergedDb = { ...localDb };
+  const mergedDb = { ...localDb };
   
   const mergeArrayIncoming = (
     localArr: any[], 
@@ -694,7 +695,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
       const expiredClientIds = new Set((currentDb.clients || []).filter((c:any) => isExpiredDemo(c.id)).map((c:any) => c.id));
       
-      let needsCleanup = expiredClientIds.size > 0 || 
+      const needsCleanup = expiredClientIds.size > 0 || 
           (currentDb.customers || []).some((c:any) => isExpiredDemo(c.id)) ||
           (currentDb.promotoras || []).some((c:any) => isExpiredDemo(c.id)) ||
           (currentDb.vendedores || []).some((c:any) => isExpiredDemo(c.id)) ||
@@ -1071,7 +1072,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         let updated = false;
         const newCustomers = (prev.customers || []).map((c: any) => {
           let hasChanges = false;
-          let newC = { ...c };
+          const newC = { ...c };
 
           // 1. Axis Bonus Expiry (7 days irreversible)
           if (newC.k_point_bonus_expiry && newC.k_point_bonus_balance > 0) {
@@ -1689,7 +1690,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
   const convertAsset = (customerId: string, fromType: 'real_balance' | 'k_point_cash_balance', amount: number) => {
     setDb((prev: any) => {
-      let updatedCustomers = prev.customers || [];
+      const updatedCustomers = prev.customers || [];
       const customer = updatedCustomers.find((c: any) => c.id === customerId);
       if (!customer) return prev;
 
@@ -1722,7 +1723,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
   const claimFlowMaster = (customerId: string) => {
     setDb((prev: any) => {
-      let updatedCustomers = prev.customers || [];
+      const updatedCustomers = prev.customers || [];
       const customerIndex = updatedCustomers.findIndex((c: any) => c.id === customerId);
       if (customerIndex === -1) return prev;
 
@@ -3056,7 +3057,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         if (c.phone === customerPhone) {
           let newReal = c.real_balance || 0;
           let newKP = c.k_points_balance || 0;
-          let kExpiry = c.k_points_expiry;
+          const kExpiry = c.k_points_expiry;
           
           if (['real_balance', 'k_points', 'hybrid'].includes(paymentMethod)) {
             newReal -= realNeeded;
@@ -3624,7 +3625,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       }
 
       let totalUSD = 0;
-      let breakdown: any = {};
+      const breakdown: any = {};
       shiftTxs.forEach((tx: any) => {
         totalUSD += tx.amountUSD;
         breakdown[tx.paymentMethod] = (breakdown[tx.paymentMethod] || 0) + tx.amountUSD;
@@ -4112,7 +4113,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       const filtered = existingCandidates.filter((c: any) => c.phone !== candidateData.phone);
       
       const customerIdx = prev.customers?.findIndex((c: any) => c.id === customerId);
-      let updatedCustomers = [...(prev.customers || [])];
+      const updatedCustomers = [...(prev.customers || [])];
 
       if (candidateData.registrationPaymentStatus !== "approved") {
         if (customerIdx !== undefined && customerIdx !== -1 && updatedCustomers[customerIdx]?.walletUSD >= 1) {
@@ -4158,7 +4159,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       const clientIdx = prev.clients?.findIndex((c: any) => c.id === clientId);
       if (clientIdx === -1) return prev;
 
-      let updatedClients = [...(prev.clients || [])];
+      const updatedClients = [...(prev.clients || [])];
       
       if (updatedClients[clientIdx].walletBalanceUSD >= 10) {
         updatedClients[clientIdx] = {

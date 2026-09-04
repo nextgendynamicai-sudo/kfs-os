@@ -26,6 +26,8 @@ import { MerchantOnboardingTour } from "../MerchantOnboardingTour";
 import { CounterDisplayQRModal } from "../CounterDisplayQRModal";
 import { QuickCashierPinModal } from "../QuickCashierPinModal";
 import { SystemBackupRestoreModal } from "../SystemBackupRestoreModal";
+import { SmartChangeCalculator } from "../SmartChangeCalculator";
+import { STARTER_VENEZUELAN_PRODUCTS } from "../../config/products";
 
 import React, { useState, useEffect, useRef } from "react";
 import {
@@ -34,7 +36,8 @@ import {
   ChevronRight, CheckCircle, CreditCard, Bell, X, Info,
   Store, Star, ChevronLeft, Clock, UserCheck, Palette,
   Zap, BookOpen, Printer, Smartphone, Settings, DownloadCloud, Terminal, Truck,
-  Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database, Trash2, Tag
+  Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database, Trash2, Tag,
+  Calculator, Sparkles, CheckCircle2, ChevronDown, ChevronUp, ShoppingBag
 } from "lucide-react";
 import { useKFS } from "../../context/KFSContext";
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
@@ -119,8 +122,15 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [payValeModal, setPayValeModal] = useState<{ vale: any; amount: string } | null>(null);
-  const { setView, editProduct, createTicket, fundWallet, processMonthlyBilling, requestSubscriptionCancellation, createVale, payVale, processPayroll, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating, registerPosTerminal, deletePosTerminal, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, toggleBusinessOpen, updateBusinessConfig, createCoupon, deleteCoupon, toggleCouponActive } = useKFS() as any;
+  const { setView, editProduct, createTicket, fundWallet, processMonthlyBilling, requestSubscriptionCancellation, createVale, payVale, processPayroll, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating, registerPosTerminal, deletePosTerminal, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, toggleBusinessOpen, updateBusinessConfig, createCoupon, deleteCoupon, toggleCouponActive, processPurchase, setCurrentUser } = useKFS() as any;
   const [deliveryRadiusKm, setDeliveryRadiusKm] = useState(clientInfo?.deliveryRadiusKm || 5);
+
+  // Estados para Experiencia Intuitiva y Rápida
+  const [showChangeCalculator, setShowChangeCalculator] = useState(false);
+  const [checkoutProduct, setCheckoutProduct] = useState<any | null>(null);
+  const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
+  const [isImportingStarter, setIsImportingStarter] = useState(false);
+  const [dismissedChecklist, setDismissedChecklist] = useState(false);
 
   // First-time Password Change State
   const [firstTimeNewPass, setFirstTimeNewPass] = useState("");
@@ -159,7 +169,9 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
           : c
       )
     }));
-    if (currentUser) currentUser.hasCompletedOnboardingTour = true;
+    if (typeof setCurrentUser === 'function') {
+      setCurrentUser((prev: any) => prev ? { ...prev, hasCompletedOnboardingTour: true } : prev);
+    }
     showToast("🎉 ¡Guía completada! Tu negocio está listo para facturar.", "success");
   };
 
@@ -189,11 +201,14 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
       )
     }));
 
-    if (currentUser) {
-      currentUser.password = firstTimeNewPass;
-      currentUser.tempPassword = null;
-      currentUser.mustChangePassword = false;
-      currentUser.requirePasswordChangeOnFirstLogin = false;
+    if (typeof setCurrentUser === 'function') {
+      setCurrentUser((prev: any) => prev ? {
+        ...prev,
+        password: firstTimeNewPass,
+        tempPassword: null,
+        mustChangePassword: false,
+        requirePasswordChangeOnFirstLogin: false
+      } : prev);
     }
 
     setShowFirstTimePassModal(false);
@@ -351,6 +366,133 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
 
   const myZReports = db.zReports?.filter((z: any) => z.clientId === currentUser.id) || [];
 
+  // Métricas del Día en Tiempo Real
+  const todayDateStr = new Date().toISOString().slice(0, 10);
+  const todayTransactions = myTransactions.filter((tx: any) =>
+    (tx.timestamp && tx.timestamp.startsWith(todayDateStr)) ||
+    (tx.date && tx.date.startsWith(todayDateStr)) ||
+    (tx.createdAt && tx.createdAt.startsWith(todayDateStr))
+  );
+  const todaySalesUSD = todayTransactions.reduce((sum: number, tx: any) => sum + (parseFloat(tx.amountUSD) || 0), 0);
+  const currentBcvRate = rates?.USD || 36.45;
+  const todaySalesBs = todaySalesUSD * currentBcvRate;
+
+  // Precarga Rápida de Catálogo Venezolano (25 productos esenciales con 1 clic)
+  const handlePreloadStarterCatalog = () => {
+    if (!addProduct) return;
+    setIsImportingStarter(true);
+    let importedCount = 0;
+    const existingBarcodes = new Set((myProducts || []).map((p: any) => p.barcode).filter(Boolean));
+    const existingNames = new Set((myProducts || []).map((p: any) => p.name?.toLowerCase().trim()).filter(Boolean));
+
+    STARTER_VENEZUELAN_PRODUCTS.forEach((prod) => {
+      if (!existingBarcodes.has(prod.barcode) && !existingNames.has(prod.name.toLowerCase().trim())) {
+        addProduct({
+          name: prod.name,
+          priceUSD: prod.priceUSD,
+          costUSD: prod.costUSD,
+          stock: prod.stock,
+          category: prod.category,
+          barcode: prod.barcode,
+          image: prod.imgUrl,
+          description: prod.description,
+          clientId: currentUser.id,
+          clientName: currentUser.company,
+          status: "active"
+        });
+        importedCount++;
+      }
+    });
+
+    setIsImportingStarter(false);
+    playSyncChime();
+    showToast(`¡Éxito! Se han importado ${importedCount} productos venezolanos esenciales a tu catálogo.`, "success");
+  };
+
+  // Cobro directo de producto desde catálogo
+  const handleConfirmCheckout = (paymentMethod: string, applyIva: boolean, paymentReference: string, customerPhone: string, customerName: string, customerRif: string, paymentScreenshot?: string, kPointsToBurn: number = 0, appliedCouponCode: string = "") => {
+    if (!checkoutProduct) return;
+    try {
+      const tx = processPurchase(checkoutProduct, paymentMethod, applyIva, customerPhone, customerName, customerRif, kPointsToBurn, appliedCouponCode);
+      setCheckoutProduct(null);
+      playSyncChime();
+      showToast(`¡Venta cobrada con éxito! Factura #${tx?.receiptNumber || 'POS'}`, "success");
+    } catch (e: any) {
+      showToast(`Error al procesar cobro: ${e?.message || e}`, "error");
+    }
+  };
+
+  // Checklist de Onboarding / Asistente de Puesta en Marcha Interactivo
+  const hasPaymentConfig = Boolean(
+    currentUser.paymentMethods?.pagoMovilPhone || 
+    currentUser.paymentMethods?.binance || 
+    currentUser.paymentMethods?.zinli ||
+    clientInfo.paymentMethods?.pagoMovilPhone
+  );
+  const hasStoreIdentity = Boolean(
+    clientInfo.storeSettings?.profilePicUrl || 
+    currentUser.avatar || 
+    clientInfo.avatar
+  );
+  const hasProducts = myProducts.length >= 3;
+  const hasCashier = myVendedores.length >= 1;
+  const hasStandee = Boolean(clientInfo.hasPrintedStandee);
+
+  const setupItems = [
+    {
+      id: "payments",
+      title: "Cuentas de Cobro (Pago Móvil / Binance / Zinli)",
+      desc: "Configura dónde recibirás los pagos de tus clientes en tienda y web",
+      done: hasPaymentConfig,
+      btnLabel: "Configurar Cuentas",
+      onClick: () => {
+        setActiveTab("config");
+        setTimeout(() => {
+          const el = document.getElementById("cuentas-cobro-section");
+          if (el) el.scrollIntoView({ behavior: "smooth" });
+        }, 150);
+      }
+    },
+    {
+      id: "identity",
+      title: "Logo y Personalización de Tienda",
+      desc: "Define los colores, logo y portada de tu vitrina virtual",
+      done: hasStoreIdentity,
+      btnLabel: "Personalizar Tienda",
+      onClick: () => setActiveTab("config")
+    },
+    {
+      id: "products",
+      title: "Catálogo de Productos",
+      desc: myProducts.length === 0 ? "Importa los 25 básicos venezolanos o sube tus productos" : `${myProducts.length} productos registrados en sistema`,
+      done: hasProducts,
+      btnLabel: myProducts.length === 0 ? "⚡ Cargar 25 Básicos" : "+ Añadir Producto",
+      onClick: myProducts.length === 0 ? handlePreloadStarterCatalog : () => setShowAddModal(true)
+    },
+    {
+      id: "team",
+      title: "Equipo y Cajeros de Turno",
+      desc: "Crea los cajeros con su PIN para el control y arqueo de caja",
+      done: hasCashier,
+      btnLabel: "+ Añadir Cajero",
+      onClick: () => {
+        setActiveTab("personal");
+        setShowAddVendedor(true);
+      }
+    },
+    {
+      id: "standee",
+      title: "Cartel QR para Mostrador",
+      desc: "Imprime tu cartel oficial para cobrar en la caja",
+      done: hasStandee,
+      btnLabel: "🖨️ Ver e Imprimir Standee",
+      onClick: () => setShowCounterQRModal(true)
+    }
+  ];
+
+  const completedSetupCount = setupItems.filter(i => i.done).length;
+  const setupPercent = Math.round((completedSetupCount / setupItems.length) * 100);
+
   useEffect(() => {
     const handleStoreSale = (e: any) => {
       if (e.detail.clientId === currentUser.id) {
@@ -499,6 +641,31 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
             <h1 className="font-black text-xl tracking-tight text-white">{KFS_BRAND.productAcronym} Negocio</h1>
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            {/* BOTÓN PROTAGONISTA: COBRAR / CAJA POS */}
+            <button 
+              type="button"
+              onClick={() => {
+                if (setView) setView("axis_nitro_pos");
+                else setActiveTab("inventario");
+              }} 
+              className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer border border-emerald-300 flex items-center gap-1.5 shadow-lg shadow-emerald-500/30 active:scale-95 animate-pulse"
+              title="Ir inmediatamente a la Caja Registradora / POS"
+            >
+              <ShoppingCart size={15} className="fill-slate-950" />
+              <span>Cobrar / Caja POS</span>
+            </button>
+
+            {/* BOTÓN CALCULADORA RÁPIDA DE VUELTO & TASA BCV */}
+            <button 
+              type="button"
+              onClick={() => setShowChangeCalculator(true)} 
+              className="px-3.5 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/40 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95"
+              title="Abrir calculadora rápida de vuelto en Dólares y Bolívares con tasa BCV"
+            >
+              <Calculator size={15} className="text-amber-400" />
+              <span>Vueltos & BCV</span>
+            </button>
+
             <button 
               type="button"
               onClick={() => setShowCounterQRModal(true)} 
@@ -555,6 +722,174 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
 
         {activeTab === "resumen" && (
           <div className="space-y-6">
+            {/* ASISTENTE INTERACTIVO DE PUESTA EN MARCHA (CHECKLIST ESTILO SHOPIFY) */}
+            {!dismissedChecklist && setupPercent < 100 && (
+              <div className="bg-gradient-to-br from-violet-950 via-slate-900 to-indigo-950 border border-violet-500/30 rounded-[2.5rem] p-6 md:p-8 text-white shadow-2xl relative overflow-hidden animate-fade-in">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-white/10 pb-5 mb-6">
+                  <div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-amber-400 bg-amber-500/20 px-3 py-1 rounded-full border border-amber-400/30 inline-flex items-center gap-1.5 mb-2">
+                      <Sparkles size={12} className="text-amber-400" /> Asistente de Puesta en Marcha
+                    </span>
+                    <h3 className="text-xl md:text-2xl font-black text-white">
+                      Configuración de tu Negocio: {setupPercent}% Completado
+                    </h3>
+                    <p className="text-xs text-slate-300 mt-1">
+                      Completa estos 5 pasos clave para dejar tu negocio 100% listo para facturar en mostrador y recibir pedidos online.
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-4 shrink-0">
+                    <div className="text-right">
+                      <span className="text-2xl font-black text-amber-400 font-mono">{completedSetupCount} de {setupItems.length}</span>
+                      <span className="text-[10px] text-slate-400 block uppercase font-bold">Pasos listos</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setDismissedChecklist(true)}
+                      className="text-slate-400 hover:text-white p-1 rounded-lg text-xs cursor-pointer border-none bg-transparent"
+                      title="Ocultar asistente por ahora"
+                    >
+                      <X size={18} />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Barra de progreso visual */}
+                <div className="w-full bg-white/10 h-3 rounded-full overflow-hidden mb-6">
+                  <div 
+                    className="h-full bg-gradient-to-r from-amber-400 via-emerald-400 to-teal-400 transition-all duration-700 rounded-full"
+                    style={{ width: `${setupPercent}%` }}
+                  />
+                </div>
+
+                {/* Tarjetas de pasos interactivos */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                  {setupItems.map((item, idx) => (
+                    <div 
+                      key={item.id}
+                      className={`p-4 rounded-2xl border transition-all flex flex-col justify-between gap-3 ${
+                        item.done 
+                          ? "bg-emerald-950/40 border-emerald-500/30 text-emerald-100" 
+                          : "bg-white/5 border-white/10 hover:border-violet-400/40 hover:bg-white/10 text-white"
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs shrink-0 mt-0.5 ${
+                          item.done ? "bg-emerald-500 text-slate-950" : "bg-white/20 text-white"
+                        }`}>
+                          {item.done ? <Check size={14} strokeWidth={3} /> : idx + 1}
+                        </div>
+                        <div>
+                          <h4 className="text-xs font-black text-white leading-snug">{item.title}</h4>
+                          <p className="text-[10px] text-slate-300 mt-1 leading-relaxed">{item.desc}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex justify-end pt-2 border-t border-white/5">
+                        {item.done ? (
+                          <span className="text-[10px] font-black text-emerald-400 flex items-center gap-1">
+                            <CheckCircle2 size={12} /> Completado
+                          </span>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={item.onClick}
+                            className="px-3 py-1.5 bg-violet-600 hover:bg-violet-500 text-white text-[11px] font-bold rounded-xl shadow-md transition-transform active:scale-95 cursor-pointer border-none"
+                          >
+                            {item.btnLabel} &rarr;
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* RESUMEN EJECUTIVO DEL DÍA (KPIs DE USO DIARIO) */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {/* Tarjeta 1: Total Cobrado Hoy */}
+              <div className="bg-gradient-to-br from-emerald-900 to-teal-950 border border-emerald-700/50 p-6 rounded-[2rem] text-white shadow-xl shadow-emerald-950/20 relative overflow-hidden flex flex-col justify-between">
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-[10px] uppercase font-black tracking-widest text-emerald-300 font-mono">
+                      💵 Cobrado Hoy en Caja
+                    </span>
+                    <span className="bg-emerald-500/30 text-emerald-200 text-[9px] font-black px-2.5 py-0.5 rounded-full font-mono">
+                      En Vivo
+                    </span>
+                  </div>
+                  <h3 className="text-3xl lg:text-4xl font-black text-white font-mono tracking-tight">
+                    {formatUSD(todaySalesUSD)}
+                  </h3>
+                </div>
+                <div className="mt-4 pt-3 border-t border-emerald-800/60">
+                  <p className="text-xs text-emerald-200 font-mono font-bold truncate">
+                    Bs. {todaySalesBs.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  </p>
+                  <p className="text-[10px] text-emerald-400 mt-0.5">
+                    Tasa Oficial BCV: Bs. {currentBcvRate.toFixed(2)}
+                  </p>
+                </div>
+              </div>
+
+              {/* Tarjeta 2: Ventas Realizadas Hoy */}
+              <div className="bg-white border border-violet-100 p-6 rounded-[2rem] shadow-xl shadow-violet-200/40 flex flex-col justify-between text-violet-950">
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-[10px] uppercase font-black tracking-widest text-slate-400 font-mono">
+                      🧾 Ventas del Día
+                    </span>
+                    <span className="bg-violet-100 text-violet-700 text-[9px] font-black px-2.5 py-0.5 rounded-full font-mono">
+                      {todayTransactions.length} Tickets
+                    </span>
+                  </div>
+                  <h3 className="text-3xl lg:text-4xl font-black text-violet-950 font-mono tracking-tight">
+                    {todayTransactions.length} <span className="text-base text-slate-400 font-normal font-sans">operaciones</span>
+                  </h3>
+                </div>
+                <div className="mt-4 pt-3 border-t border-violet-100 flex justify-between items-center text-xs">
+                  <span className="text-slate-500 font-medium">Ticket Promedio:</span>
+                  <span className="font-mono font-bold text-violet-900">
+                    {todayTransactions.length > 0 ? formatUSD(todaySalesUSD / todayTransactions.length) : "$0.00"}
+                  </span>
+                </div>
+              </div>
+
+              {/* Tarjeta 3: Estado Operativo & Alertas */}
+              <div className="bg-white border border-violet-100 p-6 rounded-[2rem] shadow-xl shadow-violet-200/40 flex flex-col justify-between text-violet-950">
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-[10px] uppercase font-black tracking-widest text-slate-400 font-mono">
+                      ⚡ Estado Operativo
+                    </span>
+                    <span className={`text-[9px] font-black px-2.5 py-0.5 rounded-full font-mono ${clientInfo.isOpen !== false ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}`}>
+                      {clientInfo.isOpen !== false ? 'Abierto' : 'Cerrado'}
+                    </span>
+                  </div>
+                  <h3 className="text-xl font-black text-violet-950 tracking-tight flex items-center gap-2">
+                    {clientInfo.isOpen !== false ? '🟢 Tienda Abierta' : '🔴 Tienda Cerrada'}
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-1">
+                    {clientInfo.isOpen !== false ? 'Tus clientes pueden comprar en mostrador y web.' : 'Los pedidos web están pausados.'}
+                  </p>
+                </div>
+                <div className="mt-3 pt-3 border-t border-violet-100 flex items-center justify-between text-xs">
+                  <span className="text-slate-500">Alertas Stock:</span>
+                  {lowStockProducts.length > 0 ? (
+                    <button 
+                      onClick={() => setActiveTab("inventario")}
+                      className="text-rose-600 font-black hover:underline cursor-pointer bg-rose-50 px-2 py-0.5 rounded-md text-[11px] border-none"
+                    >
+                      ⚠️ {lowStockProducts.length} producto(s) bajo stock
+                    </button>
+                  ) : (
+                    <span className="text-emerald-600 font-bold text-[11px]">✅ Stock normal</span>
+                  )}
+                </div>
+              </div>
+            </div>
+
             <div className="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-xl shadow-violet-200/50 border border-violet-100 relative overflow-hidden text-violet-950">
               <div className="relative z-10 w-full flex flex-col md:flex-row md:justify-between md:items-end gap-6">
                 <div>
@@ -580,7 +915,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                       </select>
                     </div>
                     <div className="flex items-center gap-2 bg-violet-50 px-4 py-2 rounded-xl border border-violet-100 placeholder:text-slate-400">
-                      <span className="text-xs font-bold text-slate-500">Tasa {KFS_BRAND.productAcronym} Activa (Oráculo):</span>
+                      <span className="text-xs font-bold text-slate-500">Tasa Oficial del Día (BCV):</span>
                       <span className="text-sm font-black text-violet-600">
                         {currentUser.oracle_fee_percentage !== undefined && currentUser.oracle_fee_percentage !== null
                           ? currentUser.oracle_fee_percentage
@@ -596,11 +931,11 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
               <DollarSign size={200} className="absolute -right-10 -bottom-20 text-violet-50" />
             </div>
 
-            {/* Peaje Gamificado Progress */}
+            {/* Meta de Descuento Vitalicio en Comisión */}
             <div className="bg-white rounded-[2rem] shadow-xl shadow-violet-200/50 p-8 flex flex-col md:flex-row items-center gap-8 border border-violet-100">
               <div className="flex-1 w-full">
                 <div className="flex justify-between items-end mb-2">
-                  <h3 className="font-black text-violet-950 text-lg">Progreso de Peaje Gamificado</h3>
+                  <h3 className="font-black text-violet-950 text-lg">🎯 Tu Meta: Descuento Vitalicio en Comisión (3%)</h3>
                   <span className="text-sm font-bold text-violet-600">{clientInfo?.onboardedUsers || 0} / 50 Usuarios</span>
                 </div>
                 <div className="w-full bg-violet-100 h-4 rounded-full overflow-hidden placeholder:text-slate-400">
@@ -688,9 +1023,36 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
         )}
 
         {activeTab === 'config' && businessPreset !== "AXIS-ONLY" && (
-          <div className="space-y-6">
-            <FiscalPrinterSetupWidget />
-            <HardwareDriverSuite showToast={showToast} />
+          <div className="bg-white rounded-[2rem] shadow-xl shadow-violet-200/50 border border-violet-100 overflow-hidden transition-all">
+            <button
+              type="button"
+              onClick={() => setShowAdvancedSettings(!showAdvancedSettings)}
+              className="w-full p-6 flex items-center justify-between text-left bg-gradient-to-r from-slate-50 to-violet-50/50 hover:bg-violet-50 transition-colors border-none cursor-pointer"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center text-violet-700">
+                  <Settings size={20} />
+                </div>
+                <div>
+                  <h4 className="font-black text-base text-violet-950 flex items-center gap-2">
+                    🛠️ Opciones Técnicas y Periféricos Avanzados
+                    <span className="text-[10px] font-bold text-violet-600 bg-violet-100 px-2 py-0.5 rounded-full uppercase">Opcional</span>
+                  </h4>
+                  <p className="text-xs text-slate-500">Impresoras fiscales SENIAT, básculas de peso, gavetas de dinero y consola IoT Edge.</p>
+                </div>
+              </div>
+              <span className="text-xs font-black text-violet-700 bg-white border border-violet-200 px-3 py-1.5 rounded-xl shadow-sm">
+                {showAdvancedSettings ? "▲ Ocultar Opciones" : "▼ Mostrar Opciones"}
+              </span>
+            </button>
+
+            {showAdvancedSettings && (
+              <div className="p-6 pt-2 space-y-6 border-t border-violet-100 animate-fade-in">
+                <FiscalPrinterSetupWidget />
+                <HardwareDriverSuite showToast={showToast} />
+                <KFSIoTEdgeConsole showToast={showToast} />
+              </div>
+            )}
           </div>
         )}
 
@@ -1047,8 +1409,6 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
           </div>
         )}
 
-        {activeTab === 'config' && businessPreset !== "AXIS-ONLY" && <KFSIoTEdgeConsole showToast={showToast} />}
-
         {/* Vales & Créditos Widget */}
         {activeTab === 'personal' && (
           <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-violet-200/50 border border-violet-100 space-y-6">
@@ -1230,12 +1590,15 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
             </div>
 
             <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-violet-200/50 border border-violet-100 space-y-6">
-            <div className="flex justify-between items-center border-b border-violet-100 pb-4">
-              <h3 className="font-black text-xl text-violet-950 flex items-center gap-2">
-                🏦 Bóveda Financiera (Métodos de Cobro)
-              </h3>
-              <span className="bg-emerald-100 text-emerald-700 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
-                Verificados
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center border-b border-violet-100 pb-4 gap-2">
+              <div>
+                <h3 className="font-black text-xl text-violet-950 flex items-center gap-2">
+                  💳 Mis Cuentas de Cobro (Pago Móvil, Zelle, Zinli, Binance)
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">Configura dónde recibirás el dinero de tus ventas. Tus clientes y cajeros verán estos datos automáticamente al cobrar.</p>
+              </div>
+              <span className="bg-emerald-100 text-emerald-700 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono shrink-0 self-start sm:self-auto">
+                Cuentas Activas
               </span>
             </div>
             <form onSubmit={e => {
@@ -1408,12 +1771,15 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
         {/* Gobernanza de Puntos de Venta (Multi-POS Integrado) */}
         {activeTab === 'config' && (
           <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-violet-200/50 border border-violet-100 space-y-6">
-            <div className="flex justify-between items-center border-b border-violet-100 pb-4">
-              <h3 className="font-black text-xl text-violet-950 flex items-center gap-2 text-violet-600">
-                🔌 Gobernanza de Puntos de Venta (Multi-POS Integrado)
-              </h3>
-              <span className="bg-violet-50 border border-violet-100 text-violet-600 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono">
-                Sincronización Directa PCI
+            <div className="flex flex-col sm:flex-row justify-between sm:items-center border-b border-violet-100 pb-4 gap-2">
+              <div>
+                <h3 className="font-black text-xl text-violet-950 flex items-center gap-2">
+                  🖥️ Mis Cajas y Puntos de Cobro (Multi-POS)
+                </h3>
+                <p className="text-xs text-slate-500 mt-0.5">Vincula terminales de venta física, cajas registradoras secundarias y puntos de cobro en red.</p>
+              </div>
+              <span className="bg-violet-50 border border-violet-100 text-violet-600 text-[9px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider font-mono shrink-0 self-start sm:self-auto">
+                Cajas en Red
               </span>
             </div>
 
@@ -1783,16 +2149,27 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
 
             {/* Gestión y Edición de Productos Publicados */}
             <div className="bg-white p-8 rounded-[2rem] shadow-xl shadow-violet-200/50 border border-violet-100 space-y-6">
-              <div className="flex justify-between items-center border-b border-violet-100 pb-4">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-violet-100 pb-4 gap-3">
                 <h3 className="font-black text-xl text-violet-950 flex items-center gap-2">
                   🛍️ Catálogo Activo & Edición de Productos ({myProducts.length})
                 </h3>
-                <button 
-                  onClick={() => setShowAddModal(true)} 
-                  className="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs rounded-xl transition-all shadow-md cursor-pointer border-none flex items-center gap-1.5"
-                >
-                  <Plus size={16} /> Agregar Producto
-                </button>
+                <div className="flex flex-wrap items-center gap-2">
+                  <button 
+                    onClick={handlePreloadStarterCatalog} 
+                    disabled={isImportingStarter}
+                    className="px-3.5 py-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs rounded-xl transition-all shadow-md cursor-pointer border-none flex items-center gap-1.5 disabled:opacity-50"
+                    title="Importar 25 productos venezolanos populares con código, foto y categoría"
+                  >
+                    <Sparkles size={14} className="fill-slate-950" />
+                    {isImportingStarter ? "Importando..." : "⚡ Cargar 25 Básicos VE"}
+                  </button>
+                  <button 
+                    onClick={() => setShowAddModal(true)} 
+                    className="px-4 py-2 bg-violet-600 hover:bg-violet-700 text-white font-bold text-xs rounded-xl transition-all shadow-md cursor-pointer border-none flex items-center gap-1.5"
+                  >
+                    <Plus size={16} /> Agregar Producto
+                  </button>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -1817,18 +2194,48 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
 
                     <div className="flex justify-between items-center pt-2 border-t border-slate-200">
                       <span className="font-black text-emerald-600 text-base font-mono">${(p.priceUSD || 0).toFixed(2)} USD</span>
-                      <button 
-                        onClick={() => setEditingProd(p)}
-                        className="px-3 py-1.5 bg-violet-900 hover:bg-slate-800 text-white font-black text-xs rounded-lg transition-colors cursor-pointer border-none shadow-sm flex items-center gap-1"
-                      >
-                        ✏️ Configurar / Editar
-                      </button>
+                      <div className="flex items-center gap-1.5">
+                        <button 
+                          onClick={() => setCheckoutProduct(p)}
+                          className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-lg transition-colors cursor-pointer border-none shadow-sm flex items-center gap-1"
+                          title="Cobrar este producto de inmediato en caja"
+                        >
+                          <ShoppingCart size={13} /> Cobrar
+                        </button>
+                        <button 
+                          onClick={() => setEditingProd(p)}
+                          className="px-2.5 py-1.5 bg-violet-100 hover:bg-violet-200 text-violet-900 font-bold text-xs rounded-lg transition-colors cursor-pointer border-none shadow-sm flex items-center gap-1"
+                        >
+                          ✏️ Editar
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
                 {myProducts.length === 0 && (
-                  <div className="col-span-full text-center py-8 text-slate-400 font-bold">
-                    No tienes productos publicados. Haz clic en "Agregar Producto" para subir tu primer ítem.
+                  <div className="col-span-full text-center py-10 px-6 bg-gradient-to-br from-violet-50 to-amber-50 rounded-2xl border-2 border-dashed border-violet-200 flex flex-col items-center gap-3">
+                    <div className="w-14 h-14 bg-amber-100 rounded-full flex items-center justify-center text-amber-600">
+                      <Sparkles size={28} />
+                    </div>
+                    <h4 className="font-black text-lg text-violet-950">Tu catálogo aún está vacío</h4>
+                    <p className="text-xs text-slate-600 max-w-md">
+                      ¿No quieres escribir ni buscar fotos para 25 productos? Haz clic en el botón de abajo para importar al instante los productos más vendidos en Venezuela (Harina PAN, Mavesa, Polar, Toddy, Arroz Mary, etc.) con sus códigos de barra oficiales y fotos.
+                    </p>
+                    <div className="flex flex-wrap justify-center gap-3 mt-2">
+                      <button
+                        onClick={handlePreloadStarterCatalog}
+                        disabled={isImportingStarter}
+                        className="px-6 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs rounded-xl shadow-lg shadow-amber-500/30 transition-all cursor-pointer border-none flex items-center gap-2"
+                      >
+                        <Sparkles size={16} /> {isImportingStarter ? "Cargando..." : "⚡ Cargar 25 Básicos con 1 Clic"}
+                      </button>
+                      <button
+                        onClick={() => setShowAddModal(true)}
+                        className="px-6 py-3 bg-violet-900 hover:bg-violet-800 text-white font-bold text-xs rounded-xl transition-all cursor-pointer border-none flex items-center gap-2"
+                      >
+                        <Plus size={16} /> Subir Producto Manual
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -2389,31 +2796,67 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
         )}
 
         {/* FIXED BOTTOM NAVIGATION */}
-        <div className="fixed bottom-0 inset-x-0 z-40 bg-white/90 backdrop-blur-xl border-t border-violet-100 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] pb-safe">
-          <div className="max-w-5xl mx-auto px-6 py-4 flex justify-between gap-2 items-center relative">
-            {[
-              { id: "resumen", icon: Activity, label: "Resumen" },
-              businessPreset !== "AXIS-ONLY" && { id: "inventario", icon: Package, label: "Inventario" },
-              businessPreset !== "AXIS-ONLY" && { id: "personal", icon: Users, label: "Personal" },
-              { id: "cupones", icon: Tag, label: "Cupones" },
-              { id: "config", icon: Settings, label: "Ajustes" }
-            ].filter((tab): tab is any => Boolean(tab)).map(tab => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className="relative flex flex-col items-center justify-center w-20 h-12 cursor-pointer group"
-                >
-                  {isActive && <span className="absolute -top-4 w-12 h-1 bg-violet-500 rounded-b-full shadow-[0_4px_10px_rgba(56,189,248,0.5)]" />}
-                  <div className={`relative transition-all duration-300 ${isActive ? '-translate-y-2 text-violet-950' : 'text-slate-400 group-hover:text-slate-600'}`}>
-                    <Icon size={24} strokeWidth={isActive ? 2.5 : 2} />
-                  </div>
-                  <span className={`text-[9px] font-bold mt-1 transition-all duration-300 ${isActive ? 'opacity-100 text-violet-950' : 'opacity-0 translate-y-2'}`}>{tab.label}</span>
-                </button>
-              )
-            })}
+        <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-xl border-t border-violet-100 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.08)] pb-safe">
+          <div className="max-w-5xl mx-auto px-4 py-2 sm:py-3 flex justify-around gap-1 items-center relative">
+            <button
+              onClick={() => setActiveTab("resumen")}
+              className="relative flex flex-col items-center justify-center w-16 h-12 cursor-pointer group"
+            >
+              {activeTab === "resumen" && <span className="absolute -top-3 w-10 h-1 bg-violet-500 rounded-b-full shadow-[0_4px_10px_rgba(56,189,248,0.5)]" />}
+              <div className={`relative transition-all duration-300 ${activeTab === "resumen" ? '-translate-y-1 text-violet-950' : 'text-slate-400 group-hover:text-slate-600'}`}>
+                <Activity size={22} strokeWidth={activeTab === "resumen" ? 2.5 : 2} />
+              </div>
+              <span className={`text-[9px] font-bold transition-all duration-300 ${activeTab === "resumen" ? 'opacity-100 text-violet-950' : 'opacity-70 text-slate-400'}`}>Resumen</span>
+            </button>
+
+            {businessPreset !== "AXIS-ONLY" && (
+              <button
+                onClick={() => setActiveTab("inventario")}
+                className="relative flex flex-col items-center justify-center w-16 h-12 cursor-pointer group"
+              >
+                {activeTab === "inventario" && <span className="absolute -top-3 w-10 h-1 bg-violet-500 rounded-b-full shadow-[0_4px_10px_rgba(56,189,248,0.5)]" />}
+                <div className={`relative transition-all duration-300 ${activeTab === "inventario" ? '-translate-y-1 text-violet-950' : 'text-slate-400 group-hover:text-slate-600'}`}>
+                  <Package size={22} strokeWidth={activeTab === "inventario" ? 2.5 : 2} />
+                </div>
+                <span className={`text-[9px] font-bold transition-all duration-300 ${activeTab === "inventario" ? 'opacity-100 text-violet-950' : 'opacity-70 text-slate-400'}`}>Productos</span>
+              </button>
+            )}
+
+            {/* BOTÓN ELEVADO CENTRAL: CAJA POS DIRECTA */}
+            <button
+              onClick={() => setView("nitro_pos")}
+              className="relative -top-5 flex flex-col items-center justify-center cursor-pointer group z-50"
+              title="Abrir Caja POS para Cobrar"
+            >
+              <div className="w-14 h-14 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white flex items-center justify-center shadow-lg shadow-emerald-500/40 border-4 border-white transition-all transform group-hover:scale-110 active:scale-95">
+                <ShoppingCart size={24} className="stroke-[2.5]" />
+              </div>
+              <span className="text-[10px] font-black text-emerald-800 tracking-tight mt-0.5 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200 shadow-sm">Caja POS</span>
+            </button>
+
+            {businessPreset !== "AXIS-ONLY" && (
+              <button
+                onClick={() => setActiveTab("personal")}
+                className="relative flex flex-col items-center justify-center w-16 h-12 cursor-pointer group"
+              >
+                {activeTab === "personal" && <span className="absolute -top-3 w-10 h-1 bg-violet-500 rounded-b-full shadow-[0_4px_10px_rgba(56,189,248,0.5)]" />}
+                <div className={`relative transition-all duration-300 ${activeTab === "personal" ? '-translate-y-1 text-violet-950' : 'text-slate-400 group-hover:text-slate-600'}`}>
+                  <Users size={22} strokeWidth={activeTab === "personal" ? 2.5 : 2} />
+                </div>
+                <span className={`text-[9px] font-bold transition-all duration-300 ${activeTab === "personal" ? 'opacity-100 text-violet-950' : 'opacity-70 text-slate-400'}`}>Equipo</span>
+              </button>
+            )}
+
+            <button
+              onClick={() => setActiveTab("config")}
+              className="relative flex flex-col items-center justify-center w-16 h-12 cursor-pointer group"
+            >
+              {activeTab === "config" && <span className="absolute -top-3 w-10 h-1 bg-violet-500 rounded-b-full shadow-[0_4px_10px_rgba(56,189,248,0.5)]" />}
+              <div className={`relative transition-all duration-300 ${activeTab === "config" ? '-translate-y-1 text-violet-950' : 'text-slate-400 group-hover:text-slate-600'}`}>
+                <Settings size={22} strokeWidth={activeTab === "config" ? 2.5 : 2} />
+              </div>
+              <span className={`text-[9px] font-bold transition-all duration-300 ${activeTab === "config" ? 'opacity-100 text-violet-950' : 'opacity-70 text-slate-400'}`}>Ajustes</span>
+            </button>
           </div>
         </div>
 
@@ -2813,6 +3256,31 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
           setDb={setDb}
           onClose={() => setShowBackupModal(false)}
           showToast={showToast}
+        />
+      )}
+
+      {/* Calculadora Inteligente de Vueltos & BCV */}
+      {showChangeCalculator && (
+        <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-fade-in">
+          <div className="w-full max-w-md">
+            <SmartChangeCalculator
+              totalDueUSD={0}
+              bcvRate={rates?.USD || currentUser?.oracle_fee_percentage || 60}
+              onClose={() => setShowChangeCalculator(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Cobro Rápido Directo desde Catálogo */}
+      {checkoutProduct && (
+        <CheckoutModal
+          product={checkoutProduct}
+          onConfirm={handleConfirmCheckout}
+          onCancel={() => setCheckoutProduct(null)}
+          formatUSD={formatUSD}
+          storeOwner={clientInfo}
+          currentUser={currentUser}
         />
       )}
 

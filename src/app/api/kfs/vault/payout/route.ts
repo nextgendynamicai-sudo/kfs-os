@@ -57,7 +57,7 @@ export async function POST(req: Request) {
       }
 
       const oldUpdatedAt = storeData.updated_at;
-      let db = storeData.db_state;
+      const db = storeData.db_state;
       let checkSuccess = false;
 
       if (role === 'dueño' || role === 'client' || role === 'comercio' || role === 'b2b') {

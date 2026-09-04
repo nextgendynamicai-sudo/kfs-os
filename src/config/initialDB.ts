@@ -147,6 +147,7 @@ export const initialDB = {
     netEarningsEUR: 0,
     adBudgetEUR: 0,
     wipeVersion: CURRENT_WIPE_VERSION,
+    deletedKeys: [] as string[],
     team: [
       {
         name: "Ivory21",

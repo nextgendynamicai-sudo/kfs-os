@@ -82,21 +82,49 @@ const KREATEK_COLORS = {
 
 export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => {
   const router = useRouter();
-  const { formatUSD, registerCandidate, showToast, markNotificationsAsRead, requestTopUp, claimFlowMaster } = useKFS() as any;
+  const { formatUSD, registerCandidate, showToast, markNotificationsAsRead, requestTopUp, claimFlowMaster, rateRider } = useKFS() as any;
   const [subTab, setSubTab] = useState("profile"); // profile | jobs
   const [isTopUpOpen, setIsTopUpOpen] = useState(false);
   const [topUpAmount, setTopUpAmount] = useState("");
+
+  const { transferP2P } = useP2PTransfer();
+  const [p2pRecipient, setP2pRecipient] = useState("");
+  const [p2pAmount, setP2pAmount] = useState("");
+  const [p2pType, setP2pType] = useState<"real_balance" | "k_points_balance">("real_balance");
+
+  // Candidate Form States (Must be declared before any conditional return)
+  const currentCandidate = db?.candidates?.find((c: any) => c.phone === currentUser?.phone);
+  const unreadNotifsCount = currentCandidate?.notifications?.filter((n: any) => !n.read).length || 0;
+
+  const [bio, setBio] = useState(currentCandidate?.bio || "");
+  const [email, setEmail] = useState(currentCandidate?.email || "");
+  const [selectedRole, setSelectedRole] = useState(currentCandidate?.role || "Cajero");
+  const [selectedSkills, setSelectedSkills] = useState<string[]>(currentCandidate?.skills || []);
+  const [answers, setAnswers] = useState<Record<string, string>>(currentCandidate?.answers || {
+    availability: "full-time",
+    location: "Caracas - Centro",
+    experienceYears: "1-3",
+    hasVehicle: "no"
+  });
+  const [isActive, setIsActive] = useState(currentCandidate ? (currentCandidate.active !== false) : true);
+
+  // CV Upload States
+  const [cvFile, setCvFile] = useState(currentCandidate?.cvFile || "");
+  const [cvFileType, setCvFileType] = useState(currentCandidate?.cvFileType || "");
+  const [cvFileName, setCvFileName] = useState(currentCandidate?.cvFileName || "");
+
+  // Registration Payment $1 USD States
+  const [regRefNum, setRegRefNum] = useState("");
+  const [regScreenshot, setRegScreenshot] = useState("");
+
+  const [useKfsCvBuilder, setUseKfsCvBuilder] = useState(currentCandidate?.useKfsCvBuilder || false);
+  const [showCvModal, setShowCvModal] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
   }, [subTab]);
-
-  const { transferP2P } = useP2PTransfer();
-  const [p2pRecipient, setP2pRecipient] = useState("");
-  const [p2pAmount, setP2pAmount] = useState("");
-  const [p2pType, setP2pType] = useState<"real_balance" | "k_points_balance">("real_balance");
 
   const handleP2PTransferSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -144,34 +172,6 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
   const volumeKPoints = volumeUSD * 1000;
   
   const meetsFlowMaster = txCount >= 10 && uniqueMerchants >= 4 && volumeKPoints >= 50000;
-
-  // Candidate Form States
-  const currentCandidate = db.candidates?.find((c: any) => c.phone === currentUser.phone);
-  const unreadNotifsCount = currentCandidate?.notifications?.filter((n: any) => !n.read).length || 0;
-
-  const [bio, setBio] = useState(currentCandidate?.bio || "");
-  const [email, setEmail] = useState(currentCandidate?.email || "");
-  const [selectedRole, setSelectedRole] = useState(currentCandidate?.role || "Cajero");
-  const [selectedSkills, setSelectedSkills] = useState<string[]>(currentCandidate?.skills || []);
-  const [answers, setAnswers] = useState<Record<string, string>>(currentCandidate?.answers || {
-    availability: "full-time",
-    location: "Caracas - Centro",
-    experienceYears: "1-3",
-    hasVehicle: "no"
-  });
-  const [isActive, setIsActive] = useState(currentCandidate ? (currentCandidate.active !== false) : true);
-
-  // CV Upload States
-  const [cvFile, setCvFile] = useState(currentCandidate?.cvFile || "");
-  const [cvFileType, setCvFileType] = useState(currentCandidate?.cvFileType || "");
-  const [cvFileName, setCvFileName] = useState(currentCandidate?.cvFileName || "");
-
-  // Registration Payment $1 USD States
-  const [regRefNum, setRegRefNum] = useState("");
-  const [regScreenshot, setRegScreenshot] = useState("");
-
-  const [useKfsCvBuilder, setUseKfsCvBuilder] = useState(currentCandidate?.useKfsCvBuilder || false);
-  const [showCvModal, setShowCvModal] = useState(false);
 
   const availableSkills = [
     "Cuadre de caja", "Uso de POS", "Atención al cliente",
@@ -513,10 +513,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                                 {[1, 2, 3, 4, 5].map(star => (
                                   <button
                                     key={star}
-                                    onClick={() => {
-                                      const { rateRider } = useKFS() as any;
-                                      rateRider(tx.id, star);
-                                    }}
+                                    onClick={() => rateRider(tx.id, star)}
                                     className="text-slate-300 hover:text-yellow-400 transition-colors text-lg"
                                   >
                                     ★

@@ -8,6 +8,40 @@ import { compressImage } from "../lib/utils";
 import { PhoneInput } from "./PhoneInput";
 import { TermsAcceptance, generateLegalTermsAudit } from "./TermsAcceptance";
 
+interface DocUploadFieldProps {
+  label: string;
+  icon: string;
+  field: "cedulaImg" | "medCertImg" | "licenseImg";
+  fileKey: "cedula" | "med" | "license";
+  uploaded: boolean;
+  imgSrc?: string;
+  isUploading: boolean;
+  onUpload: (e: React.ChangeEvent<HTMLInputElement>, field: "cedulaImg" | "medCertImg" | "licenseImg", fileKey: "cedula" | "med" | "license") => void;
+  onRemove: (field: "cedulaImg" | "medCertImg" | "licenseImg") => void;
+}
+
+const DocUploadField = ({ label, icon, field, fileKey, uploaded, imgSrc, isUploading, onUpload, onRemove }: DocUploadFieldProps) => (
+  <div className="relative">
+    <label className={`relative flex flex-col items-center justify-center gap-2 p-4 border-2 border-dashed rounded-2xl cursor-pointer transition-all group block ${uploaded ? "border-green-400 bg-green-50" : "border-violet-200 bg-violet-50/50 hover:bg-violet-100"}`}>
+      <input type="file" accept="image/*,application/pdf" className="hidden" onChange={(e) => onUpload(e, field, fileKey)} />
+      {uploaded && imgSrc ? (
+        <img src={imgSrc} className="w-full h-12 object-cover rounded-md" alt={label} />
+      ) : (
+        <span className="text-3xl">{uploaded ? "✅" : icon}</span>
+      )}
+      <span className={`text-[11px] font-bold text-center ${uploaded ? "text-green-600" : "text-violet-700 group-hover:text-violet-800"}`}>
+        {isUploading ? "Subiendo..." : uploaded ? "¡Cargado!" : label}
+      </span>
+      {uploaded && <span className="text-[8px] text-green-500 font-mono">Toca para cambiar</span>}
+    </label>
+    {uploaded && (
+      <button type="button" onClick={() => onRemove(field)} className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors z-10">
+        <Trash2 size={10} />
+      </button>
+    )}
+  </div>
+);
+
 export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCancel: () => void, defaultReferralCode?: string }) => {
   const { registerRider, showToast } = useKFS() as any;
   const [formData, setFormData] = useState({
@@ -28,7 +62,7 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
     if (rawBody.startsWith('0')) {
       rawBody = rawBody.slice(1);
     }
-    return /^(412|414|424|416|426|415|425)\d{7}$/.test(rawBody) || (rawBody.length >= 7 && rawBody.length <= 12);
+    return rawBody.length === 10;
   };
 
   const validateEmail = (email: string) => {
@@ -43,58 +77,64 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
 
   const isFormValid = isNameValid && isPhoneValid && isEmailValid && isPasswordValid && acceptedToS;
 
-  const handleDocUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: "cedulaImg" | "medCertImg" | "licenseImg", key: "cedula" | "med" | "license") => {
+  const handleDocUpload = async (e: React.ChangeEvent<HTMLInputElement>, field: "cedulaImg" | "medCertImg" | "licenseImg", fileKey: "cedula" | "med" | "license") => {
     const file = e.target.files?.[0];
     if (!file) return;
-    setUploading(prev => ({ ...prev, [key]: true }));
+    setUploading(prev => ({ ...prev, [fileKey]: true }));
     try {
-      const base64 = await compressImage(file, 500, 0.6);
-      setFormData(prev => ({ ...prev, [field]: base64 }));
+      if (file.type.startsWith("image/")) {
+        const compressed = await compressImage(file, 800, 0.7);
+        setFormData(prev => ({ ...prev, [field]: compressed }));
+      } else {
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          setFormData(prev => ({ ...prev, [field]: ev.target?.result as string }));
+        };
+        reader.readAsDataURL(file);
+      }
+      showToast(`Documento ${field} cargado correctamente.`);
     } catch {
-      showToast("Error al subir documento", "error");
+      showToast("Error al procesar el archivo.", "error");
+    } finally {
+      setUploading(prev => ({ ...prev, [fileKey]: false }));
     }
-    setUploading(prev => ({ ...prev, [key]: false }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError("");
-    if (!isNameValid) {
-      setFormError("Por favor ingresa tu Nombre Completo.");
-      return;
-    }
-    if (!isPhoneValid) {
-      setFormError("Por favor ingresa un número de Teléfono celular válido.");
-      return;
-    }
-    if (!isEmailValid) {
-      setFormError("Por favor ingresa un correo electrónico válido.");
-      return;
-    }
-    if (!isPasswordValid) {
-      setFormError("La contraseña debe tener al menos 4 caracteres.");
-      return;
-    }
+
     if (!acceptedToS) {
-      setFormError("Debes aceptar los Términos de Servicio para registrarte.");
+      setFormError("Debes aceptar los Términos y Condiciones Legales para continuar.");
       return;
     }
-    if (isSubmitting) return;
+
+    if (!validatePhone(formData.phone)) {
+      setFormError("El número de teléfono debe tener 10 dígitos (Ej: 412 1234567).");
+      return;
+    }
+
+    if (!isPmPhoneValid) {
+      setFormError("El teléfono de Pago Móvil debe tener 10 dígitos (Ej: 412 1234567).");
+      return;
+    }
+
+    if (!formData.cedulaImg) {
+      setFormError("Debes adjuntar la foto de tu Cédula de Identidad.");
+      return;
+    }
 
     setIsSubmitting(true);
     try {
+      const legalAudit = generateLegalTermsAudit();
+
       const fallbackData = {
         ...formData,
-        cedulaImg: formData.cedulaImg || "default_rider_cedula",
-        medCertImg: formData.medCertImg || "default_med",
-        licenseImg: formData.licenseImg || "default_license",
-        pagoMovil: {
-          banco: formData.pagoMovil.banco || "0102 - Banco de Venezuela",
-          telefono: formData.pagoMovil.telefono || formData.phone,
-          cedula: formData.pagoMovil.cedula || "V00000000"
-        },
-        referredBy: defaultReferralCode,
-        termsAudit: generateLegalTermsAudit()
+        role: "rider",
+        rating: 5.0,
+        status: "pending",
+        referralCode: defaultReferralCode,
+        legalTermsAudit: legalAudit
       };
 
       await Promise.resolve(registerRider(fallbackData));
@@ -102,28 +142,6 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
       setIsSubmitting(false);
     }
   };
-
-  const DocUploadField = ({ label, icon, field, fileKey, uploaded }: { label: string; icon: string; field: "cedulaImg" | "medCertImg" | "licenseImg"; fileKey: "cedula" | "med" | "license"; uploaded: boolean }) => (
-    <div className="relative">
-      <label className={`relative flex flex-col items-center justify-center gap-2 p-4 border-2 border-dashed rounded-2xl cursor-pointer transition-all group block ${uploaded ? "border-green-400 bg-green-50" : "border-violet-200 bg-violet-50/50 hover:bg-violet-100"}`}>
-        <input type="file" accept="image/*,application/pdf" className="hidden" onChange={(e) => handleDocUpload(e, field, fileKey)} />
-        {uploaded && formData[field] ? (
-          <img src={formData[field]} className="w-full h-12 object-cover rounded-md" alt={label} />
-        ) : (
-          <span className="text-3xl">{uploaded ? "✅" : icon}</span>
-        )}
-        <span className={`text-[11px] font-bold text-center ${uploaded ? "text-green-600" : "text-violet-700 group-hover:text-violet-800"}`}>
-          {uploading[fileKey] ? "Subiendo..." : uploaded ? "¡Cargado!" : label}
-        </span>
-        {uploaded && <span className="text-[8px] text-green-500 font-mono">Toca para cambiar</span>}
-      </label>
-      {uploaded && (
-        <button type="button" onClick={() => setFormData(prev => ({ ...prev, [field]: "" }))} className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-1 shadow-md hover:bg-red-600 transition-colors z-10">
-          <Trash2 size={10} />
-        </button>
-      )}
-    </div>
-  );
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4 text-violet-950 animate-fade-in pb-4">
@@ -195,9 +213,39 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
         <p className="text-[9px] text-slate-500">Sube fotos directas desde tu galería o cámara</p>
       </div>
       <div className="grid grid-cols-3 gap-2">
-        <DocUploadField label="Cédula" icon="🪪" field="cedulaImg" fileKey="cedula" uploaded={!!formData.cedulaImg} />
-        <DocUploadField label="Cert. Médico" icon="🏥" field="medCertImg" fileKey="med" uploaded={!!formData.medCertImg} />
-        <DocUploadField label="Licencia" icon="🚗" field="licenseImg" fileKey="license" uploaded={!!formData.licenseImg} />
+        <DocUploadField
+          label="Cédula"
+          icon="🪪"
+          field="cedulaImg"
+          fileKey="cedula"
+          uploaded={!!formData.cedulaImg}
+          imgSrc={formData.cedulaImg}
+          isUploading={uploading.cedula}
+          onUpload={handleDocUpload}
+          onRemove={(f) => setFormData(p => ({ ...p, [f]: "" }))}
+        />
+        <DocUploadField
+          label="Cert. Médico"
+          icon="🏥"
+          field="medCertImg"
+          fileKey="med"
+          uploaded={!!formData.medCertImg}
+          imgSrc={formData.medCertImg}
+          isUploading={uploading.med}
+          onUpload={handleDocUpload}
+          onRemove={(f) => setFormData(p => ({ ...p, [f]: "" }))}
+        />
+        <DocUploadField
+          label="Licencia"
+          icon="🚗"
+          field="licenseImg"
+          fileKey="license"
+          uploaded={!!formData.licenseImg}
+          imgSrc={formData.licenseImg}
+          isUploading={uploading.license}
+          onUpload={handleDocUpload}
+          onRemove={(f) => setFormData(p => ({ ...p, [f]: "" }))}
+        />
       </div>
 
       {/* Pago Móvil */}

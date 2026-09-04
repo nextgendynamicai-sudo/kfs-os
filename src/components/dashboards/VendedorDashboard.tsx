@@ -243,7 +243,7 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
     }
 
     // 1. Buscar por ID o código de barras localmente
-    let prod = db.products.find((p: any) => p.id === prodIdOrBarcode || p.barcode === prodIdOrBarcode);
+    const prod = db.products.find((p: any) => p.id === prodIdOrBarcode || p.barcode === prodIdOrBarcode);
 
     if (prod) {
       setCheckoutProduct(prod);

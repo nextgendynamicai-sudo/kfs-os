@@ -42,7 +42,7 @@ export async function POST(req: Request) {
       }
 
       const oldUpdatedAt = storeData.updated_at;
-      let db = storeData.db_state;
+      const db = storeData.db_state;
       const client = db.clients?.find((c: any) => c.id === clientId);
       if (!client) return NextResponse.json({ error: 'Client not found' }, { status: 404 });
 
@@ -53,10 +53,10 @@ export async function POST(req: Request) {
       }
 
       const priceUSD = applyIva ? itemPrice * 1.16 : itemPrice;
-      let subTotalUSD = priceUSD;
-      let kfsFee = subTotalUSD * kfsFeePercentage;
+      const subTotalUSD = priceUSD;
+      const kfsFee = subTotalUSD * kfsFeePercentage;
 
-      let transaction = {
+      const transaction = {
         id: `tx${Date.now()}_${Math.floor(Math.random() * 1000)}`,
         clientId,
         vendedorId: vendedorId || "online",
@@ -72,7 +72,7 @@ export async function POST(req: Request) {
       };
 
       // Agregar comisión de la Promotora (Guardián de Cartera)
-      let updatedPromotoras = [...(db.promotoras || [])];
+      const updatedPromotoras = [...(db.promotoras || [])];
       if (customerPhone && client.promotoraId) {
         const pIdx = updatedPromotoras.findIndex((p: any) => p.id === client.promotoraId);
         if (pIdx !== -1) {
@@ -84,7 +84,7 @@ export async function POST(req: Request) {
         }
       }
 
-      let updatedClients = (db.clients || []).map((c: any) => {
+      const updatedClients = (db.clients || []).map((c: any) => {
         if (c.id === clientId) {
           return {
             ...c,

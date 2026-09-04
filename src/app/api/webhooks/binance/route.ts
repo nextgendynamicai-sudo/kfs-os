@@ -56,7 +56,7 @@ export async function POST(req: Request) {
       }
 
       const oldUpdatedAt = storeData.updated_at;
-      let db = storeData.db_state;
+      const db = storeData.db_state;
       const customerIdx = db.customers?.findIndex((c: any) => c.id === customerId);
       
       if (customerIdx === undefined || customerIdx === -1) {
@@ -72,7 +72,7 @@ export async function POST(req: Request) {
       else if (amountUSD >= 10 && amountUSD < 20) kPointsBonus = 300;
       else if (amountUSD >= 20) kPointsBonus = 800;
 
-      let updatedCustomers = [...(db.customers || [])];
+      const updatedCustomers = [...(db.customers || [])];
       updatedCustomers[customerIdx] = {
         ...customer,
         real_balance: (customer.real_balance || 0) + amountUSD,
@@ -80,8 +80,8 @@ export async function POST(req: Request) {
         hasRecharged: true
       };
 
-      let updatedClients = [...(db.clients || [])];
-      let updatedPromotoras = [...(db.promotoras || [])];
+      const updatedClients = [...(db.clients || [])];
+      const updatedPromotoras = [...(db.promotoras || [])];
 
       // Bono Viral de Primera Recarga (500 Axis Points o 0.50 EUR)
       if (isFirstRecharge && customer.referred_by_customer_id) {

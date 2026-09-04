@@ -44,7 +44,7 @@ export async function POST(req: Request) {
       }
 
       const oldUpdatedAt = storeData.updated_at;
-      let db = storeData.db_state;
+      const db = storeData.db_state;
       // Buscamos al cliente por teléfono (ya que Zinli se asocia al teléfono)
       const customerIdx = db.customers?.findIndex((c: any) => c.phone === customerPhone);
       
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
       else if (amountUSD >= 10 && amountUSD < 20) kPointsBonus = 300;
       else if (amountUSD >= 20) kPointsBonus = 800;
 
-      let updatedCustomers = [...(db.customers || [])];
+      const updatedCustomers = [...(db.customers || [])];
       updatedCustomers[customerIdx] = {
         ...customer,
         real_balance: (customer.real_balance || 0) + amountUSD,

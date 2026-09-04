@@ -16,14 +16,17 @@ export const SmartChangeCalculator: React.FC<SmartChangeCalculatorProps> = ({
   onClose,
   onApplyChange
 }) => {
+  const [customTotalUSD, setCustomTotalUSD] = useState<string>(totalDueUSD > 0 ? totalDueUSD.toString() : "10");
+  const effectiveTotalDueUSD = totalDueUSD > 0 ? totalDueUSD : (parseFloat(customTotalUSD) || 0);
+
   const [tenderedUSD, setTenderedUSD] = useState<string>("");
   const [tenderedVES, setTenderedVES] = useState<string>("");
   const [activeCurrency, setActiveCurrency] = useState<"USD" | "VES">("USD");
   const [copied, setCopied] = useState(false);
 
   const totalDueVES = useMemo(() => {
-    return totalDueUSD * bcvRate;
-  }, [totalDueUSD, bcvRate]);
+    return effectiveTotalDueUSD * bcvRate;
+  }, [effectiveTotalDueUSD, bcvRate]);
 
   // Total pagado consolidado en USD
   const totalPaidInUSD = useMemo(() => {
@@ -34,8 +37,8 @@ export const SmartChangeCalculator: React.FC<SmartChangeCalculatorProps> = ({
 
   // Total cambio en USD
   const changeUSD = useMemo(() => {
-    return Math.max(0, totalPaidInUSD - totalDueUSD);
-  }, [totalPaidInUSD, totalDueUSD]);
+    return Math.max(0, totalPaidInUSD - effectiveTotalDueUSD);
+  }, [totalPaidInUSD, effectiveTotalDueUSD]);
 
   // Total cambio en VES
   const changeVES = useMemo(() => {
@@ -63,7 +66,7 @@ export const SmartChangeCalculator: React.FC<SmartChangeCalculatorProps> = ({
 
   const handleCopySummary = () => {
     const summary = `🧾 *CÁLCULO DE VUELTO / CAMBIO (KFS OS)*\n` +
-      `• Cuenta: $${totalDueUSD.toFixed(2)} USD (Bs. ${totalDueVES.toFixed(2)})\n` +
+      `• Cuenta: $${effectiveTotalDueUSD.toFixed(2)} USD (Bs. ${totalDueVES.toFixed(2)})\n` +
       `• Pagado: $${totalPaidInUSD.toFixed(2)} USD\n` +
       `---------------------------------\n` +
       `💵 *Vuelto en USD:* $${changeUSD.toFixed(2)} USD\n` +
@@ -107,9 +110,24 @@ export const SmartChangeCalculator: React.FC<SmartChangeCalculatorProps> = ({
       <div className="bg-slate-950/70 border border-slate-800 rounded-2xl p-4 flex justify-between items-center">
         <div>
           <span className="text-[10px] uppercase font-black text-slate-400 tracking-wider">Total a Cobrar</span>
-          <p className="text-2xl font-black text-amber-400 font-mono">
-            ${totalDueUSD.toFixed(2)} <span className="text-xs text-slate-400">USD</span>
-          </p>
+          {totalDueUSD > 0 ? (
+            <p className="text-2xl font-black text-amber-400 font-mono">
+              ${totalDueUSD.toFixed(2)} <span className="text-xs text-slate-400">USD</span>
+            </p>
+          ) : (
+            <div className="flex items-center gap-1 mt-0.5">
+              <span className="text-amber-400 font-bold text-xl">$</span>
+              <input
+                type="number"
+                step="any"
+                value={customTotalUSD}
+                onChange={(e) => setCustomTotalUSD(e.target.value)}
+                placeholder="10.00"
+                className="w-24 bg-slate-900 border border-amber-400/40 rounded-xl px-2.5 py-1 text-amber-400 font-mono font-black text-xl focus:outline-none focus:border-amber-400"
+              />
+              <span className="text-xs text-slate-400">USD</span>
+            </div>
+          )}
         </div>
         <div className="text-right">
           <span className="text-[10px] uppercase font-black text-slate-400 tracking-wider">Equivalente BCV</span>

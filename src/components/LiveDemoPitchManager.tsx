@@ -286,7 +286,7 @@ export const LiveDemoPitchManager: React.FC<LiveDemoPitchManagerProps> = ({ onCl
     const finalSlug = activeDemoSlug || createTenantSlug(businessName);
     
     // Construct subscription object based on commercial model chosen
-    let subscriptionData: any = {
+    const subscriptionData: any = {
       plan_type: commercialModel,
       contract_start_date: new Date().toISOString(),
       status: "active",

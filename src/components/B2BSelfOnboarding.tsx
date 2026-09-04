@@ -130,7 +130,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                   placeholder="Ej: Bodegón Chacao, C.A."
                   value={formData.company}
                   onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                  className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7c3aed] transition-colors"
+                  className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 font-medium focus:outline-none focus:border-[#7c3aed] transition-colors"
                 />
               </div>
 
@@ -142,7 +142,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                     placeholder="empresa@kfs.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7c3aed] transition-colors"
+                    className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 font-medium focus:outline-none focus:border-[#7c3aed] transition-colors"
                   />
                 </div>
                 <div>
@@ -152,7 +152,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                     placeholder="••••••••"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                    className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7c3aed] transition-colors"
+                    className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 font-medium focus:outline-none focus:border-[#7c3aed] transition-colors"
                   />
                 </div>
               </div>
@@ -173,7 +173,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                     placeholder="Ej: J-12345678-9"
                     value={formData.rif}
                     onChange={(e) => setFormData({ ...formData, rif: e.target.value })}
-                    className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7c3aed] transition-colors"
+                    className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 font-medium focus:outline-none focus:border-[#7c3aed] transition-colors"
                   />
                 </div>
               </div>
@@ -185,7 +185,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                   placeholder="Calle, Edificio, Local, Chacao, Caracas"
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7c3aed] transition-colors resize-none"
+                  className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 font-medium focus:outline-none focus:border-[#7c3aed] transition-colors resize-none"
                 />
               </div>
 
@@ -196,7 +196,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                   placeholder="Ej: p1 (dejar vacío si no aplica)"
                   value={promoterId}
                   onChange={(e) => setPromoterId(e.target.value)}
-                  className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7c3aed] transition-colors"
+                  className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 font-medium focus:outline-none focus:border-[#7c3aed] transition-colors"
                 />
               </div>
             </div>
@@ -275,8 +275,8 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                     onClick={() => setPaymentMethod(m)}
                     className={`py-2 px-1 text-center font-bold text-xs rounded-xl border transition-all cursor-pointer ${
                       paymentMethod === m
-                        ? "bg-[#7c3aed]/15 border-[#7c3aed] text-white"
-                        : "bg-white/5 border-white/5 text-[#64748b] hover:border-white/20"
+                        ? "bg-[#7c3aed] border-[#7c3aed] text-white shadow-md shadow-violet-600/30"
+                        : "bg-slate-50 border-[#e2e8f0] text-slate-700 hover:border-slate-300"
                     }`}
                   >
                     {m === "binance" ? "Binance Pay" : m === "zinli" ? "Zinli" : "Pago Móvil"}
@@ -285,7 +285,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
               </div>
 
               {/* Instructions */}
-              <div className="bg-white/5 p-3 rounded-xl text-[10px] text-[#64748b] leading-relaxed font-mono">
+              <div className="bg-slate-50 border border-[#e2e8f0] p-3 rounded-xl text-xs text-slate-700 leading-relaxed font-mono">
                 {paymentMethod === "binance" && "Binance Pay ID: 252186489 (Holding Kreatek OS)"}
                 {paymentMethod === "zinli" && "Zinli: corporativo@kreatek.com"}
                 {paymentMethod === "pago_movil" && "Pago Móvil: Banesco (0102), Teléfono: 0412-2521864, RIF: J-25218648-9"}
@@ -298,7 +298,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
                   placeholder="Ingresa los últimos 6 u 8 dígitos"
                   value={paymentRef}
                   onChange={(e) => setPaymentRef(e.target.value)}
-                  className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#7c3aed] transition-colors"
+                  className="w-full bg-slate-50 border border-[#e2e8f0] rounded-xl px-4 py-3 text-sm text-slate-900 placeholder:text-slate-400 font-medium focus:outline-none focus:border-[#7c3aed] transition-colors"
                 />
               </div>
             </div>
@@ -339,9 +339,9 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
             <div className="bg-white border border-[#7c3aed]/30 rounded-3xl p-6 max-w-sm mx-auto space-y-4 shadow-xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-24 h-24 bg-[#7c3aed]/5 rounded-full blur-xl -z-1"></div>
               
-              <div className="flex justify-between items-center text-left border-b border-white/5 pb-3">
+              <div className="flex justify-between items-center text-left border-b border-slate-100 pb-3">
                 <div>
-                  <h4 className="text-xs font-black tracking-tight text-white truncate max-w-[150px]">
+                  <h4 className="text-xs font-black tracking-tight text-slate-900 truncate max-w-[150px]">
                     {formData.company}
                   </h4>
                   <p className="text-[8px] text-[#64748b] font-mono">RIF: {formData.rif}</p>
@@ -406,7 +406,7 @@ export function B2BSelfOnboarding({ setView }: B2BSelfOnboardingProps) {
               </button>
               <button
                 onClick={() => setView("landing")}
-                className="text-xs text-[#64748b] hover:text-white transition-colors cursor-pointer"
+                className="text-xs text-[#64748b] hover:text-violet-950 font-bold transition-colors cursor-pointer"
               >
                 Volver al Portal de Inicio
               </button>

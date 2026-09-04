@@ -87,7 +87,7 @@ const KREATEK_COLORS = {
 // Toast Component
 
 export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, settlePromotoraEarnings, showToast, formatUSD, formatEUR, currentUser, logout, approveSubscription, setView }: any) => {
-  const { impersonateClient, registerClient, registerPromotora, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, deleteCustomer, deletePromotora, deleteVendedor, deleteRider, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, toggleCandidateBacking, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, validateTopUp, rates, updateBcvRates, transferKFSPoints, updateStoreSettings, createCoupon, deleteCoupon, toggleCouponActive } = useKFS() as any;
+  const { impersonateClient, registerClient, registerPromotora, assignPromotoraToClient, addGlobalProduct, sendNotification, replyTicket, closeTicket, blockClient, releaseClient, deleteClient, deleteCustomer, deletePromotora, deleteVendedor, deleteRider, approveUnlock, rejectUnlock, approveCandidateRegistration, rejectCandidateRegistration, toggleCandidateBacking, approveRider, rejectRider, assignRiderToBusiness, removeRiderFromBusiness, validateTopUp, rates, updateBcvRates, transferKFSPoints, updateStoreSettings, createCoupon, deleteCoupon, toggleCouponActive, dispatchOrder, isSupabaseConfigured } = useKFS() as any;
   const [searchPromotora, setSearchPromotora] = useState("");
   const [searchClient, setSearchClient] = useState("");
   const [searchVendedor, setSearchVendedor] = useState("");
@@ -151,7 +151,6 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
   }, [activeTab]);
-  const { isSupabaseConfigured } = useKFS() as any;
   const pendingTopUps = db.topups?.filter((t: any) => t.status === 'pending') || [];
   const pendingCandidates = db.candidates?.filter((c: any) => c.status === 'pending') || [];
   const pendingRiders = db.riders?.filter((r: any) => r.status === 'pending') || [];
@@ -2336,7 +2335,6 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
         
           {activeTab === "logistica_riders" && (() => {
             const pendingOrders = (db.transactions || []).filter((tx: any) => tx.shippingStatus === "pending" || (tx.requiresDelivery === true && tx.shippingStatus !== "dispatched" && tx.shippingStatus !== "delivered"));
-            const { dispatchOrder } = useKFS() as any;
             
             return (
             <div className="space-y-6 animate-fade-in">

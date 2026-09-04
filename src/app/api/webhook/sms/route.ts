@@ -56,7 +56,7 @@ export async function POST(req: Request) {
         }
 
         const oldUpdatedAt = dbData.updated_at;
-        let state = dbData.db_state;
+        const state = dbData.db_state;
         let modified = false;
 
         // 1. Process Subscription Renewals ($6)

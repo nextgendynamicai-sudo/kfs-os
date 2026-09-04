@@ -7,17 +7,20 @@ import { FeatureFlag } from "./FeatureFlag";
 import { 
   Flame, Cpu, Database, DollarSign, Gift, Layers, CheckCircle2, 
   PlusCircle, Sliders, ToggleLeft, ToggleRight, Sparkles, Scale,
-  Calendar, TableProperties, Binary, Calculator, KeyRound
+  Calendar, TableProperties, Binary, Calculator, KeyRound, ArrowLeft
 } from "lucide-react";
 import { SmartChangeCalculator } from "./SmartChangeCalculator";
 import { QuickCashierPinModal } from "./QuickCashierPinModal";
+import { ReceiptModal } from "./ReceiptModal";
+import { playCashDrawerSound, announcePaymentVoice } from "../lib/utils";
 
 export function AxisNitroPOS() {
-  const { db, formatUSD, rates, showToast, processPurchase } = useKFS() as any;
+  const { db, formatUSD, rates, showToast, processPurchase, setView, currentUser: kfsUser } = useKFS() as any;
   const { businessPreset, presetMetadata, refreshPreset } = usePreset();
   const [showChangeCalculator, setShowChangeCalculator] = useState(false);
   const [showPinModal, setShowPinModal] = useState(false);
   const [activeCashier, setActiveCashier] = useState<any>(null);
+  const [activeReceiptTx, setActiveReceiptTx] = useState<any | null>(null);
 
   // Mock controls so the user can test the visual flags in real-time in the demo
   const [demoFeatures, setDemoFeatures] = useState({
@@ -79,24 +82,30 @@ export function AxisNitroPOS() {
   }, [paymentMethod, totalDueUSD, effectivePointsToBurn, pointsDiscount, rates]);
 
   const handleChargeSubmit = () => {
-    // Triggering mock transaction or real purchase
-    showToast("Ejecutando cobro financiero de alta precisión...", "success");
-    
-    // Core payment deduction alert demonstrating compliance and immutability
-    setTimeout(() => {
-      alert(
-        `--- COMPROBANTE DE TRANSACCIÓN AXIS NITRO POS ---\n` +
-        `Producto: ${selectedProduct.name}\n` +
-        `Subtotal: ${formatUSD(basePrice)}\n` +
-        `Deducción de Tasa Flat Rate (2%): -${formatUSD(flatRateFee)} (Nodos Pilares)\n` +
-        `Monto Neto a Comercio: ${formatUSD(netStoreUSD)}\n` +
-        `Descuento Axis Points: -${formatUSD(pointsDiscount)}\n` +
-        `Total Cobrado: ${formatUSD(totalDueUSD)} (Bs. ${(totalDueUSD * (rates?.USD || 36.45)).toFixed(2)})\n` +
-        `Método de Pago: ${paymentMethod.toUpperCase()}\n` +
-        `-----------------------------------------------\n` +
-        `ESTADO: APROBADO (Procesado por Ghost Trap y validado en Euro BCV)`
-      );
-    }, 500);
+    // 1. Efecto acústico de caja registradora
+    playCashDrawerSound();
+
+    // 2. Efecto parlante con voz en español venezolano
+    announcePaymentVoice(totalDueUSD, paymentMethod === "cash_bs" ? "pago_movil" : "cash_usd");
+
+    // 3. Generación de transacción para comprobante térmico y WhatsApp Smart Receipt
+    const tx = {
+      id: `pos_tx_${Date.now()}`,
+      clientName: kfsUser?.company || "Comercio Afiliado KFS",
+      productName: selectedProduct.name,
+      amountUSD: totalDueUSD,
+      subtotalUSD: basePrice,
+      ivaUSD: 0,
+      igtfUSD: paymentMethod === "cash_usd" ? basePrice * 0.03 : 0,
+      paymentMethod: paymentMethod,
+      exchangeRateBCV: rates?.USD || 36.45,
+      date: new Date().toISOString(),
+      status: "APPROVED",
+      cashierName: activeCashier ? activeCashier.name : "Cajero Principal"
+    };
+
+    setActiveReceiptTx(tx);
+    showToast("¡Cobro aprobado! Mostrando ticket inteligente...", "success");
   };
 
   return (
@@ -116,8 +125,20 @@ export function AxisNitroPOS() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
+          {setView && (
+            <button
+              type="button"
+              onClick={() => setView("client")}
+              className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 border border-violet-500/40 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-white transition-all cursor-pointer shadow-sm active:scale-95"
+              title="Regresar al panel de administración"
+            >
+              <ArrowLeft size={16} className="text-violet-300" />
+              <span>Volver al Panel</span>
+            </button>
+          )}
           <button
             type="button"
+            data-testid="pos-pin-btn"
             onClick={() => setShowPinModal(true)}
             className="flex items-center gap-2 bg-violet-600/30 hover:bg-violet-600/50 border border-violet-500/40 px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95"
             title="Cambiar cajero activo con PIN táctil de 4 dígitos"
@@ -436,6 +457,18 @@ export function AxisNitroPOS() {
           }}
           onClose={() => setShowPinModal(false)}
           showToast={showToast}
+        />
+      )}
+
+      {/* Modal de Recibo Térmico & WhatsApp Smart Receipt */}
+      {activeReceiptTx && (
+        <ReceiptModal
+          tx={activeReceiptTx}
+          product={selectedProduct}
+          onClose={() => setActiveReceiptTx(null)}
+          formatUSD={formatUSD}
+          showToast={showToast}
+          currentUser={activeCashier || kfsUser || { name: "Cajero Principal", role: "vendedor" }}
         />
       )}
 

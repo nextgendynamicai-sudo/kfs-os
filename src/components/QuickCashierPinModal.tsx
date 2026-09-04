@@ -135,6 +135,7 @@ export const QuickCashierPinModal: React.FC<QuickCashierPinModalProps> = ({
             {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((digit) => (
               <button
                 key={digit}
+                data-testid={`pin-key-${digit}`}
                 onClick={() => handleDigit(digit)}
                 className="h-14 rounded-2xl bg-white/10 hover:bg-white/20 active:scale-95 text-white font-black text-xl transition-all shadow-md flex items-center justify-center cursor-pointer border border-white/5"
               >

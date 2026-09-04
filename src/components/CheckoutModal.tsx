@@ -96,13 +96,13 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
   };
 
   const handleRifChange = (val: string) => {
-    let clean = val.toUpperCase().replace(/[^VGEJP0-9-]/g, "");
-    let stripped = clean.replace(/-/g, "");
+    const clean = val.toUpperCase().replace(/[^VGEJP0-9-]/g, "");
+    const stripped = clean.replace(/-/g, "");
     if (stripped.length > 0) {
-      let letter = stripped[0];
+      const letter = stripped[0];
       if (/[VGEJP]/.test(letter)) {
-        let body = stripped.slice(1, 9).replace(/[^0-9]/g, "");
-        let verifier = stripped.slice(9, 10).replace(/[^0-9]/g, "");
+        const body = stripped.slice(1, 9).replace(/[^0-9]/g, "");
+        const verifier = stripped.slice(9, 10).replace(/[^0-9]/g, "");
         let formatted = letter;
         if (body.length > 0) formatted += "-" + body;
         if (verifier.length > 0) formatted += "-" + verifier;

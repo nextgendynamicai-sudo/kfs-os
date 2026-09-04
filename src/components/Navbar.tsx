@@ -213,7 +213,7 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
                     try {
                       const base64String = await compressImage(file, 400);
                       setDb((prev: any) => {
-                        let updated = { ...prev };
+                        const updated = { ...prev };
                         if (currentUser.role === "dueño") {
                           updated.clients = prev.clients.map((c: any) => c.id === currentUser.id ? { ...c, avatar: base64String } : c);
                         } else if (currentUser.role === "promotora") {

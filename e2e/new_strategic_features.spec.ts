@@ -63,8 +63,9 @@ test.describe('KFS OS - Suite de Pruebas: 5 Nuevas Funcionalidades Estratégicas
     // 4.1 En Axis Nitro POS (/pos)
     await page.goto('/pos');
     await page.waitForLoadState('domcontentloaded');
+    await page.waitForTimeout(500); // Esperar hidratación completa de React
 
-    const posPinBtn = page.locator('button:has-text("Cambiar PIN"), button:has-text("Cajero Activo")').first();
+    const posPinBtn = page.locator('[data-testid="pos-pin-btn"]').first();
     await expect(posPinBtn).toBeVisible({ timeout: 15000 });
     await posPinBtn.click();
 
@@ -73,8 +74,8 @@ test.describe('KFS OS - Suite de Pruebas: 5 Nuevas Funcionalidades Estratégicas
     await expect(pinModalTitle).toBeVisible({ timeout: 10000 });
 
     // Verificar teclas táctiles numéricas 1, 2, 3...
-    const key1 = page.locator('button:has-text("1")').first();
-    await expect(key1).toBeVisible();
+    const key1 = page.locator('[data-testid="pin-key-1"]').first();
+    await expect(key1).toBeVisible({ timeout: 10000 });
 
     // Cerrar modal
     const closePinBtn = page.locator('[data-testid="close-pin-modal"]').first();
