@@ -359,10 +359,12 @@ export default function Home() {
     }
   }
 
-  // If the user visits the root without a hash, enforce landing page
+  // If the user visits the root without a hash or referral/role params, enforce landing page
   useEffect(() => {
     if (typeof window !== "undefined") {
-      if (!window.location.hash && window.location.pathname === "/") {
+      const searchParams = new URLSearchParams(window.location.search);
+      const hasAccessParams = searchParams.has("role") || searchParams.has("ref") || searchParams.has("referral") || searchParams.has("code") || searchParams.has("promotoraId");
+      if (!window.location.hash && window.location.pathname === "/" && !hasAccessParams) {
          if (view !== "landing" && !currentUser) {
            setView("landing");
          }
@@ -371,8 +373,7 @@ export default function Home() {
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [safeView, view]);
+  }, [view, currentUser, setView]);
 
   if (isBooting || !isClient) {
     return (

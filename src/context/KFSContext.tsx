@@ -657,8 +657,13 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     
     if (typeof window !== "undefined") {
       const hash = window.location.hash.replace("#", "");
+      const searchParams = new URLSearchParams(window.location.search);
+      const hasAccessParams = searchParams.has("role") || searchParams.has("ref") || searchParams.has("referral") || searchParams.has("referralCode") || searchParams.has("code") || searchParams.has("promotoraId");
+
       if (hash) {
         setView(hash);
+      } else if (hasAccessParams) {
+        setView("login");
       } else if (window.location.pathname === "/" || window.location.pathname === "") {
         setView("landing");
         window.history.replaceState({ view: "landing" }, "", "");
@@ -670,8 +675,13 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         setView(event.state.view);
       } else {
         const hash = window.location.hash.replace("#", "");
+        const searchParams = new URLSearchParams(window.location.search);
+        const hasAccessParams = searchParams.has("role") || searchParams.has("ref") || searchParams.has("referral") || searchParams.has("referralCode") || searchParams.has("code") || searchParams.has("promotoraId");
+
         if (hash) {
           setView(hash);
+        } else if (hasAccessParams) {
+          setView("login");
         } else {
           setView("landing");
         }

@@ -18,7 +18,22 @@ interface UIContextType {
 const UIContext = createContext<UIContextType | undefined>(undefined);
 
 export const UIProvider = ({ children }: { children: ReactNode }) => {
-  const [view, setViewInternal] = useState<ViewType | string>("landing");
+  const [view, setViewInternal] = useState<ViewType | string>(() => {
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      const hash = window.location.hash.replace("#", "").trim();
+      const role = searchParams.get("role");
+      const ref = searchParams.get("ref") || searchParams.get("referral") || searchParams.get("referralCode") || searchParams.get("code") || searchParams.get("promotoraId");
+
+      if (hash && hash !== "landing") {
+        return hash;
+      }
+      if (role || ref) {
+        return "login";
+      }
+    }
+    return "landing";
+  });
   
   const setView = (newView: ViewType | string) => {
     setViewInternal(newView);
