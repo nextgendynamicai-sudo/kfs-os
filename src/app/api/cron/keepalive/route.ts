@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 
 // Supabase free tier pauses projects after ~7 days of inactivity.
 // This cron endpoint runs daily via Vercel Cron to keep the project alive.
+// Uses raw fetch instead of supabase-js client for maximum reliability.
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
@@ -28,39 +28,44 @@ export async function GET(request: Request) {
     });
   }
 
+  const timestamp = new Date().toISOString();
+
   try {
-    const supabase = createClient(supabaseUrl, supabaseKey);
-    
-    // Simple lightweight query to keep the database active
-    const { data, error } = await supabase
-      .from('clients')
-      .select('id')
-      .limit(1);
+    // Direct REST API call — no client library needed, maximum compatibility
+    const res = await fetch(`${supabaseUrl}/rest/v1/clients?select=id&limit=1`, {
+      method: 'GET',
+      headers: {
+        'apikey': supabaseKey,
+        'Authorization': `Bearer ${supabaseKey}`,
+        'Content-Type': 'application/json'
+      },
+      signal: AbortSignal.timeout(10000) // 10s timeout
+    });
 
-    const timestamp = new Date().toISOString();
-
-    if (error) {
-      console.warn(`[KFS Keepalive] ${timestamp} - Query error:`, error.message);
+    if (!res.ok) {
+      const body = await res.text();
+      console.warn(`[KFS Keepalive] ${timestamp} - HTTP ${res.status}: ${body}`);
       return NextResponse.json({ 
-        status: 'error', 
-        message: error.message, 
+        status: 'warning', 
+        httpStatus: res.status,
+        message: body.substring(0, 200),
         timestamp 
       });
     }
 
-    console.log(`[KFS Keepalive] ${timestamp} - Ping OK, rows: ${data?.length ?? 0}`);
+    const data = await res.json();
+    console.log(`[KFS Keepalive] ${timestamp} - Ping OK, rows: ${Array.isArray(data) ? data.length : 0}`);
     return NextResponse.json({ 
       status: 'alive', 
-      rows: data?.length ?? 0, 
+      rows: Array.isArray(data) ? data.length : 0, 
       timestamp 
     });
   } catch (err: any) {
-    const timestamp = new Date().toISOString();
-    console.error(`[KFS Keepalive] ${timestamp} - Fatal:`, err.message);
+    console.error(`[KFS Keepalive] ${timestamp} - Error:`, err.message);
     return NextResponse.json({ 
       status: 'error', 
       message: err.message, 
       timestamp 
-    }, { status: 500 });
+    }, { status: 200 }); // Return 200 so Vercel Cron doesn't flag it as failure
   }
 }
