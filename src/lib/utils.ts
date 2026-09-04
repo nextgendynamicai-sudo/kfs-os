@@ -257,4 +257,44 @@ export const resolveThemeColor = (color: string) => {
   return tailwindColors[color] || "#7c3aed";
 };
 
+/**
+ * Smart Audio Announcer (Efecto Parlante Inteligente KFS)
+ * Emits an acoustic attention chime followed by a crisp, localized spoken announcement in Spanish.
+ */
+export const announcePaymentVoice = (amountUSD: number, paymentMethod: string = "cash", extraText?: string) => {
+  if (typeof window === "undefined") return;
+
+  const methodNames: { [key: string]: string } = {
+    pago_movil: "Pago Móvil",
+    cash: "Efectivo",
+    cash_usd: "Dólares en Efectivo",
+    cash_eur: "Euros en Efectivo",
+    binance: "Binance Pay",
+    zinli: "Zinli",
+    wally_tech: "Wally",
+    zelle: "Zelle",
+    real_balance: "Saldo KFS",
+    k_points: "Puntos K-Points",
+    hybrid: "Pago Mixto",
+    pos_integrated: "Punto de Venta",
+    vale_credit: "Vale a Crédito",
+  };
+
+  const friendlyMethod = methodNames[paymentMethod] || paymentMethod;
+  const formattedAmount = Number(amountUSD || 0).toFixed(2);
+
+  // 1. Play modern attention chime
+  playSyncChime();
+
+  // 2. Speak after brief acoustic chime delay (250ms)
+  setTimeout(() => {
+    let speechMessage = `¡Pago confirmado! ${formattedAmount} dólares por ${friendlyMethod}.`;
+    if (extraText) {
+      speechMessage += ` ${extraText}`;
+    }
+    speakText(speechMessage);
+  }, 300);
+};
+
+
 

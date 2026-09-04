@@ -4,13 +4,14 @@ import { KFS_BRAND } from "../config/brandConfig";
 import React, { useState, useEffect } from "react";
 
 import { useKFS } from "../context/KFSContext";
-import { playCashDrawerSound } from "../lib/utils";
+import { playCashDrawerSound, announcePaymentVoice } from "../lib/utils";
 import { motion } from "framer-motion";
 import { ModalPortal } from "./ModalPortal";
 
 export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap, showToast, currentUser }: any) => {
   const [isPrinting, setIsPrinting] = useState(true);
   const [isTorn, setIsTorn] = useState(false);
+  const [whatsappPhone, setWhatsappPhone] = useState(tx?.customerPhone || "");
 
   useEffect(() => {
     if (!tx) return;
@@ -177,21 +178,48 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
             >
               🖨️ Imprimir Térmico
             </button>
-            
-            {tx.customerPhone ? (
-              <a 
-                href={`https://wa.me/58${tx.customerPhone.replace(/^0+/, '').replace(/[^0-9]/g, '')}?text=Hola ${tx.customerName || 'Cliente'}, ¡Gracias por tu compra en ${product?.clientName || 'KFS ECOSISTEMA'}!%0A%0A*Recibo KFS: ${tx.receiptNumber}*${tx.isFiscal ? `%0A*Factura Fiscal / Control: 00-${Math.floor(10000 + Math.random() * 89999)}*` : ''}%0AProducto: ${product?.name} ${tx.isFiscal ? '(G)' : '(E)'}%0A${tx.isFiscal ? `Base Imponible: ${formatUSD(tx.baseUSD)}%0A` : ''}IVA: ${formatUSD(tx.ivaUSD)}%0AIGTF: ${formatUSD(tx.igtfUSD)}%0A%0ATasa Oficial BCV: ${tx.exchangeRateBCV?.toFixed(2)} Bs%0A*Total Pagado (USD): ${formatUSD(tx.amountUSD)}*%0A*Total Pagado (Bs): ${(tx.amountUSD * (tx.exchangeRateBCV || 36.5)).toFixed(2)} Bs*${tx.kfsPointsEarned > 0 ? `%0A%0A🎁 ¡Felicidades! Acumulaste +${tx.kfsPointsEarned.toFixed(1)} ${KFS_BRAND.economy.currency} con esta compra.` : ''}%0A%0ARecibo Digital Oficial ${KFS_BRAND.productAcronym}.`}
+
+            <button 
+              onClick={() => announcePaymentVoice(tx.amountUSD, tx.paymentMethod)}
+              className="py-3 rounded-xl font-black text-xs text-violet-700 bg-violet-100/80 hover:bg-violet-200 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md active:scale-95 border border-violet-200"
+              title="Anunciar Cobro por Parlante"
+            >
+              🔊 Parlante
+            </button>
+          </div>
+
+          {/* WhatsApp Direct Sender Box */}
+          <div className="bg-black/30 border border-white/10 rounded-2xl p-3 flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <input
+                type="tel"
+                placeholder="Teléfono WhatsApp (ej: 04141234567)"
+                value={whatsappPhone}
+                onChange={(e) => setWhatsappPhone(e.target.value)}
+                className="flex-1 bg-black/50 border border-white/10 rounded-xl px-3 py-2 text-xs font-mono text-white placeholder:text-gray-500 focus:outline-none focus:border-green-500"
+              />
+              <a
+                href={(() => {
+                  const raw = (whatsappPhone || "").replace(/[^0-9]/g, '');
+                  const clean = raw.startsWith('58') ? raw : (raw.startsWith('0') ? `58${raw.slice(1)}` : `58${raw}`);
+                  const clientName = product?.clientName || currentUser?.company || 'KFS ECOSISTEMA';
+                  const text = `Hola ${tx.customerName || 'Cliente'}, ¡Gracias por tu compra en *${clientName}*!%0A%0A🧾 *Recibo Oficial: ${tx.receiptNumber}*%0A📦 Producto: ${product?.name || 'Compra POS'}%0A💵 *Total (USD): ${formatUSD(tx.amountUSD)}*%0A🇻🇪 *Total (Bs BCV): ${((tx.amountUSD || 0) * (tx.exchangeRateBCV || 36.5)).toFixed(2)} Bs*%0A📅 Fecha: ${new Date(tx.timestamp).toLocaleString()}%0A${tx.kfsPointsEarned > 0 ? `%0A🎁 *¡Acumulaste +${tx.kfsPointsEarned.toFixed(1)} Puntos K-Points!*` : ''}%0A%0AConsulta tu saldo y carnet digital en: https://kfs-os.vercel.app/rewards`;
+                  return clean.length >= 10 ? `https://wa.me/${clean}?text=${text}` : '#';
+                })()}
                 target="_blank"
                 rel="noreferrer"
-                className="py-3 rounded-xl font-black text-xs text-white bg-green-500 hover:bg-green-600 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md border-none"
+                onClick={(e) => {
+                  if ((whatsappPhone || "").replace(/[^0-9]/g, '').length < 10) {
+                    e.preventDefault();
+                    showToast("Ingresa un número válido de WhatsApp (al menos 10 dígitos).", "error");
+                  }
+                }}
+                className="px-4 py-2 rounded-xl font-black text-xs text-white bg-green-500 hover:bg-green-600 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md shadow-green-500/20 active:scale-95 text-center whitespace-nowrap"
               >
-                💬 Recibo WhatsApp
+                💬 Enviar WhatsApp
               </a>
-            ) : (
-              <button disabled className="py-3 rounded-xl font-bold text-xs text-slate-400 bg-violet-50 border border-white/5 flex items-center justify-center gap-1.5 cursor-not-allowed">
-                Sin Teléfono CRM
-              </button>
-            )}
+            </div>
+            <p className="text-[10px] text-gray-400 font-sans">Envía el comprobante digital al cliente en 1 clic sin gastar papel térmico.</p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-2 mt-2">

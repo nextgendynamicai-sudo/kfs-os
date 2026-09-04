@@ -7,14 +7,17 @@ import { FeatureFlag } from "./FeatureFlag";
 import { 
   Flame, Cpu, Database, DollarSign, Gift, Layers, CheckCircle2, 
   PlusCircle, Sliders, ToggleLeft, ToggleRight, Sparkles, Scale,
-  Calendar, TableProperties, Binary, Calculator
+  Calendar, TableProperties, Binary, Calculator, KeyRound
 } from "lucide-react";
 import { SmartChangeCalculator } from "./SmartChangeCalculator";
+import { QuickCashierPinModal } from "./QuickCashierPinModal";
 
 export function AxisNitroPOS() {
   const { db, formatUSD, rates, showToast, processPurchase } = useKFS() as any;
   const { businessPreset, presetMetadata, refreshPreset } = usePreset();
   const [showChangeCalculator, setShowChangeCalculator] = useState(false);
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [activeCashier, setActiveCashier] = useState<any>(null);
 
   // Mock controls so the user can test the visual flags in real-time in the demo
   const [demoFeatures, setDemoFeatures] = useState({
@@ -112,11 +115,25 @@ export function AxisNitroPOS() {
             Demostración de inyección visual mediante Feature Flags con blindaje del núcleo financiero.
           </p>
         </div>
-        <div className="flex items-center gap-3 bg-black/40 border border-violet-800/30 p-3 rounded-2xl">
-          <Cpu className="text-violet-400" size={20} />
-          <div className="text-left">
-            <span className="text-[9px] text-slate-500 uppercase font-black block">Preset Activo</span>
-            <span className="text-xs font-bold text-violet-400">{businessPreset}</span>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setShowPinModal(true)}
+            className="flex items-center gap-2 bg-violet-600/30 hover:bg-violet-600/50 border border-violet-500/40 px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95"
+            title="Cambiar cajero activo con PIN táctil de 4 dígitos"
+          >
+            <KeyRound size={16} className="text-violet-300" />
+            <div className="text-left">
+              <span className="text-[9px] text-slate-400 uppercase font-black block">Cajero Activo</span>
+              <span className="text-xs font-bold text-white">{activeCashier ? activeCashier.name : "Cambiar PIN"}</span>
+            </div>
+          </button>
+          <div className="flex items-center gap-3 bg-black/40 border border-violet-800/30 p-3 rounded-2xl">
+            <Cpu className="text-violet-400" size={20} />
+            <div className="text-left">
+              <span className="text-[9px] text-slate-500 uppercase font-black block">Preset Activo</span>
+              <span className="text-xs font-bold text-violet-400">{businessPreset}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -406,6 +423,20 @@ export function AxisNitroPOS() {
             }}
           />
         </div>
+      )}
+
+      {/* Modal de PIN Rápido de Cajero */}
+      {showPinModal && (
+        <QuickCashierPinModal
+          vendedores={db?.vendedores || []}
+          currentUser={activeCashier || { name: "Cajero Principal", role: "vendedor" }}
+          onSelectCashier={(vendedor) => {
+            setActiveCashier(vendedor);
+            showToast(`Cajero activo: ${vendedor.name}`, "success");
+          }}
+          onClose={() => setShowPinModal(false)}
+          showToast={showToast}
+        />
       )}
 
     </div>

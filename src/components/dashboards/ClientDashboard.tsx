@@ -23,6 +23,9 @@ import { ScannerView } from "../ScannerView";
 import { LowStockAlertsWidget } from "../LowStockAlertsWidget";
 import { ComboBuilderModal } from "../ComboBuilderModal";
 import { MerchantOnboardingTour } from "../MerchantOnboardingTour";
+import { CounterDisplayQRModal } from "../CounterDisplayQRModal";
+import { QuickCashierPinModal } from "../QuickCashierPinModal";
+import { SystemBackupRestoreModal } from "../SystemBackupRestoreModal";
 
 import React, { useState, useEffect, useRef } from "react";
 import {
@@ -128,11 +131,26 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
 
   // Onboarding Guided Tour State (Paso 4: Tour Guiado Interactivo)
   const [showOnboardingTour, setShowOnboardingTour] = useState(
-    Boolean(!clientInfo?.hasCompletedOnboardingTour && !currentUser?.hasCompletedOnboardingTour && !clientInfo?.mustChangePassword && !currentUser?.mustChangePassword)
+    Boolean(
+      !clientInfo?.hasCompletedOnboardingTour && 
+      !currentUser?.hasCompletedOnboardingTour && 
+      !clientInfo?.mustChangePassword && 
+      !currentUser?.mustChangePassword &&
+      (typeof window === "undefined" || !localStorage.getItem("kfs_onboarding_dismissed"))
+    )
   );
+
+  // Modal states for Counter QR, Cashier PIN switcher, and System Backup
+  const [showCounterQRModal, setShowCounterQRModal] = useState(false);
+  const [showPinModal, setShowPinModal] = useState(false);
+  const [showBackupModal, setShowBackupModal] = useState(false);
+  const [activeCashier, setActiveCashier] = useState<any>(null);
 
   const handleCompleteOnboardingTour = () => {
     setShowOnboardingTour(false);
+    if (typeof window !== "undefined") {
+      try { localStorage.setItem("kfs_onboarding_dismissed", "true"); } catch {}
+    }
     setDb((prev: any) => ({
       ...prev,
       clients: (prev.clients || []).map((c: any) => 
@@ -480,7 +498,34 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
             <span className="bg-white/20 p-2 rounded-xl text-white"><Store size={20} /></span>
             <h1 className="font-black text-xl tracking-tight text-white">{KFS_BRAND.productAcronym} Negocio</h1>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <button 
+              type="button"
+              onClick={() => setShowCounterQRModal(true)} 
+              className="px-3 py-1.5 bg-violet-600/70 hover:bg-violet-600 rounded-xl text-white text-xs font-bold transition-all cursor-pointer border border-violet-400/40 flex items-center gap-1.5 shadow-sm active:scale-95"
+              title="Generar e imprimir exhibidor de mostrador con QR oficial"
+            >
+              🖨️ Standee QR
+            </button>
+
+            <button 
+              type="button"
+              onClick={() => setShowPinModal(true)} 
+              className="px-3 py-1.5 bg-white/15 hover:bg-white/25 rounded-xl text-white text-xs font-bold transition-all cursor-pointer border border-white/20 flex items-center gap-1.5 shadow-sm active:scale-95"
+              title="Cambiar cajero con PIN de 4 dígitos"
+            >
+              🔑 {activeCashier ? activeCashier.name : "Cajero PIN"}
+            </button>
+
+            <button 
+              type="button"
+              onClick={() => setShowBackupModal(true)} 
+              className="px-3 py-1.5 bg-emerald-600/50 hover:bg-emerald-600 rounded-xl text-white text-xs font-bold transition-all cursor-pointer border border-emerald-400/30 flex items-center gap-1.5 shadow-sm active:scale-95"
+              title="Bóveda de respaldo JSON offline seguro"
+            >
+              📦 Respaldo
+            </button>
+
             <button 
               type="button"
               onClick={() => setShowOnboardingTour(true)} 
@@ -2728,8 +2773,45 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
         <MerchantOnboardingTour
           clientInfo={clientInfo}
           onComplete={handleCompleteOnboardingTour}
-          onClose={() => setShowOnboardingTour(false)}
+          onClose={() => {
+            setShowOnboardingTour(false);
+            if (typeof window !== "undefined") {
+              try { localStorage.setItem("kfs_onboarding_dismissed", "true"); } catch {}
+            }
+          }}
           setActiveTab={setActiveTab}
+          showToast={showToast}
+        />
+      )}
+
+      {/* Standee Mostrador QR Imprimible */}
+      {showCounterQRModal && (
+        <CounterDisplayQRModal
+          client={clientInfo}
+          onClose={() => setShowCounterQRModal(false)}
+        />
+      )}
+
+      {/* Switcher Rápido de Cajero por PIN */}
+      {showPinModal && (
+        <QuickCashierPinModal
+          vendedores={db.vendedores || []}
+          currentUser={currentUser}
+          onSelectCashier={(vendedor) => {
+            setActiveCashier(vendedor);
+            showToast(`Cajero activo: ${vendedor.name}`);
+          }}
+          onClose={() => setShowPinModal(false)}
+          showToast={showToast}
+        />
+      )}
+
+      {/* Bóveda Inmune y Respaldo / Restauración Offline */}
+      {showBackupModal && (
+        <SystemBackupRestoreModal
+          db={db}
+          setDb={setDb}
+          onClose={() => setShowBackupModal(false)}
           showToast={showToast}
         />
       )}

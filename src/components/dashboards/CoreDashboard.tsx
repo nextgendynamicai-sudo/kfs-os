@@ -15,6 +15,7 @@ import { RegisterCustomerForm } from "../RegisterCustomerForm";
 import { RegisterRiderForm } from "../RegisterRiderForm";
 import { RecruitmentWidget } from "../RecruitmentWidget";
 import { ScannerView } from "../ScannerView";
+import { SystemBackupRestoreModal } from "../SystemBackupRestoreModal";
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { QRCodeSVG } from "qrcode.react";
@@ -127,6 +128,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
   const [exploreSubTab, setExploreSubTab] = useState<"descubrir" | "actividades">("descubrir");
   const [showCoreNotifDrawer, setShowCoreNotifDrawer] = useState(false);
   const [showLiveDemoPitch, setShowLiveDemoPitch] = useState(false);
+  const [showBackupModal, setShowBackupModal] = useState(false);
   const [newMemberName, setNewMemberName] = useState("");
   const [newMemberPass, setNewMemberPass] = useState("");
   const [newMemberPermissions, setNewMemberPermissions] = useState<string[]>([]);
@@ -321,6 +323,15 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
               <Sparkles size={16} className="fill-slate-950 text-slate-950 animate-pulse" />
               <span className="hidden sm:inline">Demostración en Vivo</span>
               <span className="sm:hidden">Demo</span>
+            </button>
+            <button
+              onClick={() => setShowBackupModal(true)}
+              className="px-4 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-500 hover:to-teal-600 text-white font-black text-xs flex items-center gap-2 shadow-lg shadow-emerald-950/40 cursor-pointer transition-all hover:scale-105 border border-emerald-400/30"
+              title="Bóveda de Respaldo Inmune y Restauración Segura (Regla 1)"
+            >
+              <Database size={16} className="text-emerald-300" />
+              <span className="hidden sm:inline">Bóveda & Respaldo</span>
+              <span className="sm:hidden">Respaldo</span>
             </button>
             <button
               onClick={() => { window.location.href = "/rewards"; }}
@@ -3418,6 +3429,16 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
             <LiveDemoPitchManager onClose={() => setShowLiveDemoPitch(false)} />
           </div>
         </div>
+      )}
+
+      {/* Bóveda Inmune y Respaldo / Restauración Offline de Matriz */}
+      {showBackupModal && (
+        <SystemBackupRestoreModal
+          db={db}
+          setDb={setDb}
+          onClose={() => setShowBackupModal(false)}
+          showToast={showToast}
+        />
       )}
     </div>
   );

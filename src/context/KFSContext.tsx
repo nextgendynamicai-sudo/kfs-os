@@ -3,7 +3,7 @@
 import { KFS_BRAND } from "../config/brandConfig";
 import React, { createContext, useContext, useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { supabase, isSupabaseConfigured, uploadAsset } from "./supabase";
-import { playScannerBeep, speakText, getStoreCoords, getCustomerCoords, playSyncChime } from "../lib/utils";
+import { playScannerBeep, speakText, getStoreCoords, getCustomerCoords, playSyncChime, announcePaymentVoice } from "../lib/utils";
 import { useUI } from "./UIContext";
 import { getIndexedDBValue, setIndexedDBValue } from "../lib/indexedDB";
 import { 
@@ -3311,7 +3311,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     });
     
     showToast(`Compra procesada. Recibo ${receiptNumber}`);
-    speakText("Venta aprobada.");
+    announcePaymentVoice(totalUSD, paymentMethod);
     
     if (typeof window !== "undefined") {
       window.dispatchEvent(new CustomEvent("kfs-purchase", { detail: { ...product, finalTotalUSD: totalUSD } }));
@@ -3574,7 +3574,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       };
     });
     showToast("Pago validado y orden procesada.");
-    if (!silent) speakText("Venta aprobada.");
+    if (!silent) announcePaymentVoice(order.amountUSD || 0, order.paymentMethod || "online");
   };
 
   const rejectOrder = (orderId: string) => {
@@ -3818,7 +3818,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       const isAmountMatching = amount <= 0 || amount >= orderDueBs * (1 - tolerancePercent);
 
       if (isAmountMatching) {
-        speakText("Pago verificado.");
+        announcePaymentVoice(pendingOrder.amountUSD || 0, "pago_movil", `Referencia ${String(reference || "").slice(-4)}`);
         if (reconConfig.autoApprove !== false) {
           approveOrder(pendingOrder.id);
         }
