@@ -3,7 +3,7 @@ import { createClient } from '@supabase/supabase-js';
 
 // Supabase free tier pauses projects after ~7 days of inactivity.
 // This cron endpoint runs daily via Vercel Cron to keep the project alive.
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const cleanEnv = (val?: string) => val ? val.replace(/[\uFEFF\u200B]/g, '').trim() : '';
