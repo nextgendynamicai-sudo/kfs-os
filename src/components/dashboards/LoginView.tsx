@@ -101,7 +101,7 @@ const FAQ_ITEMS = [
   {
     category: "General & Costos",
     question: "¿El registro para clientes, comercios, promotoras o riders tiene algún costo?",
-    answer: "El registro para Clientes, Promotoras y Riders es 100% gratuito, sin pagos iniciales ni comisiones ocultas. Los Comercios cuentan con un período de prueba gratuito completo para configurar sus inventarios, probar el Punto de Venta y comenzar a vender sin requerir tarjeta de crédito."
+    answer: "El registro para Clientes, Promotoras y Riders es 100% gratuito. Para los Comercios, la incorporación requiere la contratación del plan operativo y setup de infraestructura tecnológica (Punto de Venta en la nube, control de inventario, catálogo online y pasarelas de pago multimoneda), sin períodos de prueba gratuitos."
   },
   {
     category: "Inicio de Sesión",
