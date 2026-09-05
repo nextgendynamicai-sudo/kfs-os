@@ -6,10 +6,12 @@ import {
   Shield, Lock, ChevronRight, ChevronLeft, Smartphone, Mail,
   Eye, EyeOff, UserPlus, ShoppingCart, Store, Users, Truck,
   Sparkles, CheckCircle2, KeyRound, ArrowRight, Info,
-  HelpCircle, ChevronDown, Check, MessageCircle, Search, Zap
+  HelpCircle, ChevronDown, Check, MessageCircle, Search, Zap,
+  ShieldCheck, BadgeCheck
 } from "lucide-react";
 import { KFS_BRAND } from "../../config/brandConfig";
 import { Navbar } from "../Navbar";
+import { useKFS } from "../../context/KFSContext";
 
 const RegisterClientForm = dynamic(() => import("../RegisterClientForm").then(m => m.RegisterClientForm), { ssr: false });
 const RegisterPromotoraForm = dynamic(() => import("../RegisterPromotoraForm").then(m => m.RegisterPromotoraForm), { ssr: false });
@@ -196,20 +198,44 @@ export const LoginView = ({
   const [selectedRoleOverride, setSelectedRoleOverride] = useState<string | null>(null);
   const [showRoleSelector, setShowRoleSelector] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loginSuccess, setLoginSuccess] = useState(false);
   const [adminClickCount, setAdminClickCount] = useState(0);
 
   // Estados para FAQ y búsqueda
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const [faqSearch, setFaqSearch] = useState("");
 
+  // Lectura segura de la tasa oficial BCV del contexto central
+  let bcvRate: string | null = null;
+  try {
+    const kfsCtx = useKFS();
+    if (kfsCtx?.rates?.USD) {
+      bcvRate = kfsCtx.rates.USD.toFixed(2);
+    }
+  } catch (_) {
+    // Fallback silencioso si se monta fuera del Provider
+  }
+
   const isPhoneIdentifier = /^[+0-9\s-]+$/.test(identifier.trim()) && identifier.trim().length > 3;
 
   const handleSubmitLogin = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setIsSubmitting(true);
+    
+    // Vibración háptica en dispositivos móviles compatibles
+    if (typeof window !== "undefined" && window.navigator && "vibrate" in window.navigator) {
+      try { (window.navigator as any).vibrate(15); } catch (_) {}
+    }
+
     try {
       const targetRole = selectedRoleOverride || (activeTab === "core" ? "core" : "universal");
       await handleLogin(targetRole, password, identifier);
+      setLoginSuccess(true);
+
+      // Vibración de confirmación exitosa
+      if (typeof window !== "undefined" && window.navigator && "vibrate" in window.navigator) {
+        try { (window.navigator as any).vibrate([25, 40, 25]); } catch (_) {}
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -251,12 +277,42 @@ export const LoginView = ({
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-violet-50 via-slate-50 to-violet-100/70 font-sans selection:bg-violet-600 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-violet-50 via-slate-50 to-violet-100/70 font-sans selection:bg-violet-600 selection:text-white relative overflow-hidden">
+      
+      {/* ========================================================= */}
+      {/* FONDO FINTECH AURORA CON ORBES DESENFOCADOS ANIMADOS      */}
+      {/* ========================================================= */}
+      <div className="absolute top-12 left-1/4 -translate-x-1/2 w-[34rem] h-[34rem] bg-violet-400/20 rounded-full blur-3xl pointer-events-none animate-pulse duration-[7000ms]" />
+      <div className="absolute top-1/3 right-10 w-[28rem] h-[28rem] bg-fuchsia-400/15 rounded-full blur-3xl pointer-events-none animate-pulse duration-[9000ms]" />
+      <div className="absolute bottom-20 left-10 w-[30rem] h-[30rem] bg-emerald-400/15 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute bottom-1/3 right-1/4 w-80 h-80 bg-indigo-400/15 rounded-full blur-3xl pointer-events-none" />
+
       <Navbar />
       
       {/* Contenedor Principal con Scroll Fluido y Estructura Responsive */}
-      <main className="flex-1 flex flex-col items-center justify-start p-4 sm:p-6 md:p-8 w-full max-w-6xl mx-auto space-y-12 sm:space-y-16 py-6 sm:py-10">
+      <main className="flex-1 flex flex-col items-center justify-start p-4 sm:p-6 md:p-8 w-full max-w-6xl mx-auto space-y-10 sm:space-y-14 py-6 sm:py-10 relative z-10">
         
+        {/* ========================================================= */}
+        {/* CHIP DE PLATAFORMA EN VIVO (LIVE NETWORK PULSE & TASA BCV) */}
+        {/* ========================================================= */}
+        <div className="flex justify-center -mb-4 sm:-mb-6 z-10 animate-fade-in">
+          <div className="inline-flex items-center gap-2 sm:gap-2.5 px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white/90 backdrop-blur-xl border border-violet-200/80 shadow-md shadow-violet-500/10 text-xs font-bold text-slate-700 hover:shadow-lg hover:scale-105 transition-all">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+            <span className="text-slate-900 font-extrabold tracking-tight">Red KFS Activa</span>
+            <span className="text-slate-300">|</span>
+            <span className="text-violet-700 font-black">
+              Tasa Oficial BCV: <span className="text-slate-900">{bcvRate ? `Bs. ${bcvRate}` : "En línea"}</span>
+            </span>
+            <span className="text-slate-300 hidden sm:inline">|</span>
+            <span className="hidden sm:inline-flex items-center gap-1 text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-bold">
+              100% Operativo
+            </span>
+          </div>
+        </div>
+
         {/* Ancla para Scroll Suave de la Tarjeta Central */}
         <div id="auth-main-card" className="w-full flex justify-center scroll-mt-24">
           <div className="w-full max-w-md bg-white/95 backdrop-blur-xl shadow-2xl shadow-violet-200/60 border border-violet-100/80 rounded-[2.5rem] p-6 sm:p-8 animate-fade-in transition-all">
@@ -420,13 +476,22 @@ export const LoginView = ({
                     )}
                   </div>
 
+                  {/* Botón de Inicio de Sesión con Micro-animación de Carga y Éxito */}
                   <button
                     type="submit"
-                    disabled={isSubmitting}
+                    disabled={isSubmitting || loginSuccess}
                     className="w-full py-4 rounded-2xl font-black text-sm text-white bg-violet-600 hover:bg-violet-700 active:scale-[0.98] transition-all shadow-xl shadow-violet-600/30 flex items-center justify-center gap-2 cursor-pointer border-none mt-2 disabled:opacity-50"
                   >
-                    {isSubmitting ? (
-                      <span>Autenticando...</span>
+                    {loginSuccess ? (
+                      <div className="flex items-center gap-2 text-white animate-fade-in">
+                        <CheckCircle2 size={18} className="text-emerald-300 animate-bounce" />
+                        <span>¡Acceso Concedido!</span>
+                      </div>
+                    ) : isSubmitting ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                        <span>Verificando credenciales...</span>
+                      </div>
                     ) : (
                       <>
                         <span>Iniciar Sesión</span>
@@ -467,6 +532,30 @@ export const LoginView = ({
                       <span>¿Dudas sobre qué cuenta elegir? Ver guía y FAQ</span>
                       <ChevronDown size={14} />
                     </button>
+                  </div>
+                </div>
+
+                {/* ========================================================= */}
+                {/* BADGES DE CONFIANZA Y SEGURIDAD BANCARIA (TRUST BADGES)   */}
+                {/* ========================================================= */}
+                <div className="grid grid-cols-3 gap-1.5 pt-2 border-t border-slate-100">
+                  <div className="p-2 rounded-xl bg-slate-50/80 border border-slate-100/90 text-center flex flex-col items-center gap-1 hover:bg-violet-50/50 transition-colors">
+                    <ShieldCheck size={16} className="text-violet-600" />
+                    <span className="text-[9px] sm:text-[10px] font-black text-slate-700 leading-tight">
+                      Cifrado TLS 256-bit
+                    </span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-slate-50/80 border border-slate-100/90 text-center flex flex-col items-center gap-1 hover:bg-emerald-50/50 transition-colors">
+                    <Lock size={16} className="text-emerald-600" />
+                    <span className="text-[9px] sm:text-[10px] font-black text-slate-700 leading-tight">
+                      Persistencia Blindada
+                    </span>
+                  </div>
+                  <div className="p-2 rounded-xl bg-slate-50/80 border border-slate-100/90 text-center flex flex-col items-center gap-1 hover:bg-indigo-50/50 transition-colors">
+                    <BadgeCheck size={16} className="text-indigo-600" />
+                    <span className="text-[9px] sm:text-[10px] font-black text-slate-700 leading-tight">
+                      Tasa Oficial BCV
+                    </span>
                   </div>
                 </div>
 
@@ -748,6 +837,37 @@ export const LoginView = ({
                     <p className="text-xs sm:text-[13px] text-slate-600 mt-3 leading-relaxed font-medium">
                       {profile.description}
                     </p>
+
+                    {/* Tarjeta Holográfica Interactiva VIP Axis Rewards (Solo en Perfil Cliente) */}
+                    {profile.id === "customer" && (
+                      <div className="mt-4 mb-2 p-4 rounded-2xl bg-gradient-to-tr from-slate-950 via-indigo-950 to-slate-900 border border-amber-400/40 text-white shadow-xl relative overflow-hidden group/card hover:scale-[1.02] transition-all duration-300">
+                        {/* Reflejo Holográfico Brillante */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 group-hover/card:opacity-100 -translate-x-full group-hover/card:translate-x-full transition-all duration-1000 pointer-events-none" />
+                        
+                        <div className="flex justify-between items-start">
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-6 rounded bg-amber-400/80 shadow-inner flex items-center justify-center text-[10px] font-mono text-slate-950 font-black">
+                              CHIP
+                            </div>
+                            <span className="text-[10px] font-mono tracking-widest text-amber-300/80">NFC •)))</span>
+                          </div>
+                          <span className="text-[9px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                            VIP PASS
+                          </span>
+                        </div>
+
+                        <div className="mt-4 flex justify-between items-end">
+                          <div>
+                            <span className="text-[9px] font-mono uppercase text-slate-400 block">Miembro Titular</span>
+                            <span className="text-xs font-black tracking-wider text-slate-100">CLIENTE FRECUENTE</span>
+                          </div>
+                          <div className="text-right">
+                            <span className="text-[9px] font-mono uppercase text-emerald-400 block font-bold">Cashback Activo</span>
+                            <span className="text-xs font-black tracking-wide text-amber-300">AXIS REWARDS</span>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                     {/* Beneficios Clave */}
                     <div className="mt-4 pt-4 border-t border-slate-100 space-y-2">
