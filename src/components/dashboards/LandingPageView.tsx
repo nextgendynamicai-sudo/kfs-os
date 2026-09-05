@@ -85,8 +85,8 @@ export const LandingPageView = ({ setView }: any) => {
       {/* Navbar */}
       <nav className="fixed w-full z-50 bg-white/90 backdrop-blur-xl border-b border-violet-100 py-3.5 px-4 sm:px-10 flex justify-between items-center transition-all duration-300 shadow-sm">
         <div className="flex items-center gap-2.5 sm:gap-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
-          <div className="p-1 rounded-xl bg-violet-500/10 flex items-center justify-center">
-            <KreatekLogo className="h-8 w-auto" />
+          <div className="p-1.5 rounded-xl bg-white/80 border border-violet-100 shadow-xs flex items-center justify-center">
+            <KreatekLogo className="h-8 w-auto drop-shadow-sm filter" />
           </div>
           <div className="flex items-center gap-2">
             <span className="text-base sm:text-lg font-black tracking-tight text-violet-950">

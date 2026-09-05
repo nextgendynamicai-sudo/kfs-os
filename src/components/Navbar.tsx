@@ -39,8 +39,14 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedTheme = localStorage.getItem("theme");
-      const isDark = savedTheme === "dark" || (!savedTheme && window.matchMedia("(prefers-color-scheme: dark)").matches);
+      // Default to light mode for the executive Fintech glassmorphism experience
+      const isDark = savedTheme === "dark";
       setTheme(isDark ? "dark" : "light");
+      if (isDark) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
     }
   }, []);
 
@@ -163,8 +169,8 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
             className="flex items-center gap-2.5 sm:gap-3 cursor-pointer select-none group"
             title="AXIS NITRO KFS OS 8.0"
           >
-            <div className="relative flex items-center justify-center p-1 rounded-xl bg-violet-500/10 dark:bg-white/10 group-hover:bg-violet-500/15 group-hover:scale-105 transition-all duration-300">
-              <KreatekLogo className="h-8 sm:h-9 w-auto drop-shadow-xs" />
+            <div className="relative flex items-center justify-center p-1.5 rounded-xl bg-white/80 dark:bg-white/10 border border-violet-100 dark:border-white/15 shadow-xs group-hover:bg-white/95 group-hover:scale-105 transition-all duration-300">
+              <KreatekLogo className="h-8 sm:h-9 w-auto drop-shadow-sm filter" />
             </div>
             
             <div className="flex flex-col">

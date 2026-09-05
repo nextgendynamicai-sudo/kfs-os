@@ -390,9 +390,9 @@ export default function Home() {
             <div className="absolute -inset-1 border-t-2 border-violet-400 rounded-full animate-[spin_2s_linear_infinite]" />
             <div className="absolute -inset-3 border-r-2 border-indigo-400/40 rounded-full animate-[spin_6s_linear_infinite_reverse]" />
             
-            {/* Main Logo Image (Rotating slowly with transparent background) */}
-            <div className="w-28 h-28 flex items-center justify-center rounded-full bg-violet-950/40 backdrop-blur-md shadow-xl border border-violet-500/20 p-2 overflow-hidden hover:scale-105 transition-transform duration-300">
-              <img src="/kfs-logo.png" className="w-full h-full object-contain animate-[spin_8s_linear_infinite]" alt="Kreatek Flow Systems Logo" />
+            {/* Main Logo Image (Rotating slowly with luminous halo) */}
+            <div className="w-28 h-28 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-xl shadow-[0_0_35px_rgba(168,85,247,0.35)] border border-white/20 p-3 overflow-hidden hover:scale-105 transition-transform duration-300">
+              <img src="/kfs-logo.png" className="w-full h-full object-contain filter drop-shadow-[0_0_12px_rgba(255,255,255,0.75)] animate-[spin_8s_linear_infinite]" alt="Kreatek Flow Systems Logo" />
             </div>
           </div>
           
@@ -414,7 +414,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-violet-900">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
       <Toast toast={toast} />
 
       {ghostTrapLocked && (
