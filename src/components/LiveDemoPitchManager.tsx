@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   Sparkles, Store, Check, Copy, ExternalLink, Trash2, ShieldCheck, 
   DollarSign, Percent, KeyRound, RefreshCw, Send, ArrowRight, X, 
@@ -10,6 +10,8 @@ import {
 import { useKFS } from "../context/KFSContext";
 import { createTenantSlug } from "../lib/tenantManager";
 import { syncSingleClient, syncSingleProduct } from "../lib/supabaseSync";
+import { BUSINESS_CATEGORIES, BUSINESS_CATEGORY_MAP, getCategoryPreset } from "../lib/businessCategories";
+import { CategorySearchSelect } from "./CategorySearchSelect";
 
 interface LiveDemoPitchManagerProps {
   onClose?: () => void;
@@ -51,68 +53,37 @@ export const LiveDemoPitchManager: React.FC<LiveDemoPitchManagerProps> = ({ onCl
   const [activatedClientData, setActivatedClientData] = useState<any | null>(null);
   const [copiedLink, setCopiedLink] = useState(false);
 
-  // Category Presets Catalog
-  const categoryPresets: Record<string, { color: string; defaultProds: Array<{ name: string; priceUSD: number; image: string }> }> = {
-    bodegon: {
-      color: "#F59E0B",
-      defaultProds: [
-        { name: "Harina de Maíz Pan 1kg", priceUSD: 1.25, image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600&auto=format&fit=crop&q=60" },
-        { name: "Queso Amarillo Paisa 500g", priceUSD: 4.80, image: "https://images.unsplash.com/photo-1486297678162-eb2a19b0a32d?w=600&auto=format&fit=crop&q=60" },
-        { name: "Café Molido Gourmet 250g", priceUSD: 2.50, image: "https://images.unsplash.com/photo-1559056199-641a0ac8b55e?w=600&auto=format&fit=crop&q=60" },
-        { name: "Aceite Vegetal 1L", priceUSD: 3.20, image: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=600&auto=format&fit=crop&q=60" }
-      ]
-    },
-    comida: {
-      color: "#EF4444",
-      defaultProds: [
-        { name: "Hamburguesa Doble Carne con Queso Cheddar", priceUSD: 6.50, image: "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=600&auto=format&fit=crop&q=60" },
-        { name: "Pizza Familiar 4 Sabores con Borde de Queso", priceUSD: 12.00, image: "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=600&auto=format&fit=crop&q=60" },
-        { name: "Papas Fritas Grandes con Tocineta", priceUSD: 3.50, image: "https://images.unsplash.com/photo-1573080496219-bb080dd4f877?w=600&auto=format&fit=crop&q=60" },
-        { name: "Refresco 2L Sabor Original", priceUSD: 2.00, image: "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?w=600&auto=format&fit=crop&q=60" }
-      ]
-    },
-    farmacia: {
-      color: "#10B981",
-      defaultProds: [
-        { name: "Acetaminofén 500mg (Caja 10 Tabletas)", priceUSD: 1.50, image: "https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=600&auto=format&fit=crop&q=60" },
-        { name: "Alcohol Antiséptico 70% 500ml", priceUSD: 2.00, image: "https://images.unsplash.com/photo-1583947215259-38e31be8751f?w=600&auto=format&fit=crop&q=60" },
-        { name: "Vitamina C Efervescente 1000mg", priceUSD: 3.50, image: "https://images.unsplash.com/photo-1550572017-edd951aa8f72?w=600&auto=format&fit=crop&q=60" },
-        { name: "Suero Oral Electrolitos 500ml", priceUSD: 1.80, image: "https://images.unsplash.com/photo-1527613426441-4da17471b66d?w=600&auto=format&fit=crop&q=60" }
-      ]
-    },
-    ropa: {
-      color: "#8B5CF6",
-      defaultProds: [
-        { name: "Franela Oversize Premium 100% Algodón", priceUSD: 15.00, image: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&auto=format&fit=crop&q=60" },
-        { name: "Jeans Clásico Denim Azul Oscuro", priceUSD: 25.00, image: "https://images.unsplash.com/photo-1542272604-780c96856592?w=600&auto=format&fit=crop&q=60" },
-        { name: "Gorra Urbana con Bordado 3D", priceUSD: 10.00, image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=600&auto=format&fit=crop&q=60" }
-      ]
-    },
-    ferreteria: {
-      color: "#3B82F6",
-      defaultProds: [
-        { name: "Bombillo LED 12W Luz Blanca 6500K", priceUSD: 1.80, image: "https://images.unsplash.com/photo-1550985616-10810253b84d?w=600&auto=format&fit=crop&q=60" },
-        { name: "Cinta Teflón Profesional 3/4", priceUSD: 0.80, image: "https://images.unsplash.com/photo-1581783342308-f792dbdd27c5?w=600&auto=format&fit=crop&q=60" },
-        { name: "Destornillador Doble Punta Imantado", priceUSD: 3.00, image: "https://images.unsplash.com/photo-1586864387967-d02ef85d93e8?w=600&auto=format&fit=crop&q=60" }
-      ]
-    }
-  };
+  // Category Presets Catalog (19 comprehensive commercial categories)
+  const categoryPresets = BUSINESS_CATEGORY_MAP;
 
-  // Handle Category Change
+  // Initialize demo products on mount if empty
+  useEffect(() => {
+    if (demoProducts.length === 0) {
+      const preset = BUSINESS_CATEGORY_MAP[category] || BUSINESS_CATEGORY_MAP.bodegon;
+      setDemoProducts(preset.defaultProds.map((p, idx) => ({
+        id: `demo_prod_${Date.now()}_${idx}`,
+        name: p.name,
+        priceUSD: p.priceUSD,
+        stock: 50,
+        image: p.image
+      })));
+    }
+  }, []);
+
+  // Handle Category Change (Auto-adapts demo products & brand color)
   const handleCategorySelect = (catKey: string) => {
     setCategory(catKey);
-    const preset = categoryPresets[catKey];
+    const preset = BUSINESS_CATEGORY_MAP[catKey] || BUSINESS_CATEGORY_MAP.bodegon;
     if (preset) {
       setThemeColor(preset.color);
-      if (demoProducts.length === 0) {
-        setDemoProducts(preset.defaultProds.map((p, idx) => ({
-          id: `demo_prod_${Date.now()}_${idx}`,
-          name: p.name,
-          priceUSD: p.priceUSD,
-          stock: 50,
-          image: p.image
-        })));
-      }
+      // Auto-adapt demo catalog to match the selected category
+      setDemoProducts(preset.defaultProds.map((p, idx) => ({
+        id: `demo_prod_${Date.now()}_${idx}`,
+        name: p.name,
+        priceUSD: p.priceUSD,
+        stock: 50,
+        image: p.image
+      })));
     }
   };
 
@@ -394,7 +365,7 @@ export const LiveDemoPitchManager: React.FC<LiveDemoPitchManagerProps> = ({ onCl
   const demoStoreUrl = activeDemoSlug ? `https://axisnitro.store/nitro/${activeDemoSlug}` : "";
 
   return (
-    <div className="bg-slate-950 border border-violet-500/30 rounded-[2.5rem] p-6 sm:p-8 text-white shadow-2xl space-y-6 relative overflow-hidden">
+    <div className="bg-slate-950 border border-violet-500/30 rounded-[2.5rem] p-6 sm:p-8 text-white shadow-2xl space-y-6 relative overflow-visible">
       {/* Glow */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl pointer-events-none" />
@@ -528,20 +499,11 @@ export const LiveDemoPitchManager: React.FC<LiveDemoPitchManagerProps> = ({ onCl
                   />
                 </div>
 
-                <div>
-                  <label className="text-[11px] font-bold text-slate-300 block mb-1">Rubro / Categoría *</label>
-                  <select
-                    value={category}
-                    onChange={e => handleCategorySelect(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-amber-400 font-bold cursor-pointer"
-                  >
-                    <option value="bodegon">🛒 Bodegón / Supermercado / Víveres</option>
-                    <option value="comida">🍔 Comida Rápida / Restaurante / Panadería</option>
-                    <option value="farmacia">💊 Farmacia / Salud / Cuidado Personal</option>
-                    <option value="ropa">👕 Ropa / Calzado / Boutique</option>
-                    <option value="ferreteria">🔧 Ferretería / Iluminación / Hogar</option>
-                  </select>
-                </div>
+                <CategorySearchSelect
+                  value={category}
+                  onChange={handleCategorySelect}
+                  label="Rubro / Categoría *"
+                />
 
                 <div>
                   <label className="text-[11px] font-bold text-slate-300 block mb-1">Nombre del Dueño / Gerente</label>

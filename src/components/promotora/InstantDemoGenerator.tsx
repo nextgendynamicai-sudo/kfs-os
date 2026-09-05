@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { Sparkles, Store, Send, Check, Copy, ExternalLink, RefreshCw, Smartphone } from "lucide-react";
 import { useKFS } from "../../context/KFSContext";
 import { createTenantSlug } from "../../lib/tenantManager";
+import { getCategoryPreset } from "../../lib/businessCategories";
+import { CategorySearchSelect } from "../CategorySearchSelect";
 
 interface InstantDemoGeneratorProps {
   promotoraId: string;
@@ -56,7 +58,8 @@ export const InstantDemoGenerator: React.FC<InstantDemoGeneratorProps> = ({
 
     const slug = createTenantSlug(businessName);
     const clientId = `demo_${Date.now()}`;
-    const sampleList = sampleProductsByCategory[category] || sampleProductsByCategory.comida;
+    const preset = getCategoryPreset(category);
+    const sampleList = preset.defaultProds;
 
     // Crear cliente demo en base de datos reactiva
     const newDemoClient = {
@@ -72,7 +75,7 @@ export const InstantDemoGenerator: React.FC<InstantDemoGeneratorProps> = ({
       plan: "pionero",
       kfsFeePercentage: 0.02,
       storeSettings: {
-        themeColor: category === "comida" ? "#EF4444" : category === "farmacia" ? "#10B981" : category === "bodegon" ? "#F59E0B" : "#8B5CF6",
+        themeColor: preset.color,
         profilePicUrl: "https://cdn-icons-png.flaticon.com/512/3063/3063822.png",
         coverPhotoUrl: "https://images.unsplash.com/photo-1556742049-0a67e55722c0?w=1200&auto=format&fit=crop&q=60",
         bioText: `¡Bienvenido a ${businessName.trim()}! Esta es tu tienda virtual demo creada por tu promotora ${promotoraName}.`,
@@ -172,21 +175,11 @@ export const InstantDemoGenerator: React.FC<InstantDemoGeneratorProps> = ({
           />
         </div>
 
-        <div>
-          <label className="text-[10px] font-black uppercase text-slate-300 block mb-1">
-            2. Rubro Comercial
-          </label>
-          <select
-            value={category}
-            onChange={e => setCategory(e.target.value)}
-            className="w-full bg-slate-900/90 border border-violet-500/30 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:border-amber-400 font-bold cursor-pointer"
-          >
-            <option value="comida">🍔 Comida Rápida / Restaurant</option>
-            <option value="bodegon">🛒 Bodegón / Víveres</option>
-            <option value="farmacia">💊 Farmacia / Salud</option>
-            <option value="ropa">👕 Ropa / Calzado / Boutique</option>
-          </select>
-        </div>
+        <CategorySearchSelect
+          value={category}
+          onChange={setCategory}
+          label="2. Rubro Comercial"
+        />
 
         <div>
           <label className="text-[10px] font-black uppercase text-slate-300 block mb-1">
