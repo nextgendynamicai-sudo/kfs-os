@@ -277,7 +277,7 @@ export const LoginView = ({
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-violet-50 via-slate-50 to-violet-100/70 font-sans selection:bg-violet-600 selection:text-white relative overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-violet-50 via-slate-50 to-violet-100/70 font-sans selection:bg-violet-600 selection:text-white relative overflow-x-clip">
       
       {/* ========================================================= */}
       {/* FONDO FINTECH AURORA CON ORBES DESENFOCADOS ANIMADOS      */}

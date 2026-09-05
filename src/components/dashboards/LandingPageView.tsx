@@ -84,8 +84,18 @@ export const LandingPageView = ({ setView }: any) => {
     <div className="min-h-screen bg-gradient-to-b from-[#fcfaff] via-[#f2e6ff] to-[#d8beff] text-violet-950 font-sans overflow-x-hidden selection:bg-violet-600 selection:text-white">
       {/* Navbar */}
       <nav className="fixed w-full z-50 bg-white/90 backdrop-blur-xl border-b border-violet-100 py-3.5 px-4 sm:px-10 flex justify-between items-center transition-all duration-300 shadow-sm">
-        <div className="flex items-center gap-3">
-          <KreatekLogo className="h-8 w-auto text-violet-600" />
+        <div className="flex items-center gap-2.5 sm:gap-3 cursor-pointer" onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}>
+          <div className="p-1 rounded-xl bg-violet-500/10 flex items-center justify-center">
+            <KreatekLogo className="h-8 w-auto" />
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="text-base sm:text-lg font-black tracking-tight text-violet-950">
+              AXIS NITRO
+            </span>
+            <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-violet-100 text-violet-700 border border-violet-200 shadow-xs">
+              OS 8.0
+            </span>
+          </div>
         </div>
         <div className="flex items-center gap-2 sm:gap-3">
           <button 

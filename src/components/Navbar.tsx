@@ -1,7 +1,16 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ChevronLeft, Bell, Sun, Moon, X } from "lucide-react";
+import { 
+  ChevronLeft, 
+  Bell, 
+  Sun, 
+  Moon, 
+  X, 
+  ShoppingBag, 
+  Store, 
+  LogOut 
+} from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { KreatekLogo } from "./KreatekLogo";
 import { compressImage, playSyncChime } from "../lib/utils";
@@ -86,13 +95,33 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
   const getNetworkDetails = () => {
     switch (networkState) {
       case "online":
-        return { color: "bg-green-500 shadow-[0_0_8px_#22c55e]", border: "border-green-500/50 shadow-[0_0_15px_rgba(34,197,94,0.25)] bg-green-950/20 hover:bg-green-900/30 text-green-400", label: "ONLINE (NUBE)", text: "text-green-400" };
+        return { 
+          color: "bg-emerald-500 shadow-[0_0_8px_#10b981]", 
+          border: "border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.15)] bg-emerald-50 dark:bg-emerald-950/20 hover:bg-emerald-100/80 dark:hover:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300", 
+          label: "ONLINE (NUBE)", 
+          text: "text-emerald-600 dark:text-emerald-400" 
+        };
       case "mesh":
-        return { color: "bg-amber-500 shadow-[0_0_8px_#f59e0b]", border: "border-amber-500/50 shadow-[0_0_15px_rgba(245,158,11,0.25)] bg-amber-950/20 hover:bg-amber-900/30 text-amber-400", label: "LOCAL MESH (P2P)", text: "text-amber-400" };
+        return { 
+          color: "bg-amber-500 shadow-[0_0_8px_#f59e0b]", 
+          border: "border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.15)] bg-amber-50 dark:bg-amber-950/20 hover:bg-amber-100/80 dark:hover:bg-amber-900/30 text-amber-700 dark:text-amber-300", 
+          label: "LOCAL MESH (P2P)", 
+          text: "text-amber-600 dark:text-amber-400" 
+        };
       case "offline":
-        return { color: "bg-red-500 shadow-[0_0_8px_#ef4444] animate-pulse", border: "border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.25)] bg-red-950/20 hover:bg-red-900/30 text-red-400 animate-pulse", label: "OFFLINE (STAND-ALONE)", text: "text-red-400" };
+        return { 
+          color: "bg-red-500 shadow-[0_0_8px_#ef4444] animate-pulse", 
+          border: "border-red-500/40 shadow-[0_0_15px_rgba(239,68,68,0.15)] bg-red-50 dark:bg-red-950/20 hover:bg-red-100/80 dark:hover:bg-red-900/30 text-red-700 dark:text-red-400 animate-pulse", 
+          label: "OFFLINE (STAND-ALONE)", 
+          text: "text-red-600 dark:text-red-400" 
+        };
       default:
-        return { color: "bg-green-500 shadow-[0_0_8px_#22c55e]", border: "border-green-500/50 shadow-[0_0_15px_rgba(34,197,94,0.25)] bg-green-950/20 hover:bg-green-900/30 text-green-400", label: "ONLINE (NUBE)", text: "text-green-400" };
+        return { 
+          color: "bg-emerald-500 shadow-[0_0_8px_#10b981]", 
+          border: "border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.15)] bg-emerald-50 dark:bg-emerald-950/20 hover:bg-emerald-100/80 dark:hover:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300", 
+          label: "ONLINE (NUBE)", 
+          text: "text-emerald-600 dark:text-emerald-400" 
+        };
     }
   };
 
@@ -101,168 +130,275 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
 
   return (
     <>
+      {/* Alerta Global de Notificaciones Urgentes (Solo si existe y usuario está logueado) */}
       {latestNotif && (
-        <div className="w-full bg-gradient-to-r from-red-600 to-red-800 text-white px-4 py-2 text-center text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-lg z-50 animate-fade-in relative">
-          <Bell size={16} className="animate-bounce" />
-          <span className="uppercase tracking-widest">{latestNotif.title}:</span>
+        <div className="w-full bg-gradient-to-r from-rose-600 to-violet-700 text-white px-4 py-2 text-center text-xs sm:text-sm font-bold flex items-center justify-center gap-2 shadow-md z-50 animate-fade-in relative">
+          <Bell size={15} className="animate-bounce" />
+          <span className="uppercase tracking-widest text-[11px] bg-white/20 px-2 py-0.5 rounded-full">{latestNotif.title}:</span>
           <span className="font-normal">{latestNotif.message}</span>
         </div>
       )}
-      <nav className="flex flex-col sm:flex-row justify-between items-center p-4 border-b border-white/5 bg-violet-900 sticky top-0 z-40 backdrop-blur-md gap-3 w-full">
-        <div className="flex items-center gap-3">
+
+      {/* Barra de Navegación Principal en Cristal Translúcido (Glassmorphism de Élite) */}
+      <nav className="flex flex-row justify-between items-center px-4 sm:px-6 py-2.5 sm:py-3 border-b border-slate-200/70 dark:border-white/10 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl sticky top-0 z-40 shadow-xs transition-all duration-300 gap-3 w-full">
+        
+        {/* ========================================================= */}
+        {/* IZQUIERDA: BOTÓN VOLVER + LOGO FUSIONADO + BRANDING ELEGANTE */}
+        {/* ========================================================= */}
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           {showBack && (
             <button
               onClick={handleBack}
-              className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-white/10 hover:bg-white/5 text-xs text-gray-300 font-bold transition-all cursor-pointer mr-2"
+              className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-xs text-slate-700 dark:text-slate-200 font-bold transition-all cursor-pointer mr-1 shadow-xs"
+              title="Regresar a la pantalla anterior"
             >
-              <ChevronLeft size={16} /> Atrás
+              <ChevronLeft size={16} />
+              <span className="hidden xs:inline">Atrás</span>
             </button>
           )}
-          <KreatekLogo className="h-10 sm:h-12 w-auto" />
+
+          {/* Logo fusionado de forma limpia sin caja blanca tosca */}
+          <div 
+            onClick={() => { if (!currentUser) setView("landing"); }}
+            className="flex items-center gap-2.5 sm:gap-3 cursor-pointer select-none group"
+            title="AXIS NITRO KFS OS 8.0"
+          >
+            <div className="relative flex items-center justify-center p-1 rounded-xl bg-violet-500/10 dark:bg-white/10 group-hover:bg-violet-500/15 group-hover:scale-105 transition-all duration-300">
+              <KreatekLogo className="h-8 sm:h-9 w-auto drop-shadow-xs" />
+            </div>
+            
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <span className="text-sm sm:text-base font-black tracking-tight bg-gradient-to-r from-slate-900 via-violet-950 to-indigo-950 dark:from-white dark:via-violet-200 dark:to-indigo-200 bg-clip-text text-transparent">
+                  AXIS NITRO
+                </span>
+                <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-950/60 text-violet-700 dark:text-violet-300 border border-violet-200/80 dark:border-violet-800/60 shadow-xs">
+                  OS 8.0
+                </span>
+              </div>
+              <span className="text-[9px] font-bold tracking-wider text-slate-500 dark:text-slate-400 font-mono">
+                FINTECH PLATFORM
+              </span>
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-end">
-          {/* Network Telemetry Trigger */}
-          <button
-            onClick={cycleNetworkState}
-            disabled={isSyncing}
-            className={`flex items-center gap-2 px-3 py-1.5 rounded-full border bg-white/5 backdrop-blur-sm transition-all hover:bg-white/10 ${net.border} cursor-pointer group disabled:opacity-50`}
-            title="Gestor de Conexión de Contingencia y Sincronización"
-          >
-            <span className={`relative flex h-2 w-2`}>
-              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${net.color}`}></span>
-              <span className={`relative inline-flex rounded-full h-2 w-2 ${net.color}`}></span>
-            </span>
-            <span className={`font-mono text-[10px] font-black ${net.text} tracking-wider`}>
-              {isSyncing ? "SINCRONIZANDO..." : net.label}
-            </span>
-          </button>
+        {/* ========================================================= */}
+        {/* CENTRO: TÍTULO CONTEXTUAL (SI APLICA EN MARKETPLACE/DASHBOARD) */}
+        {/* ========================================================= */}
+        {title && (
+          <div className="hidden md:flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-100/80 dark:bg-white/5 border border-slate-200/80 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-300 font-mono shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
+            <span className="truncate max-w-xs">{title}</span>
+          </div>
+        )}
 
-          {title && <span className="text-white/80 text-xs sm:text-sm uppercase tracking-wider font-mono bg-white/5 px-3 py-1.5 rounded-full">{title}</span>}
+        {/* ========================================================= */}
+        {/* DERECHA: PÚBLICO COMERCIAL (MILLION-DOLLAR) vs SESIÓN PRIVADA */}
+        {/* ========================================================= */}
+        <div className="flex items-center gap-2 sm:gap-3 justify-end shrink-0">
+          
+          {/* ------------------------------------------------------- */}
+          {/* CASO A: VISTA PÚBLICA / ACCESO (SIN USUARIO LOGUEADO)   */}
+          {/* Cero botones toscos de programador, 100% comercial      */}
+          {/* ------------------------------------------------------- */}
+          {!currentUser ? (
+            <>
+              {/* Micro-chip de Estado Bancario en Línea (Discreto y Elegante) */}
+              <div
+                onClick={cycleNetworkState}
+                className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200/80 dark:border-emerald-800/50 text-emerald-700 dark:text-emerald-300 text-[11px] font-bold cursor-pointer hover:bg-emerald-100/80 dark:hover:bg-emerald-900/40 transition-all shadow-xs select-none"
+                title="Infraestructura Bancaria en tiempo real (Click para alternar contingencia)"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${net.color}`}></span>
+                  <span className={`relative inline-flex rounded-full h-2 w-2 ${net.color}`}></span>
+                </span>
+                <span className="font-semibold tracking-tight">
+                  {networkState === 'offline' ? 'Modo Offline' : networkState === 'mesh' ? 'Malla P2P' : 'Sistemas en Línea'}
+                </span>
+              </div>
 
-          {/* Supabase Connection Status Badge */}
-          <span 
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-[10px] font-black font-mono tracking-wider bg-white/5 ${
-              isSupabaseConfigured 
-                ? "border-emerald-500/30 text-emerald-400" 
-                : "border-white/10 text-gray-400"
-            }`}
-            title={isSupabaseConfigured ? "Supabase Cloud: Conectado" : "Supabase Cloud: Desconectado (Usando Mock Local)"}
-          >
-            {isSupabaseConfigured ? "☁️ CLOUD ACTIVE" : "☁️ MOCK ACTIVE"}
-          </span>
+              {/* Botón Explorar Catálogo / Mercado */}
+              <button
+                onClick={() => setView("marketplace")}
+                className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-slate-700 dark:text-slate-200 hover:text-violet-700 dark:hover:text-violet-400 hover:bg-violet-50 dark:hover:bg-white/5 transition-all cursor-pointer"
+                title="Ver vitrina de productos y comercios afiliados"
+              >
+                <ShoppingBag size={14} className="text-violet-600 dark:text-violet-400" />
+                <span>Catálogo</span>
+              </button>
 
-          {/* Compartir APK / App */}
-          <button
-            onClick={async () => {
-              const shareUrl = `${window.location.origin}/download-apk`;
-              if (navigator.share) {
-                try {
-                  await navigator.share({
-                    title: "KFS-OS APK",
-                    text: "Descarga la aplicación oficial de KFS-OS en tu dispositivo móvil",
-                    url: shareUrl
-                  });
-                  showToast("Enlace compartido con éxito", "success");
-                } catch (e) {
-                  // user cancelled or share failed
-                }
-              } else {
-                navigator.clipboard.writeText(shareUrl);
-                showToast("Enlace de descarga copiado al portapapeles.", "success");
-              }
-            }}
-            className="flex items-center justify-center p-2 rounded-xl border border-violet-500/30 hover:bg-violet-800 text-violet-300 hover:text-white transition-all cursor-pointer h-8 px-3 gap-1.5 bg-violet-950/40 text-xs font-black uppercase tracking-wider"
-            title="Compartir enlace de descarga de la aplicación móvil"
-          >
-            <span>🔗 Compartir App</span>
-          </button>
+              {/* Botón Comercial: Afiliar Negocio */}
+              <button
+                onClick={() => setView("b2b-onboarding")}
+                className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-xl text-xs font-bold bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 text-white shadow-xs shadow-violet-500/20 hover:shadow-md transition-all cursor-pointer border-none"
+                title="Registra tu negocio y obtén punto de venta POS"
+              >
+                <Store size={14} />
+                <span>Afiliar Negocio</span>
+              </button>
 
-          {/* Theme Toggle Button */}
-          <button
-            onClick={toggleTheme}
-            className="flex items-center justify-center p-2 rounded-xl border border-white/10 hover:bg-white/5 text-gray-300 hover:text-white transition-all cursor-pointer h-8 w-8 bg-white/5"
-            title={theme === "light" ? "Cambiar a Modo Oscuro" : "Cambiar a Modo Claro"}
-          >
-            {theme === "light" ? <Moon size={14} /> : <Sun size={14} />}
-          </button>
+              {/* Selector de Modo Claro / Oscuro */}
+              <button
+                onClick={toggleTheme}
+                className="flex items-center justify-center p-2 rounded-xl border border-slate-200/80 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all cursor-pointer h-8 w-8 bg-white/70 dark:bg-slate-900/70 shadow-xs"
+                title={theme === "light" ? "Cambiar a Modo Oscuro" : "Cambiar a Modo Claro"}
+              >
+                {theme === "light" ? <Moon size={14} /> : <Sun size={14} />}
+              </button>
+            </>
+          ) : (
+            /* ------------------------------------------------------- */
+            /* CASO B: SESIÓN AUTENTICADA (OPERATIVO EN DASHBOARD)     */
+            /* Herramientas avanzadas con diseño Glassmorphism refinado */
+            /* ------------------------------------------------------- */
+            <>
+              {/* Telemetría y Sincronización de Red P2P / Nube */}
+              <button
+                onClick={cycleNetworkState}
+                disabled={isSyncing}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border bg-white/70 dark:bg-slate-900/70 backdrop-blur-sm transition-all hover:bg-slate-100 dark:hover:bg-slate-800 ${net.border} cursor-pointer group disabled:opacity-50 shadow-xs`}
+                title="Gestor de Conexión de Contingencia y Sincronización"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${net.color}`}></span>
+                  <span className={`relative inline-flex rounded-full h-2 w-2 ${net.color}`}></span>
+                </span>
+                <span className={`font-mono text-[10px] font-black ${net.text} tracking-wider`}>
+                  {isSyncing ? "SINCRONIZANDO..." : net.label}
+                </span>
+              </button>
 
-          {/* Interactive Notification Bell */}
-          <button
-            onClick={() => setShowNotifDrawer(prev => !prev)}
-            className="relative flex items-center justify-center p-2 rounded-xl border border-violet-500/30 hover:bg-violet-800/50 text-violet-200 hover:text-white transition-all cursor-pointer h-8 w-8 bg-violet-950/40"
-            title="Ver centro de notificaciones"
-          >
-            <Bell size={14} className={db.notifications?.length > 0 ? "animate-pulse text-amber-400" : ""} />
-            {(db.notifications || []).length > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[9px] font-black text-slate-950 shadow-md">
-                {(db.notifications || []).length}
+              {/* Indicador de Nube Supabase */}
+              <span 
+                className={`hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border text-[10px] font-black font-mono tracking-wider bg-white/70 dark:bg-slate-900/70 shadow-xs ${
+                  isSupabaseConfigured 
+                    ? "border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/20" 
+                    : "border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400"
+                }`}
+                title={isSupabaseConfigured ? "Supabase Cloud: Conectado" : "Supabase Cloud: Desconectado (Usando Mock Local)"}
+              >
+                {isSupabaseConfigured ? "☁️ CLOUD ACTIVE" : "☁️ MOCK ACTIVE"}
               </span>
-            )}
-          </button>
 
-          {currentUser && currentUser.role !== "marketplace" && (
-            <label className="relative w-8 h-8 rounded-full border border-violet-600/50 cursor-pointer overflow-hidden flex items-center justify-center bg-white/10 hover:bg-white/20 transition-all shadow-inner group" title="Toca tu foto para actualizar tu imagen de perfil">
-              <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={async e => {
-                  const file = e.target.files?.[0];
-                  if (file) {
+              {/* Compartir APK / App */}
+              <button
+                onClick={async () => {
+                  const shareUrl = `${window.location.origin}/download-apk`;
+                  if (navigator.share) {
                     try {
-                      const base64String = await compressImage(file, 400);
-                      setDb((prev: any) => {
-                        const updated = { ...prev };
-                        if (currentUser.role === "dueño") {
-                          updated.clients = prev.clients.map((c: any) => c.id === currentUser.id ? { ...c, avatar: base64String } : c);
-                        } else if (currentUser.role === "promotora") {
-                          updated.promotoras = prev.promotoras.map((p: any) => p.id === currentUser.id ? { ...p, avatar: base64String } : p);
-                        } else if (currentUser.role === "vendedor") {
-                          updated.vendedores = prev.vendedores.map((v: any) => v.id === currentUser.id ? { ...v, avatar: base64String } : v);
-                        } else if (currentUser.role === "customer") {
-                          updated.customers = (prev.customers || []).map((c: any) => c.id === currentUser.id ? { ...c, avatar: base64String } : c);
-                        } else if (currentUser.role === "rider") {
-                          updated.riders = (prev.riders || []).map((r: any) => r.id === currentUser.id ? { ...r, avatar: base64String } : r);
-                        } else if (currentUser.role === "core") {
-                          updated.kreatekCore = { ...updated.kreatekCore, avatar: base64String };
-                        }
-                        return updated;
+                      await navigator.share({
+                        title: "KFS-OS APK",
+                        text: "Descarga la aplicación oficial de KFS-OS en tu dispositivo móvil",
+                        url: shareUrl
                       });
-
-                      setCurrentUser((prev: any) => ({ ...prev, avatar: base64String }));
-                      showToast("Foto de perfil comprimida y guardada.", "success");
-                    } catch (error) {
-                      showToast("Error comprimiendo imagen", "error");
+                      showToast("Enlace compartido con éxito", "success");
+                    } catch (e) {
+                      // user cancelled
                     }
+                  } else {
+                    navigator.clipboard.writeText(shareUrl);
+                    showToast("Enlace de descarga copiado al portapapeles.", "success");
                   }
                 }}
-              />
-              {currentUser.avatar ? (
-                <img src={currentUser.avatar} className="w-full h-full object-cover" alt="Perfil" />
-              ) : (
-                <div className="w-full h-full bg-violet-600 text-violet-900 font-black text-[10px] flex items-center justify-center">
-                  {currentUser.name ? currentUser.name.slice(0, 2).toUpperCase() : (currentUser.company ? currentUser.company.slice(0, 2).toUpperCase() : "KF")}
-                </div>
-              )}
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                <span className="text-[8px] text-white font-black">⚙️</span>
-              </div>
-            </label>
-          )}
+                className="hidden sm:flex items-center justify-center p-2 rounded-xl border border-violet-200 dark:border-violet-800/50 hover:bg-violet-50 dark:hover:bg-violet-900/30 text-violet-700 dark:text-violet-300 transition-all cursor-pointer h-8 px-2.5 gap-1.5 bg-violet-50/60 dark:bg-violet-950/30 text-[11px] font-bold shadow-xs"
+                title="Compartir enlace de descarga de la aplicación móvil"
+              >
+                <span>🔗 App</span>
+              </button>
 
-          {currentUser && (
-            <button
-              onClick={logout}
-              className="text-xs font-bold text-red-400 hover:text-red-300 transition-colors cursor-pointer bg-red-950/20 border border-red-500/20 px-3 py-1.5 rounded-xl flex items-center gap-1"
-              title="Cerrar Sesión y salir del sistema"
-            >
-              ❌ Salir
-            </button>
+              {/* Selector de Modo Claro / Oscuro */}
+              <button
+                onClick={toggleTheme}
+                className="flex items-center justify-center p-2 rounded-xl border border-slate-200/80 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all cursor-pointer h-8 w-8 bg-white/70 dark:bg-slate-900/70 shadow-xs"
+                title={theme === "light" ? "Cambiar a Modo Oscuro" : "Cambiar a Modo Claro"}
+              >
+                {theme === "light" ? <Moon size={14} /> : <Sun size={14} />}
+              </button>
+
+              {/* Campana de Notificaciones Interactiva */}
+              <button
+                onClick={() => setShowNotifDrawer(prev => !prev)}
+                className="relative flex items-center justify-center p-2 rounded-xl border border-violet-200 dark:border-violet-800/50 hover:bg-violet-50 dark:hover:bg-violet-900/40 text-violet-700 dark:text-violet-300 transition-all cursor-pointer h-8 w-8 bg-violet-50/50 dark:bg-violet-950/40 shadow-xs"
+                title="Ver centro de notificaciones"
+              >
+                <Bell size={14} className={db.notifications?.length > 0 ? "animate-pulse text-amber-500" : ""} />
+                {(db.notifications || []).length > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-[9px] font-black text-slate-950 shadow-sm">
+                    {(db.notifications || []).length}
+                  </span>
+                )}
+              </button>
+
+              {/* Foto de Perfil / Cambio de Avatar */}
+              {currentUser.role !== "marketplace" && (
+                <label 
+                  className="relative w-8 h-8 rounded-full border-2 border-violet-500/40 cursor-pointer overflow-hidden flex items-center justify-center bg-violet-100 dark:bg-white/10 hover:border-violet-600 transition-all shadow-xs group" 
+                  title="Toca tu foto para actualizar tu imagen de perfil"
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={async e => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        try {
+                          const base64String = await compressImage(file, 400);
+                          setDb((prev: any) => {
+                            const updated = { ...prev };
+                            if (currentUser.role === "dueño") {
+                              updated.clients = prev.clients.map((c: any) => c.id === currentUser.id ? { ...c, avatar: base64String } : c);
+                            } else if (currentUser.role === "promotora") {
+                              updated.promotoras = prev.promotoras.map((p: any) => p.id === currentUser.id ? { ...p, avatar: base64String } : p);
+                            } else if (currentUser.role === "vendedor") {
+                              updated.vendedores = prev.vendedores.map((v: any) => v.id === currentUser.id ? { ...v, avatar: base64String } : v);
+                            } else if (currentUser.role === "customer") {
+                              updated.customers = (prev.customers || []).map((c: any) => c.id === currentUser.id ? { ...c, avatar: base64String } : c);
+                            } else if (currentUser.role === "rider") {
+                              updated.riders = (prev.riders || []).map((r: any) => r.id === currentUser.id ? { ...r, avatar: base64String } : r);
+                            } else if (currentUser.role === "core") {
+                              updated.kreatekCore = { ...updated.kreatekCore, avatar: base64String };
+                            }
+                            return updated;
+                          });
+
+                          setCurrentUser((prev: any) => ({ ...prev, avatar: base64String }));
+                          showToast("Foto de perfil comprimida y guardada.", "success");
+                        } catch (error) {
+                          showToast("Error comprimiendo imagen", "error");
+                        }
+                      }
+                    }}
+                  />
+                  {currentUser.avatar ? (
+                    <img src={currentUser.avatar} className="w-full h-full object-cover" alt="Perfil" />
+                  ) : (
+                    <div className="w-full h-full bg-violet-600 text-white font-black text-[10px] flex items-center justify-center">
+                      {currentUser.name ? currentUser.name.slice(0, 2).toUpperCase() : (currentUser.company ? currentUser.company.slice(0, 2).toUpperCase() : "KF")}
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                    <span className="text-[8px] text-white font-black">⚙️</span>
+                  </div>
+                </label>
+              )}
+
+              {/* Botón Salir / Logout */}
+              <button
+                onClick={logout}
+                className="text-xs font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 hover:bg-rose-100 dark:hover:bg-rose-950/50 transition-colors cursor-pointer bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 px-2.5 sm:px-3 py-1.5 rounded-xl flex items-center gap-1 shadow-xs"
+                title="Cerrar Sesión y salir del sistema"
+              >
+                <LogOut size={13} />
+                <span className="hidden xs:inline">Salir</span>
+              </button>
+            </>
           )}
         </div>
 
-        {/* Notification Modal Drawer */}
+        {/* Drawer Lateral del Centro de Notificaciones */}
         {showNotifDrawer && (
           <div className="fixed inset-0 z-[99999] bg-slate-950/80 backdrop-blur-md flex justify-end animate-fade-in">
             <div className="w-full max-w-md bg-slate-900 border-l border-violet-500/30 text-white h-full p-6 flex flex-col justify-between shadow-2xl overflow-hidden">
@@ -353,4 +489,5 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
       </nav>
     </>
   );
-}
+};
+
