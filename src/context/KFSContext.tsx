@@ -177,6 +177,20 @@ interface KFSContextType {
 
 const upgradeToNewBaseline = (oldDb: any, baselineDb: any) => {
   if (!oldDb) return baselineDb;
+
+  const mergeAdditive = (oldArr: any[], baseArr: any[]) => {
+    const map = new Map();
+    // 1. Agregar todos los defaults de fábrica
+    (baseArr || []).forEach(item => {
+      if (item && item.id) map.set(item.id, item);
+    });
+    // 2. Sobrescribir/Mantener con los datos persistidos de usuarios
+    (oldArr || []).forEach(item => {
+      if (item && item.id) map.set(item.id, item);
+    });
+    return Array.from(map.values());
+  };
+
   return {
     ...baselineDb,
     kreatekCore: {
@@ -184,25 +198,25 @@ const upgradeToNewBaseline = (oldDb: any, baselineDb: any) => {
       ...(oldDb.kreatekCore || {}),
       wipeVersion: CURRENT_WIPE_VERSION
     },
-    orders: oldDb.orders || [],
-    transactions: oldDb.transactions || [],
-    auditLogs: oldDb.auditLogs || [],
-    supportTickets: oldDb.supportTickets || [],
-    products: oldDb.products || [],
-    clients: oldDb.clients || [],
-    promotoras: oldDb.promotoras || [],
-    vendedores: oldDb.vendedores || [],
-    customers: oldDb.customers || [],
-    riders: oldDb.riders || [],
-    expenses: oldDb.expenses || [],
-    posTerminals: oldDb.posTerminals || [],
-    zReports: oldDb.zReports || [],
-    blindAudits: oldDb.blindAudits || [],
-    vales: oldDb.vales || [],
-    candidates: oldDb.candidates || [],
-    unlockedContacts: oldDb.unlockedContacts || [],
-    coupons: oldDb.coupons || [],
-    kfsNetworkLedger: oldDb.kfsNetworkLedger || []
+    orders: mergeAdditive(oldDb.orders, baselineDb.orders),
+    transactions: mergeAdditive(oldDb.transactions, baselineDb.transactions),
+    auditLogs: mergeAdditive(oldDb.auditLogs, baselineDb.auditLogs),
+    supportTickets: mergeAdditive(oldDb.supportTickets, baselineDb.supportTickets),
+    products: mergeAdditive(oldDb.products, baselineDb.products),
+    clients: mergeAdditive(oldDb.clients, baselineDb.clients),
+    promotoras: mergeAdditive(oldDb.promotoras, baselineDb.promotoras),
+    vendedores: mergeAdditive(oldDb.vendedores, baselineDb.vendedores),
+    customers: mergeAdditive(oldDb.customers, baselineDb.customers),
+    riders: mergeAdditive(oldDb.riders, baselineDb.riders),
+    expenses: mergeAdditive(oldDb.expenses, baselineDb.expenses),
+    posTerminals: mergeAdditive(oldDb.posTerminals, baselineDb.posTerminals),
+    zReports: mergeAdditive(oldDb.zReports, baselineDb.zReports),
+    blindAudits: mergeAdditive(oldDb.blindAudits, baselineDb.blindAudits),
+    vales: mergeAdditive(oldDb.vales, baselineDb.vales),
+    candidates: mergeAdditive(oldDb.candidates, baselineDb.candidates),
+    unlockedContacts: mergeAdditive(oldDb.unlockedContacts, baselineDb.unlockedContacts),
+    coupons: mergeAdditive(oldDb.coupons, baselineDb.coupons),
+    kfsNetworkLedger: mergeAdditive(oldDb.kfsNetworkLedger, baselineDb.kfsNetworkLedger)
   };
 };
 

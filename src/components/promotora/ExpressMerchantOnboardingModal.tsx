@@ -213,6 +213,7 @@ export const ExpressMerchantOnboardingModal: React.FC<ExpressMerchantOnboardingM
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   placeholder="Ej: +58 412 1234567"
+                  maxLength={15}
                   className="w-full bg-slate-800 border border-slate-700 rounded-xl pl-10 pr-4 py-3 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500 font-mono font-bold"
                   autoFocus
                 />

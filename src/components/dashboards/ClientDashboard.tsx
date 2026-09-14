@@ -28,6 +28,8 @@ import { QuickCashierPinModal } from "../QuickCashierPinModal";
 import { SystemBackupRestoreModal } from "../SystemBackupRestoreModal";
 import { SmartChangeCalculator } from "../SmartChangeCalculator";
 import { STARTER_VENEZUELAN_PRODUCTS } from "../../config/products";
+import { SpotlightWalkthrough } from "../onboarding/SpotlightWalkthrough";
+import { MerchantTransactionHistoryWidget } from "../transactions/MerchantTransactionHistoryWidget";
 
 import React, { useState, useEffect, useRef } from "react";
 import {
@@ -138,6 +140,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
   const [showFirstTimePassModal, setShowFirstTimePassModal] = useState(
     Boolean(currentUser?.mustChangePassword || currentUser?.requirePasswordChangeOnFirstLogin || clientInfo?.mustChangePassword || clientInfo?.requirePasswordChangeOnFirstLogin)
   );
+  const [showSpotlightTour, setShowSpotlightTour] = useState(false);
 
   // Onboarding Guided Tour State (Paso 4: Tour Guiado Interactivo)
   const [showOnboardingTour, setShowOnboardingTour] = useState(
@@ -344,7 +347,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
   const netProfitUSD = grossSalesUSD - totalExpensesUSD;
 
   const myTransactions = (db.transactions || []).filter((tx: any) =>
-    db.products?.find((p: any) => p.id === tx.productId)?.clientId === currentUser?.id
+    tx.clientId === currentUser?.id || db.products?.find((p: any) => p.id === tx.productId)?.clientId === currentUser?.id
   );
   const clientChartData = myTransactions.map((t: any, index: number) => ({
     name: `Venta ${index + 1}`,
@@ -700,6 +703,15 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
             >
               🧭 Guía de Inicio
             </button>
+
+            <button 
+              type="button"
+              onClick={() => setShowSpotlightTour(true)} 
+              className="px-3 py-1.5 bg-gradient-to-r from-amber-500/20 to-orange-500/20 hover:bg-amber-500/30 rounded-xl text-amber-300 text-xs font-bold transition-all cursor-pointer border border-amber-400/40 flex items-center gap-1.5 shadow-sm active:scale-95"
+              title="Tour guiado 3D por las funciones clave del sistema"
+            >
+              ✨ Tour 3D
+            </button>
             <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
               <LogOut size={16} />
             </button>
@@ -930,6 +942,13 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
               </div>
               <DollarSign size={200} className="absolute -right-10 -bottom-20 text-violet-50" />
             </div>
+
+            {/* HISTORIAL INTELIGENTE DE VENTAS & FILTROS RÁPIDOS */}
+            <MerchantTransactionHistoryWidget
+              transactions={myTransactions}
+              bcvRate={currentBcvRate}
+              formatUSD={formatUSD}
+            />
 
             {/* Meta de Descuento Vitalicio en Comisión */}
             <div className="bg-white rounded-[2rem] shadow-xl shadow-violet-200/50 p-8 flex flex-col md:flex-row items-center gap-8 border border-violet-100">
@@ -3272,15 +3291,17 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
         </div>
       )}
 
-      {/* Modal de Cobro Rápido Directo desde Catálogo */}
-      {checkoutProduct && (
-        <CheckoutModal
-          product={checkoutProduct}
-          onConfirm={handleConfirmCheckout}
-          onCancel={() => setCheckoutProduct(null)}
-          formatUSD={formatUSD}
-          storeOwner={clientInfo}
-          currentUser={currentUser}
+      {/* Tour Guiado Interactivo 3D (Spotlight Walkthrough) */}
+      {showSpotlightTour && (
+        <SpotlightWalkthrough
+          onClose={() => setShowSpotlightTour(false)}
+          onNavigateTab={(tabKey) => {
+            if (tabKey === "inventory") setActiveTab("inventario");
+            else if (tabKey === "pos") {
+              if (setView) setView("axis_nitro_pos");
+              else setActiveTab("inventario");
+            } else if (tabKey === "overview") setActiveTab("resumen");
+          }}
         />
       )}
 

@@ -11,6 +11,7 @@ import { ModalPortal } from "./ModalPortal";
 export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap, showToast, currentUser }: any) => {
   const [isPrinting, setIsPrinting] = useState(true);
   const [isTorn, setIsTorn] = useState(false);
+  const [thermalWidth, setThermalWidth] = useState<"58mm" | "80mm">("58mm");
   const [whatsappPhone, setWhatsappPhone] = useState(tx?.customerPhone || "");
 
   useEffect(() => {
@@ -158,6 +159,31 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
 
         {/* Tactile Hardware Drawer Base */}
         <div className="w-full bg-[#151924] rounded-b-[2.5rem] border border-violet-100 p-5 shadow-2xl flex flex-col gap-3 z-10 -mt-1">
+          {/* Format Switcher 58mm / 80mm */}
+          <div className="flex items-center justify-between bg-black/40 p-2 rounded-xl border border-white/10 text-xs">
+            <span className="text-[10px] uppercase font-bold text-slate-400">Rollo Térmico:</span>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setThermalWidth("58mm")}
+                className={`px-2.5 py-1 rounded-lg text-[10px] font-black transition-all cursor-pointer ${
+                  thermalWidth === "58mm" ? "bg-amber-400 text-slate-950 shadow-sm" : "bg-slate-800 text-slate-400 hover:text-white"
+                }`}
+              >
+                58mm (Bolsillo)
+              </button>
+              <button
+                type="button"
+                onClick={() => setThermalWidth("80mm")}
+                className={`px-2.5 py-1 rounded-lg text-[10px] font-black transition-all cursor-pointer ${
+                  thermalWidth === "80mm" ? "bg-amber-400 text-slate-950 shadow-sm" : "bg-slate-800 text-slate-400 hover:text-white"
+                }`}
+              >
+                80mm (Mostrador)
+              </button>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             <button 
               onClick={playCashDrawerSound} 
@@ -167,16 +193,16 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
             </button>
             <button 
               onClick={() => {
-                showToast("Enviando comando ESC/POS a tiquetera térmica...", "success");
+                showToast(`Enviando a tiquetera térmica ${thermalWidth}...`, "success");
                 setTimeout(() => {
                   playCashDrawerSound();
                   window.print();
                 }, 300);
               }} 
               className="py-3 rounded-xl font-black text-xs text-violet-600 bg-violet-50 border border-violet-100 hover:bg-violet-100 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md active:scale-95 border-none"
-              title="Impresión Directa ESC/POS 58mm/80mm"
+              title={`Impresión Directa ESC/POS formato ${thermalWidth}`}
             >
-              🖨️ Imprimir Térmico
+              🖨️ {thermalWidth}
             </button>
 
             <button 
@@ -196,6 +222,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
                 placeholder="Teléfono WhatsApp (ej: 04141234567)"
                 value={whatsappPhone}
                 onChange={(e) => setWhatsappPhone(e.target.value)}
+                maxLength={15}
                 className="flex-1 bg-black/50 border border-white/10 rounded-xl px-3 py-2 text-xs font-mono text-white placeholder:text-gray-500 focus:outline-none focus:border-green-500"
               />
               <a

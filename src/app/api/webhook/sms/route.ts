@@ -27,9 +27,13 @@ export async function POST(req: Request) {
       reference = refMatch[0];
     }
 
-    const amountMatch = sms.match(/(?:bs[A-Za-z\.]*\s*:?\s*|monto\s*:?\s*|pago movil.*?)(\d+(?:[.,]\d+)?)/i);
+    const amountMatch = sms.match(/(?:bs[A-Za-z\.]*\s*:?\s*|monto\s*:?\s*|pago movil.*?)((?:\d{1,3}(?:\.\d{3})*|\d+)(?:,\d+)?|\d+(?:\.\d+)?)/i);
     if (amountMatch && amountMatch[1]) {
-      amount = parseFloat(amountMatch[1].replace(',', '.'));
+      let rawAmount = amountMatch[1];
+      if (rawAmount.includes(',')) {
+        rawAmount = rawAmount.replace(/\./g, '').replace(',', '.');
+      }
+      amount = parseFloat(rawAmount);
     }
 
     if (!reference) {

@@ -85,9 +85,13 @@ export function PhoneInput({
 
   useEffect(() => {
     const parsed = parsePhoneNumber(value);
-    setSelectedPrefix(parsed.prefix);
-    setLocalBody(parsed.body);
-  }, [value]);
+    const currentFull = formatFullPhoneNumber(selectedPrefix, localBody);
+    // Only update local state if the incoming value is fundamentally different
+    if (value !== currentFull) {
+      setSelectedPrefix(parsed.prefix);
+      setLocalBody(parsed.body);
+    }
+  }, [value, selectedPrefix, localBody]);
 
   const handlePrefixChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newPrefix = e.target.value;
@@ -145,6 +149,7 @@ export function PhoneInput({
           value={localBody}
           onChange={handleBodyChange}
           placeholder={placeholder}
+          maxLength={15}
           className={`w-full font-medium text-sm py-3 px-4 rounded-xl border focus:outline-none transition-all ${
             isDark
               ? "bg-slate-900/50 border-slate-800 text-white placeholder:text-slate-500 focus:border-violet-500"

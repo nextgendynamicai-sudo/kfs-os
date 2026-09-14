@@ -85,6 +85,12 @@ export const RiderDashboard = ({ db, currentUser, logout }: any) => {
   const [editingPM, setEditingPM] = useState(false);
   const [pmForm, setPmForm] = useState({ banco: "", telefono: "", cedula: "" });
   const [gpsSharing, setGpsSharing] = useState(false);
+  const [solarGlareMode, setSolarGlareMode] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("kfs_rider_solar_mode") === "true";
+    }
+    return false;
+  });
   const gpsWatchRef = useRef<number | null>(null);
 
   const riderInfo = db.riders?.find((r: any) => r.id === currentUser.id) || currentUser;
@@ -125,17 +131,45 @@ export const RiderDashboard = ({ db, currentUser, logout }: any) => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 text-violet-950 font-sans pb-24 relative">
+    <div className={`min-h-screen font-sans pb-24 relative transition-colors duration-200 ${
+      solarGlareMode ? "bg-black text-amber-300" : "bg-slate-50 text-violet-950"
+    }`}>
       {/* Wavy Header */}
-      <div className="bg-gradient-to-br from-violet-900 to-slate-900 rounded-b-[3rem] shadow-xl shadow-violet-900/20 pt-6 pb-12 px-6 text-white relative z-10 border-b border-violet-800">
+      <div className={`rounded-b-[3rem] shadow-xl pt-6 pb-12 px-6 text-white relative z-10 border-b ${
+        solarGlareMode 
+          ? "bg-stone-950 border-amber-400 shadow-amber-500/10" 
+          : "bg-gradient-to-br from-violet-900 to-slate-900 border-violet-800 shadow-violet-900/20"
+      }`}>
         <div className="flex justify-between items-center mb-6">
           <div className="flex items-center gap-2">
             <span className="bg-white/20 p-2 rounded-xl text-violet-100 backdrop-blur-sm"><Truck size={20} /></span>
             <h1 className="font-black text-xl tracking-tight text-white">{KFS_BRAND.productAcronym} Delivery</h1>
           </div>
-          <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-rose-500 transition-colors cursor-pointer text-white">
-            <LogOut size={16} />
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                const next = !solarGlareMode;
+                setSolarGlareMode(next);
+                if (typeof window !== "undefined") {
+                  try { localStorage.setItem("kfs_rider_solar_mode", String(next)); } catch {}
+                }
+                showToast(next ? "☀️ Modo Alto Contraste Solar Activado" : "Modo Normal Restaurado", "info");
+              }}
+              className={`px-3 py-1.5 rounded-xl text-xs font-black uppercase tracking-wider transition-all cursor-pointer flex items-center gap-1.5 border ${
+                solarGlareMode 
+                  ? "bg-amber-400 text-slate-950 border-amber-300 shadow-lg shadow-amber-400/40" 
+                  : "bg-white/10 text-white border-white/20 hover:bg-white/20"
+              }`}
+              title="Activa alto contraste para visibilidad extrema bajo el sol en moto"
+            >
+              {solarGlareMode ? "☀️ Sol Activo" : "☀️ Modo Sol"}
+            </button>
+
+            <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-rose-500 transition-colors cursor-pointer text-white">
+              <LogOut size={16} />
+            </button>
+          </div>
         </div>
 
         <div className="flex items-center gap-4">
@@ -305,18 +339,29 @@ export const RiderDashboard = ({ db, currentUser, logout }: any) => {
                           />
                         </div>
                       )}
-                      {/* Navigation Button */}
-                      <a
-                        href={mapsUrl!}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center justify-center gap-2 w-full py-2.5 bg-orange-500 hover:bg-orange-400 active:scale-95 text-white font-black rounded-xl transition-all text-xs cursor-pointer shadow-lg shadow-orange-500/30"
-                      >
-                        <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current" xmlns="http://www.w3.org/2000/svg">
-                          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-                        </svg>
-                        🗺️ Iniciar Navegación en Google Maps
-                      </a>
+                      {/* Navigation Buttons: 1-Click Google Maps & Waze */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                        <a
+                          href={mapsUrl!}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 active:scale-95 text-white font-black rounded-xl transition-all text-xs cursor-pointer shadow-md no-underline text-center"
+                        >
+                          <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current shrink-0" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+                          </svg>
+                          🗺️ Google Maps
+                        </a>
+
+                        <a
+                          href={`https://waze.com/ul?q=${encodeURIComponent(fullAddress)}&navigate=yes`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center justify-center gap-2 py-3 bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-400 hover:to-teal-400 active:scale-95 text-slate-950 font-black rounded-xl transition-all text-xs cursor-pointer shadow-md no-underline text-center"
+                        >
+                          🚗 Waze 1-Clic
+                        </a>
+                      </div>
                     </div>
                   ) : (
                     <div className="bg-slate-50 border border-slate-100 rounded-xl p-3">

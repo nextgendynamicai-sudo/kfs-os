@@ -7,18 +7,22 @@ import { FeatureFlag } from "./FeatureFlag";
 import { 
   Flame, Cpu, Database, DollarSign, Gift, Layers, CheckCircle2, 
   PlusCircle, Sliders, ToggleLeft, ToggleRight, Sparkles, Scale,
-  Calendar, TableProperties, Binary, Calculator, KeyRound, ArrowLeft
+  Calendar, TableProperties, Binary, Calculator, KeyRound, ArrowLeft,
+  Camera, Coins, Barcode
 } from "lucide-react";
 import { SmartChangeCalculator } from "./SmartChangeCalculator";
 import { QuickCashierPinModal } from "./QuickCashierPinModal";
 import { ReceiptModal } from "./ReceiptModal";
-import { playCashDrawerSound, announcePaymentVoice } from "../lib/utils";
+import { ZeroHardwareBarcodeScanner } from "./pos/ZeroHardwareBarcodeScanner";
+import { playCashDrawerSound, announcePaymentVoice, playScannerBeep } from "../lib/utils";
 
 export function AxisNitroPOS() {
   const { db, formatUSD, rates, showToast, processPurchase, setView, currentUser: kfsUser } = useKFS() as any;
   const { businessPreset, presetMetadata, refreshPreset } = usePreset();
   const [showChangeCalculator, setShowChangeCalculator] = useState(false);
   const [showPinModal, setShowPinModal] = useState(false);
+  const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
+  const [quickCashUSD, setQuickCashUSD] = useState<number | null>(null);
   const [activeCashier, setActiveCashier] = useState<any>(null);
   const [activeReceiptTx, setActiveReceiptTx] = useState<any | null>(null);
 
@@ -226,13 +230,24 @@ export function AxisNitroPOS() {
             </div>
 
             {/* Product card */}
-            <div className="bg-slate-900/80 border border-violet-900/20 p-4 rounded-2xl flex justify-between items-center">
-              <div>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Artículo Seleccionado</p>
-                <p className="text-lg font-black text-white mt-0.5">{selectedProduct.name}</p>
+            <div className="bg-slate-900/80 border border-violet-900/20 p-4 rounded-2xl flex justify-between items-center gap-3">
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Artículo Seleccionado</p>
+                  <button
+                    type="button"
+                    onClick={() => setShowBarcodeScanner(true)}
+                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-violet-600/30 hover:bg-violet-600/50 border border-violet-500/40 text-violet-200 text-[10px] font-bold transition-all cursor-pointer shadow-sm active:scale-95"
+                    title="Escanear con cámara del teléfono"
+                  >
+                    <Camera size={12} className="text-amber-400" />
+                    <span>Escanear Cámara</span>
+                  </button>
+                </div>
+                <p className="text-lg font-black text-white mt-0.5 truncate">{selectedProduct.name}</p>
                 <p className="text-xs text-violet-300 font-bold mt-1">Precio Base: {formatUSD(basePrice)}</p>
               </div>
-              <div className="text-right">
+              <div className="text-right shrink-0">
                 <p className="text-2xl font-black text-white">{formatUSD(basePrice)}</p>
                 <p className="text-[9px] text-slate-500">En stock: {selectedProduct.stock} u.</p>
               </div>
@@ -397,6 +412,84 @@ export function AxisNitroPOS() {
                 </div>
               )}
 
+              {/* Asistente Táctil de Vueltos Automáticos (Quick Cash Assistant) */}
+              <div className="bg-slate-900/60 border border-violet-800/30 p-3.5 rounded-2xl space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                    <Coins size={13} className="text-amber-400" /> Vueltos Automáticos en Caja
+                  </span>
+                  {quickCashUSD !== null && (
+                    <button 
+                      type="button" 
+                      onClick={() => setQuickCashUSD(null)}
+                      className="text-[10px] text-slate-400 hover:text-amber-300 font-bold cursor-pointer"
+                    >
+                      Limpiar
+                    </button>
+                  )}
+                </div>
+                
+                {/* Denomination Pills */}
+                <div className="flex flex-wrap gap-1.5">
+                  {[5, 10, 20, 50, 100].map((denom) => (
+                    <button
+                      key={denom}
+                      type="button"
+                      onClick={() => {
+                        playCashDrawerSound();
+                        setQuickCashUSD(denom);
+                      }}
+                      className={`px-2.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer border ${
+                        quickCashUSD === denom
+                          ? "bg-amber-400 text-slate-950 border-amber-300 shadow-md shadow-amber-400/20"
+                          : "bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700 hover:bg-slate-900"
+                      }`}
+                    >
+                      ${denom}
+                    </button>
+                  ))}
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      playCashDrawerSound();
+                      setQuickCashUSD(totalDueUSD);
+                    }}
+                    className="px-2.5 py-1.5 rounded-xl text-xs font-black bg-emerald-950/60 border border-emerald-500/40 text-emerald-400 hover:bg-emerald-900/60 transition-all cursor-pointer"
+                  >
+                    Monto Exacto
+                  </button>
+                </div>
+
+                {/* Math Result Box */}
+                {quickCashUSD !== null && (
+                  <div className={`p-2.5 rounded-xl border font-mono text-xs flex items-center justify-between animate-in fade-in duration-150 ${
+                    quickCashUSD >= totalDueUSD 
+                      ? "bg-emerald-950/40 border-emerald-500/40 text-emerald-300"
+                      : "bg-amber-950/40 border-amber-500/40 text-amber-300"
+                  }`}>
+                    <div>
+                      <span className="text-[9px] uppercase tracking-wider block text-slate-400 font-bold">
+                        {quickCashUSD >= totalDueUSD ? "Vuelto a Entregar:" : "Monto Faltante:"}
+                      </span>
+                      <span className="text-sm font-black">
+                        {quickCashUSD >= totalDueUSD 
+                          ? `$${(quickCashUSD - totalDueUSD).toFixed(2)} USD`
+                          : `$${(totalDueUSD - quickCashUSD).toFixed(2)} USD`}
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[9px] uppercase tracking-wider block text-slate-400 font-bold">Equivalente BCV:</span>
+                      <span className="text-xs font-bold text-white">
+                        {quickCashUSD >= totalDueUSD
+                          ? `Bs. ${((quickCashUSD - totalDueUSD) * (rates?.USD || 36.45)).toFixed(2)}`
+                          : `Bs. ${((totalDueUSD - quickCashUSD) * (rates?.USD || 36.45)).toFixed(2)}`}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
               {/* Totals */}
               <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pt-3 border-t border-violet-950 font-black">
                 <div>
@@ -469,6 +562,32 @@ export function AxisNitroPOS() {
           formatUSD={formatUSD}
           showToast={showToast}
           currentUser={activeCashier || kfsUser || { name: "Cajero Principal", role: "vendedor" }}
+        />
+      )}
+
+      {/* Modal de Escáner Zero-Hardware con Cámara */}
+      {showBarcodeScanner && (
+        <ZeroHardwareBarcodeScanner
+          products={db?.products || []}
+          onScan={(scannedName) => {
+            const matched = (db?.products || []).find((p: any) => p.name === scannedName);
+            if (matched) {
+              setSelectedProduct({
+                name: matched.name,
+                priceUSD: matched.priceUSD || matched.price || 1.50,
+                stock: matched.stock || 30
+              });
+            } else {
+              setSelectedProduct({
+                name: scannedName,
+                priceUSD: 2.50,
+                stock: 50
+              });
+            }
+            showToast(`¡Código escaneado! Producto cargado al POS.`, "success");
+            setShowBarcodeScanner(false);
+          }}
+          onClose={() => setShowBarcodeScanner(false)}
         />
       )}
 

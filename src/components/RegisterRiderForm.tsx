@@ -62,7 +62,7 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
     if (rawBody.startsWith('0')) {
       rawBody = rawBody.slice(1);
     }
-    return rawBody.length === 10;
+    return /^(412|414|424|416|426|415|425)\d{7}$/.test(rawBody) || (rawBody.length >= 7 && rawBody.length <= 12);
   };
 
   const validateEmail = (email: string) => {

@@ -155,6 +155,7 @@ Te tengo una sorpresa: me tomé la libertad de crear una *Tienda Demo en Vivo* p
             value={targetPhone}
             onChange={(e) => setTargetPhone(e.target.value)}
             placeholder="+58 412 1234567"
+            maxLength={15}
             className="w-full bg-slate-950 border border-emerald-500/30 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-emerald-400 font-mono"
           />
         </div>

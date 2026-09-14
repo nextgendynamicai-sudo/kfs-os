@@ -12,6 +12,8 @@ import { createTenantSlug } from "../lib/tenantManager";
 import { syncSingleClient, syncSingleProduct } from "../lib/supabaseSync";
 import { BUSINESS_CATEGORIES, BUSINESS_CATEGORY_MAP, getCategoryPreset } from "../lib/businessCategories";
 import { CategorySearchSelect } from "./CategorySearchSelect";
+import { MerchantPitchRoiCalculator } from "./promotora/MerchantPitchRoiCalculator";
+import { MerchantWelcomeFlyerModal } from "./promotora/MerchantWelcomeFlyerModal";
 
 interface LiveDemoPitchManagerProps {
   onClose?: () => void;
@@ -28,6 +30,8 @@ export const LiveDemoPitchManager: React.FC<LiveDemoPitchManagerProps> = ({ onCl
   const [ownerEmail, setOwnerEmail] = useState("");
   const [city, setCity] = useState("Caracas, Venezuela");
   const [themeColor, setThemeColor] = useState("#F59E0B");
+  const [showRoiPitch, setShowRoiPitch] = useState(false);
+  const [showFlyerModal, setShowFlyerModal] = useState(false);
   
   // Products inside current demo session
   const [demoProducts, setDemoProducts] = useState<Array<{ id: string; name: string; priceUSD: number; stock: number; image: string }>>([]);
@@ -462,6 +466,13 @@ export const LiveDemoPitchManager: React.FC<LiveDemoPitchManagerProps> = ({ onCl
             </button>
 
             <button
+              onClick={() => setShowFlyerModal(true)}
+              className="px-5 py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-2xl shadow-lg shadow-amber-500/30 transition-all flex items-center justify-center gap-2 border-none cursor-pointer"
+            >
+              🎨 Flyer Digital
+            </button>
+
+            <button
               onClick={() => {
                 setActivatedClientData(null);
                 setBusinessName("");
@@ -523,6 +534,7 @@ export const LiveDemoPitchManager: React.FC<LiveDemoPitchManagerProps> = ({ onCl
                     value={ownerPhone}
                     onChange={e => setOwnerPhone(e.target.value)}
                     placeholder="Ej: +58 412 1234567"
+                    maxLength={15}
                     className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-white placeholder:text-slate-600 focus:outline-none focus:border-amber-400 font-mono"
                   />
                 </div>
@@ -552,8 +564,17 @@ export const LiveDemoPitchManager: React.FC<LiveDemoPitchManagerProps> = ({ onCl
                 </div>
               </div>
 
-              {/* Botón de Montar Demo */}
-              <div className="pt-3 flex gap-3">
+              {/* Botón de Montar Demo & ROI */}
+              <div className="pt-3 flex flex-col sm:flex-row gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowRoiPitch(!showRoiPitch)}
+                  className="px-4 py-3.5 bg-slate-950 hover:bg-slate-800 text-amber-300 font-bold text-xs rounded-2xl border border-amber-400/30 transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0"
+                  title="Calculadora ROI de ahorro vs datáfonos bancarios"
+                >
+                  <DollarSign size={16} /> {showRoiPitch ? "Ocultar ROI" : "Calculadora ROI"}
+                </button>
+
                 <button
                   type="button"
                   onClick={handleLaunchLiveDemo}
@@ -573,6 +594,13 @@ export const LiveDemoPitchManager: React.FC<LiveDemoPitchManagerProps> = ({ onCl
                   </button>
                 )}
               </div>
+
+              {/* Calculadora de Ahorro & Ganancia ROI en Vivo */}
+              {showRoiPitch && (
+                <div className="pt-2">
+                  <MerchantPitchRoiCalculator className="animate-fade-in" />
+                </div>
+              )}
             </div>
 
             {/* Columna Derecha: Catálogo Interactivo en Vivo */}
@@ -909,6 +937,17 @@ export const LiveDemoPitchManager: React.FC<LiveDemoPitchManagerProps> = ({ onCl
             </div>
           </div>
         </div>
+      )}
+
+      {/* Modal Flyer de Bienvenida */}
+      {showFlyerModal && activatedClientData && (
+        <MerchantWelcomeFlyerModal
+          companyName={activatedClientData.company}
+          slug={activatedClientData.slug}
+          ownerPhone={activatedClientData.phone}
+          onClose={() => setShowFlyerModal(false)}
+          showToast={showToast}
+        />
       )}
     </div>
   );

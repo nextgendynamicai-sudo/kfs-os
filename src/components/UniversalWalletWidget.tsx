@@ -1,6 +1,7 @@
 import { KFS_BRAND } from "../config/brandConfig";
 import React, { useState, useEffect } from "react";
 import { DollarSign, Zap, Gift, CircleDollarSign } from "lucide-react";
+import { HolographicFlipCard } from "./rewards/HolographicFlipCard";
 
 interface UniversalWalletWidgetProps {
   currentUser: any;
@@ -81,6 +82,18 @@ export function UniversalWalletWidget({ currentUser, formatUSD, children }: Univ
           )}
         </div>
       </div>
+
+      {/* 3D Interactive VIP Holographic Card for Consumers */}
+      {isB2C && (
+        <div className="max-w-md mx-auto my-3">
+          <HolographicFlipCard
+            customerName={currentUser?.name || currentUser?.company || "CLIENTE VIP"}
+            memberId={currentUser?.phone || "AXIS-7749-9210"}
+            kPointsBalance={kPointsBalance}
+            cashbackTier="VIP NITRO PASS"
+          />
+        </div>
+      )}
 
       {/* Balances Display - Grid 4 Columns */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

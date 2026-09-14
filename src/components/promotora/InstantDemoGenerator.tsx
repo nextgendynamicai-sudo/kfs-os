@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import { Sparkles, Store, Send, Check, Copy, ExternalLink, RefreshCw, Smartphone } from "lucide-react";
+import { Sparkles, Store, Send, Check, Copy, ExternalLink, RefreshCw, Smartphone, Sliders, Image as ImageIcon } from "lucide-react";
 import { useKFS } from "../../context/KFSContext";
 import { createTenantSlug } from "../../lib/tenantManager";
 import { getCategoryPreset } from "../../lib/businessCategories";
 import { CategorySearchSelect } from "../CategorySearchSelect";
+import { MerchantPitchRoiCalculator } from "./MerchantPitchRoiCalculator";
+import { MerchantWelcomeFlyerModal } from "./MerchantWelcomeFlyerModal";
 
 interface InstantDemoGeneratorProps {
   promotoraId: string;
@@ -24,6 +26,8 @@ export const InstantDemoGenerator: React.FC<InstantDemoGeneratorProps> = ({
   const [generatedSlug, setGeneratedSlug] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showRoiCalculator, setShowRoiCalculator] = useState(false);
+  const [showFlyerModal, setShowFlyerModal] = useState(false);
 
   const sampleProductsByCategory: Record<string, Array<{ name: string; priceUSD: number; image: string }>> = {
     comida: [
@@ -190,27 +194,44 @@ export const InstantDemoGenerator: React.FC<InstantDemoGeneratorProps> = ({
             value={ownerPhone}
             onChange={e => setOwnerPhone(e.target.value)}
             placeholder="Ej: +58 412 1234567"
+            maxLength={15}
             className="w-full bg-slate-900/90 border border-violet-500/30 rounded-xl px-4 py-3 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-400 font-mono"
           />
         </div>
       </div>
 
-      {/* Botón de Generación */}
-      <button
-        onClick={handleGenerateInstantDemo}
-        disabled={isGenerating || !businessName.trim()}
-        className="w-full py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 disabled:opacity-40 text-slate-950 font-black text-xs uppercase tracking-wider rounded-2xl shadow-xl shadow-amber-500/20 transition-all cursor-pointer border-none flex items-center justify-center gap-2 active:scale-95"
-      >
-        {isGenerating ? (
-          <>
-            <RefreshCw size={16} className="animate-spin" /> Montando Tienda Demo en Vivo...
-          </>
-        ) : (
-          <>
-            <Sparkles size={16} /> ¡Crear Tienda Demo para {businessName || "el Comercio"}!
-          </>
-        )}
-      </button>
+      {/* Botón de ROI Pitch & Generación */}
+      <div className="flex flex-col sm:flex-row gap-2.5">
+        <button
+          type="button"
+          onClick={() => setShowRoiCalculator(!showRoiCalculator)}
+          className="px-4 py-3.5 bg-slate-900/90 hover:bg-slate-800 text-amber-300 font-black text-xs uppercase tracking-wider rounded-2xl border border-amber-400/30 transition-all flex items-center justify-center gap-2 cursor-pointer shrink-0"
+          title="Mostrar calculadora de ahorro y comisión para el comerciante"
+        >
+          <Sliders size={16} /> {showRoiCalculator ? "Ocultar ROI" : "Calculadora ROI"}
+        </button>
+
+        <button
+          onClick={handleGenerateInstantDemo}
+          disabled={isGenerating || !businessName.trim()}
+          className="flex-1 py-3.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 disabled:opacity-40 text-slate-950 font-black text-xs uppercase tracking-wider rounded-2xl shadow-xl shadow-amber-500/20 transition-all cursor-pointer border-none flex items-center justify-center gap-2 active:scale-95"
+        >
+          {isGenerating ? (
+            <>
+              <RefreshCw size={16} className="animate-spin" /> Montando Tienda Demo en Vivo...
+            </>
+          ) : (
+            <>
+              <Sparkles size={16} /> ¡Crear Tienda Demo para {businessName || "el Comercio"}!
+            </>
+          )}
+        </button>
+      </div>
+
+      {/* Calculadora de Ahorro & Ganancia ROI en Vivo */}
+      {showRoiCalculator && (
+        <MerchantPitchRoiCalculator className="animate-fade-in" />
+      )}
 
       {/* Resultado: Tarjeta de Enlace Generado */}
       {generatedSlug && (
@@ -248,13 +269,34 @@ export const InstantDemoGenerator: React.FC<InstantDemoGeneratorProps> = ({
             </div>
           </div>
 
-          <button
-            onClick={handleShareWhatsApp}
-            className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 border-none cursor-pointer"
-          >
-            <Send size={15} /> 📲 Enviar Demo al WhatsApp del Comerciante
-          </button>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+            <button
+              onClick={handleShareWhatsApp}
+              className="py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 border-none cursor-pointer"
+            >
+              <Send size={15} /> 📲 Enviar por WhatsApp
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowFlyerModal(true)}
+              className="py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-amber-500/20 transition-all flex items-center justify-center gap-2 border-none cursor-pointer"
+            >
+              <ImageIcon size={15} /> 🎨 Flyer de Bienvenida
+            </button>
+          </div>
         </div>
+      )}
+
+      {/* Flyer Digital Modal */}
+      {showFlyerModal && generatedSlug && (
+        <MerchantWelcomeFlyerModal
+          companyName={businessName}
+          slug={generatedSlug}
+          ownerPhone={ownerPhone}
+          onClose={() => setShowFlyerModal(false)}
+          showToast={showToast}
+        />
       )}
     </div>
   );
