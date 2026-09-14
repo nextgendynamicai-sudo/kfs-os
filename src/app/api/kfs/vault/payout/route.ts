@@ -65,27 +65,52 @@ export async function POST(req: Request) {
         const withdrawalFee = amountUSD * 0.02; // 2% Withdrawal Fee
         const totalToDeduct = amountUSD + withdrawalFee;
 
-        if (idx !== -1 && (db.clients[idx].walletBalanceUSD >= totalToDeduct || db.clients[idx].salesUSD >= amountUSD)) {
-          db.clients[idx] = {
-            ...db.clients[idx],
-            walletBalanceUSD: Math.max(0, (db.clients[idx].walletBalanceUSD || 0) - totalToDeduct),
-            salesUSD: Math.max(0, (db.clients[idx].salesUSD || 0) - amountUSD),
-            pendingPayoutUSD: (db.clients[idx].pendingPayoutUSD || 0) + amountUSD
-          };
-          checkSuccess = true;
+        if (idx !== -1) {
+          const client = db.clients[idx];
+          const walletBal = client.walletBalanceUSD || 0;
+          const salesBal = client.salesUSD || 0;
+          const totalAvailable = walletBal + salesBal;
+
+          if (totalAvailable >= totalToDeduct) {
+            let remDeduct = totalToDeduct;
+            const newWallet = Math.max(0, walletBal - remDeduct);
+            remDeduct -= (walletBal - newWallet);
+            const newSales = Math.max(0, salesBal - remDeduct);
+
+            db.clients[idx] = {
+              ...client,
+              walletBalanceUSD: Number(newWallet.toFixed(2)),
+              salesUSD: Number(newSales.toFixed(2)),
+              pendingPayoutUSD: Number(((client.pendingPayoutUSD || 0) + amountUSD).toFixed(2))
+            };
+            checkSuccess = true;
+          }
         }
       } else if (role === 'promotora') {
         const idx = db.promotoras?.findIndex((p: any) => p.id === userId);
         const withdrawalFee = amountUSD * 0.02; // 2% Withdrawal Fee
         const totalToDeduct = amountUSD + withdrawalFee;
 
-        if (idx !== -1 && (db.promotoras[idx].passiveEarningsEUR >= totalToDeduct || db.promotoras[idx].earnings >= totalToDeduct)) { 
-          db.promotoras[idx] = {
-            ...db.promotoras[idx],
-            passiveEarningsEUR: Math.max(0, (db.promotoras[idx].passiveEarningsEUR || 0) - totalToDeduct),
-            pendingPayoutEUR: (db.promotoras[idx].pendingPayoutEUR || 0) + amountUSD
-          };
-          checkSuccess = true;
+        if (idx !== -1) {
+          const promo = db.promotoras[idx];
+          const passiveBal = promo.passiveEarningsEUR || 0;
+          const earningsBal = promo.earnings || 0;
+          const totalAvailable = passiveBal + earningsBal;
+
+          if (totalAvailable >= totalToDeduct) {
+            let remDeduct = totalToDeduct;
+            const newPassive = Math.max(0, passiveBal - remDeduct);
+            remDeduct -= (passiveBal - newPassive);
+            const newEarnings = Math.max(0, earningsBal - remDeduct);
+
+            db.promotoras[idx] = {
+              ...promo,
+              passiveEarningsEUR: Number(newPassive.toFixed(2)),
+              earnings: Number(newEarnings.toFixed(2)),
+              pendingPayoutEUR: Number(((promo.pendingPayoutEUR || 0) + amountUSD).toFixed(2))
+            };
+            checkSuccess = true;
+          }
         }
       }
 
@@ -145,6 +170,36 @@ export async function POST(req: Request) {
 
       if (!updateError && updateData && updateData.length > 0) {
         writeSuccess = true;
+
+        // Dual-Sync to relational tables
+        try {
+          if (role === 'promotora') {
+            const promo = newDb.promotoras?.find((p: any) => p.id === userId);
+            if (promo) {
+              await supabase.from('promotoras').update({
+                passiveEarningsEUR: promo.passiveEarningsEUR,
+                pendingPayoutEUR: promo.pendingPayoutEUR
+              }).eq('id', userId);
+              await supabase.from('kfs_promotoras').update({
+                earnings: promo.earnings
+              }).eq('id', userId);
+            }
+          } else {
+            const client = newDb.clients?.find((c: any) => c.id === userId);
+            if (client) {
+              await supabase.from('clients').update({
+                walletBalanceUSD: client.walletBalanceUSD,
+                salesUSD: client.salesUSD,
+                pendingPayoutUSD: client.pendingPayoutUSD
+              }).eq('id', userId);
+              await supabase.from('kfs_clients').update({
+                wallet_balance_usd: client.walletBalanceUSD
+              }).eq('id', userId);
+            }
+          }
+        } catch (_syncErr) {
+          // Relational sync notice logged
+        }
       } else {
         console.warn(`[Collision Detectado] Intento ${attempts}/${maxAttempts} para vault payout de ${userId}. Reintentando...`);
         await new Promise(r => setTimeout(r, 50 + Math.floor(Math.random() * 100)));

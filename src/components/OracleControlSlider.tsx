@@ -30,8 +30,8 @@ export const OracleControlSlider = ({ db, setDb, showToast, onOpenCreateMerchant
         // Try update Supabase if configured
         try {
           await supabase
-            .from('kfs_clients')
-            .update({ oracle_fee_percentage: targetFee, kfsFeePercentage: targetFee / 100 });
+            .from('clients')
+            .update({ kfsFeePercentage: targetFee / 100 });
         } catch (e) {
           // ignore offline sync
         }
@@ -51,8 +51,8 @@ export const OracleControlSlider = ({ db, setDb, showToast, onOpenCreateMerchant
 
         try {
           await supabase
-            .from('kfs_clients')
-            .update({ oracle_fee_percentage: targetFee, kfsFeePercentage: targetFee / 100 })
+            .from('clients')
+            .update({ kfsFeePercentage: targetFee / 100 })
             .eq('id', targetId);
         } catch (e) {
           // ignore offline sync

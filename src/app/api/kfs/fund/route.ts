@@ -113,6 +113,20 @@ export async function POST(req: Request) {
       if (!updateError && updateData && updateData.length > 0) {
         success = true;
         finalBalance = updatedCustomers[customerIdx].real_balance;
+
+        // Dual-sync customer to relational tables
+        try {
+          const cust = updatedCustomers[customerIdx];
+          await supabase.from('customers').update({
+            walletUSD: cust.real_balance,
+            k_points_balance: cust.k_point_bonus_balance || cust.k_points_balance || 0
+          }).eq('id', customerId);
+          await supabase.from('kfs_customers').update({
+            kpoints_balance: cust.k_point_bonus_balance || cust.k_points_balance || 0
+          }).eq('id', customerId);
+        } catch (_e) {
+          // Relational sync notice
+        }
       } else {
         console.warn(`[Collision Detectado] Intento ${attempts}/${maxAttempts} para fund de ${customerId}. Reintentando...`);
         await new Promise(r => setTimeout(r, 50 + Math.floor(Math.random() * 100)));

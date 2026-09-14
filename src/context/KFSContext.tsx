@@ -16,6 +16,7 @@ import {
   syncSingleRider,
   forceDirectCloudSync
 } from "../lib/supabaseSync";
+import { applyDemurrageToCustomers } from "../lib/demurrageEngine";
 
 import { VENEZUELAN_PRODUCTS_CATALOG } from "../config/products";
 
@@ -216,6 +217,8 @@ const upgradeToNewBaseline = (oldDb: any, baselineDb: any) => {
     candidates: mergeAdditive(oldDb.candidates, baselineDb.candidates),
     unlockedContacts: mergeAdditive(oldDb.unlockedContacts, baselineDb.unlockedContacts),
     coupons: mergeAdditive(oldDb.coupons, baselineDb.coupons),
+    rewardTasks: mergeAdditive(oldDb.rewardTasks || [], baselineDb.rewardTasks || []),
+    rewardSubmissions: mergeAdditive(oldDb.rewardSubmissions || [], baselineDb.rewardSubmissions || []),
     kfsNetworkLedger: mergeAdditive(oldDb.kfsNetworkLedger, baselineDb.kfsNetworkLedger)
   };
 };
@@ -860,6 +863,16 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
           if (parsed) {
             parsed = cleanupOldDemos(parsed);
+            
+            // Execute Double Ledger Demurrage (AOF + Expirations)
+            if (parsed.customers) {
+              const demurrage = applyDemurrageToCustomers(parsed.customers);
+              if (demurrage.updated) {
+                parsed.customers = demurrage.newCustomers;
+                console.log("[KFS Double Ledger] Demurrage processado offline en el arranque.");
+              }
+            }
+
             if (parsed.kreatekCore?.wipeVersion !== CURRENT_WIPE_VERSION) {
               console.log(`[${KFS_BRAND.productAcronym}] Database version mismatch. Upgrading database while preserving user data.`);
               const upgradedDb = upgradeToNewBaseline(parsed, initialDB);

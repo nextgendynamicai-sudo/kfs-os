@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Store, Link2, CheckCircle, AlertCircle, ArrowRight, Lock, Sparkles } from 'lucide-react';
 
 export default function NitroHubSetup() {
-  const { currentUser, db, showToast } = useKFS() as any;
+  const { currentUser, db, setDb, showToast } = useKFS() as any;
   const [storeName, setStoreName] = useState('');
   const [slug, setSlug] = useState('');
   const [selectedClientId, setSelectedClientId] = useState('');
@@ -93,34 +93,78 @@ export default function NitroHubSetup() {
       }
     }
 
-    try {
-      // Check if slug is unique beforehand to show a nice error
-      const { data: existing } = await supabase
-        .from('axis_nitro_hubs')
-        .select('slug')
-        .eq('slug', slug)
-        .maybeSingle();
+    // Validate owner_id format (must be UUID for PostgreSQL)
+    let validOwnerId: string | null = null;
+    if (ownerId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(ownerId)) {
+      validOwnerId = ownerId;
+    }
 
-      if (existing) {
-        setErrorStatus('El enlace de tienda (slug) ya está siendo utilizado por otro comercio. Por favor, elige uno diferente.');
-        setStatus('');
-        setLoading(false);
-        showToast("Enlace duplicado", "error");
-        return;
+    try {
+      // 1. Intentar registrar en axis_nitro_hubs si la tabla está disponible
+      let hubCreatedInTable = false;
+      try {
+        const { data: existing } = await supabase
+          .from('axis_nitro_hubs')
+          .select('slug')
+          .eq('slug', slug)
+          .maybeSingle();
+
+        if (existing) {
+          setErrorStatus('El enlace de tienda (slug) ya está siendo utilizado por otro comercio. Por favor, elige uno diferente.');
+          setStatus('');
+          setLoading(false);
+          showToast("Enlace duplicado", "error");
+          return;
+        }
+
+        const { error: hubErr } = await supabase.from('axis_nitro_hubs').insert([{
+          owner_id: validOwnerId,
+          store_name: storeName,
+          slug: slug
+        }]);
+
+        if (!hubErr) {
+          hubCreatedInTable = true;
+        }
+      } catch (_e) {
+        // Fallback resiliente si la tabla axis_nitro_hubs no existe en caché
       }
 
-      const { error } = await supabase.from('axis_nitro_hubs').insert([{
-        owner_id: ownerId,
-        store_name: storeName,
-        slug: slug
-      }]);
+      // 2. Vincular el slug permanentemente al perfil del comercio en KFS OS
+      const targetClientId = (currentUser?.role === 'dueño' ? currentUser?.id : selectedClientId) || currentUser?.id;
+      if (targetClientId) {
+        // Sincronizar en db local/reactiva
+        if (setDb) {
+          setDb((prev: any) => ({
+            ...prev,
+            clients: (prev.clients || []).map((c: any) => 
+              c.id === targetClientId ? { 
+                ...c, 
+                company: storeName, 
+                slug, 
+                storeSettings: { ...(c.storeSettings || {}), slug, storeName } 
+              } : c
+            )
+          }));
+        }
 
-      if (error) {
-        setErrorStatus(`Error al crear en Supabase: ${error.message}`);
-        setStatus('');
-        setLoading(false);
-        showToast("Error de creación", "error");
-        return;
+        // Actualizar tabla clients en Supabase
+        await supabase
+          .from('clients')
+          .update({ 
+            company: storeName, 
+            name: storeName,
+            slug
+          })
+          .eq('id', targetClientId);
+
+        // Actualizar tabla kfs_clients en Supabase
+        await supabase
+          .from('kfs_clients')
+          .update({ 
+            business_name: storeName
+          })
+          .eq('id', targetClientId);
       }
       
       setStatus('¡Axis Nitro Hub Activado! Ya puedes subir productos.');

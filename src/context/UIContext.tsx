@@ -68,7 +68,8 @@ export const UIProvider = ({ children }: { children: ReactNode }) => {
     const handleOnline = async () => {
       setNetworkState("syncing");
       const { processOfflineQueue } = await import("../lib/offlineSync");
-      const { syncedCount } = await processOfflineQueue();
+      const { syncToRelational } = await import("../lib/supabaseSync");
+      const { syncedCount } = await processOfflineQueue(syncToRelational);
       
       setNetworkState("online");
       if (syncedCount > 0) {

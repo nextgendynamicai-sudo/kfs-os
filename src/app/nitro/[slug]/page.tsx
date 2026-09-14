@@ -22,7 +22,7 @@ export default async function NitroStorefront({ params }: { params: Promise<{ sl
       .from('axis_nitro_hubs')
       .select('*')
       .eq('slug', cleanSlug)
-      .single();
+      .maybeSingle();
 
     if (hubData) {
       found = true;
@@ -33,7 +33,7 @@ export default async function NitroStorefront({ params }: { params: Promise<{ sl
         .select('*')
         .eq('hub_id', hubData.id);
       
-      if (nitroProds) {
+      if (nitroProds && nitroProds.length > 0) {
         productsData = nitroProds.map((p: any) => ({
           id: p.id,
           name: p.name,
@@ -48,7 +48,7 @@ export default async function NitroStorefront({ params }: { params: Promise<{ sl
           .from('kfs_clients')
           .select('id, raw_data')
           .eq('raw_data->>auth_user_id', hubData.owner_id)
-          .single();
+          .maybeSingle();
 
         if (clientData) {
           const raw = clientData.raw_data || {};
@@ -56,21 +56,21 @@ export default async function NitroStorefront({ params }: { params: Promise<{ sl
             storeBio = raw.storeSettings.bioText || storeBio;
             themeColor = raw.storeSettings.themeColor || themeColor;
             storeLogo = raw.storeSettings.profilePicUrl || storeLogo;
-            storeBanner = raw.storeSettings.coverPhotoUrl || storeBanner;
+            storeBanner = raw.storeSettings.coverPhotoUrl || raw.storeSettings.bannerUrl || storeBanner;
           }
 
           const { data: kfsProducts } = await supabase
             .from('kfs_products')
             .select('*')
-            .eq('client_id', clientData.id);
+            .eq('seller_id', clientData.id);
 
           if (kfsProducts && kfsProducts.length > 0) {
             const mappedKfs = kfsProducts.map((kp: any) => ({
               id: kp.id,
               name: kp.name,
-              price: kp.price_usd,
-              description: kp.raw_data?.description || "",
-              image_url: kp.image_url || kp.raw_data?.photoUrl || kp.raw_data?.image_url || ""
+              price: kp.price_usd || kp.price,
+              description: kp.description || kp.raw_data?.description || "",
+              image_url: kp.image || kp.image_url || kp.raw_data?.photoUrl || kp.raw_data?.image_url || ""
             }));
 
             const existing = new Set(productsData.map((p: any) => p.name.toLowerCase()));
@@ -84,40 +84,144 @@ export default async function NitroStorefront({ params }: { params: Promise<{ sl
     // Continuar con resolución de respaldo
   }
 
-  // 2. Intentar resolver desde 'kfs_clients' si aún no se encontró
+  // 2. Intentar resolver desde 'clients' (tabla principal en Supabase)
   if (!found) {
     try {
-      const { data: clients } = await supabase.from('kfs_clients').select('*');
+      const { data: clients } = await supabase.from('clients').select('*');
       if (clients && clients.length > 0) {
         const target = clients.find((c: any) => {
           const raw = c.raw_data || {};
-          const s = raw.slug || (raw.company || raw.name || c.id).toLowerCase().replace(/[^a-z0-9]+/g, "-");
+          const s = (c.slug || raw.slug || (c.company || c.name || c.id)).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+          return s === cleanSlug || c.id?.toLowerCase() === cleanSlug;
+        });
+
+        if (target) {
+          found = true;
+          storeName = target.company || target.name || storeName;
+          const st = target.storeSettings || (target.raw_data && target.raw_data.storeSettings) || {};
+          if (st) {
+            storeBio = st.bioText || target.store_bio || storeBio;
+            themeColor = st.themeColor || target.store_theme_color || themeColor;
+            storeLogo = st.profilePicUrl || target.avatar || storeLogo;
+            storeBanner = st.coverPhotoUrl || st.bannerUrl || storeBanner;
+          }
+
+          // Cargar productos desde 'products' y 'kfs_products'
+          const { data: prods } = await supabase
+            .from('products')
+            .select('*')
+            .eq('clientId', target.id);
+
+          if (prods && prods.length > 0) {
+            productsData = prods.map((p: any) => ({
+              id: p.id,
+              name: p.name,
+              price: p.price || p.priceUSD || 0,
+              description: p.description || "",
+              image_url: p.image || p.image_url || ""
+            }));
+          }
+
+          const { data: kfsProds } = await supabase
+            .from('kfs_products')
+            .select('*')
+            .eq('seller_id', target.id);
+
+          if (kfsProds && kfsProds.length > 0) {
+            const mappedKfs = kfsProds.map((kp: any) => ({
+              id: kp.id,
+              name: kp.name,
+              price: kp.price_usd || kp.price || 0,
+              description: kp.description || "",
+              image_url: kp.image || kp.image_url || ""
+            }));
+            const existing = new Set(productsData.map((p: any) => p.name.toLowerCase()));
+            const unique = mappedKfs.filter((kp: any) => !existing.has(kp.name.toLowerCase()));
+            productsData = [...productsData, ...unique];
+          }
+        }
+      }
+    } catch (err) {
+      // Continuar a siguiente capa
+    }
+  }
+
+  // 3. Intentar resolver desde 'kfs_clients' si aún no se encontró
+  if (!found) {
+    try {
+      const { data: kfsClients } = await supabase.from('kfs_clients').select('*');
+      if (kfsClients && kfsClients.length > 0) {
+        const target = kfsClients.find((c: any) => {
+          const raw = c.raw_data || {};
+          const s = (raw.slug || (c.business_name || raw.company || raw.name || c.id)).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
           return s === cleanSlug || c.id?.toLowerCase() === cleanSlug;
         });
 
         if (target) {
           found = true;
           const raw = target.raw_data || {};
-          storeName = raw.company || raw.name || "Comercio KFS";
+          storeName = target.business_name || raw.company || raw.name || storeName;
           if (raw.storeSettings) {
             storeBio = raw.storeSettings.bioText || storeBio;
             themeColor = raw.storeSettings.themeColor || themeColor;
             storeLogo = raw.storeSettings.profilePicUrl || storeLogo;
-            storeBanner = raw.storeSettings.coverPhotoUrl || storeBanner;
+            storeBanner = raw.storeSettings.coverPhotoUrl || raw.storeSettings.bannerUrl || storeBanner;
           }
 
           const { data: kfsProducts } = await supabase
             .from('kfs_products')
             .select('*')
-            .eq('client_id', target.id);
+            .eq('seller_id', target.id);
 
-          if (kfsProducts) {
+          if (kfsProducts && kfsProducts.length > 0) {
             productsData = kfsProducts.map((kp: any) => ({
               id: kp.id,
               name: kp.name,
-              price: kp.price_usd,
-              description: kp.raw_data?.description || "",
-              image_url: kp.image_url || kp.raw_data?.photoUrl || kp.raw_data?.image_url || ""
+              price: kp.price_usd || kp.price || 0,
+              description: kp.description || kp.raw_data?.description || "",
+              image_url: kp.image || kp.image_url || kp.raw_data?.photoUrl || kp.raw_data?.image_url || ""
+            }));
+          }
+        }
+      }
+    } catch (err) {
+      // Continuar a capa de estado P2P
+    }
+  }
+
+  // 4. Intentar resolver desde 'kfs_store_states' (Estado P2P en Vivo)
+  if (!found) {
+    try {
+      const { data: stateRow } = await supabase
+        .from('kfs_store_states')
+        .select('db_state')
+        .eq('id', 'kfs-general-db-prod')
+        .maybeSingle();
+
+      if (stateRow?.db_state) {
+        const stateDb = stateRow.db_state;
+        const target = (stateDb.clients || []).find((c: any) => {
+          const s = (c.slug || (c.company || c.name || c.id)).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+          return s === cleanSlug || c.id?.toLowerCase() === cleanSlug;
+        });
+
+        if (target) {
+          found = true;
+          storeName = target.company || target.name || storeName;
+          const st = target.storeSettings || {};
+          storeBio = st.bioText || storeBio;
+          themeColor = st.themeColor || themeColor;
+          storeLogo = st.profilePicUrl || target.avatar || storeLogo;
+          storeBanner = st.coverPhotoUrl || st.bannerUrl || storeBanner;
+
+          const matchedProducts = (stateDb.products || []).filter((p: any) => (p.clientId === target.id || p.seller_id === target.id));
+          if (matchedProducts.length > 0) {
+            productsData = matchedProducts.map((p: any) => ({
+              id: p.id,
+              name: p.name,
+              price: p.priceUSD || p.price || 0,
+              description: p.description || "",
+              image_url: p.image || p.image_url || ""
             }));
           }
         }
@@ -127,7 +231,7 @@ export default async function NitroStorefront({ params }: { params: Promise<{ sl
     }
   }
 
-  // 3. Fallback a catálogo inicial / tienda oficial (kfs-express)
+  // 5. Fallback a catálogo inicial / tienda oficial (kfs-express)
   if (!found && (cleanSlug === "kfs-express" || cleanSlug === "oficial" || cleanSlug === "axis-nitro")) {
     found = true;
     const client = initialDB.clients[0];

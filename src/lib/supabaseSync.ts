@@ -55,8 +55,6 @@ export const syncToRelational = async (db: any) => {
         id: c.id,
         business_name: c.company || c.name || "KFS Business",
         wallet_balance_usd: c.walletBalanceUSD || 0,
-        k_points_balance: c.k_points_balance || 0,
-        subscription: c.subscription || null,
         raw_data: cleanBase64(c),
         created_at: c.created_at || new Date().toISOString()
       }));
@@ -204,6 +202,19 @@ export const syncSingleTransaction = async (t: any) => {
       raw_data: cleanBase64(t)
     };
     await supabase.from('transactions').upsert(payload, { onConflict: 'id' });
+
+    // Also sync to kfs_transactions for dual-schema compatibility
+    await supabase.from('kfs_transactions').upsert({
+      id: t.id,
+      type: t.type || "SALE",
+      amount_usd: t.amountUSD || t.amount || 0,
+      currency: t.paymentMethod || t.currency || "USD",
+      status: t.status || "COMPLETED",
+      sender_id: t.clientId || t.senderId || "System",
+      receiver_id: t.customerId || null,
+      metadata: cleanBase64(t),
+      created_at: t.date || t.timestamp || new Date().toISOString()
+    }, { onConflict: 'id' });
   } catch (err) {
     console.warn("[Supabase Sync] syncSingleTransaction notice:", err);
   }
@@ -243,8 +254,6 @@ export const syncSingleClient = async (c: any) => {
       id: c.id,
       business_name: c.company || c.name || "KFS Business",
       wallet_balance_usd: c.walletBalanceUSD || 0,
-      k_points_balance: c.k_points_balance || 0,
-      subscription: c.subscription || null,
       raw_data: cleanBase64(c),
       created_at: c.created_at || new Date().toISOString()
     }, { onConflict: 'id' });
@@ -271,6 +280,17 @@ export const syncSingleCustomer = async (c: any) => {
       raw_data: cleanBase64(c)
     };
     await supabase.from('customers').upsert(payload, { onConflict: 'id' });
+
+    // Also sync to kfs_customers for dual-schema compatibility
+    await supabase.from('kfs_customers').upsert({
+      id: c.id,
+      name: c.name || "Cliente KFS",
+      email: c.email || `${c.id}@kfs.com`,
+      phone: c.phone || "",
+      referred_by: c.referredBy || "",
+      kpoints_balance: c.kpointsBalance || c.k_points_balance || 0,
+      created_at: c.created_at || new Date().toISOString()
+    }, { onConflict: 'id' });
   } catch (err) {
     console.warn("[Supabase Sync] syncSingleCustomer notice:", err);
   }
@@ -332,6 +352,16 @@ export const syncSinglePromotora = async (p: any) => {
       raw_data: cleanBase64(p)
     };
     await supabase.from('promotoras').upsert(payload, { onConflict: 'id' });
+
+    // Also sync to kfs_promotoras for dual-schema compatibility
+    await supabase.from('kfs_promotoras').upsert({
+      id: p.id,
+      name: p.name || "Promotora KFS",
+      email: p.email || `${p.id}@kfs.com`,
+      earnings: p.passiveEarningsEUR || p.earnings || 0,
+      referrals_count: p.referralsCount || 0,
+      created_at: p.created_at || new Date().toISOString()
+    }, { onConflict: 'id' });
   } catch (err) {
     console.warn("[Supabase Sync] syncSinglePromotora notice:", err);
   }
@@ -355,6 +385,18 @@ export const syncSingleRider = async (r: any) => {
       raw_data: cleanBase64(r)
     };
     await supabase.from('riders').upsert(payload, { onConflict: 'id' });
+
+    // Also sync to kfs_riders for dual-schema compatibility
+    await supabase.from('kfs_riders').upsert({
+      id: r.id,
+      name: r.name || "Rider KFS",
+      email: r.email || `${r.id}@kfs.com`,
+      phone: r.phone || "",
+      vehicle_type: r.vehicleType || "Moto",
+      deliveries: r.deliveries || 0,
+      earnings: r.earningsUSD || r.walletBalanceUSD || 0,
+      created_at: r.created_at || new Date().toISOString()
+    }, { onConflict: 'id' });
   } catch (err) {
     console.warn("[Supabase Sync] syncSingleRider notice:", err);
   }
