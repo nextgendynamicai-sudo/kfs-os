@@ -268,7 +268,7 @@ export const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCod
 
       <div className="flex gap-3 pt-4">
         <button type="button" onClick={onCancel} className="w-1/3 py-3.5 rounded-xl border border-violet-200 hover:bg-violet-50 text-slate-500 font-bold transition-all text-sm cursor-pointer bg-transparent">
-          Cancelar
+          <span>Cancelar</span>
         </button>
         <button 
           type="submit" 
@@ -276,7 +276,7 @@ export const RegisterPromotoraForm = ({ onRegister, onCancel, defaultReferralCod
           className="w-2/3 py-3.5 rounded-xl font-black text-white text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-md shadow-violet-600/30 cursor-pointer bg-violet-600 border-none disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100"
           title={isFormValid ? "Completar registro" : "Por favor, completa todos los requisitos mostrados en la lista"}
         >
-          {isSubmitting ? "Registrando..." : isFormValid ? "Registrar Perfil" : "Requisitos Incompletos"}
+          <span>{isSubmitting ? "Registrando..." : isFormValid ? "Registrar Perfil" : "Requisitos Incompletos"}</span>
         </button>
       </div>
     </form>

@@ -8,14 +8,21 @@ interface ModalPortalProps {
 }
 
 export function ModalPortal({ children }: ModalPortalProps) {
-  const [mounted, setMounted] = useState(false);
+  const [container, setContainer] = useState<HTMLElement | null>(null);
 
   useEffect(() => {
-    setMounted(true);
-    return () => setMounted(false);
+    let portalRoot = document.getElementById("kfs-modal-portal-root");
+    if (!portalRoot) {
+      portalRoot = document.createElement("div");
+      portalRoot.id = "kfs-modal-portal-root";
+      portalRoot.className = "notranslate";
+      portalRoot.setAttribute("translate", "no");
+      document.body.appendChild(portalRoot);
+    }
+    setContainer(portalRoot);
   }, []);
 
-  if (!mounted) return null;
+  if (!container) return null;
 
-  return createPortal(children, document.body);
+  return createPortal(children, container);
 }

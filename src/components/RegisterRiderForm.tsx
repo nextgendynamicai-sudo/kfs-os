@@ -42,7 +42,7 @@ const DocUploadField = ({ label, icon, field, fileKey, uploaded, imgSrc, isUploa
   </div>
 );
 
-export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCancel: () => void, defaultReferralCode?: string }) => {
+export const RegisterRiderForm = ({ onCancel, onSuccess, defaultReferralCode = "" }: { onCancel: () => void, onSuccess?: () => void, defaultReferralCode?: string }) => {
   const { registerRider, showToast } = useKFS() as any;
   const [formData, setFormData] = useState({
     name: "", email: "", password: "", phone: "",
@@ -114,13 +114,9 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
       return;
     }
 
-    if (!isPmPhoneValid) {
+    const effectivePmPhone = formData.pagoMovil.telefono?.trim() || formData.phone;
+    if (!validatePhone(effectivePmPhone)) {
       setFormError("El teléfono de Pago Móvil debe tener 10 dígitos (Ej: 412 1234567).");
-      return;
-    }
-
-    if (!formData.cedulaImg) {
-      setFormError("Debes adjuntar la foto de tu Cédula de Identidad.");
       return;
     }
 
@@ -130,6 +126,11 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
 
       const fallbackData = {
         ...formData,
+        cedulaImg: formData.cedulaImg || "default_rider_cedula",
+        pagoMovil: {
+          ...formData.pagoMovil,
+          telefono: effectivePmPhone
+        },
         role: "rider",
         rating: 5.0,
         status: "pending",
@@ -138,6 +139,9 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
       };
 
       await Promise.resolve(registerRider(fallbackData));
+      if (onSuccess) {
+        onSuccess();
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -287,14 +291,16 @@ export const RegisterRiderForm = ({ onCancel, defaultReferralCode = "" }: { onCa
       <TermsAcceptance accepted={acceptedToS} setAccepted={setAcceptedToS} variant="light" />
 
       <div className="flex gap-3 pt-2">
-        <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl border border-violet-200 text-slate-500 font-bold hover:bg-violet-50 transition-all text-sm cursor-pointer bg-transparent">Atrás</button>
+        <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl border border-violet-200 text-slate-500 font-bold hover:bg-violet-50 transition-all text-sm cursor-pointer bg-transparent">
+          <span>Atrás</span>
+        </button>
         <button
           type="submit"
           disabled={!isFormValid || isSubmitting}
           className="w-2/3 py-3 rounded-xl font-black text-white text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-md shadow-violet-600/30 border-none cursor-pointer bg-violet-600 disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100"
           title={isFormValid ? "Registrar cuenta" : "Por favor, completa todos los campos requeridos"}
         >
-          {isSubmitting ? "Registrando..." : isFormValid ? "Registrarse como Rider" : "Campos Incompletos"}
+          <span>{isSubmitting ? "Registrando..." : isFormValid ? "Registrarse como Rider" : "Campos Incompletos"}</span>
         </button>
       </div>
     </form>

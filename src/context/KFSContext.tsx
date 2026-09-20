@@ -61,7 +61,7 @@ interface KFSContextType {
   rejectRewardSubmission: (submissionId: string, reason: string, reviewerId?: string) => Promise<void>;
   formatUSD: (val: number) => string;
   formatEUR: (val: number) => string;
-  handleLogin: (role: string, password: string, email?: string | null) => void;
+  handleLogin: (role: string, password: string, email?: string | null) => Promise<boolean>;
   logout: () => void;
   registerClient: (clientData: any, promotoraId: string, kfsFeePercentage: number) => void;
   registerFreeUser: (clientData: any, promotoraId: string) => Promise<any>;
@@ -1267,10 +1267,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const formatUSD = (val: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(val);
   const formatEUR = (val: number) => new Intl.NumberFormat("de-DE", { style: "currency", currency: "EUR" }).format(val);
 
-  const handleLogin = async (role: string, password: string, email: string | null = null) => {
+  const handleLogin = async (role: string, password: string, email: string | null = null): Promise<boolean> => {
     if (role === "marketplace") {
       setView("marketplace");
-      return;
+      return true;
     }
 
     const safePass = password ? password.trim() : "";
@@ -1360,10 +1360,10 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         setCurrentUser({ ...demoUser, role: targetRole });
         setView(targetRole === "dueño" ? "client" : targetRole);
         showToast(`Modo Demostración Activado: ${demoUser.name || demoUser.company || "Test User"}`, "warning");
-        return;
+        return true;
       }
       showToast("No hay usuarios registrados para este rol. Crea uno primero.", "error");
-      return;
+      return false;
     }
 
     if (role === "core" || ((role === "universal" || !role) && (safePass === (process.env.NEXT_PUBLIC_CORE_PASSWORD || "199521") || safePass === "199521" || safePass === "199521." || safePass === "ivory21"))) {
@@ -1372,7 +1372,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         setCurrentUser({ role: "core", name: "El Arquitecto", avatar: db.kreatekCore?.avatar || "" });
         setView("core");
         showToast(`${KFS_BRAND.productAcronym} OS Accesado. Bienvenido, Arquitecto.`);
-        return;
+        return true;
       }
       
       const teamMember = db.kreatekCore?.team?.find(
@@ -1388,12 +1388,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         });
         setView("core");
         showToast(`Acceso de Equipo Concedido: ${teamMember.name}`);
-        return;
+        return true;
       }
       
       if (role === "core") {
         showToast("Credenciales de Arquitecto/Equipo incorrectas.", "error");
-        return;
+        return false;
       }
     }
 
@@ -1412,7 +1412,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     let authSuccess = false;
     let authData: any = null;
 
-    if (supabaseLoginEmail && supabaseLoginEmail.includes("@")) {
+    if (supabaseLoginEmail && supabaseLoginEmail.includes("@") && isSupabaseConfigured) {
       try {
         const { data, error } = await supabase.auth.signInWithPassword({
           email: supabaseLoginEmail,
@@ -1427,33 +1427,172 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       }
     }
 
-    // 1. Search in selected role collection
-    let foundUser: any = null;
-    let detectedRole = role;
+    // Helper to search in a specific role array
+    const findInCollection = (items: any[] | undefined, targetRole: string, allowAuthMatch: boolean = false) => {
+      if (!items || items.length === 0) return null;
+      return items.find((item: any) => {
+        const passMatch = matchesPass(item.password) || (item.tempPassword && item.tempPassword === safePass) || (allowAuthMatch && authSuccess);
+        if (!passMatch) return false;
 
-    const findInRole = (targetRole: string) => {
-      const matchPass = (item: any) => matchesPass(item.password) || (item.tempPassword && item.tempPassword === safePass);
-      if (targetRole === "promotora") return (db.promotoras || []).find((p: any) => ((p.email && p.email.toLowerCase() === safeEmail) || matchPhone(p.phone, rawEmail)) && matchPass(p));
-      if (targetRole === "dueño") return (db.clients || []).find((c: any) => ((c.email && c.email.toLowerCase() === safeEmail) || matchPhone(c.phone, rawEmail)) && matchPass(c));
-      if (targetRole === "vendedor") return (db.vendedores || []).find((v: any) => ((v.email && v.email.toLowerCase() === safeEmail) || matchPhone(v.phone, rawEmail)) && matchPass(v));
-      if (targetRole === "rider") return (db.riders || []).find((r: any) => ((r.email && r.email.toLowerCase() === safeEmail) || matchPhone(r.phone, rawEmail)) && matchPass(r));
-      if (targetRole === "customer") return (db.customers || []).find((c: any) => (matchPhone(c.phone, rawEmail) || (c.email && c.email.toLowerCase() === safeEmail)) && matchPass(c));
+        const emailMatch = safeEmail && item.email && item.email.toLowerCase() === safeEmail;
+        const phoneMatch = (rawEmail || cleanPhone) && matchPhone(item.phone || item.pagoMovil, rawEmail);
+        const authMatch = allowAuthMatch && authSuccess && authData?.user?.email && item.email && item.email.toLowerCase() === authData.user.email.toLowerCase();
+
+        return emailMatch || phoneMatch || authMatch;
+      });
+    };
+
+    const findInDb = (database: any, targetRole: string, allowAuth: boolean = false) => {
+      if (!database) return null;
+      if (targetRole === "promotora") return findInCollection(database.promotoras, "promotora", allowAuth);
+      if (targetRole === "dueño") return findInCollection(database.clients, "dueño", allowAuth);
+      if (targetRole === "vendedor") return findInCollection(database.vendedores, "vendedor", allowAuth);
+      if (targetRole === "rider") return findInCollection(database.riders, "rider", allowAuth);
+      if (targetRole === "customer") return findInCollection(database.customers, "customer", allowAuth);
       return null;
     };
 
-    foundUser = findInRole(role);
+    // 1. Search in local memory (selected role first, then fallback across all roles)
+    let foundUser: any = null;
+    let detectedRole = role;
 
-    // 2. Cross-role Fallback Search if not found in selected role
+    if (role !== "universal") {
+      foundUser = findInDb(db, role, authSuccess);
+    }
+
     if (!foundUser) {
-      const allRoles = ["customer", "dueño", "promotora", "rider", "vendedor"];
+      const allRoles = ["dueño", "customer", "promotora", "rider", "vendedor"];
       for (const r of allRoles) {
-        if (r === role) continue;
-        const candidate = findInRole(r);
+        if (r === role && role !== "universal") continue;
+        const candidate = findInDb(db, r, authSuccess);
         if (candidate) {
           foundUser = candidate;
           detectedRole = r;
           break;
         }
+      }
+    }
+
+    // 2. Cloud Fallback Search (if user registered on another device, or local state was cached before registration)
+    if (!foundUser && isSupabaseConfigured) {
+      try {
+        // A. Inspect central snapshot from kfs_store_states
+        const { data: storeStateData } = await supabase
+          .from("kfs_store_states")
+          .select("db_state")
+          .eq("id", "kfs-general-db-prod")
+          .maybeSingle();
+
+        const remoteDb = storeStateData?.db_state;
+        if (remoteDb) {
+          if (role !== "universal") {
+            foundUser = findInDb(remoteDb, role, authSuccess);
+          }
+          if (!foundUser) {
+            const allRoles = ["dueño", "customer", "promotora", "rider", "vendedor"];
+            for (const r of allRoles) {
+              if (r === role && role !== "universal") continue;
+              const cand = findInDb(remoteDb, r, authSuccess);
+              if (cand) {
+                foundUser = cand;
+                detectedRole = r;
+                break;
+              }
+            }
+          }
+        }
+
+        // B. If still not found, check relational tables directly (clients, customers, promotoras, riders)
+        if (!foundUser) {
+          if (safeEmail || cleanPhone) {
+            let clientQuery = supabase.from("clients").select("*");
+            if (safeEmail && cleanPhone) {
+              clientQuery = clientQuery.or(`email.ilike.${safeEmail},phone.eq.${rawEmail}`);
+            } else if (safeEmail) {
+              clientQuery = clientQuery.ilike("email", safeEmail);
+            } else {
+              clientQuery = clientQuery.eq("phone", rawEmail);
+            }
+            const { data: clientRow } = await clientQuery.maybeSingle();
+            if (clientRow && (matchesPass(clientRow.password) || authSuccess)) {
+              foundUser = clientRow.raw_data ? { ...clientRow.raw_data, ...clientRow } : clientRow;
+              detectedRole = "dueño";
+            }
+          }
+        }
+
+        if (!foundUser) {
+          if (safeEmail || cleanPhone) {
+            let custQuery = supabase.from("customers").select("*");
+            if (safeEmail && cleanPhone) {
+              custQuery = custQuery.or(`email.ilike.${safeEmail},phone.eq.${rawEmail}`);
+            } else if (safeEmail) {
+              custQuery = custQuery.ilike("email", safeEmail);
+            } else {
+              custQuery = custQuery.eq("phone", rawEmail);
+            }
+            const { data: custRow } = await custQuery.maybeSingle();
+            if (custRow && (matchesPass(custRow.password) || authSuccess)) {
+              foundUser = custRow.raw_data ? { ...custRow.raw_data, ...custRow } : custRow;
+              detectedRole = "customer";
+            }
+          }
+        }
+
+        if (!foundUser) {
+          if (safeEmail || cleanPhone) {
+            let promoQuery = supabase.from("promotoras").select("*");
+            if (safeEmail && cleanPhone) {
+              promoQuery = promoQuery.or(`email.ilike.${safeEmail},phone.eq.${rawEmail}`);
+            } else if (safeEmail) {
+              promoQuery = promoQuery.ilike("email", safeEmail);
+            } else {
+              promoQuery = promoQuery.eq("phone", rawEmail);
+            }
+            const { data: promoRow } = await promoQuery.maybeSingle();
+            if (promoRow && (matchesPass(promoRow.password) || authSuccess)) {
+              foundUser = promoRow.raw_data ? { ...promoRow.raw_data, ...promoRow } : promoRow;
+              detectedRole = "promotora";
+            }
+          }
+        }
+
+        if (!foundUser) {
+          if (safeEmail || cleanPhone) {
+            let riderQuery = supabase.from("riders").select("*");
+            if (safeEmail && cleanPhone) {
+              riderQuery = riderQuery.or(`email.ilike.${safeEmail},phone.eq.${rawEmail}`);
+            } else if (safeEmail) {
+              riderQuery = riderQuery.ilike("email", safeEmail);
+            } else {
+              riderQuery = riderQuery.eq("phone", rawEmail);
+            }
+            const { data: riderRow } = await riderQuery.maybeSingle();
+            if (riderRow && (matchesPass(riderRow.password) || authSuccess)) {
+              foundUser = riderRow.raw_data ? { ...riderRow.raw_data, ...riderRow } : riderRow;
+              detectedRole = "rider";
+            }
+          }
+        }
+
+        // C. If found in cloud, immediately hydrate local db, localStorage and IndexedDB
+        if (foundUser) {
+          const collectionKey = detectedRole === "dueño" ? "clients" : (detectedRole === "customer" ? "customers" : (detectedRole === "promotora" ? "promotoras" : (detectedRole === "rider" ? "riders" : "vendedores")));
+          setDb((prevDb: any) => {
+            const list = prevDb[collectionKey] || [];
+            const idx = list.findIndex((x: any) => x.id === foundUser.id || (safeEmail && x.email && x.email.toLowerCase() === safeEmail));
+            const updatedList = idx >= 0 
+              ? list.map((x: any, i: number) => i === idx ? { ...x, ...foundUser } : x)
+              : [...list, foundUser];
+            const newDb = { ...prevDb, [collectionKey]: updatedList };
+            try {
+              localStorage.setItem("kfs_os_db_prod", JSON.stringify(newDb));
+            } catch (_) {}
+            return newDb;
+          });
+        }
+      } catch (cloudErr) {
+        console.warn("[handleLogin] Cloud fallback query notice:", cloudErr);
       }
     }
 
@@ -1468,10 +1607,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       if ("Notification" in window && Notification.permission !== "granted") {
         Notification.requestPermission();
       }
-      return;
+      return true;
     }
 
     showToast("Credenciales inválidas. Por favor verifica tu correo/teléfono y contraseña.", "error");
+    return false;
   };
 
   const hashPassword = async (password: string) => {

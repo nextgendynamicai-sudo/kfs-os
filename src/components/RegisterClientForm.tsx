@@ -337,14 +337,16 @@ export const RegisterClientForm = ({ onRegister, onCancel, standalone = true, de
       <TermsAcceptance accepted={acceptedToS} setAccepted={setAcceptedToS} variant={standalone ? "light" : "dark"} />
 
       <div className="flex gap-3 pt-4">
-        <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl border border-violet-200 text-slate-500 font-bold hover:bg-violet-50 transition-all text-sm cursor-pointer">Cancelar</button>
+        <button type="button" onClick={onCancel} className="w-1/3 py-3 rounded-xl border border-violet-200 text-slate-500 font-bold hover:bg-violet-50 transition-all text-sm cursor-pointer">
+          <span>Cancelar</span>
+        </button>
         <button 
           type="submit" 
           disabled={!isFormValid || isSubmitting}
           className="w-2/3 py-3.5 rounded-xl font-black text-white text-sm hover:scale-[1.02] active:scale-95 transition-all shadow-md shadow-violet-600/30 cursor-pointer bg-violet-600 border-none disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed disabled:shadow-none disabled:scale-100"
           title={isFormValid ? "Completar registro" : "Por favor, completa todos los requisitos mostrados en la lista"}
         >
-          {isSubmitting ? "Registrando..." : isFormValid ? "Finalizar Setup de Tienda" : "Requisitos Incompletos"}
+          <span>{isSubmitting ? "Registrando..." : isFormValid ? "Finalizar Setup de Tienda" : "Requisitos Incompletos"}</span>
         </button>
       </div>
     </form>

@@ -26,6 +26,23 @@ export class ErrorBoundary extends Component<Props, State> {
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     console.error("Uncaught error in React Component:", error, errorInfo);
+
+    // Auto-recuperación inteligente si el error proviene de Google Translate o mutaciones externas del DOM
+    const isDomMutationError = 
+      error?.name === "NotFoundError" || 
+      error?.message?.includes("removeChild") || 
+      error?.message?.includes("not a child of this node") ||
+      error?.message?.includes("insertBefore");
+
+    if (isDomMutationError) {
+      console.warn("ErrorBoundary: Detectada mutación externa del DOM (Traductor/Extensión). Auto-recuperando estado...");
+      setTimeout(() => {
+        if (this.state.hasError) {
+          this.setState({ hasError: false, error: null });
+        }
+      }, 50);
+    }
+
     try {
       const Sentry = require("@sentry/nextjs");
       if (process.env.NEXT_PUBLIC_SENTRY_DSN) {

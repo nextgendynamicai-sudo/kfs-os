@@ -7,6 +7,7 @@ import { UIProvider } from "../context/UIContext";
 import { PresetProvider } from "../context/PresetContext";
 import { ErrorBoundary } from "../components/ErrorBoundary";
 import { PwaUpdater } from "../components/PwaUpdater";
+import "../lib/safeDOM";
 
 const jakartaSans = Plus_Jakarta_Sans({
   variable: "--font-jakarta-sans",
@@ -41,6 +42,7 @@ export const metadata: Metadata = {
     apple: "/kfs-logo.png",
   },
 };
+
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
@@ -51,13 +53,58 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
-      className={`${jakartaSans.variable} ${geistMono.variable} h-full antialiased`}
+      lang="es"
+      translate="no"
+      className={`${jakartaSans.variable} ${geistMono.variable} h-full antialiased notranslate`}
     >
       <head>
+        <meta name="google" content="notranslate" />
+        <meta name="googlebot" content="notranslate" />
         <script dangerouslySetInnerHTML={{
           __html: `
             try {
+              if (typeof window !== 'undefined' && typeof Node !== 'undefined') {
+                // Safe DOM Polyfill for Google Translate & Extensions
+                var origRemoveChild = Node.prototype.removeChild;
+                Node.prototype.removeChild = function(child) {
+                  if (!child) return child;
+                  if (child.parentNode && child.parentNode !== this) {
+                    try { return child.parentNode.removeChild(child); } catch(e) { return child; }
+                  }
+                  if (!child.parentNode) return child;
+                  try { return origRemoveChild.call(this, child); } catch(err) {
+                    if (child.parentNode) {
+                      try { return child.parentNode.removeChild(child); } catch(_) {}
+                    }
+                    return child;
+                  }
+                };
+
+                var origInsertBefore = Node.prototype.insertBefore;
+                Node.prototype.insertBefore = function(newNode, refNode) {
+                  if (!newNode) return newNode;
+                  if (refNode && refNode.parentNode && refNode.parentNode !== this) {
+                    try { return refNode.parentNode.insertBefore(newNode, refNode); } catch(e) {
+                      try { return origInsertBefore.call(this, newNode, null); } catch(_) { return newNode; }
+                    }
+                  }
+                  try { return origInsertBefore.call(this, newNode, refNode); } catch(err) {
+                    try { return origInsertBefore.call(this, newNode, null); } catch(_) { return newNode; }
+                  }
+                };
+
+                var origReplaceChild = Node.prototype.replaceChild;
+                Node.prototype.replaceChild = function(newChild, oldChild) {
+                  if (!newChild || !oldChild) return oldChild;
+                  if (oldChild.parentNode && oldChild.parentNode !== this) {
+                    try { return oldChild.parentNode.replaceChild(newChild, oldChild); } catch(e) { return oldChild; }
+                  }
+                  try { return origReplaceChild.call(this, newChild, oldChild); } catch(err) {
+                    try { return this.appendChild(newChild); } catch(_) { return oldChild; }
+                  }
+                };
+              }
+
               if (typeof window !== 'undefined') {
                 if (localStorage.getItem("theme") === "dark") {
                   document.documentElement.classList.add("dark");
@@ -81,7 +128,7 @@ export default function RootLayout({
           `
         }} />
       </head>
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col notranslate" translate="no">
         <ErrorBoundary>
           <UIProvider>
             <KFSProvider>

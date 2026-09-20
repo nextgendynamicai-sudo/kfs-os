@@ -161,7 +161,7 @@ export function RegistrationModal({ isOpen, onClose, offerType }: RegistrationMo
                 : "bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-slate-950 shadow-lg shadow-orange-500/20"
             } disabled:opacity-50 disabled:cursor-not-allowed`}
           >
-            {loading ? "Validando Sistema..." : "Registrar y Entrar a la Consola"}
+            <span>{loading ? "Validando Sistema..." : "Registrar y Entrar a la Consola"}</span>
             {!loading && <ChevronRight size={18} />}
           </button>
         </form>

@@ -229,13 +229,18 @@ export const LoginView = ({
 
     try {
       const targetRole = selectedRoleOverride || (activeTab === "core" ? "core" : "universal");
-      await handleLogin(targetRole, password, identifier);
-      setLoginSuccess(true);
-
-      // Vibración de confirmación exitosa
-      if (typeof window !== "undefined" && window.navigator && "vibrate" in window.navigator) {
-        try { (window.navigator as any).vibrate([25, 40, 25]); } catch (_) {}
+      const isSuccess = await handleLogin(targetRole, password, identifier);
+      if (isSuccess) {
+        setLoginSuccess(true);
+        // Vibración de confirmación exitosa
+        if (typeof window !== "undefined" && window.navigator && "vibrate" in window.navigator) {
+          try { (window.navigator as any).vibrate([25, 40, 25]); } catch (_) {}
+        }
+      } else {
+        setLoginSuccess(false);
       }
+    } catch (_) {
+      setLoginSuccess(false);
     } finally {
       setIsSubmitting(false);
     }
@@ -435,7 +440,7 @@ export const LoginView = ({
                         autoComplete="username"
                         placeholder="usuario@correo.com o 04141234567"
                         value={identifier}
-                        onChange={e => setIdentifier(e.target.value)}
+                        onChange={e => { setIdentifier(e.target.value); setLoginSuccess(false); }}
                         className="w-full bg-slate-50/80 border border-slate-200 focus:border-violet-500 focus:bg-white rounded-2xl pl-11 pr-4 py-3.5 text-slate-900 font-medium placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-violet-500/10 transition-all text-sm"
                       />
                     </div>
@@ -457,7 +462,7 @@ export const LoginView = ({
                         autoComplete="current-password"
                         placeholder="Ingresa tu clave de acceso"
                         value={password}
-                        onChange={e => setPassword(e.target.value)}
+                        onChange={e => { setPassword(e.target.value); setLoginSuccess(false); }}
                         className="w-full bg-slate-50/80 border border-slate-200 focus:border-violet-500 focus:bg-white rounded-2xl pl-11 pr-11 py-3.5 text-slate-900 font-medium placeholder:text-slate-400 focus:outline-none focus:ring-4 focus:ring-violet-500/10 transition-all text-sm"
                       />
                       <button
@@ -759,7 +764,10 @@ export const LoginView = ({
 
                 {activeTab === "registerPromo" && (
                   <RegisterPromotoraForm
-                    onRegister={registerPromotora}
+                    onRegister={async (data: any) => {
+                      await registerPromotora(data);
+                      setActiveTab("login");
+                    }}
                     onCancel={() => setActiveTab("register-select")}
                     defaultReferralCode={referralCode}
                   />
@@ -774,6 +782,7 @@ export const LoginView = ({
 
                 {activeTab === "registerRider" && (
                   <RegisterRiderForm
+                    onSuccess={() => setActiveTab("login")}
                     onCancel={() => setActiveTab("register-select")}
                     defaultReferralCode={referralCode}
                   />

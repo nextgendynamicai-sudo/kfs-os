@@ -220,6 +220,57 @@ export const syncSingleTransaction = async (t: any) => {
   }
 };
 
+export const appendUserToStoreState = async (
+  type: 'clients' | 'customers' | 'promotoras' | 'riders' | 'vendedores',
+  item: any
+) => {
+  if (!supabase || !isSupabaseConfigured || !item) return;
+  const syncId = "kfs-general-db-prod";
+  try {
+    const { data, error } = await supabase
+      .from('kfs_store_states')
+      .select('db_state')
+      .eq('id', syncId)
+      .maybeSingle();
+
+    if (error && error.code !== 'PGRST116') {
+      console.warn(`[Supabase Sync] appendUserToStoreState read error:`, error);
+      return;
+    }
+
+    const currentState = data?.db_state || {};
+    const currentList = currentState[type] || [];
+    const itemToSave = cleanBase64(item);
+
+    const idx = currentList.findIndex((x: any) => {
+      if (x.id && item.id && x.id === item.id) return true;
+      if (item.email && x.email && x.email.toLowerCase() === item.email.toLowerCase()) return true;
+      if (item.phone && x.phone && x.phone === item.phone) return true;
+      return false;
+    });
+
+    let updatedList;
+    if (idx >= 0) {
+      updatedList = currentList.map((x: any, i: number) => (i === idx ? { ...x, ...itemToSave } : x));
+    } else {
+      updatedList = [...currentList, itemToSave];
+    }
+
+    const updatedState = {
+      ...currentState,
+      [type]: updatedList
+    };
+
+    await supabase.from('kfs_store_states').upsert({
+      id: syncId,
+      db_state: updatedState,
+      updated_at: new Date().toISOString()
+    }, { onConflict: 'id' });
+  } catch (err) {
+    console.warn(`[Supabase Sync] appendUserToStoreState exception for ${type}:`, err);
+  }
+};
+
 export const syncSingleClient = async (c: any) => {
   if (!supabase || !isSupabaseConfigured) return;
   try {
@@ -257,6 +308,9 @@ export const syncSingleClient = async (c: any) => {
       raw_data: cleanBase64(c),
       created_at: c.created_at || new Date().toISOString()
     }, { onConflict: 'id' });
+
+    // Instantly append to kfs_store_states for instant cross-device visibility
+    await appendUserToStoreState('clients', c);
   } catch (err) {
     console.warn("[Supabase Sync] syncSingleClient notice:", err);
   }
@@ -291,6 +345,9 @@ export const syncSingleCustomer = async (c: any) => {
       kpoints_balance: c.kpointsBalance || c.k_points_balance || 0,
       created_at: c.created_at || new Date().toISOString()
     }, { onConflict: 'id' });
+
+    // Instantly append to kfs_store_states for instant cross-device visibility
+    await appendUserToStoreState('customers', c);
   } catch (err) {
     console.warn("[Supabase Sync] syncSingleCustomer notice:", err);
   }
@@ -362,6 +419,9 @@ export const syncSinglePromotora = async (p: any) => {
       referrals_count: p.referralsCount || 0,
       created_at: p.created_at || new Date().toISOString()
     }, { onConflict: 'id' });
+
+    // Instantly append to kfs_store_states for instant cross-device visibility
+    await appendUserToStoreState('promotoras', p);
   } catch (err) {
     console.warn("[Supabase Sync] syncSinglePromotora notice:", err);
   }
@@ -397,6 +457,9 @@ export const syncSingleRider = async (r: any) => {
       earnings: r.earningsUSD || r.walletBalanceUSD || 0,
       created_at: r.created_at || new Date().toISOString()
     }, { onConflict: 'id' });
+
+    // Instantly append to kfs_store_states for instant cross-device visibility
+    await appendUserToStoreState('riders', r);
   } catch (err) {
     console.warn("[Supabase Sync] syncSingleRider notice:", err);
   }
