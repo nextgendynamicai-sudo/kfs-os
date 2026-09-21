@@ -14,7 +14,8 @@ import {
   syncSingleProduct,
   syncSinglePromotora,
   syncSingleRider,
-  forceDirectCloudSync
+  forceDirectCloudSync,
+  fetchUserRelationalState
 } from "../lib/supabaseSync";
 import { applyDemurrageToCustomers } from "../lib/demurrageEngine";
 
@@ -1578,13 +1579,36 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         // C. If found in cloud, immediately hydrate local db, localStorage and IndexedDB
         if (foundUser) {
           const collectionKey = detectedRole === "dueño" ? "clients" : (detectedRole === "customer" ? "customers" : (detectedRole === "promotora" ? "promotoras" : (detectedRole === "rider" ? "riders" : "vendedores")));
+          
+          // SQL DIRECT HYDRATION (Bypass JSON)
+          let relationalData: any = null;
+          try {
+             relationalData = await fetchUserRelationalState({ ...foundUser, role: detectedRole });
+          } catch(e) { console.warn("Relational SQL hydration failed", e); }
+
           setDb((prevDb: any) => {
             const list = prevDb[collectionKey] || [];
             const idx = list.findIndex((x: any) => x.id === foundUser.id || (safeEmail && x.email && x.email.toLowerCase() === safeEmail));
             const updatedList = idx >= 0 
               ? list.map((x: any, i: number) => i === idx ? { ...x, ...foundUser } : x)
               : [...list, foundUser];
-            const newDb = { ...prevDb, [collectionKey]: updatedList };
+            
+            let newDb = { ...prevDb, [collectionKey]: updatedList };
+
+            // Merge SQL Relational Data directly into memory
+            if (relationalData) {
+               if (relationalData.products?.length > 0) {
+                 const pMap = new Map((newDb.products || []).map((p:any) => [p.id, p]));
+                 relationalData.products.forEach((p:any) => pMap.set(p.id, p));
+                 newDb.products = Array.from(pMap.values());
+               }
+               if (relationalData.transactions?.length > 0) {
+                 const tMap = new Map((newDb.transactions || []).map((t:any) => [t.id, t]));
+                 relationalData.transactions.forEach((t:any) => tMap.set(t.id, t));
+                 newDb.transactions = Array.from(tMap.values());
+               }
+            }
+
             try {
               localStorage.setItem("kfs_os_db_prod", JSON.stringify(newDb));
             } catch (_) {}

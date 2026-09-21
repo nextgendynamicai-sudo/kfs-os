@@ -20,21 +20,35 @@ export async function POST(req: Request) {
     }
 
     const payload = await req.json();
-    const { bizType, data } = payload;
+    const { bizType, data, bizId } = payload;
     
     // Verificamos si es un pago exitoso
     if (bizType !== 'PAY' || data?.status !== 'SUCCESS') {
       return NextResponse.json({ success: true, message: 'Ignored or pending' });
     }
 
-    // 2. Extraemos el merchantTradeNo (debe ser el ID del cliente de KFS OS)
-    // El payload de Binance incluye merchantTradeNo que podemos usar como customerId
+    // 2. Extraemos el merchantTradeNo y bizId
     const customerId = data.merchantTradeNo; 
     const amountUSD = parseFloat(data.orderAmount);
+    const transactionId = bizId || data.bizId || `binance_${customerId}_${Date.now()}`;
 
     if (!customerId || isNaN(amountUSD) || amountUSD <= 0) {
       return NextResponse.json({ returnCode: "FAIL", returnMessage: "Invalid customer or amount" }, { status: 400 });
     }
+
+    // --- IDEMPOTENCY CHECK ---
+    // Verificamos si este webhook ya fue procesado buscando el transactionId
+    const { data: existingTx } = await supabase
+      .from('transactions')
+      .select('id')
+      .eq('id', transactionId)
+      .maybeSingle();
+      
+    if (existingTx) {
+      console.warn(`[Webhook Binance] Transacción duplicada ignorada: ${transactionId}`);
+      return NextResponse.json({ returnCode: "SUCCESS", returnMessage: "Already processed" });
+    }
+    // -------------------------
 
     // 3. Obtener estado actual (Híbrido) con reintentos OCC
     const syncId = "kfs-general-db-prod";
@@ -127,8 +141,32 @@ export async function POST(req: Request) {
           await supabase.from('kfs_customers').update({
             kpoints_balance: cust.k_points_balance || 0
           }).eq('id', customerId);
+          
+          // Registrar transaccion para idempotencia
+          const txPayload = {
+             id: transactionId,
+             clientId: 'binance_system',
+             customerId: customerId,
+             type: 'RECHARGE',
+             amount: amountUSD,
+             paymentMethod: 'BINANCE_PAY',
+             status: 'COMPLETED',
+             timestamp: nextUpdatedAt
+          };
+          await supabase.from('transactions').insert(txPayload);
+          await supabase.from('kfs_transactions').insert({
+             id: transactionId,
+             type: 'RECHARGE',
+             amount_usd: amountUSD,
+             currency: 'USD',
+             status: 'COMPLETED',
+             sender_id: 'binance_system',
+             receiver_id: customerId,
+             created_at: nextUpdatedAt
+          });
         } catch (_e) {
           // Relational sync notice
+          console.warn('Error syncing relational tables:', _e);
         }
       } else {
         console.warn(`[Collision Detectado] Intento ${attempts}/${maxAttempts} para binance webhook de ${customerId}. Reintentando...`);

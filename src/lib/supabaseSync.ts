@@ -491,3 +491,36 @@ export const forceDirectCloudSync = async (database: any) => {
     console.warn("[Supabase Sync] forceDirectCloudSync error:", err);
   }
 };
+
+export const fetchUserRelationalState = async (user: any) => {
+  if (!supabase || !isSupabaseConfigured || !user || !user.id) return null;
+  
+  const partialDb: any = {
+    products: [],
+    transactions: [],
+    vales: [],
+    posTerminals: [],
+    expenses: []
+  };
+
+  try {
+    const isOwner = user.role === 'dueño';
+    const isVendedor = user.role === 'vendedor';
+    const clientId = isOwner ? user.id : (isVendedor ? user.clientId : null);
+
+    if (clientId) {
+       // Fetch Products
+       const { data: prods } = await supabase.from('products').select('*').eq('clientId', clientId);
+       if (prods) partialDb.products = prods.map(p => p.raw_data ? {...p.raw_data, ...p} : p);
+       
+       // Fetch Transactions
+       const { data: txs } = await supabase.from('transactions').select('*').eq('clientId', clientId);
+       if (txs) partialDb.transactions = txs.map(t => t.raw_data ? {...t.raw_data, ...t} : t);
+    }
+    
+    return partialDb;
+  } catch (err) {
+    console.warn('[Supabase Sync] fetchUserRelationalState error', err);
+    return null;
+  }
+};
