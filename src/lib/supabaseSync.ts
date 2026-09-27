@@ -511,11 +511,11 @@ export const fetchUserRelationalState = async (user: any) => {
     if (clientId) {
        // Fetch Products
        const { data: prods } = await supabase.from('products').select('*').eq('clientId', clientId);
-       if (prods) partialDb.products = prods.map(p => p.raw_data ? {...p.raw_data, ...p} : p);
+       if (prods) partialDb.products = prods.map((p: any) => p.raw_data ? {...p.raw_data, ...p} : p);
        
        // Fetch Transactions
        const { data: txs } = await supabase.from('transactions').select('*').eq('clientId', clientId);
-       if (txs) partialDb.transactions = txs.map(t => t.raw_data ? {...t.raw_data, ...t} : t);
+       if (txs) partialDb.transactions = txs.map((t: any) => t.raw_data ? {...t.raw_data, ...t} : t);
     }
     
     return partialDb;

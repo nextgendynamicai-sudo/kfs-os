@@ -991,7 +991,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
       </div>
 
       {/* FIXED BOTTOM NAVIGATION - PREMIUM GLASS CARDS */}
-      <div className="fixed bottom-0 inset-x-0 z-50 bg-slate-950/80 backdrop-blur-2xl border-t border-violet-500/20 shadow-[0_-10px_40px_rgba(15,23,42,0.6)] py-3 px-4">
+      <div className="fixed bottom-0 inset-x-0 z-50 bg-slate-950/80 backdrop-blur-2xl border-t border-violet-500/20 shadow-[0_-10px_40px_rgba(15,23,42,0.6)] py-3 px-4 safe-pb">
         <div className="max-w-4xl mx-auto flex items-center justify-center gap-4 overflow-x-auto no-scrollbar py-1 px-2">
           {[
             { id: "profile", icon: Activity, label: "Mi Cuenta" },

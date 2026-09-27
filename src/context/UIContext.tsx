@@ -4,11 +4,23 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 
 export type ViewType = string;
 
+export interface ToastAction {
+  label: string;
+  onClick: () => void;
+}
+
+export interface ToastState {
+  show: boolean;
+  message: string;
+  type: string;
+  action?: ToastAction;
+}
+
 interface UIContextType {
   view: ViewType;
   setView: (v: ViewType) => void;
-  toast: { show: boolean; message: string; type: string };
-  showToast: (message: string, type?: "success" | "error" | "info" | "warning") => void;
+  toast: ToastState;
+  showToast: (message: string, type?: "success" | "error" | "info" | "warning", action?: ToastAction) => void;
   networkState: "online" | "offline" | "syncing" | "mesh";
   setNetworkState: (state: "online" | "offline" | "syncing" | "mesh") => void;
   ghostTrapLocked: boolean;
@@ -44,15 +56,16 @@ export const UIProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const [toast, setToast] = useState({ show: false, message: "", type: "success" });
+  const [toast, setToast] = useState<ToastState>({ show: false, message: "", type: "success" });
   const [networkState, setNetworkState] = useState<"online" | "offline" | "syncing" | "mesh">("online");
   const [ghostTrapLocked, setGhostTrapLocked] = useState(false);
 
-  const showToast = React.useCallback((message: string, type: "success" | "error" | "info" | "warning" = "success") => {
-    setToast({ show: true, message, type });
+  const showToast = React.useCallback((message: string, type: "success" | "error" | "info" | "warning" = "success", action?: ToastAction) => {
+    setToast({ show: true, message, type, action });
+    const duration = action ? 5000 : 3000;
     setTimeout(() => {
-      setToast({ show: false, message: "", type: "success" });
-    }, 3000);
+      setToast(prev => (prev.message === message ? { show: false, message: "", type: "success", action: undefined } : prev));
+    }, duration);
     
     // Native Push Notification Support
     if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted" && type === "success") {

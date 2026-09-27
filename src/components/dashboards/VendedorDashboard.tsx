@@ -80,7 +80,27 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
   const [smsInput, setSmsInput] = useState("");
   const [searchProduct, setSearchProduct] = useState("");
   const [activeScreenshot, setActiveScreenshot] = useState<string | null>(null);
+  const [showIoT, setShowIoT] = useState(false);
   const { queryGlobalBarcode, smsConciliator, rates, networkState, requestNotificationPermission, processBlindCashCount } = useKFS() as any;
+
+  // Escucha de comandos globales para vendedor
+  useEffect(() => {
+    const handleQuickSell = (e: any) => {
+      if (e.detail) setCheckoutProduct(e.detail);
+    };
+    const handleOpenBlindCount = () => setShowBlindCountModal(true);
+    const handleOpenAdd = () => setShowAddModal(true);
+
+    window.addEventListener("kfs-quick-sell-product", handleQuickSell);
+    window.addEventListener("kfs-open-blind-count", handleOpenBlindCount);
+    window.addEventListener("kfs-open-add-product", handleOpenAdd);
+
+    return () => {
+      window.removeEventListener("kfs-quick-sell-product", handleQuickSell);
+      window.removeEventListener("kfs-open-blind-count", handleOpenBlindCount);
+      window.removeEventListener("kfs-open-add-product", handleOpenAdd);
+    };
+  }, []);
 
   // Hardware Barcode Scanner Listener
   useEffect(() => {
@@ -351,6 +371,15 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
             <button onClick={() => setShowBlindCountModal(true)} className="flex items-center gap-1.5 bg-red-500/10 text-red-400 hover:bg-red-500/20 px-3 py-1.5 rounded-xl transition-colors text-xs font-bold cursor-pointer">
               Cerrar Caja (Z)
             </button>
+            <button
+              onClick={() => window.dispatchEvent(new CustomEvent("open-command-palette"))}
+              className="flex items-center gap-1.5 bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-xl transition-colors text-xs font-bold cursor-pointer"
+              title="Búsqueda rápida y comandos (Ctrl+K)"
+            >
+              <Search size={14} />
+              <span className="hidden sm:inline">Buscar</span>
+              <kbd className="hidden md:inline-block bg-white/20 px-1 py-0.5 rounded text-[9px] font-mono">⌘K</kbd>
+            </button>
           </div>
           <div className="flex items-center gap-2">
             <div className="bg-gradient-to-r from-amber-400 to-orange-500 px-2.5 py-1 rounded-lg flex items-center gap-1 shadow-sm" title="Axis Pts">
@@ -398,7 +427,29 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
 
         <UniversalWalletWidget currentUser={currentUser} formatUSD={formatUSD} />
 
-        <KFSIoTEdgeConsole showToast={showToast} />
+        {/* Herramientas de Periféricos & IoT Edge (Opcional/Colapsable) */}
+        <div className="bg-white rounded-3xl border border-violet-100 shadow-sm overflow-hidden">
+          <button
+            type="button"
+            onClick={() => setShowIoT(!showIoT)}
+            className="w-full p-4 flex items-center justify-between text-left bg-slate-50 hover:bg-slate-100 transition-colors border-none cursor-pointer"
+          >
+            <div className="flex items-center gap-2">
+              <Terminal size={18} className="text-violet-600" />
+              <span className="text-xs font-bold text-slate-800">
+                Dispositivos Conectados (Básculas, Gaveta y Consola IoT)
+              </span>
+            </div>
+            <span className="text-[11px] font-bold text-violet-600">
+              {showIoT ? "▲ Ocultar" : "▼ Mostrar Conexiones"}
+            </span>
+          </button>
+          {showIoT && (
+            <div className="p-4 border-t border-slate-100 animate-fade-in">
+              <KFSIoTEdgeConsole showToast={showToast} />
+            </div>
+          )}
+        </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <button onClick={() => setShowAddModal(true)} className="bg-white border border-violet-100 p-8 rounded-[2rem] shadow-xl shadow-violet-200/50 flex flex-col items-center justify-center gap-4 hover:border-violet-300 transition-all cursor-pointer">
@@ -749,7 +800,7 @@ export const VendedorDashboard = ({ db, setDb, currentUser, addProduct, processP
       )}
 
       {/* Mobile TabBar Navigation - PREMIUM GLASS CARDS */}
-      <div className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-slate-950/80 backdrop-blur-2xl border-t border-violet-500/20 shadow-[0_-10px_40px_rgba(15,23,42,0.6)] py-2 px-4">
+      <div className="md:hidden fixed bottom-0 inset-x-0 z-50 bg-slate-950/80 backdrop-blur-2xl border-t border-violet-500/20 shadow-[0_-10px_40px_rgba(15,23,42,0.6)] py-2 px-4 safe-pb">
         <div className="flex justify-around items-center gap-2">
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}

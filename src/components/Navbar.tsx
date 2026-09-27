@@ -9,7 +9,8 @@ import {
   X, 
   ShoppingBag, 
   Store, 
-  LogOut 
+  LogOut,
+  Search 
 } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { KreatekLogo } from "./KreatekLogo";
@@ -80,20 +81,20 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
 
     if (networkState === "online") {
       setNetworkState("mesh");
-      showToast("Modo: RED DE MALLA LOCAL (P2P Mesh) activada. Inventarios locales vinculados.", "success");
+      showToast("Modo Local activado. Las operaciones y el inventario están seguros en este dispositivo.", "success");
     } else if (networkState === "mesh") {
       setNetworkState("offline");
-      showToast("Modo: DESCONECTADO (Stand-alone). Guardado en LocalStorage activado.", "error");
+      showToast("Modo Desconectado. Todos los cobros se guardan seguros en tu almacenamiento local.", "warning");
     } else {
       setIsSyncing(true);
-      showToast("Sincronizando base de datos local P2P con el servidor en la nube...", "success");
+      showToast("Sincronizando tus ventas y datos con la nube...", "info");
 
       // Simulate sync animation
       setTimeout(() => {
         setNetworkState("online");
         setIsSyncing(false);
         playSyncChime();
-        showToast("¡Base de datos sincronizada! 100% de consistencia en la nube.", "success");
+        showToast("¡Todo sincronizado con éxito! Datos al día.", "success");
       }, 2000);
     }
   };
@@ -104,28 +105,28 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
         return { 
           color: "bg-emerald-500 shadow-[0_0_8px_#10b981]", 
           border: "border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.15)] bg-emerald-50 dark:bg-emerald-950/20 hover:bg-emerald-100/80 dark:hover:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300", 
-          label: "ONLINE (NUBE)", 
+          label: "🟢 EN LÍNEA", 
           text: "text-emerald-600 dark:text-emerald-400" 
         };
       case "mesh":
         return { 
           color: "bg-amber-500 shadow-[0_0_8px_#f59e0b]", 
           border: "border-amber-500/40 shadow-[0_0_15px_rgba(245,158,11,0.15)] bg-amber-50 dark:bg-amber-950/20 hover:bg-amber-100/80 dark:hover:bg-amber-900/30 text-amber-700 dark:text-amber-300", 
-          label: "LOCAL MESH (P2P)", 
+          label: "🟡 MODO LOCAL", 
           text: "text-amber-600 dark:text-amber-400" 
         };
       case "offline":
         return { 
           color: "bg-red-500 shadow-[0_0_8px_#ef4444] animate-pulse", 
           border: "border-red-500/40 shadow-[0_0_15px_rgba(239,68,68,0.15)] bg-red-50 dark:bg-red-950/20 hover:bg-red-100/80 dark:hover:bg-red-900/30 text-red-700 dark:text-red-400 animate-pulse", 
-          label: "OFFLINE (STAND-ALONE)", 
+          label: "🔴 DESCONECTADO", 
           text: "text-red-600 dark:text-red-400" 
         };
       default:
         return { 
           color: "bg-emerald-500 shadow-[0_0_8px_#10b981]", 
           border: "border-emerald-500/40 shadow-[0_0_15px_rgba(16,185,129,0.15)] bg-emerald-50 dark:bg-emerald-950/20 hover:bg-emerald-100/80 dark:hover:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300", 
-          label: "ONLINE (NUBE)", 
+          label: "🟢 EN LÍNEA", 
           text: "text-emerald-600 dark:text-emerald-400" 
         };
     }
@@ -245,6 +246,16 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
                 <span>Afiliar Negocio</span>
               </button>
 
+              {/* Botón Buscador / Comandos Rápidos (Ctrl+K) */}
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent("open-command-palette"))}
+                className="hidden sm:flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 transition-all cursor-pointer h-8 bg-white/70 dark:bg-slate-900/70 shadow-xs"
+                title="Búsqueda rápida y comandos (Ctrl + K)"
+              >
+                <Search size={14} className="text-violet-600 dark:text-violet-400" />
+                <span className="text-xs font-bold">Buscar</span>
+              </button>
+
               {/* Selector de Modo Claro / Oscuro */}
               <button
                 onClick={toggleTheme}
@@ -312,6 +323,17 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
                 title="Compartir enlace de descarga de la aplicación móvil"
               >
                 <span>🔗 App</span>
+              </button>
+
+              {/* Botón Buscador / Comandos Rápidos (Ctrl+K) */}
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent("open-command-palette"))}
+                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 transition-all cursor-pointer h-8 bg-white/70 dark:bg-slate-900/70 shadow-xs"
+                title="Búsqueda rápida y comandos (Ctrl + K)"
+              >
+                <Search size={14} className="text-violet-600 dark:text-violet-400" />
+                <span className="hidden md:inline text-xs font-bold">Buscar</span>
+                <kbd className="hidden lg:inline-block bg-slate-200/80 dark:bg-white/10 px-1 py-0.5 rounded text-[9px] font-mono text-slate-500 dark:text-slate-400">⌘K</kbd>
               </button>
 
               {/* Selector de Modo Claro / Oscuro */}

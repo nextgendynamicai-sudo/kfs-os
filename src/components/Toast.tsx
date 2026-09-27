@@ -1,82 +1,55 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import {
-  Camera, Upload, ShoppingCart, TrendingUp, Users, DollarSign,
-  LogOut, Shield, Package, Activity, Search, QrCode, Lock,
-  ChevronRight, CheckCircle, CreditCard, Bell, X, Info,
-  Store, Star, ChevronLeft, Clock, UserCheck, Palette,
-  Zap, BookOpen, Printer, Smartphone, Settings, DownloadCloud, Terminal, Truck,
-  Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database, Trash2
-} from "lucide-react";
-import { useKFS } from "../context/KFSContext";
-import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { CheckoutModal } from "../components/CheckoutModal";
-import { TopUpModal } from "../components/TopUpModal";
-import { PayoutModal } from "../components/PayoutModal";
-import { ReceiptModal } from "../components/ReceiptModal";
-import { UniversalWalletWidget } from "../components/UniversalWalletWidget";
-import { ProfileAvatarEditor } from "../components/ProfileAvatarEditor";
-import { CoreDashboard } from "../components/dashboards/CoreDashboard";
-import { PromotoraDashboard } from "../components/dashboards/PromotoraDashboard";
-import { ClientDashboard } from "../components/dashboards/ClientDashboard";
-import { VendedorDashboard } from "../components/dashboards/VendedorDashboard";
-import { RiderDashboard } from "../components/dashboards/RiderDashboard";
-import { CustomerDashboard } from "../components/dashboards/CustomerDashboard";
-import { LoginView } from "../components/dashboards/LoginView";
-import { MarketplaceView } from "../components/dashboards/MarketplaceView";
-import { LandingPageView } from "../components/dashboards/LandingPageView";
-
-
-import { FlowExpressCatalog } from "../components/FlowExpressCatalog";
-import { B2BSelfOnboarding } from "../components/B2BSelfOnboarding";
-import { DatabaseManagerWidget } from "../components/DatabaseManagerWidget";
-import { ReferralLinksWidget } from "../components/ReferralLinksWidget";
-import { KPointsIssuerWidget } from "../components/KPointsIssuerWidget";
-import { useP2PTransfer } from "../hooks/useP2PTransfer";
-import { compressImage, readAsBase64, playPremiumChime, playSyncChime, playCashDrawerSound, playScannerBeep, getStoreCoords, getCustomerCoords } from "../lib/utils";
-import { AnimatedCounter } from "../components/AnimatedCounter";
-import { AppEnforcer } from "../components/AppEnforcer";
-import { PioneerOfferBanner } from '../components/PioneerOfferBanner';
-import { OracleControlSlider } from '../components/OracleControlSlider';
-import { OracleInsightCard } from '../components/OracleInsightCard';
-import { PushCommandCenter } from "../components/PushCommandCenter";
-import { supabase } from "../context/supabase";
-import { motion, AnimatePresence } from "framer-motion";
-import dynamic from 'next/dynamic';
-
-const LiveMap = dynamic(() => import('../components/LiveMap'), { ssr: false });
-
-// Theme and Global Constants
-const KREATEK_COLORS = {
-  navy: "violet-900",
-  bronze: "violet-600",
-  white: "#F8F9FA"
-};
-
-// ==========================================
-// UTILITIES
-// ==========================================
-
-
-// ==========================================
-// BUSINESS ECOSYSTEM SUBCOMPONENTS
-// ==========================================
-
-
-
-// ==========================================
-// SUBCOMPONENTS (DEFINED OUTSIDE PARENT TO PREVENT UNMOUNT RESETS)
-// ==========================================
-
-// Toast Component
+import React from "react";
+import { CheckCircle2, AlertTriangle, AlertCircle, Info } from "lucide-react";
 
 export const Toast = ({ toast }: { toast: any }) => {
-  if (!toast.show) return null;
+  if (!toast?.show) return null;
+
+  const isSuccess = toast.type === "success";
+  const isError = toast.type === "error";
+  const isWarning = toast.type === "warning";
+
+  const getBgStyle = () => {
+    if (isError) {
+      return "bg-rose-600/95 text-white border-rose-400/40 shadow-rose-900/30";
+    }
+    if (isWarning) {
+      return "bg-amber-600/95 text-white border-amber-400/40 shadow-amber-900/30";
+    }
+    if (toast.type === "info") {
+      return "bg-sky-600/95 text-white border-sky-400/40 shadow-sky-900/30";
+    }
+    return "bg-slate-900/95 dark:bg-slate-950/95 text-white border-violet-500/30 shadow-violet-950/40";
+  };
+
   return (
-    <div className={`fixed top-6 left-1/2 -translate-x-1/2 z-[999999] px-6 py-3 rounded-full shadow-2xl backdrop-blur-md font-bold text-sm transition-all duration-300 flex items-center gap-2 ${toast.type === "error" ? "bg-red-500/90 text-white border border-red-400" : toast.type === "warning" ? "bg-amber-500/90 text-white border border-amber-400" : "bg-violet-600/90 text-violet-900 border border-white/20"}`}>
-      {toast.type === "success" ? <CheckCircle size={18} /> : <Activity size={18} />}
-      {toast.message}
+    <div 
+      className={`fixed bottom-6 sm:bottom-auto sm:top-6 left-1/2 -translate-x-1/2 z-[999999] max-w-[92vw] sm:max-w-md px-5 py-3 rounded-2xl sm:rounded-full shadow-2xl backdrop-blur-xl font-semibold text-xs sm:text-sm transition-all duration-300 flex items-center justify-between gap-3 border ${getBgStyle()}`}
+      role="alert"
+    >
+      <div className="flex items-center gap-2.5 truncate">
+        {isSuccess ? (
+          <CheckCircle2 size={18} className="text-emerald-400 shrink-0" />
+        ) : isWarning ? (
+          <AlertTriangle size={18} className="text-amber-300 shrink-0" />
+        ) : isError ? (
+          <AlertCircle size={18} className="text-rose-200 shrink-0" />
+        ) : (
+          <Info size={18} className="text-sky-300 shrink-0" />
+        )}
+        <span className="truncate">{toast.message}</span>
+      </div>
+
+      {toast.action && (
+        <button
+          type="button"
+          onClick={toast.action.onClick}
+          className="shrink-0 px-2.5 py-1 bg-white/20 hover:bg-white/30 text-white rounded-lg text-xs font-black uppercase tracking-wider transition-all active:scale-95 cursor-pointer border-none shadow-xs"
+        >
+          {toast.action.label}
+        </button>
+      )}
     </div>
   );
-}
+};

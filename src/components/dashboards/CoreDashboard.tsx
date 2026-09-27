@@ -2974,7 +2974,7 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
 
       {/* FIXED BOTTOM NAVIGATION - SLEEK 5-ICON STATIC BAR (LIKE SCREENSHOT) */}
-      <div className="fixed bottom-0 inset-x-0 z-50 bg-[#1A1A1A] border-t border-white/5 py-4 px-6 pb-6 shadow-[0_-10px_40px_rgba(0,0,0,0.8)]">
+      <div className="fixed bottom-0 inset-x-0 z-50 bg-[#1A1A1A] border-t border-white/5 py-4 px-6 safe-pb shadow-[0_-10px_40px_rgba(0,0,0,0.8)]">
         <div className="max-w-md mx-auto flex items-center justify-between">
           {[
             { id: "panel", icon: Activity, label: "Explorar" },

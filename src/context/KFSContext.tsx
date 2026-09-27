@@ -47,8 +47,8 @@ interface KFSContextType {
   currentUser: any;
   setCurrentUser: (user: any) => void;
   updateUserAvatar: (userId: string, role: string, avatarBase64: string) => Promise<void>;
-  toast: { show: boolean; message: string; type: string };
-  showToast: (message: string, type?: "success" | "error") => void;
+  toast: { show: boolean; message: string; type: string; action?: { label: string; onClick: () => void } };
+  showToast: (message: string, type?: "success" | "error" | "info" | "warning", action?: { label: string; onClick: () => void }) => void;
   rates: typeof MOCK_BCV_RATES;
   updateBcvRates: (usd: number, eur: number) => void;
   db: typeof initialDB;

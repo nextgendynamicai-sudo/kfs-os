@@ -19,6 +19,7 @@ import { ReceiptModal } from "../components/ReceiptModal";
 import { UniversalWalletWidget } from "../components/UniversalWalletWidget";
 import { ProfileAvatarEditor } from "../components/ProfileAvatarEditor";
 import { Toast } from "../components/Toast";
+import { CommandPalette } from "../components/CommandPalette";
 export { CvViewerModal } from "../components/CvViewerModal";
 export { SMSConciliatorSimulator } from "../components/SMSConciliatorSimulator";
 export { KFSFinancialSplitCalculator } from "../components/KFSFinancialSplitCalculator";
@@ -416,6 +417,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
       <Toast toast={toast} />
+      <CommandPalette />
 
       {ghostTrapLocked && (
         <div className="fixed inset-0 bg-[#0B0104]/95 backdrop-blur-xl z-[99999] flex items-center justify-center p-4 animate-fade-in">

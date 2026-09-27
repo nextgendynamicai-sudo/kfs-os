@@ -28,6 +28,7 @@ import { QuickCashierPinModal } from "../QuickCashierPinModal";
 import { SystemBackupRestoreModal } from "../SystemBackupRestoreModal";
 import { SmartChangeCalculator } from "../SmartChangeCalculator";
 import { STARTER_VENEZUELAN_PRODUCTS } from "../../config/products";
+import { BlindCashCountModal } from "../BlindCashCountModal";
 import { SpotlightWalkthrough } from "../onboarding/SpotlightWalkthrough";
 import { MerchantTransactionHistoryWidget } from "../transactions/MerchantTransactionHistoryWidget";
 
@@ -39,7 +40,7 @@ import {
   Store, Star, ChevronLeft, Clock, UserCheck, Palette,
   Zap, BookOpen, Printer, Smartphone, Settings, DownloadCloud, Terminal, Truck,
   Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database, Trash2, Tag,
-  Calculator, Sparkles, CheckCircle2, ChevronDown, ChevronUp, ShoppingBag
+  Calculator, Sparkles, CheckCircle2, ChevronDown, ChevronUp, ShoppingBag, ShieldAlert, PlusCircle
 } from "lucide-react";
 import { useKFS } from "../../context/KFSContext";
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
@@ -124,7 +125,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [payValeModal, setPayValeModal] = useState<{ vale: any; amount: string } | null>(null);
-  const { setView, editProduct, createTicket, fundWallet, processMonthlyBilling, requestSubscriptionCancellation, createVale, payVale, processPayroll, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating, registerPosTerminal, deletePosTerminal, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, toggleBusinessOpen, updateBusinessConfig, createCoupon, deleteCoupon, toggleCouponActive, processPurchase, setCurrentUser } = useKFS() as any;
+  const { setView, editProduct, createTicket, fundWallet, processMonthlyBilling, requestSubscriptionCancellation, createVale, payVale, processPayroll, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating, registerPosTerminal, deletePosTerminal, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, toggleBusinessOpen, updateBusinessConfig, createCoupon, deleteCoupon, toggleCouponActive, processPurchase, processBlindCashCount, setCurrentUser } = useKFS() as any;
   const [deliveryRadiusKm, setDeliveryRadiusKm] = useState(clientInfo?.deliveryRadiusKm || 5);
 
   // Estados para Experiencia Intuitiva y Rápida
@@ -133,6 +134,68 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
   const [isImportingStarter, setIsImportingStarter] = useState(false);
   const [dismissedChecklist, setDismissedChecklist] = useState(false);
+  const [showBlindCountModal, setShowBlindCountModal] = useState(false);
+
+  // Progressive Disclosure: Modo Mostrador (Rápido) vs Modo Gerencial (Completo)
+  const [interfaceMode, setInterfaceMode] = useState<"counter" | "pro">(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("kfs_interface_mode");
+      if (saved === "counter" || saved === "pro") return saved;
+    }
+    return "counter";
+  });
+  const [searchProductCounter, setSearchProductCounter] = useState("");
+
+  const toggleInterfaceMode = (mode: "counter" | "pro") => {
+    setInterfaceMode(mode);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("kfs_interface_mode", mode);
+    }
+    showToast(
+      mode === "counter"
+        ? "🛍️ Modo Mostrador activado: Interfaz rápida para ventas."
+        : "📊 Modo Gerencial activado: Acceso completo a administración.",
+      "success"
+    );
+  };
+
+  // Escucha de comandos globales (Command Palette)
+  useEffect(() => {
+    const handleSetMode = (e: any) => {
+      if (e.detail === "counter" || e.detail === "pro") {
+        toggleInterfaceMode(e.detail);
+      }
+    };
+    const handleQuickSell = (e: any) => {
+      if (e.detail) {
+        setCheckoutProduct(e.detail);
+      }
+    };
+    const handleSwitchTab = (e: any) => {
+      if (e.detail) {
+        setActiveTab(e.detail);
+      }
+    };
+    const handleOpenAdd = () => setShowAddModal(true);
+    const handleOpenExpense = () => setShowExpenseModal(true);
+    const handleOpenBlindCount = () => setShowBlindCountModal(true);
+
+    window.addEventListener("kfs-set-interface-mode", handleSetMode);
+    window.addEventListener("kfs-quick-sell-product", handleQuickSell);
+    window.addEventListener("kfs-switch-tab", handleSwitchTab);
+    window.addEventListener("kfs-open-add-product", handleOpenAdd);
+    window.addEventListener("kfs-open-expense-modal", handleOpenExpense);
+    window.addEventListener("kfs-open-blind-count", handleOpenBlindCount);
+
+    return () => {
+      window.removeEventListener("kfs-set-interface-mode", handleSetMode);
+      window.removeEventListener("kfs-quick-sell-product", handleQuickSell);
+      window.removeEventListener("kfs-switch-tab", handleSwitchTab);
+      window.removeEventListener("kfs-open-add-product", handleOpenAdd);
+      window.removeEventListener("kfs-open-expense-modal", handleOpenExpense);
+      window.removeEventListener("kfs-open-blind-count", handleOpenBlindCount);
+    };
+  }, []);
 
   // First-time Password Change State
   const [firstTimeNewPass, setFirstTimeNewPass] = useState("");
@@ -337,6 +400,12 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
   };
 
   const myProducts = db.products?.filter((p: any) => p.clientId === currentUser?.id) || [];
+  const filteredCounterProducts = myProducts.filter((p: any) =>
+    !searchProductCounter.trim() ||
+    p.name.toLowerCase().includes(searchProductCounter.toLowerCase()) ||
+    (p.barcode && p.barcode.includes(searchProductCounter)) ||
+    (p.category && p.category.toLowerCase().includes(searchProductCounter.toLowerCase()))
+  );
   const myVendedores = db.vendedores?.filter((v: any) => v.clientId === currentUser?.id) || [];
   const myExpenses = db.expenses?.filter((e: any) => e.clientId === currentUser?.id) || [];
   const myOrders = db.orders?.filter((o: any) => o.clientId === currentUser?.id && o.status === 'pending') || [];
@@ -644,6 +713,36 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
             <h1 className="font-black text-xl tracking-tight text-white">{KFS_BRAND.productAcronym} Negocio</h1>
           </div>
           <div className="flex flex-wrap items-center gap-2">
+            {/* SELECTOR DE MODO: MOSTRADOR (RÁPIDO) vs GERENCIAL (PRO) */}
+            <div className="flex items-center bg-violet-950/80 p-1 rounded-2xl border border-violet-400/30 shadow-inner">
+              <button
+                type="button"
+                onClick={() => toggleInterfaceMode("counter")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer border-none ${
+                  interfaceMode === "counter"
+                    ? "bg-emerald-500 text-slate-950 shadow-md scale-[1.02]"
+                    : "text-violet-300 hover:text-white bg-transparent"
+                }`}
+                title="Modo Mostrador: Interfaz rápida y limpia para cobro en caja"
+              >
+                <Store size={13} />
+                <span>Mostrador</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => toggleInterfaceMode("pro")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer border-none ${
+                  interfaceMode === "pro"
+                    ? "bg-violet-600 text-white shadow-md scale-[1.02]"
+                    : "text-violet-300 hover:text-white bg-transparent"
+                }`}
+                title="Modo Gerencial: Acceso completo a analíticas, nómina y configuración avanzada"
+              >
+                <Sparkles size={13} />
+                <span>Gerencial</span>
+              </button>
+            </div>
+
             {/* BOTÓN PROTAGONISTA: COBRAR / CAJA POS */}
             <button 
               type="button"
@@ -734,6 +833,82 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
 
         {activeTab === "resumen" && (
           <div className="space-y-6">
+            {/* PANEL PRINCIPAL DE ATENCIÓN: MODO MOSTRADOR RÁPIDO */}
+            {interfaceMode === "counter" && (
+              <div className="bg-gradient-to-r from-violet-900 via-indigo-950 to-slate-950 text-white p-6 sm:p-8 rounded-[2.5rem] border border-violet-500/30 shadow-2xl space-y-5 animate-fade-in relative overflow-hidden">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                  <div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-500/20 px-3 py-1 rounded-full border border-emerald-400/30 inline-flex items-center gap-1.5 mb-2">
+                      ⚡ Modo Mostrador Activo
+                    </span>
+                    <h3 className="text-xl sm:text-2xl font-black text-white">
+                      Cobro Rápido en Caja
+                    </h3>
+                    <p className="text-xs text-slate-300">
+                      Escanea productos o haz clic para cobrar al instante.
+                    </p>
+                  </div>
+                  
+                  <div className="flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (setView) setView("axis_nitro_pos");
+                        else setActiveTab("inventario");
+                      }}
+                      className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-black rounded-xl shadow-lg shadow-emerald-500/30 transition-all active:scale-95 cursor-pointer border-none flex items-center gap-1.5"
+                    >
+                      <ShoppingCart size={15} />
+                      <span>Abrir Pantalla POS</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowBlindCountModal(true)}
+                      className="px-3.5 py-2.5 bg-white/10 hover:bg-white/20 text-white text-xs font-black rounded-xl border border-white/20 transition-all active:scale-95 cursor-pointer flex items-center gap-1.5"
+                    >
+                      <ShieldAlert size={15} className="text-amber-400" />
+                      <span>Cierre de Caja (Z)</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Buscador Rápido de Productos para Mostrador */}
+                <div className="pt-2 border-t border-white/10">
+                  <div className="relative">
+                    <Search size={18} className="absolute left-4 top-3 text-violet-400" />
+                    <input
+                      type="text"
+                      placeholder="Buscar por nombre o código de barras para cobrar de inmediato..."
+                      value={searchProductCounter}
+                      onChange={(e) => setSearchProductCounter(e.target.value)}
+                      className="w-full bg-white/10 border border-white/20 rounded-2xl pl-11 pr-4 py-2.5 text-xs sm:text-sm font-semibold text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400"
+                    />
+                  </div>
+
+                  {/* Grid de productos rápidos para cobrar con 1 clic */}
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 mt-3 max-h-60 overflow-y-auto pr-1">
+                    {filteredCounterProducts.slice(0, 12).map((p: any) => (
+                      <div
+                        key={p.id}
+                        onClick={() => setCheckoutProduct(p)}
+                        className="p-3 bg-white/5 hover:bg-white/15 border border-white/10 hover:border-emerald-400/50 rounded-2xl cursor-pointer transition-all flex flex-col justify-between group active:scale-95"
+                      >
+                        <div>
+                          <span className="text-[10px] text-slate-400 font-mono block truncate">{p.category || "General"}</span>
+                          <h4 className="text-xs font-bold text-white truncate mt-0.5 group-hover:text-emerald-300">{p.name}</h4>
+                        </div>
+                        <div className="flex justify-between items-end mt-2 pt-1 border-t border-white/5">
+                          <span className="text-xs font-black text-emerald-400 font-mono">{formatUSD(p.priceUSD || 0)}</span>
+                          <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded ${p.stock > 0 ? "text-slate-300 bg-white/10" : "text-rose-400 bg-rose-950/50"}`}>
+                            Stock: {p.stock ?? 0}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
             {/* ASISTENTE INTERACTIVO DE PUESTA EN MARCHA (CHECKLIST ESTILO SHOPIFY) */}
             {!dismissedChecklist && setupPercent < 100 && (
               <div className="bg-gradient-to-br from-violet-950 via-slate-900 to-indigo-950 border border-violet-500/30 rounded-[2.5rem] p-6 md:p-8 text-white shadow-2xl relative overflow-hidden animate-fade-in">
@@ -2458,7 +2633,49 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                     </div>
                   );
                 })}
-                {myProducts.length === 0 && <div className="col-span-2 md:col-span-4 text-center py-10 bg-white rounded-2xl text-slate-400 font-bold">Catálogo vacío.</div>}
+                {myProducts.length === 0 && (
+                  <div className="col-span-1 min-[400px]:col-span-2 md:col-span-4 bg-white rounded-3xl border border-violet-100 p-8 sm:p-12 text-center space-y-4 shadow-sm max-w-lg mx-auto my-4 animate-fade-in">
+                    <div className="w-16 h-16 bg-violet-100 rounded-2xl flex items-center justify-center text-violet-600 mx-auto">
+                      <Package size={32} />
+                    </div>
+                    <div className="space-y-1">
+                      <h3 className="text-lg font-black text-violet-950">Tu inventario aún está listo para comenzar</h3>
+                      <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                        Carga tu primer producto con su precio de venta o importa un catálogo de demostración con 1 clic para empezar a vender ya.
+                      </p>
+                    </div>
+                    <div className="flex flex-col sm:flex-row gap-2 justify-center pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowAddModal(true)}
+                        className="px-5 py-2.5 bg-violet-600 hover:bg-violet-700 text-white text-xs font-black rounded-xl shadow-md transition-all active:scale-95 cursor-pointer border-none flex items-center justify-center gap-1.5"
+                      >
+                        <PlusCircle size={16} />
+                        <span>+ Agregar Primer Producto</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsImportingStarter(true);
+                          const sampleProducts = [
+                            { id: `prod_sample_${Date.now()}_1`, clientId: clientInfo?.id || currentUser?.id, name: "Café Espresso Premium", priceUSD: 1.50, costUSD: 0.60, stock: 50, category: "Bebidas", isFeatured: true },
+                            { id: `prod_sample_${Date.now()}_2`, clientId: clientInfo?.id || currentUser?.id, name: "Croissant de Mantequilla", priceUSD: 2.00, costUSD: 0.80, stock: 30, category: "Alimentos", isFeatured: true },
+                            { id: `prod_sample_${Date.now()}_3`, clientId: clientInfo?.id || currentUser?.id, name: "Agua Mineral 500ml", priceUSD: 1.00, costUSD: 0.35, stock: 100, category: "Bebidas", isFeatured: false }
+                          ];
+                          setDb((prev: any) => ({
+                            ...prev,
+                            products: [...(prev.products || []), ...sampleProducts]
+                          }));
+                          setIsImportingStarter(false);
+                          showToast("3 productos de ejemplo importados a tu inventario", "success");
+                        }}
+                        className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition-all active:scale-95 cursor-pointer border border-slate-200"
+                      >
+                        📥 Cargar Catálogo Base
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -2815,7 +3032,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
         )}
 
         {/* FIXED BOTTOM NAVIGATION */}
-        <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-xl border-t border-violet-100 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.08)] pb-safe">
+        <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-xl border-t border-violet-100 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.08)] safe-pb">
           <div className="max-w-5xl mx-auto px-4 py-2 sm:py-3 flex justify-around gap-1 items-center relative">
             <button
               onClick={() => setActiveTab("resumen")}
@@ -3305,6 +3522,23 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
         />
       )}
 
+      {/* Modal de Cierre de Caja del Día (Reporte Z) */}
+      <BlindCashCountModal
+        isOpen={showBlindCountModal}
+        onClose={() => setShowBlindCountModal(false)}
+        bcvRate={rates?.USD || 36.45}
+        cashierName={currentUser?.name || "Administrador / Caja"}
+        terminalName="Caja Mostrador Principal"
+        onConfirm={(auditData) => {
+          processBlindCashCount({
+            vendedorId: currentUser?.id,
+            clientId: clientInfo?.id || currentUser?.id,
+            terminalName: "Caja Mostrador Principal",
+            ...auditData
+          });
+          showToast("Cierre de caja (Z) registrado con éxito", "success");
+        }}
+      />
     </div>
   );
 }

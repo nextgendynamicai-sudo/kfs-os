@@ -75,6 +75,27 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
 
   const [isProcessingPos, setIsProcessingPos] = useState(false);
   const [posStep, setPosStep] = useState(0);
+  const [receivedCashUSD, setReceivedCashUSD] = useState<string>("");
+
+  const handlePasteClipboard = async () => {
+    try {
+      if (typeof navigator !== "undefined" && navigator.clipboard) {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          const match = text.match(/\b\d{4,12}\b/);
+          const refToSet = match ? match[0] : text.trim().slice(0, 20);
+          setPaymentReference(refToSet);
+          showToast(`Referencia pegada: ${refToSet}`, "success");
+        } else {
+          showToast("El portapapeles está vacío.", "warning");
+        }
+      } else {
+        showToast("Pegado automático no soportado. Escribe la referencia.", "info");
+      }
+    } catch (e) {
+      showToast("Pega la referencia manualmente en el campo.", "info");
+    }
+  };
 
   // Real-time validations
   const validatePhone = (phone: string, prefix: string) => {
@@ -330,20 +351,34 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
 
   return (
     <ModalPortal>
-      <div className="fixed inset-0 bg-violet-950/60 backdrop-blur-xl z-[99999] flex items-center justify-center p-4 overflow-hidden">
+      <div className="fixed inset-0 bg-violet-950/70 backdrop-blur-xl z-[99999] flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-hidden animate-in fade-in duration-200 font-sans">
         <motion.div 
           initial={{ y: 50, opacity: 0, scale: 0.95 }}
           animate={{ y: 0, opacity: 1, scale: 1 }}
           transition={{ type: "spring", stiffness: 300, damping: 25 }}
-          className="bg-white/95 backdrop-blur-2xl rounded-[2rem] w-full max-w-md p-6 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-white/20 max-h-[90vh] overflow-y-auto"
+          className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl rounded-t-[2.5rem] sm:rounded-[2rem] w-full max-w-lg p-6 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.5)] border border-slate-200 dark:border-white/10 max-h-[92vh] overflow-y-auto"
         >
-          <h3 className="text-2xl font-black mb-2 text-[#0A1128]">{isOnline ? "Comprar Online" : "Caja Registradora"}</h3>
-          <p className="text-sm text-gray-500 mb-6">{product.name}</p>
+          {/* Mobile drag handle for native bottom sheet feel */}
+          <div className="w-12 h-1.5 bg-slate-300 dark:bg-white/20 rounded-full mx-auto mb-4 sm:hidden" />
+
+          <div className="flex justify-between items-start mb-2">
+            <div>
+              <h3 className="text-2xl font-black text-[#0A1128] dark:text-white">{isOnline ? "Comprar Online" : "Caja Registradora"}</h3>
+              <p className="text-sm text-gray-500 dark:text-slate-400">{product.name}</p>
+            </div>
+            <button
+              type="button"
+              onClick={onCancel}
+              className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-full bg-slate-100 dark:bg-white/10 cursor-pointer border-none"
+            >
+              <X size={18} />
+            </button>
+          </div>
           
           <div className="space-y-4">
             <div>
               <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 block">Método de Pago</label>
-              <select value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-[#C5A184] cursor-pointer">
+              <select value={paymentMethod} onChange={e => setPaymentMethod(e.target.value)} className="w-full bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-white/10 rounded-xl px-4 py-3 font-bold text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#C5A184] cursor-pointer">
                 <option value="cash_bs">Pago Móvil / Transferencia (Bs)</option>
                 <option value="zinli">Zinli</option>
                 <option value="wally_tech">Wally Tech</option>
@@ -362,6 +397,128 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
                 )}
               </select>
             </div>
+
+            {/* SECCIÓN EFECTIVO: BILLETES RÁPIDOS Y CÁLCULO DE VUELTO INSTANTÁNEO */}
+            {(paymentMethod === "cash_usd" || paymentMethod === "cash_eur") && (
+              <div className="bg-emerald-50/80 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/40 rounded-2xl p-4 space-y-3 animate-fade-in">
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-emerald-800 dark:text-emerald-300">
+                    💵 Calculadora de Efectivo y Vuelto
+                  </span>
+                  <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400 font-mono">
+                    Total: ${total.toFixed(2)} USD
+                  </span>
+                </div>
+
+                {/* Botones de billetes rápidos */}
+                <div className="flex flex-wrap gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setReceivedCashUSD(total.toFixed(2))}
+                    className="px-2.5 py-1 rounded-lg text-xs font-black bg-emerald-600 hover:bg-emerald-700 text-white transition-all cursor-pointer border-none shadow-xs"
+                  >
+                    Exacto (${total.toFixed(2)})
+                  </button>
+                  {[5, 10, 20, 50, 100].map((bill) => (
+                    <button
+                      key={bill}
+                      type="button"
+                      onClick={() => setReceivedCashUSD(bill.toString())}
+                      className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer border shadow-xs ${
+                        parseFloat(receivedCashUSD) === bill
+                          ? "bg-emerald-800 text-white border-emerald-900"
+                          : bill >= total
+                          ? "bg-white dark:bg-slate-800 text-emerald-900 dark:text-emerald-200 border-emerald-300 dark:border-emerald-700 hover:bg-emerald-100"
+                          : "bg-emerald-100/50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900"
+                      }`}
+                    >
+                      ${bill}
+                    </button>
+                  ))}
+                </div>
+
+                {/* Input de monto recibido */}
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <span className="absolute left-3 top-2.5 text-xs font-bold text-emerald-700 dark:text-emerald-400">$</span>
+                    <input
+                      type="number"
+                      step="0.01"
+                      placeholder="Monto entregado por cliente"
+                      value={receivedCashUSD}
+                      onChange={(e) => setReceivedCashUSD(e.target.value)}
+                      className="w-full bg-white dark:bg-slate-800 border border-emerald-300 dark:border-emerald-700 rounded-xl pl-7 pr-3 py-2 text-xs font-bold text-emerald-950 dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                    />
+                  </div>
+                  {receivedCashUSD && (
+                    <button
+                      type="button"
+                      onClick={() => setReceivedCashUSD("")}
+                      className="p-2 text-emerald-600 hover:text-emerald-800 dark:text-emerald-400 text-xs font-bold cursor-pointer border-none bg-transparent"
+                    >
+                      Limpiar
+                    </button>
+                  )}
+                </div>
+
+                {/* Vuelto / Cambio resultante */}
+                {receivedCashUSD && parseFloat(receivedCashUSD) >= total && (
+                  <div className="bg-emerald-100/90 dark:bg-emerald-900/40 border border-emerald-300 dark:border-emerald-700 p-3 rounded-xl flex items-center justify-between">
+                    <div>
+                      <span className="text-[10px] uppercase font-black text-emerald-800 dark:text-emerald-300 block">Vuelto a Entregar</span>
+                      <span className="text-xl font-black text-emerald-950 dark:text-emerald-100 font-mono">
+                        ${(parseFloat(receivedCashUSD) - total).toFixed(2)} USD
+                      </span>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-[10px] text-emerald-700 dark:text-emerald-400 block font-medium">Equivalente BCV:</span>
+                      <span className="text-sm font-black text-emerald-800 dark:text-emerald-200 font-mono">
+                        Bs. {((parseFloat(receivedCashUSD) - total) * (rates?.USD || 36.45)).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {receivedCashUSD && parseFloat(receivedCashUSD) < total && (
+                  <div className="bg-amber-100 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-800 p-2.5 rounded-xl text-xs font-bold text-amber-900 dark:text-amber-200 flex justify-between items-center">
+                    <span>Faltan:</span>
+                    <span className="font-mono font-black">${(total - parseFloat(receivedCashUSD)).toFixed(2)} USD</span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* SECCIÓN PAGO MÓVIL EN MOSTRADOR: ATAJO RÁPIDO PARA PEGAR REFERENCIA */}
+            {paymentMethod === "cash_bs" && !isOnline && (
+              <div className="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-white/10 rounded-2xl p-4 space-y-3 animate-fade-in">
+                <div className="flex justify-between items-center">
+                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                    📱 Cobro Pago Móvil (Tasa Oficial BCV)
+                  </span>
+                  <span className="text-sm font-black text-violet-900 dark:text-violet-300 font-mono">
+                    Bs. {totalBs.toFixed(2)}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    placeholder="Referencia bancaria (4 a 12 dígitos)..."
+                    value={paymentReference}
+                    onChange={(e) => setPaymentReference(e.target.value)}
+                    className="flex-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-white/15 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-400 font-mono"
+                  />
+                  <button
+                    type="button"
+                    onClick={handlePasteClipboard}
+                    className="px-3 py-2 bg-violet-600 hover:bg-violet-700 text-white rounded-xl text-xs font-black transition-all cursor-pointer border-none shadow-xs flex items-center gap-1 active:scale-95 shrink-0"
+                    title="Pegar número de referencia desde el portapapeles"
+                  >
+                    📋 Pegar Ref
+                  </button>
+                </div>
+              </div>
+            )}
 
             {paymentMethod === "split_currency" && (
               <div className="bg-red-50/50 p-4 rounded-xl border border-red-100 space-y-3">
