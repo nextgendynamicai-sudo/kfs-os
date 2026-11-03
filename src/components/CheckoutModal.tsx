@@ -245,15 +245,24 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
       return;
     }
 
-    // Unified loading transition for standard checkouts
+    // Snappy loading transition optimized for instant in-person mobile POS
+    if (!isOnline) {
+      setIsProcessingPos(true);
+      setPosStep(4);
+      setTimeout(() => {
+        onConfirm(paymentMethod, applyIva, paymentReference, customerPhone, customerName, customerRif, paymentScreenshot, kPointsToBurn, appliedCoupon?.code || "");
+      }, 350);
+      return;
+    }
+
     setIsProcessingPos(true);
     setPosStep(1);
     setTimeout(() => {
-      setPosStep(4); // Trigger success checkmark
+      setPosStep(4);
       setTimeout(() => {
         onConfirm(paymentMethod, applyIva, paymentReference, customerPhone, customerName, customerRif, paymentScreenshot, kPointsToBurn, appliedCoupon?.code || "");
-      }, 2000);
-    }, 1500);
+      }, 600);
+    }, 500);
   };
 
   if (isProcessingPos) {
@@ -633,8 +642,8 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
             )}
 
             <div>
-              <label className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2 block">Nombre del Cliente</label>
-              <input type="text" placeholder="Ej: Juan Pérez" value={customerName} onChange={e => setCustomerName(e.target.value)} className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-bold text-gray-900 focus:outline-none focus:ring-2 focus:ring-violet-400" />
+              <label className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-1.5 block">Nombre del Cliente</label>
+              <input type="text" placeholder="Ej: Juan Pérez" value={customerName} onChange={e => setCustomerName(e.target.value)} className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-2.5 sm:py-3 font-bold text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-400 text-xs sm:text-sm" />
             </div>
 
             <div>
@@ -680,7 +689,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
             
             <label className="flex items-center gap-3 p-4 border border-gray-200 rounded-xl cursor-pointer hover:bg-gray-50 transition-colors">
               <input type="checkbox" checked={applyIva} onChange={e => setApplyIva(e.target.checked)} className="w-5 h-5 text-violet-600 rounded focus:ring-violet-500 accent-violet-600" />
-              <span className="font-bold text-[#0A1128]">Generar Factura Fiscal (IVA 16%)</span>
+              <span className="font-bold text-slate-900 dark:text-white">Generar Factura Fiscal (IVA 16%)</span>
             </label>
 
             {applyIva && (
@@ -704,7 +713,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
             )}
 
             {/* Campo de Código de Cupón */}
-            <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-2">
+            <div className="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-white/10 space-y-2">
               <label className="text-xs font-bold text-gray-500 uppercase tracking-widest block">Código de Cupón de Descuento</label>
               <div className="flex gap-2">
                 <input 
@@ -718,7 +727,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
                       setCouponError("");
                     }
                   }} 
-                  className="flex-1 bg-white border border-gray-200 rounded-xl px-3 py-2 text-xs font-bold text-gray-900 uppercase focus:outline-none placeholder:text-slate-400"
+                  className="flex-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-slate-900 dark:text-white uppercase focus:outline-none placeholder:text-slate-400"
                 />
                 <button 
                   type="button" 
@@ -739,22 +748,36 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
               ) : null}
             </div>
 
-            <div className="bg-gray-50 p-4 rounded-xl border border-gray-100 space-y-2">
+            <div className="bg-slate-50 dark:bg-slate-800/60 p-4 rounded-xl border border-slate-200 dark:border-white/10 space-y-2">
               <div className="flex justify-between text-sm font-bold text-gray-600"><span>Subtotal:</span> <span>{formatUSD(price)}</span></div>
               {couponDiscountUSD > 0 && <div className="flex justify-between text-sm font-bold text-emerald-600"><span>Descuento Cupón:</span> <span>-{formatUSD(couponDiscountUSD)}</span></div>}
               {applyIva && <div className="flex justify-between text-sm font-bold text-gray-600"><span>IVA (16%):</span> <span className="text-red-500">+{formatUSD(iva)}</span></div>}
               {isForeign && <div className="flex justify-between text-sm font-bold text-gray-600"><span>IGTF (3%):</span> <span className="text-red-500">+{formatUSD(igtf)}</span></div>}
               {kPointsToBurn > 0 && <div className="flex justify-between text-sm font-bold text-purple-600"><span>Descuento {KFS_BRAND.economy.currency}:</span> <span>-{formatUSD(discountUSD)}</span></div>}
-              <div className="flex justify-between text-lg font-black text-[#0A1128] pt-2 border-t border-gray-200 mt-2"><span>Total a Pagar:</span> <span>{formatUSD(total)}</span></div>
+              <div className="flex justify-between items-center text-lg font-black text-slate-900 dark:text-white pt-2 border-t border-slate-200 dark:border-white/10 mt-2">
+                <span>Total a Pagar:</span> 
+                <div className="text-right">
+                  <span className="block">{formatUSD(total)}</span>
+                  <span className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-bold block">Bs. {totalBs.toFixed(2)}</span>
+                </div>
+              </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 pt-4">
-              <button type="button" onClick={onCancel} className="w-full sm:w-1/3 py-3 rounded-xl bg-gray-100 font-bold text-gray-600 cursor-pointer border-none">Cancelar</button>
+            <div className="sticky bottom-0 -mx-6 -mb-6 sm:-mx-8 sm:-mb-8 p-3.5 sm:p-5 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-white/10 flex flex-col sm:flex-row gap-2.5 z-30 shadow-[0_-10px_25px_rgba(0,0,0,0.1)]">
+              <button 
+                type="button" 
+                onClick={onCancel} 
+                className="w-full sm:w-1/3 py-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold text-slate-700 dark:text-slate-300 active:scale-95 transition-all cursor-pointer border-none text-xs"
+              >
+                Cancelar
+              </button>
               <button 
                 disabled={(paymentMethod === 'split_currency' && ((parseFloat(splitAmount1) || 0) <= 0 || (parseFloat(splitAmount1) || 0) > total)) || (applyIva && !validateRif(customerRif))}
                 onClick={handleConfirm} 
-                className="w-full sm:w-2/3 py-3 rounded-xl font-black text-white bg-violet-600 hover:bg-violet-700 shadow-lg shadow-violet-600/30 hover:shadow-xl hover:shadow-violet-600/40 hover:scale-[1.02] active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:bg-gray-400 disabled:cursor-not-allowed border-none">
-                {isOnline ? "Enviar Pago a Revisión" : applyIva ? "Emitir Factura Fiscal" : "Cobrar Cliente"}
+                className="w-full sm:w-2/3 py-3.5 rounded-xl font-black text-slate-950 bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-300 hover:to-teal-300 shadow-lg shadow-emerald-500/25 active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:bg-gray-400 disabled:cursor-not-allowed border border-emerald-300 flex items-center justify-center gap-2 text-xs sm:text-sm tracking-wide"
+              >
+                <span>{isOnline ? "Enviar Pago a Revisión" : applyIva ? "Emitir Factura Fiscal" : "Cobrar " + formatUSD(total)}</span>
+                {!isOnline && <span className="text-[11px] font-mono font-black px-1.5 py-0.5 rounded bg-emerald-600/20 text-emerald-950 dark:text-emerald-900">Bs. {totalBs.toFixed(2)}</span>}
               </button>
             </div>
           </div>

@@ -40,7 +40,8 @@ import {
   Store, Star, ChevronLeft, Clock, UserCheck, Palette,
   Zap, BookOpen, Printer, Smartphone, Settings, DownloadCloud, Terminal, Truck,
   Briefcase, FileText, Award, Check, ArrowUpRight, WifiOff, Gift, MapPin, UserPlus, LogIn, Eye, Database, Trash2, Tag,
-  Calculator, Sparkles, CheckCircle2, ChevronDown, ChevronUp, ShoppingBag, ShieldAlert, PlusCircle
+  Calculator, Sparkles, CheckCircle2, ChevronDown, ChevronUp, ShoppingBag, ShieldAlert, PlusCircle,
+  KeyRound
 } from "lucide-react";
 import { useKFS } from "../../context/KFSContext";
 import { AreaChart, Area, XAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
@@ -131,6 +132,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
   // Estados para Experiencia Intuitiva y Rápida
   const [showChangeCalculator, setShowChangeCalculator] = useState(false);
   const [checkoutProduct, setCheckoutProduct] = useState<any | null>(null);
+  const [receiptTx, setReceiptTx] = useState<any | null>(null);
   const [showAdvancedSettings, setShowAdvancedSettings] = useState(false);
   const [isImportingStarter, setIsImportingStarter] = useState(false);
   const [dismissedChecklist, setDismissedChecklist] = useState(false);
@@ -706,15 +708,61 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
       )}
 
       {/* Neumorphic / Purple Header */}
-      <div className="bg-gradient-to-br from-violet-900 to-violet-950 rounded-b-[3rem] shadow-xl shadow-violet-900/20 pt-6 pb-12 px-6 text-white relative z-10 border-b border-violet-800">
-        <div className="flex justify-between items-center mb-6">
-          <div className="flex items-center gap-2">
-            <span className="bg-white/20 p-2 rounded-xl text-white"><Store size={20} /></span>
-            <h1 className="font-black text-xl tracking-tight text-white">{KFS_BRAND.productAcronym} Negocio</h1>
+      <div className="bg-gradient-to-br from-violet-900 via-violet-950 to-slate-950 rounded-b-[2.5rem] sm:rounded-b-[3rem] shadow-xl shadow-violet-900/20 pt-5 pb-10 sm:pb-12 px-4 sm:px-6 text-white relative z-10 border-b border-violet-800">
+        
+        {/* Top Header Bar */}
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-3 mb-4">
+          <div className="flex items-center justify-between w-full md:w-auto">
+            <div className="flex items-center gap-2">
+              <span className="bg-white/20 p-2 rounded-xl text-white shadow-inner"><Store size={20} /></span>
+              <h1 className="font-black text-lg sm:text-xl tracking-tight text-white">{KFS_BRAND.productAcronym} Negocio</h1>
+            </div>
+
+            {/* Mobile Top Controls: Mode Switcher & Logout */}
+            <div className="flex items-center gap-1.5 md:hidden">
+              <div className="flex items-center bg-violet-950/80 p-0.5 rounded-xl border border-violet-400/30 shadow-inner">
+                <button
+                  type="button"
+                  onClick={() => toggleInterfaceMode("counter")}
+                  className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-black transition-all cursor-pointer border-none ${
+                    interfaceMode === "counter"
+                      ? "bg-emerald-500 text-slate-950 shadow-md"
+                      : "text-violet-300 hover:text-white bg-transparent"
+                  }`}
+                  title="Modo Mostrador: Interfaz rápida y limpia para cobro en caja"
+                >
+                  <Store size={12} />
+                  <span>Mostrador</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleInterfaceMode("pro")}
+                  className={`flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-black transition-all cursor-pointer border-none ${
+                    interfaceMode === "pro"
+                      ? "bg-violet-600 text-white shadow-md"
+                      : "text-violet-300 hover:text-white bg-transparent"
+                  }`}
+                  title="Modo Gerencial"
+                >
+                  <Sparkles size={12} />
+                  <span>Gerencial</span>
+                </button>
+              </div>
+              <button 
+                type="button" 
+                onClick={logout} 
+                className="p-1.5 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white border-none"
+                title="Cerrar sesión"
+              >
+                <LogOut size={15} />
+              </button>
+            </div>
           </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {/* SELECTOR DE MODO: MOSTRADOR (RÁPIDO) vs GERENCIAL (PRO) */}
-            <div className="flex items-center bg-violet-950/80 p-1 rounded-2xl border border-violet-400/30 shadow-inner">
+
+          {/* Action Chips: Horizontal scrollable ribbon on mobile, flex-wrap on desktop */}
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 w-full md:w-auto md:flex-wrap">
+            {/* Desktop Mode Switcher */}
+            <div className="hidden md:flex items-center bg-violet-950/80 p-1 rounded-2xl border border-violet-400/30 shadow-inner shrink-0">
               <button
                 type="button"
                 onClick={() => toggleInterfaceMode("counter")}
@@ -736,7 +784,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                     ? "bg-violet-600 text-white shadow-md scale-[1.02]"
                     : "text-violet-300 hover:text-white bg-transparent"
                 }`}
-                title="Modo Gerencial: Acceso completo a analíticas, nómina y configuración avanzada"
+                title="Modo Gerencial: Acceso completo a analíticas y nómina"
               >
                 <Sparkles size={13} />
                 <span>Gerencial</span>
@@ -750,80 +798,102 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                 if (setView) setView("axis_nitro_pos");
                 else setActiveTab("inventario");
               }} 
-              className="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer border border-emerald-300 flex items-center gap-1.5 shadow-lg shadow-emerald-500/30 active:scale-95 animate-pulse"
+              className="px-3.5 py-1.5 md:px-4 md:py-2 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-black rounded-xl text-xs uppercase tracking-wider transition-all cursor-pointer border border-emerald-300 flex items-center gap-1.5 shadow-lg shadow-emerald-500/30 active:scale-95 shrink-0"
               title="Ir inmediatamente a la Caja Registradora / POS"
             >
-              <ShoppingCart size={15} className="fill-slate-950" />
-              <span>Cobrar / Caja POS</span>
+              <ShoppingCart size={14} className="fill-slate-950" />
+              <span>Caja POS</span>
             </button>
 
             {/* BOTÓN CALCULADORA RÁPIDA DE VUELTO & TASA BCV */}
             <button 
               type="button"
               onClick={() => setShowChangeCalculator(true)} 
-              className="px-3.5 py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/40 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95"
+              className="px-3 py-1.5 md:px-3.5 md:py-2 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-400/40 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-sm active:scale-95 shrink-0"
               title="Abrir calculadora rápida de vuelto en Dólares y Bolívares con tasa BCV"
             >
-              <Calculator size={15} className="text-amber-400" />
+              <Calculator size={14} className="text-amber-400" />
               <span>Vueltos & BCV</span>
             </button>
 
-            <button 
-              type="button"
-              onClick={() => setShowCounterQRModal(true)} 
-              className="px-3 py-1.5 bg-violet-600/70 hover:bg-violet-600 rounded-xl text-white text-xs font-bold transition-all cursor-pointer border border-violet-400/40 flex items-center gap-1.5 shadow-sm active:scale-95"
-              title="Generar e imprimir exhibidor de mostrador con QR oficial"
-            >
-              🖨️ Standee QR
-            </button>
-
+            {/* BOTÓN CAJERO PIN */}
             <button 
               type="button"
               onClick={() => setShowPinModal(true)} 
-              className="px-3 py-1.5 bg-white/15 hover:bg-white/25 rounded-xl text-white text-xs font-bold transition-all cursor-pointer border border-white/20 flex items-center gap-1.5 shadow-sm active:scale-95"
+              className="px-3 py-1.5 bg-white/15 hover:bg-white/25 rounded-xl text-white text-xs font-bold transition-all cursor-pointer border border-white/20 flex items-center gap-1.5 shadow-sm active:scale-95 shrink-0"
               title="Cambiar cajero con PIN de 4 dígitos"
             >
-              🔑 {activeCashier ? activeCashier.name : "Cajero PIN"}
+              <KeyRound size={13} className="text-violet-300" />
+              <span>{activeCashier ? activeCashier.name.split(" ")[0] : "Cajero PIN"}</span>
             </button>
 
+            {/* BOTÓN STANDEE QR */}
+            <button 
+              type="button"
+              onClick={() => setShowCounterQRModal(true)} 
+              className="px-3 py-1.5 bg-violet-600/70 hover:bg-violet-600 rounded-xl text-white text-xs font-bold transition-all cursor-pointer border border-violet-400/40 flex items-center gap-1.5 shadow-sm active:scale-95 shrink-0"
+              title="Generar e imprimir exhibidor de mostrador con QR oficial"
+            >
+              <span>🖨️ Standee QR</span>
+            </button>
+
+            {/* BOTÓN RESPALDO OFFLINE */}
             <button 
               type="button"
               onClick={() => setShowBackupModal(true)} 
-              className="px-3 py-1.5 bg-emerald-600/50 hover:bg-emerald-600 rounded-xl text-white text-xs font-bold transition-all cursor-pointer border border-emerald-400/30 flex items-center gap-1.5 shadow-sm active:scale-95"
+              className="px-3 py-1.5 bg-emerald-600/50 hover:bg-emerald-600 rounded-xl text-white text-xs font-bold transition-all cursor-pointer border border-emerald-400/30 flex items-center gap-1.5 shadow-sm active:scale-95 shrink-0"
               title="Bóveda de respaldo JSON offline seguro"
             >
-              📦 Respaldo
+              <span>📦 Respaldo</span>
             </button>
 
-            <button 
-              type="button"
-              onClick={() => setShowOnboardingTour(true)} 
-              className="px-3 py-1.5 bg-white/15 hover:bg-white/25 rounded-xl text-white text-xs font-bold transition-all cursor-pointer border border-white/20 flex items-center gap-1.5 shadow-sm active:scale-95"
-            >
-              🧭 Guía de Inicio
-            </button>
-
+            {/* BOTÓN TOUR 3D */}
             <button 
               type="button"
               onClick={() => setShowSpotlightTour(true)} 
-              className="px-3 py-1.5 bg-gradient-to-r from-amber-500/20 to-orange-500/20 hover:bg-amber-500/30 rounded-xl text-amber-300 text-xs font-bold transition-all cursor-pointer border border-amber-400/40 flex items-center gap-1.5 shadow-sm active:scale-95"
+              className="px-3 py-1.5 bg-gradient-to-r from-amber-500/20 to-orange-500/20 hover:bg-amber-500/30 rounded-xl text-amber-300 text-xs font-bold transition-all cursor-pointer border border-amber-400/40 flex items-center gap-1.5 shadow-sm active:scale-95 shrink-0"
               title="Tour guiado 3D por las funciones clave del sistema"
             >
-              ✨ Tour 3D
+              <Sparkles size={13} className="text-amber-400" />
+              <span>Tour 3D</span>
             </button>
-            <button onClick={logout} className="p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white">
+
+            {/* BOTÓN GUÍA */}
+            <button 
+              type="button"
+              onClick={() => setShowOnboardingTour(true)} 
+              className="px-3 py-1.5 bg-white/15 hover:bg-white/25 rounded-xl text-white text-xs font-bold transition-all cursor-pointer border border-white/20 flex items-center gap-1.5 shadow-sm active:scale-95 shrink-0"
+              title="Guía de Inicio"
+            >
+              <span>🧭 Guía</span>
+            </button>
+
+            {/* Desktop Logout */}
+            <button 
+              type="button"
+              onClick={logout} 
+              className="hidden md:flex p-2 bg-white/10 rounded-xl hover:bg-red-500 transition-colors cursor-pointer text-white border-none shrink-0"
+              title="Cerrar sesión"
+            >
               <LogOut size={16} />
             </button>
           </div>
         </div>
 
-        <div className="flex items-center gap-4">
-          <div className="w-16 h-16 bg-violet-600 rounded-full flex items-center justify-center text-white font-black text-2xl flex-shrink-0 shadow-lg border-4 border-violet-800 relative z-20">
+        {/* IDENTITY CARD */}
+        <div className="flex items-center gap-3.5 sm:gap-4">
+          <div className="w-14 h-14 sm:w-16 sm:h-16 bg-violet-600 rounded-full flex items-center justify-center text-white font-black text-xl sm:text-2xl flex-shrink-0 shadow-lg border-4 border-violet-800 relative z-20">
             <ProfileAvatarEditor currentUser={currentUser} />
           </div>
-          <div>
-            <h2 className="text-xl md:text-2xl font-black tracking-tight truncate text-white">{currentUser.company}</h2>
-            <p className="text-violet-300 font-mono text-xs mt-1 truncate max-w-[200px] bg-violet-950/50 inline-block px-2 py-0.5 rounded-md border border-violet-800">{currentUser.email}</p>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h2 className="text-lg sm:text-2xl font-black tracking-tight text-white leading-tight line-clamp-2">{currentUser.company}</h2>
+              <span className="shrink-0 text-[10px] font-black px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                100% Offline
+              </span>
+            </div>
+            <p className="text-violet-300 font-mono text-xs mt-1 truncate max-w-full sm:max-w-md bg-violet-950/50 inline-block px-2 py-0.5 rounded-md border border-violet-800">{currentUser.email}</p>
           </div>
         </div>
       </div>
@@ -878,7 +948,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                     <Search size={18} className="absolute left-4 top-3 text-violet-400" />
                     <input
                       type="text"
-                      placeholder="Buscar por nombre o código de barras para cobrar de inmediato..."
+                      placeholder="Buscar producto o código de barras..."
                       value={searchProductCounter}
                       onChange={(e) => setSearchProductCounter(e.target.value)}
                       className="w-full bg-white/10 border border-white/20 rounded-2xl pl-11 pr-4 py-2.5 text-xs sm:text-sm font-semibold text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400"
@@ -3060,7 +3130,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
 
             {/* BOTÓN ELEVADO CENTRAL: CAJA POS DIRECTA */}
             <button
-              onClick={() => setView("nitro_pos")}
+              onClick={() => setView("axis_nitro_pos")}
               className="relative -top-5 flex flex-col items-center justify-center cursor-pointer group z-50"
               title="Abrir Caja POS para Cobrar"
             >
@@ -3539,6 +3609,19 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
           showToast("Cierre de caja (Z) registrado con éxito", "success");
         }}
       />
+
+      {/* Modal de Cobro Directo de Producto */}
+      {checkoutProduct && (
+        <CheckoutModal
+          product={checkoutProduct}
+          onConfirm={handleConfirmCheckout}
+          onCancel={() => setCheckoutProduct(null)}
+          formatUSD={formatUSD}
+          isOnline={false}
+          storeOwner={currentUser}
+          currentUser={currentUser}
+        />
+      )}
     </div>
   );
 }

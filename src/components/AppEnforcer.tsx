@@ -61,14 +61,21 @@ export function AppEnforcer({ children, currentUser: propsUser, updatePwaStatus 
 
   const requestNotificationPermission = async () => {
     if (!("Notification" in window)) {
-      alert("Tu navegador no soporta notificaciones.");
+      if (kfsContext?.showToast) {
+        kfsContext.showToast("Tu navegador no soporta notificaciones nativas.", "warning");
+      }
       return;
     }
     const permission = await Notification.requestPermission();
     if (permission === "granted") {
       setHasPermissions(true);
+      if (kfsContext?.showToast) {
+        kfsContext.showToast("¡Notificaciones activadas con éxito!", "success");
+      }
     } else {
-      alert("Debes permitir las notificaciones desde la configuración de tu navegador.");
+      if (kfsContext?.showToast) {
+        kfsContext.showToast("Debes permitir las notificaciones desde la configuración de tu navegador.", "warning");
+      }
     }
   };
 
@@ -168,7 +175,7 @@ export function AppEnforcer({ children, currentUser: propsUser, updatePwaStatus 
               <input
                 type="password"
                 maxLength={8}
-                placeholder="Código de Arquitecto (199521)"
+                placeholder="Código de Seguridad / PIN Maestro"
                 value={bypassPin}
                 onChange={(e) => setBypassPin(e.target.value)}
                 className="flex-1 bg-black/50 border border-violet-900/50 rounded-xl px-4 py-3 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:ring-1 focus:ring-violet-500 font-mono tracking-widest"

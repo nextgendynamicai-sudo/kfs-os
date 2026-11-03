@@ -187,7 +187,7 @@ export const RiderDashboard = ({ db, currentUser, logout }: any) => {
       </div>
 
       {/* Main Content Area */}
-      <div className="max-w-2xl mx-auto px-4 -mt-6 relative z-20 space-y-4 animate-fade-in">
+      <div className="max-w-2xl mx-auto px-4 -mt-6 relative z-20 space-y-4 animate-fade-in pb-24 sm:pb-8">
         <UniversalWalletWidget currentUser={riderInfo} formatUSD={formatUSD} />
 
         {/* Check-In / Check-Out Widget */}
@@ -216,6 +216,39 @@ export const RiderDashboard = ({ db, currentUser, logout }: any) => {
             )}
           </div>
         </div>
+
+        {/* Interactive Tab Navigation Bar (Samsung S25 Ultra 412x915 & Desktop) */}
+        <div className="flex items-center gap-1.5 sm:gap-2 p-1.5 bg-slate-100 dark:bg-slate-800/80 rounded-2xl border border-violet-100 dark:border-white/10 overflow-x-auto no-scrollbar shadow-xs">
+          {[
+            { id: "overview", label: "Resumen", icon: Activity },
+            { id: "deliveries", label: "Entregas", icon: Truck, badge: pendingDeliveries.length },
+            { id: "pago", label: "Pago Móvil", icon: CreditCard },
+            { id: "docs", label: "Documentos", icon: FileText }
+          ].map(t => {
+            const Icon = t.icon;
+            const isActive = activeTab === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setActiveTab(t.id)}
+                className={`flex-1 min-w-[70px] sm:min-w-[85px] flex items-center justify-center gap-1.5 py-2.5 px-2 sm:px-3 rounded-xl text-xs font-bold transition-all cursor-pointer relative ${
+                  isActive
+                    ? "bg-violet-600 text-white shadow-md shadow-violet-600/30 font-black scale-[1.02]"
+                    : "text-slate-600 dark:text-slate-300 hover:text-violet-600 hover:bg-white/60 dark:hover:bg-white/5"
+                }`}
+              >
+                <Icon size={15} />
+                <span className="truncate">{t.label}</span>
+                {Boolean(t.badge && t.badge > 0) && (
+                  <span className="bg-rose-500 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full ml-0.5">
+                    {t.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </div>
+
         {/* TAB: Overview */}
         {activeTab === "overview" && (
           <div className="space-y-4">
@@ -481,6 +514,40 @@ export const RiderDashboard = ({ db, currentUser, logout }: any) => {
             </div>
           </div>
         )}
+      </div>
+
+      {/* FIXED BOTTOM NAVIGATION FOR MOBILE VIEWPORTS (Samsung S25 Ultra 412x915) */}
+      <div className="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-slate-950/90 backdrop-blur-xl border-t border-violet-500/20 py-2 px-3 safe-pb shadow-[0_-10px_30px_rgba(0,0,0,0.6)]">
+        <div className="flex items-center justify-around max-w-md mx-auto">
+          {[
+            { id: "overview", label: "Resumen", icon: Activity },
+            { id: "deliveries", label: "Entregas", icon: Truck, badge: pendingDeliveries.length },
+            { id: "pago", label: "Pago Móvil", icon: CreditCard },
+            { id: "docs", label: "Documentos", icon: FileText }
+          ].map(t => {
+            const Icon = t.icon;
+            const isActive = activeTab === t.id;
+            return (
+              <button
+                key={t.id}
+                onClick={() => setActiveTab(t.id)}
+                className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all cursor-pointer border-none bg-transparent ${
+                  isActive ? "text-violet-400 font-black scale-105" : "text-slate-400 hover:text-white"
+                }`}
+              >
+                <div className="relative">
+                  <Icon size={19} strokeWidth={isActive ? 2.5 : 1.8} />
+                  {Boolean(t.badge && t.badge > 0) && (
+                    <span className="absolute -top-1.5 -right-2.5 bg-rose-500 text-white text-[8px] font-black w-4 h-4 rounded-full flex items-center justify-center shadow-sm">
+                      {t.badge}
+                    </span>
+                  )}
+                </div>
+                <span className="text-[10px] mt-0.5">{t.label}</span>
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

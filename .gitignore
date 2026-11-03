@@ -48,3 +48,10 @@ next-env.d.ts
 .env*
 scripts/*.mjs
 scratch/
+
+# debug screenshots & internal agent logs
+/s25_*.png
+/public/s25_*.png
+/artifacts/
+/.agents/teamwork/
+/.vscode/

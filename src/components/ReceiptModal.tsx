@@ -13,6 +13,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
   const [isTorn, setIsTorn] = useState(false);
   const [thermalWidth, setThermalWidth] = useState<"58mm" | "80mm">("58mm");
   const [whatsappPhone, setWhatsappPhone] = useState(tx?.customerPhone || "");
+  const [showAnnulConfirm, setShowAnnulConfirm] = useState(false);
 
   useEffect(() => {
     if (!tx) return;
@@ -76,14 +77,14 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
         {/* Paper Receipt Roll-out Container */}
         <div className={`w-[90%] bg-white shadow-2xl relative overflow-hidden transition-all duration-700 ease-out border-x border-gray-200 ${isPrinting ? "h-0 opacity-0" : "h-auto opacity-100"} ${isTorn ? "translate-y-4 rotate-2 opacity-0 scale-95" : ""}`} style={{ clipPath: 'polygon(0% 0%, 100% 0%, 100% 98%, 97% 100%, 94% 98%, 91% 100%, 88% 98%, 85% 100%, 82% 98%, 79% 100%, 76% 98%, 73% 100%, 70% 98%, 67% 100%, 64% 98%, 61% 100%, 58% 98%, 55% 100%, 52% 98%, 49% 100%, 46% 98%, 43% 100%, 40% 98%, 37% 100%, 34% 98%, 31% 100%, 28% 98%, 25% 100%, 22% 98%, 19% 100%, 16% 98%, 13% 100%, 10% 98%, 7% 100%, 4% 98%, 0% 100%)' }}>
           
-          <div className="p-6 pt-4 font-mono text-white text-xs space-y-4">
+          <div className="p-6 pt-4 font-mono text-slate-800 text-xs space-y-4">
             
             {/* Header Receipt */}
             <div className="text-center border-b border-dashed border-gray-300 pb-3">
-              <h3 className="text-sm font-black tracking-widest uppercase mb-1">{product?.clientName || `${KFS_BRAND.productAcronym} ECOSISTEMA`}</h3>
-              <p className="text-[10px] text-slate-400 font-bold">RIF: J-50201438-9</p>
-              <p className="text-[10px] text-slate-400">BOS CONTROL DIGITAL</p>
-              <p className="text-[9px] text-slate-500 font-mono mt-1">{new Date(tx.timestamp).toLocaleString()}</p>
+              <h3 className="text-sm font-black tracking-widest uppercase mb-1 text-slate-900">{product?.clientName || `${KFS_BRAND.productAcronym} ECOSISTEMA`}</h3>
+              <p className="text-[10px] text-slate-600 font-bold">RIF: J-50201438-9</p>
+              <p className="text-[10px] text-slate-600">BOS CONTROL DIGITAL</p>
+              <p className="text-[9px] text-slate-500 font-mono mt-1">{new Date(tx.timestamp || tx.date || Date.now()).toLocaleString()}</p>
             </div>
 
             {/* Receipt Control Barcode (Pure CSS) */}
@@ -216,7 +217,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
 
           {/* WhatsApp Direct Sender Box */}
           <div className="bg-black/30 border border-white/10 rounded-2xl p-3 flex flex-col gap-2">
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
               <input
                 type="tel"
                 placeholder="Teléfono WhatsApp (ej: 04141234567)"
@@ -230,7 +231,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
                   const raw = (whatsappPhone || "").replace(/[^0-9]/g, '');
                   const clean = raw.startsWith('58') ? raw : (raw.startsWith('0') ? `58${raw.slice(1)}` : `58${raw}`);
                   const clientName = product?.clientName || currentUser?.company || 'KFS ECOSISTEMA';
-                  const text = `Hola ${tx.customerName || 'Cliente'}, ¡Gracias por tu compra en *${clientName}*!%0A%0A🧾 *Recibo Oficial: ${tx.receiptNumber}*%0A📦 Producto: ${product?.name || 'Compra POS'}%0A💵 *Total (USD): ${formatUSD(tx.amountUSD)}*%0A🇻🇪 *Total (Bs BCV): ${((tx.amountUSD || 0) * (tx.exchangeRateBCV || 36.5)).toFixed(2)} Bs*%0A📅 Fecha: ${new Date(tx.timestamp).toLocaleString()}%0A${tx.kfsPointsEarned > 0 ? `%0A🎁 *¡Acumulaste +${tx.kfsPointsEarned.toFixed(1)} Puntos K-Points!*` : ''}%0A%0AConsulta tu saldo y carnet digital en: https://kfs-os.vercel.app/rewards`;
+                  const text = `Hola ${tx.customerName || 'Cliente'}, ¡Gracias por tu compra en *${clientName}*!%0A%0A🧾 *Recibo Oficial: ${tx.receiptNumber || 'POS'}*%0A📦 Producto: ${product?.name || 'Compra POS'}%0A💵 *Total (USD): ${formatUSD(tx.amountUSD)}*%0A🇻🇪 *Total (Bs BCV): ${((tx.amountUSD || 0) * (tx.exchangeRateBCV || 36.5)).toFixed(2)} Bs*%0A📅 Fecha: ${new Date(tx.timestamp || tx.date || Date.now()).toLocaleString()}%0A${tx.kfsPointsEarned > 0 ? `%0A🎁 *¡Acumulaste +${tx.kfsPointsEarned.toFixed(1)} Puntos K-Points!*` : ''}%0A%0AConsulta tu saldo y carnet digital en: https://kfs-os.vercel.app/rewards`;
                   return clean.length >= 10 ? `https://wa.me/${clean}?text=${text}` : '#';
                 })()}
                 target="_blank"
@@ -241,7 +242,7 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
                     showToast("Ingresa un número válido de WhatsApp (al menos 10 dígitos).", "error");
                   }
                 }}
-                className="px-4 py-2 rounded-xl font-black text-xs text-white bg-green-500 hover:bg-green-600 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md shadow-green-500/20 active:scale-95 text-center whitespace-nowrap"
+                className="px-4 py-2.5 rounded-xl font-black text-xs text-white bg-green-500 hover:bg-green-600 transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-md shadow-green-500/20 active:scale-95 text-center whitespace-nowrap shrink-0"
               >
                 💬 Enviar WhatsApp
               </a>
@@ -251,13 +252,8 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
 
           <div className="flex flex-col sm:flex-row gap-2 mt-2">
             <button 
-              onClick={() => {
-                showToast("Procesando anulación...", "error");
-                setTimeout(() => {
-                  triggerGhostTrap(currentUser.id, tx.amountUSD, tx.paymentMethod);
-                  window.location.reload();
-                }, 1500);
-              }}
+              type="button"
+              onClick={() => setShowAnnulConfirm(true)}
               className="w-full sm:w-1/3 py-4 bg-red-900/50 hover:bg-red-800 text-red-100 font-black rounded-2xl text-xs hover:scale-[1.01] active:scale-95 transition-all shadow-xl flex justify-center items-center gap-2 cursor-pointer border border-red-500/20"
             >
               Anular
@@ -270,6 +266,48 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
             ✂️ Rasgar Recibo y Volver
             </button>
           </div>
+
+          {/* Diálogo de Confirmación para Evitar Bloqueo Accidental de Ghost Trap */}
+          {showAnnulConfirm && (
+            <div className="fixed inset-0 z-[100000] bg-black/85 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in">
+              <div className="bg-slate-900 border border-rose-500/50 rounded-3xl p-6 max-w-xs w-full shadow-2xl text-center space-y-4">
+                <div className="w-14 h-14 rounded-2xl bg-rose-500/20 text-rose-400 mx-auto flex items-center justify-center text-3xl">
+                  🚨
+                </div>
+                <div>
+                  <h4 className="text-base font-black text-white">¿Confirmar Anulación?</h4>
+                  <p className="text-xs text-slate-300 mt-2 leading-relaxed">
+                    Esta acción activará el protocolo de seguridad <strong>Ghost Trap</strong> y auditará la transacción de <strong>{formatUSD ? formatUSD(tx.amountUSD) : `$${tx.amountUSD}`}</strong>.
+                  </p>
+                </div>
+                <div className="flex gap-2 pt-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowAnnulConfirm(false)}
+                    className="flex-1 py-3 rounded-xl border border-white/10 bg-white/10 hover:bg-white/20 text-xs font-bold text-slate-200 transition-all cursor-pointer"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowAnnulConfirm(false);
+                      if (showToast) showToast("Procesando anulación con Ghost Trap...", "error");
+                      setTimeout(() => {
+                        if (triggerGhostTrap) {
+                          triggerGhostTrap(currentUser?.id, tx.amountUSD, tx.paymentMethod);
+                        }
+                        window.location.reload();
+                      }, 1200);
+                    }}
+                    className="flex-1 py-3 rounded-xl bg-rose-600 hover:bg-rose-500 text-xs font-black text-white shadow-lg shadow-rose-600/30 transition-all cursor-pointer"
+                  >
+                    Sí, Anular
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
         </div>
       </motion.div>

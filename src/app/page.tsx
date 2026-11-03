@@ -20,6 +20,7 @@ import { UniversalWalletWidget } from "../components/UniversalWalletWidget";
 import { ProfileAvatarEditor } from "../components/ProfileAvatarEditor";
 import { Toast } from "../components/Toast";
 import { CommandPalette } from "../components/CommandPalette";
+import { DemoSwitcherBar } from "../components/DemoSwitcherBar";
 export { CvViewerModal } from "../components/CvViewerModal";
 export { SMSConciliatorSimulator } from "../components/SMSConciliatorSimulator";
 export { KFSFinancialSplitCalculator } from "../components/KFSFinancialSplitCalculator";
@@ -35,6 +36,8 @@ export { StorefrontCustomizer } from "../components/StorefrontCustomizer";
 export { OnboardingWizard } from "../components/OnboardingWizard";
 export { RecruitmentWidget } from "../components/RecruitmentWidget";
 export { ScannerView } from "../components/ScannerView";
+
+import dynamic from 'next/dynamic';
 
 const CoreDashboard = dynamic(() => import("../components/dashboards/CoreDashboard").then(mod => mod.CoreDashboard), { ssr: false });
 const PromotoraDashboard = dynamic(() => import("../components/dashboards/PromotoraDashboard").then(mod => mod.PromotoraDashboard), { ssr: false });
@@ -65,7 +68,6 @@ import { OracleInsightCard } from '../components/OracleInsightCard';
 import { PushCommandCenter } from "../components/PushCommandCenter";
 import { supabase } from "../context/supabase";
 import { motion, AnimatePresence } from "framer-motion";
-import dynamic from 'next/dynamic';
 
 const LiveMap = dynamic(() => import('../components/LiveMap'), { ssr: false });
 
@@ -271,7 +273,7 @@ export default function Home() {
     handleLogin, logout, registerClient, registerFreeUser, upgradeToPremium, registerPromotora, registerVendedor, approvePromotora, rejectPromotora, settlePromotoraEarnings, addProduct, addExpense, processPurchase,
     submitOnlineOrder, approveOrder, rejectOrder, dispatchOrder, generateZReport, registerCrmExpress,
     paySubscription, approveSubscription, requestPayout, requestTopUp,
-    ghostTrapLocked, setGhostTrapLocked, triggerGhostTrap, logAction
+    ghostTrapLocked, setGhostTrapLocked, triggerGhostTrap, logAction, loadDemoCommerce
   } = useKFS() as any;
 
   const [ghostPassword, setGhostPassword] = useState("");
@@ -344,8 +346,19 @@ export default function Home() {
     }
   }, [currentUser, isUserValid, logout, setView, showToast, setCurrentUser]);
 
-  const validViews = ["landing", "axis_nitro_pos", "b2b-onboarding", "login", "marketplace", "customer", "core", "promotora", "client", "vendedor", "rider", "self-checkout-kiosk"];
-  let normalizedView = view === "dueño" ? "client" : view;
+  
+  // Auto-iniciar sesión Demo Comercio cuando se navega con ?demo=true
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.get("demo") === "true" && !currentUser && loadDemoCommerce) {
+        loadDemoCommerce("dueño");
+      }
+    }
+  }, [currentUser, loadDemoCommerce]);
+
+  const validViews = ["landing", "axis_nitro_pos", "nitro_pos", "b2b-onboarding", "login", "marketplace", "customer", "core", "promotora", "client", "vendedor", "rider", "self-checkout-kiosk"];
+  let normalizedView = view === "dueño" ? "client" : (view === "nitro_pos" ? "axis_nitro_pos" : view);
   
   if (!validViews.includes(normalizedView)) {
     normalizedView = currentUser ? (currentUser.role === "dueño" ? "client" : (currentUser.role || "landing")) : "landing";
@@ -364,7 +377,7 @@ export default function Home() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const searchParams = new URLSearchParams(window.location.search);
-      const hasAccessParams = searchParams.has("role") || searchParams.has("ref") || searchParams.has("referral") || searchParams.has("code") || searchParams.has("promotoraId");
+      const hasAccessParams = searchParams.has("demo") || searchParams.has("role") || searchParams.has("ref") || searchParams.has("referral") || searchParams.has("code") || searchParams.has("promotoraId");
       if (!window.location.hash && window.location.pathname === "/" && !hasAccessParams) {
          if (view !== "landing" && !currentUser) {
            setView("landing");
@@ -418,6 +431,7 @@ export default function Home() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
       <Toast toast={toast} />
       <CommandPalette />
+      <DemoSwitcherBar />
 
       {ghostTrapLocked && (
         <div className="fixed inset-0 bg-[#0B0104]/95 backdrop-blur-xl z-[99999] flex items-center justify-center p-4 animate-fade-in">

@@ -7,5 +7,6 @@ test-results
 scratch
 *.exe
 *.apk
+!public/kfs-os.apk
 .next
 .git

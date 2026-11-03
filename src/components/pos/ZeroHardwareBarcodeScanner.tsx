@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Camera, X, Zap, Volume2, CheckCircle, Barcode, QrCode, RefreshCw } from "lucide-react";
+import { Camera, X, Zap, CheckCircle, Barcode } from "lucide-react";
 import { playScannerBeep } from "../../lib/utils";
 
 interface ZeroHardwareBarcodeScannerProps {
@@ -84,9 +84,7 @@ export const ZeroHardwareBarcodeScanner: React.FC<ZeroHardwareBarcodeScannerProp
     const track = stream.getVideoTracks()[0];
     if (track) {
       try {
-        // @ts-ignore
-        await track.applyConstraints({
-          // @ts-ignore
+        await (track as any).applyConstraints({
           advanced: [{ torch: !torchOn }]
         });
         setTorchOn(!torchOn);
@@ -132,6 +130,7 @@ export const ZeroHardwareBarcodeScanner: React.FC<ZeroHardwareBarcodeScannerProp
             <button
               type="button"
               onClick={onClose}
+              aria-label="Cerrar Escáner"
               className="p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-colors cursor-pointer"
             >
               <X size={18} />

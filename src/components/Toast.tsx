@@ -25,7 +25,7 @@ export const Toast = ({ toast }: { toast: any }) => {
 
   return (
     <div 
-      className={`fixed bottom-6 sm:bottom-auto sm:top-6 left-1/2 -translate-x-1/2 z-[999999] max-w-[92vw] sm:max-w-md px-5 py-3 rounded-2xl sm:rounded-full shadow-2xl backdrop-blur-xl font-semibold text-xs sm:text-sm transition-all duration-300 flex items-center justify-between gap-3 border ${getBgStyle()}`}
+      className={`fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-[999999] max-w-[92vw] sm:max-w-md px-5 py-3 rounded-2xl sm:rounded-full shadow-2xl backdrop-blur-xl font-semibold text-xs sm:text-sm transition-all duration-300 flex items-center justify-between gap-3 border ${getBgStyle()}`}
       role="alert"
     >
       <div className="flex items-center gap-2.5 truncate">

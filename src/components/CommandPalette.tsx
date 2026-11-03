@@ -77,7 +77,7 @@ export const CommandPalette = () => {
       icon: ShoppingCart,
       keywords: "caja pos cobrar vender ticket factura venta escanear",
       action: () => {
-        setView("nitro_pos");
+        setView("axis_nitro_pos");
         showToast("Caja POS abierta para cobro rápido", "success");
       }
     });

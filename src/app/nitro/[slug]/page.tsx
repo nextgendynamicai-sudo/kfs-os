@@ -4,6 +4,17 @@
 import { supabase } from '../../../context/supabase';
 import { initialDB } from '../../../config/initialDB';
 
+async function withTimeout<T>(promise: Promise<T>, ms: number = 1500): Promise<T | null> {
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), ms))
+    ]);
+  } catch {
+    return null;
+  }
+}
+
 export default async function NitroStorefront({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const cleanSlug = slug.toLowerCase().trim();
@@ -16,13 +27,37 @@ export default async function NitroStorefront({ params }: { params: Promise<{ sl
   let productsData: any[] = [];
   let found = false;
 
-  // 1. Intentar resolver desde 'axis_nitro_hubs'
+  // 0. Fallback inmediato de fábrica si es tienda oficial o coincide con baseline
+  const defaultClient = (initialDB.clients || []).find((c: any) => {
+    const s = (c.slug || c.id || c.company || "").toLowerCase();
+    return s === cleanSlug || c.id?.toLowerCase() === cleanSlug;
+  }) || (cleanSlug === "kfs-express" || cleanSlug === "oficial" || cleanSlug === "axis-nitro" ? initialDB.clients[0] : null);
+
+  if (defaultClient) {
+    found = true;
+    storeName = defaultClient.company || storeName;
+    storeBio = defaultClient.storeSettings?.bioText || storeBio;
+    themeColor = defaultClient.storeSettings?.themeColor || themeColor;
+    storeLogo = defaultClient.storeSettings?.profilePicUrl || storeLogo;
+    productsData = (initialDB.products || []).map((p: any) => ({
+      id: p.id,
+      name: p.name,
+      price: p.priceUSD || p.price || 0,
+      description: p.description || "",
+      image_url: p.image || p.image_url || ""
+    }));
+  }
+
+  // 1. Intentar resolver o enriquecer desde 'axis_nitro_hubs'
   try {
-    const { data: hubData } = await supabase
-      .from('axis_nitro_hubs')
-      .select('*')
-      .eq('slug', cleanSlug)
-      .maybeSingle();
+    const hubRes: any = await withTimeout(
+      supabase
+        .from('axis_nitro_hubs')
+        .select('*')
+        .eq('slug', cleanSlug)
+        .maybeSingle()
+    );
+    const hubData = hubRes?.data;
 
     if (hubData) {
       found = true;
@@ -87,7 +122,8 @@ export default async function NitroStorefront({ params }: { params: Promise<{ sl
   // 2. Intentar resolver desde 'clients' (tabla principal en Supabase)
   if (!found) {
     try {
-      const { data: clients } = await supabase.from('clients').select('*');
+      const clientsRes: any = await withTimeout(supabase.from('clients').select('*'), 1500);
+      const clients = clientsRes?.data;
       if (clients && clients.length > 0) {
         const target = clients.find((c: any) => {
           const raw = c.raw_data || {};
@@ -106,11 +142,12 @@ export default async function NitroStorefront({ params }: { params: Promise<{ sl
             storeBanner = st.coverPhotoUrl || st.bannerUrl || storeBanner;
           }
 
-          // Cargar productos desde 'products' y 'kfs_products'
-          const { data: prods } = await supabase
-            .from('products')
-            .select('*')
-            .eq('clientId', target.id);
+          // Cargar productos desde 'products' y 'kfs_products' con timeout
+          const prodsRes: any = await withTimeout(
+            supabase.from('products').select('*').eq('clientId', target.id),
+            1500
+          );
+          const prods = prodsRes?.data;
 
           if (prods && prods.length > 0) {
             productsData = prods.map((p: any) => ({
@@ -122,10 +159,11 @@ export default async function NitroStorefront({ params }: { params: Promise<{ sl
             }));
           }
 
-          const { data: kfsProds } = await supabase
-            .from('kfs_products')
-            .select('*')
-            .eq('seller_id', target.id);
+          const kfsProdsRes: any = await withTimeout(
+            supabase.from('kfs_products').select('*').eq('seller_id', target.id),
+            1500
+          );
+          const kfsProds = kfsProdsRes?.data;
 
           if (kfsProds && kfsProds.length > 0) {
             const mappedKfs = kfsProds.map((kp: any) => ({
@@ -149,7 +187,8 @@ export default async function NitroStorefront({ params }: { params: Promise<{ sl
   // 3. Intentar resolver desde 'kfs_clients' si aún no se encontró
   if (!found) {
     try {
-      const { data: kfsClients } = await supabase.from('kfs_clients').select('*');
+      const kfsClientsRes: any = await withTimeout(supabase.from('kfs_clients').select('*'), 1500);
+      const kfsClients = kfsClientsRes?.data;
       if (kfsClients && kfsClients.length > 0) {
         const target = kfsClients.find((c: any) => {
           const raw = c.raw_data || {};
@@ -168,10 +207,11 @@ export default async function NitroStorefront({ params }: { params: Promise<{ sl
             storeBanner = raw.storeSettings.coverPhotoUrl || raw.storeSettings.bannerUrl || storeBanner;
           }
 
-          const { data: kfsProducts } = await supabase
-            .from('kfs_products')
-            .select('*')
-            .eq('seller_id', target.id);
+          const kfsProdsRes: any = await withTimeout(
+            supabase.from('kfs_products').select('*').eq('seller_id', target.id),
+            1500
+          );
+          const kfsProducts = kfsProdsRes?.data;
 
           if (kfsProducts && kfsProducts.length > 0) {
             productsData = kfsProducts.map((kp: any) => ({
@@ -192,11 +232,15 @@ export default async function NitroStorefront({ params }: { params: Promise<{ sl
   // 4. Intentar resolver desde 'kfs_store_states' (Estado P2P en Vivo)
   if (!found) {
     try {
-      const { data: stateRow } = await supabase
-        .from('kfs_store_states')
-        .select('db_state')
-        .eq('id', 'kfs-general-db-prod')
-        .maybeSingle();
+      const stateRowRes: any = await withTimeout(
+        supabase
+          .from('kfs_store_states')
+          .select('db_state')
+          .eq('id', 'kfs-general-db-prod')
+          .maybeSingle(),
+        1500
+      );
+      const stateRow = stateRowRes?.data;
 
       if (stateRow?.db_state) {
         const stateDb = stateRow.db_state;

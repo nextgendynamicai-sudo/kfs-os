@@ -10,6 +10,7 @@ export default function DownloadApkPage() {
   const [copied, setCopied] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInstalled, setIsInstalled] = useState(false);
+  const [instructionToast, setInstructionToast] = useState<string | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -26,18 +27,29 @@ export default function DownloadApkPage() {
   }, []);
 
   useEffect(() => {
-    let url = "/kfs-os.apk";
+    // El APK se sirve desde el mismo origen (public/kfs-os.apk) para no depender
+    // de un bucket externo. Si existe en Supabase Storage se usa como espejo,
+    // verificando primero que responda para evitar enlaces rotos.
+    const localUrl = "/kfs-os.apk";
+    setApkUrl(localUrl);
     if (isSupabaseConfigured && supabase) {
       try {
         const { data } = supabase.storage.from("kfs-assets").getPublicUrl("kfs-os.apk");
         if (data?.publicUrl) {
-          url = data.publicUrl;
+          fetch(localUrl, { method: "HEAD" })
+            .then((res) => {
+              if (!res.ok) {
+                return fetch(data.publicUrl, { method: "HEAD" }).then((mirror) => {
+                  if (mirror.ok) setApkUrl(data.publicUrl);
+                });
+              }
+            })
+            .catch(() => {});
         }
       } catch (err) {
         console.error("Failed to generate public APK url:", err);
       }
     }
-    setApkUrl(url);
   }, []);
 
   const handleInstallPwa = async () => {
@@ -51,10 +63,11 @@ export default function DownloadApkPage() {
     } else {
       const isIos = /iPad|iPhone|iPod/.test(navigator.userAgent);
       if (isIos) {
-        alert("En iPhone/iPad: Presiona el botón 'Compartir' de Safari y selecciona 'Añadir a pantalla de inicio'.");
+        setInstructionToast("📱 En iPhone/iPad: Presiona el botón 'Compartir' de Safari y selecciona 'Añadir a pantalla de inicio'.");
       } else {
-        alert("Presiona el menú de 3 puntos de tu navegador y selecciona 'Instalar aplicación' o 'Añadir a pantalla de inicio'.");
+        setInstructionToast("📱 Presiona el menú de 3 puntos de tu navegador y selecciona 'Instalar aplicación' o 'Añadir a pantalla de inicio'.");
       }
+      setTimeout(() => setInstructionToast(null), 8000);
     }
   };
 
@@ -82,6 +95,20 @@ export default function DownloadApkPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-violet-950 to-indigo-950 text-white flex flex-col items-center justify-center p-4 relative overflow-hidden font-sans">
+      {/* Non-blocking Instruction Toast for Mobile Browsers */}
+      {instructionToast && (
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 max-w-sm w-[92vw] bg-violet-900/95 text-white p-4 rounded-2xl border border-violet-400/50 shadow-2xl backdrop-blur-xl animate-fade-in flex items-start justify-between gap-3 text-xs">
+          <span className="leading-relaxed">{instructionToast}</span>
+          <button 
+            type="button" 
+            onClick={() => setInstructionToast(null)} 
+            className="text-white/60 hover:text-white font-black text-sm p-1 -mt-1 cursor-pointer border-none bg-transparent shrink-0"
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
       {/* Background blobs */}
       <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-600/10 rounded-full blur-3xl pointer-events-none"></div>
       <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -156,7 +183,7 @@ export default function DownloadApkPage() {
                 <Download size={14} /> Descargar .APK (Android)
               </a>
               <p className="text-[9px] text-center text-slate-400">
-                Requiere haber subido kfs-os.apk a Supabase
+                Versión 8.0.0 · ~30 MB · Funciona 100% offline
               </p>
             </div>
           </div>

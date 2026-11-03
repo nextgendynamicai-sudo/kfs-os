@@ -1,535 +1,871 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useKFS } from "../context/KFSContext";
 import { usePreset } from "../context/PresetContext";
-import { FeatureFlag } from "./FeatureFlag";
 import { 
-  Flame, Cpu, Database, DollarSign, Gift, Layers, CheckCircle2, 
-  PlusCircle, Sliders, ToggleLeft, ToggleRight, Sparkles, Scale,
-  Calendar, TableProperties, Binary, Calculator, KeyRound, ArrowLeft,
-  Camera, Coins, Barcode
+  ShoppingCart, Search, Barcode, Camera, Calculator, KeyRound, ArrowLeft, 
+  Trash2, Plus, Minus, CheckCircle2, DollarSign, Sparkles, Sliders, 
+  ChevronDown, ChevronUp, ShieldAlert, Coins, RefreshCw, X, Receipt, 
+  Layers, Package, Check, Phone, UserCheck, Flame, Scale, Calendar, TableProperties, Binary
 } from "lucide-react";
 import { SmartChangeCalculator } from "./SmartChangeCalculator";
 import { QuickCashierPinModal } from "./QuickCashierPinModal";
+import { BlindCashCountModal } from "./BlindCashCountModal";
 import { ReceiptModal } from "./ReceiptModal";
 import { ZeroHardwareBarcodeScanner } from "./pos/ZeroHardwareBarcodeScanner";
-import { playCashDrawerSound, announcePaymentVoice, playScannerBeep } from "../lib/utils";
+import { 
+  playCashDrawerSound, 
+  announcePaymentVoice, 
+  playScannerBeep, 
+  playSyncChime 
+} from "../lib/utils";
+import { DEMO_COMMERCE_ID, DEMO_COMMERCE_PRODUCTS } from "../config/demoCommerceDB";
+
+export interface CartItem {
+  product: any;
+  qty: number;
+}
 
 export function AxisNitroPOS() {
-  const { db, formatUSD, rates, showToast, processPurchase, setView, currentUser: kfsUser } = useKFS() as any;
-  const { businessPreset, presetMetadata, refreshPreset } = usePreset();
+  const { 
+    db, 
+    formatUSD, 
+    rates, 
+    showToast, 
+    processPurchase, 
+    setView, 
+    currentUser, 
+    processBlindCashCount 
+  } = useKFS() as any;
+
+  const { businessPreset, presetMetadata } = usePreset();
+
+  // Active cashier
+  const [activeCashier, setActiveCashier] = useState<any>(() => {
+    if (currentUser?.role === "vendedor") return currentUser;
+    const demoCashier = (db?.vendedores || []).find((v: any) => v.clientId === DEMO_COMMERCE_ID);
+    return demoCashier || (currentUser ? { ...currentUser, name: currentUser.name || "Cajero Principal" } : { name: "Cajero Mostrador" });
+  });
+
+  // Modals
   const [showChangeCalculator, setShowChangeCalculator] = useState(false);
   const [showPinModal, setShowPinModal] = useState(false);
+  const [showBlindCountModal, setShowBlindCountModal] = useState(false);
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false);
-  const [quickCashUSD, setQuickCashUSD] = useState<number | null>(null);
-  const [activeCashier, setActiveCashier] = useState<any>(null);
+  const [showMobileCartDrawer, setShowMobileCartDrawer] = useState(false);
+  const [showFeatureDrawer, setShowFeatureDrawer] = useState(false);
   const [activeReceiptTx, setActiveReceiptTx] = useState<any | null>(null);
 
-  // Mock controls so the user can test the visual flags in real-time in the demo
-  const [demoFeatures, setDemoFeatures] = useState({
-    escandallos: presetMetadata.features.escandallos,
-    serial_tracking: presetMetadata.features.serial_tracking,
-    room_management: presetMetadata.features.room_management,
-    weight_scale: presetMetadata.features.weight_scale,
-    booking_system: presetMetadata.features.booking_system,
-  });
+  // Search & Filter
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("Todos");
 
-  // Keep state synced with context unless modified in demo
-  React.useEffect(() => {
-    setDemoFeatures({
-      escandallos: presetMetadata.features.escandallos,
-      serial_tracking: presetMetadata.features.serial_tracking,
-      room_management: presetMetadata.features.room_management,
-      weight_scale: presetMetadata.features.weight_scale,
-      booking_system: presetMetadata.features.booking_system,
-    });
-  }, [presetMetadata]);
+  // Multi-Item Cart
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const cartMap = useMemo(() => new Map(cart.map(i => [i.product.id, i])), [cart]);
 
-  // Demo item selection
-  const [selectedProduct, setSelectedProduct] = useState({
-    name: "Cerveza Polar Pilsen (Tercio)",
-    priceUSD: 1.50,
-    stock: 45
-  });
-
-  const [applyIva, setApplyIva] = useState(false);
-  const [axisPointsToBurn, setAxisPointsToBurn] = useState(0);
+  // Checkout Options
   const [paymentMethod, setPaymentMethod] = useState("cash_usd");
+  const [applyIva, setApplyIva] = useState(false);
+  const [quickCashUSD, setQuickCashUSD] = useState<number | null>(null);
+  const [axisPointsToBurn, setAxisPointsToBurn] = useState(0);
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [customerName, setCustomerName] = useState("");
+  const [paymentReference, setPaymentReference] = useState("");
 
-  // Core Financial calculations (Flat Rate 2%, Axis Points logic, Ghost Trap)
-  const basePrice = selectedProduct.priceUSD;
-  const flatRateFee = basePrice * 0.02; // Core 2% flat rate
-  const netStoreUSD = basePrice - flatRateFee;
-  
-  const iva = applyIva ? basePrice * 0.16 : 0;
-  // SUDEBAN & Tokenomics Invariant: Points can only subsidize up to max 50% of order value
-  const orderSubtotal = basePrice + iva;
-  const maxPointsAllowed = Math.floor((orderSubtotal * 0.5) / 0.001);
-  const effectivePointsToBurn = Math.min(axisPointsToBurn, maxPointsAllowed);
-  const pointsDiscount = effectivePointsToBurn * 0.001; // 1000 points = $1.00 USD
-  const totalDueUSD = Math.max(orderSubtotal * 0.5, orderSubtotal - pointsDiscount);
+  // Feature Flags
+  const [demoFeatures, setDemoFeatures] = useState({
+    escandallos: presetMetadata?.features?.escandallos || false,
+    serial_tracking: presetMetadata?.features?.serial_tracking || false,
+    room_management: presetMetadata?.features?.room_management || false,
+    weight_scale: presetMetadata?.features?.weight_scale || false,
+    booking_system: presetMetadata?.features?.booking_system || false,
+  });
 
-  // Ghost Trap calculations (Hybrid payments simulation)
-  const ghostTrapSplit = useMemo(() => {
-    if (paymentMethod === "hybrid") {
-      const pointsUSDValue = pointsDiscount;
-      const cashNeededUSD = Math.max(0, totalDueUSD);
-      return {
-        pointsBurned: effectivePointsToBurn,
-        pointsUSD: pointsUSDValue,
-        cashUSD: cashNeededUSD,
-        cashBs: cashNeededUSD * (rates?.USD || 36.45)
-      };
+  // Effective merchant identifier
+  const activeMerchantId = useMemo(() => {
+    if (
+      currentUser?.id === DEMO_COMMERCE_ID ||
+      currentUser?.clientId === DEMO_COMMERCE_ID ||
+      currentUser?.merchantId === DEMO_COMMERCE_ID ||
+      currentUser?.isDemoUser
+    ) {
+      return DEMO_COMMERCE_ID;
     }
-    return null;
-  }, [paymentMethod, totalDueUSD, effectivePointsToBurn, pointsDiscount, rates]);
+    return currentUser?.merchantId || currentUser?.clientId || currentUser?.id || DEMO_COMMERCE_ID;
+  }, [currentUser]);
 
-  const handleChargeSubmit = () => {
-    // 1. Efecto acústico de caja registradora
-    playCashDrawerSound();
+  // Merchant info
+  const merchantInfo = useMemo(() => {
+    return (db?.clients || []).find((c: any) => c.id === activeMerchantId) || {
+      company: "Bodegón & Market Gourmet Caracas",
+      paymentMethods: {
+        pagoMovil: { bank: "Banesco (0134)", phone: "0412-5551234", idCard: "J-408192841" }
+      }
+    };
+  }, [db?.clients, activeMerchantId]);
 
-    // 2. Efecto parlante con voz en español venezolano
-    announcePaymentVoice(totalDueUSD, paymentMethod === "cash_bs" ? "pago_movil" : "cash_usd");
+  // Catalog products
+  const storeProducts = useMemo(() => {
+    const list = (db?.products || []).filter((p: any) => p.clientId === activeMerchantId);
+    if (list.length > 0) return list;
+    return DEMO_COMMERCE_PRODUCTS;
+  }, [db?.products, activeMerchantId]);
 
-    // 3. Generación de transacción para comprobante térmico y WhatsApp Smart Receipt
-    const tx = {
-      id: `pos_tx_${Date.now()}`,
-      clientName: kfsUser?.company || "Comercio Afiliado KFS",
-      productName: selectedProduct.name,
-      amountUSD: totalDueUSD,
-      subtotalUSD: basePrice,
-      ivaUSD: 0,
-      igtfUSD: paymentMethod === "cash_usd" ? basePrice * 0.03 : 0,
-      paymentMethod: paymentMethod,
-      exchangeRateBCV: rates?.USD || 36.45,
-      date: new Date().toISOString(),
-      status: "APPROVED",
-      cashierName: activeCashier ? activeCashier.name : "Cajero Principal"
+  // Categories list
+  const categories = useMemo(() => {
+    const set = new Set<string>();
+    set.add("Todos");
+    storeProducts.forEach((p: any) => {
+      if (p.category) set.add(p.category);
+    });
+    return Array.from(set);
+  }, [storeProducts]);
+
+  // Filtered products
+  const filteredProducts = useMemo(() => {
+    return storeProducts.filter((p: any) => {
+      const matchCat = selectedCategory === "Todos" || p.category === selectedCategory;
+      const q = searchQuery.toLowerCase().trim();
+      const matchQuery = !q || 
+        p.name?.toLowerCase().includes(q) || 
+        (p.barcode && p.barcode.includes(q)) || 
+        (p.brand && p.brand.toLowerCase().includes(q));
+      return matchCat && matchQuery;
+    });
+  }, [storeProducts, selectedCategory, searchQuery]);
+
+  // Cart operations
+  const addToCart = (product: any) => {
+    if (product.stock !== undefined && product.stock <= 0) {
+      showToast(`Producto sin stock: ${product.name}`, "error");
+      return;
+    }
+
+    if (typeof window !== "undefined" && window.navigator && "vibrate" in window.navigator) {
+      try { (window.navigator as any).vibrate(15); } catch (_) {}
+    }
+    playScannerBeep();
+
+    setCart(prev => {
+      const idx = prev.findIndex(item => item.product.id === product.id);
+      if (idx !== -1) {
+        const updated = [...prev];
+        const newQty = updated[idx].qty + 1;
+        if (product.stock !== undefined && newQty > product.stock) {
+          showToast(`Stock máximo disponible alcanzado (${product.stock} u.)`, "warning");
+          return prev;
+        }
+        updated[idx] = { ...updated[idx], qty: newQty };
+        return updated;
+      }
+      return [...prev, { product, qty: 1 }];
+    });
+  };
+
+  const updateCartQty = (productId: string, delta: number) => {
+    setCart(prev => {
+      return prev.map(item => {
+        if (item.product.id === productId) {
+          const newQty = item.qty + delta;
+          if (newQty <= 0) return null;
+          if (item.product.stock !== undefined && newQty > item.product.stock) {
+            showToast(`Máximo disponible: ${item.product.stock} u.`, "warning");
+            return item;
+          }
+          return { ...item, qty: newQty };
+        }
+        return item;
+      }).filter(Boolean) as CartItem[];
+    });
+  };
+
+  const removeFromCart = (productId: string) => {
+    setCart(prev => prev.filter(item => item.product.id !== productId));
+  };
+
+  const clearCart = () => {
+    setCart([]);
+    setQuickCashUSD(null);
+    setPaymentReference("");
+    setCustomerPhone("");
+    setCustomerName("");
+  };
+
+  // Hardware Scanner Listener (USB/Bluetooth Barcode Guns)
+  useEffect(() => {
+    let barcodeBuffer = "";
+    let lastKeyTime = Date.now();
+    let timeoutId: any;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
+
+      const currentTime = Date.now();
+      if (currentTime - lastKeyTime > 60) {
+        barcodeBuffer = "";
+      }
+      lastKeyTime = currentTime;
+
+      if (e.key === "Enter" && barcodeBuffer.length > 3) {
+        e.preventDefault();
+        const code = barcodeBuffer.trim();
+        barcodeBuffer = "";
+
+        const found = storeProducts.find((p: any) => p.barcode === code);
+        if (found) {
+          addToCart(found);
+          showToast(`Escaneado: ${found.name}`, "success");
+        } else {
+          showToast(`Código no encontrado: ${code}`, "warning");
+        }
+      } else if (e.key.length === 1) {
+        barcodeBuffer += e.key;
+      }
+
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => { barcodeBuffer = ""; }, 120);
     };
 
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      clearTimeout(timeoutId);
+    };
+  }, [storeProducts]);
+
+  // Financial Calculations
+  const bcvRate = rates?.USD || 36.45;
+  const cartSubtotalUSD = useMemo(() => {
+    return cart.reduce((acc, item) => acc + ((item.product.priceUSD || 0) * item.qty), 0);
+  }, [cart]);
+
+  const ivaUSD = applyIva ? cartSubtotalUSD * 0.16 : 0;
+  const isForeign = ['cash_usd', 'cash_eur', 'zinli', 'binance', 'zelle'].includes(paymentMethod);
+  const igtfUSD = isForeign && applyIva ? (cartSubtotalUSD + ivaUSD) * 0.03 : 0;
+
+  const orderGrossUSD = cartSubtotalUSD + ivaUSD + igtfUSD;
+  const maxPointsAllowed = Math.floor((orderGrossUSD * 0.5) / 0.001);
+  const effectivePointsToBurn = Math.min(axisPointsToBurn, maxPointsAllowed);
+  const pointsDiscountUSD = effectivePointsToBurn * 0.001;
+
+  const totalDueUSD = Math.max(0, orderGrossUSD - pointsDiscountUSD);
+  const totalDueBs = totalDueUSD * bcvRate;
+  const totalItemCount = cart.reduce((acc, item) => acc + item.qty, 0);
+
+  // Paste reference helper
+  const handlePasteClipboard = async () => {
+    try {
+      if (typeof navigator !== "undefined" && navigator.clipboard) {
+        const text = await navigator.clipboard.readText();
+        if (text) {
+          const match = text.match(/\b\d{4,12}\b/);
+          const refToSet = match ? match[0] : text.trim().slice(0, 20);
+          setPaymentReference(refToSet);
+          showToast(`Referencia pegada: ${refToSet}`, "success");
+        }
+      }
+    } catch (_) {
+      showToast("Pega la referencia manualmente en el campo.", "info");
+    }
+  };
+
+  // Charge submission
+  const handleConfirmSale = () => {
+    if (cart.length === 0) {
+      showToast("Agrega al menos un producto al carrito para cobrar.", "warning");
+      return;
+    }
+
+    if (paymentMethod === "vale_credit") {
+      if (!customerPhone) {
+        showToast("Ingresa el teléfono o nombre del cliente para registrar el vale/fiado.", "warning");
+        return;
+      }
+    }
+
+    // 1. Audio and voice feedback
+    playCashDrawerSound();
+    playSyncChime();
+    announcePaymentVoice(totalDueUSD, paymentMethod === "cash_bs" ? "pago_movil" : "cash_usd");
+
+    // 2. Build multi-item cart payload
+    const cartPayload = {
+      id: `pos_cart_${Date.now()}`,
+      name: cart.length === 1 ? cart[0].product.name : `Venta Mostrador (${totalItemCount} items)`,
+      priceUSD: cartSubtotalUSD,
+      clientId: activeMerchantId,
+      cartItems: cart.map(item => ({
+        id: item.product.id,
+        name: item.product.name,
+        priceUSD: item.product.priceUSD || 0,
+        quantity: item.qty
+      }))
+    };
+
+    // 3. Process purchase in central ledger
+    let tx: any = null;
+    try {
+      tx = processPurchase(
+        cartPayload,
+        paymentMethod,
+        applyIva,
+        customerPhone,
+        customerName || (activeCashier ? `Cliente de ${activeCashier.name.split(" ")[0]}` : "Cliente Mostrador"),
+        "", // customerRif
+        effectivePointsToBurn
+      );
+    } catch (err: any) {
+      console.error("[POS Sale Error]", err);
+    }
+
+    // Fallback transaction object if needed
+    if (!tx) {
+      tx = {
+        id: `pos_tx_${Date.now()}`,
+        receiptNumber: `POS-${Math.floor(100000 + Math.random() * 900000)}`,
+        timestamp: Date.now(),
+        clientName: merchantInfo?.company || currentUser?.company || "Bodegón & Market Gourmet Caracas",
+        productName: cartPayload.name,
+        amountUSD: totalDueUSD,
+        subtotalUSD: cartSubtotalUSD,
+        ivaUSD,
+        igtfUSD,
+        paymentMethod,
+        exchangeRateBCV: bcvRate,
+        date: new Date().toISOString(),
+        status: "APPROVED",
+        cashierName: activeCashier ? activeCashier.name : "Cajero Mostrador",
+        cartItems: cartPayload.cartItems
+      };
+    } else {
+      tx = {
+        ...tx,
+        clientName: merchantInfo?.company || currentUser?.company || "Bodegón & Market Gourmet Caracas",
+        cartItems: cartPayload.cartItems,
+        cashierName: activeCashier ? activeCashier.name : "Cajero Mostrador"
+      };
+    }
+
+    // 4. Reset cart & open thermal ticket modal
+    clearCart();
+    setShowMobileCartDrawer(false);
     setActiveReceiptTx(tx);
-    showToast("¡Cobro aprobado! Mostrando ticket inteligente...", "success");
+    showToast(`¡Venta procesada con éxito! Recibo #${tx.receiptNumber || 'POS'}`, "success");
   };
 
   return (
-    <div className="bg-slate-950 text-white rounded-[2.5rem] border border-violet-900/50 p-6 md:p-8 shadow-[0_20px_60px_rgba(30,20,80,0.5)] space-y-8 animate-fade-in max-w-5xl mx-auto">
+    <div className="min-h-screen bg-slate-950 text-white font-sans pb-28 md:pb-12 animate-fade-in relative selection:bg-violet-500 selection:text-white w-full max-w-[100vw] overflow-x-clip">
       
-      {/* Upper Brand Info */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-violet-900/30 pb-6">
-        <div>
-          <span className="text-[10px] font-black uppercase tracking-widest text-violet-400 bg-violet-900/30 px-3 py-1 rounded-full border border-violet-800/50 flex items-center gap-1.5 w-fit mb-2">
-            <Sparkles size={10} className="text-violet-400 animate-pulse" /> Axis Nitro Core System
-          </span>
-          <h2 className="text-3xl font-black tracking-tight bg-gradient-to-r from-white via-violet-200 to-violet-300 bg-clip-text text-transparent">
-            Axis Nitro POS Interface
-          </h2>
-          <p className="text-xs text-slate-400 mt-1">
-            Demostración de inyección visual mediante Feature Flags con blindaje del núcleo financiero.
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          {setView && (
+      {/* ========================================================= */}
+      {/* TOP HEADER: CASHIER & SYSTEM TELEMETRY                     */}
+      {/* ========================================================= */}
+      <header className="sticky top-0 z-40 w-full max-w-[100vw] overflow-x-clip box-border bg-slate-950/95 backdrop-blur-xl border-b border-violet-900/40 px-2 sm:px-4 md:px-6 py-2 sm:py-2.5 shadow-lg">
+        <div className="max-w-7xl mx-auto flex items-center justify-between gap-1.5 sm:gap-2 w-full min-w-0">
+          
+          {/* Back button & Brand */}
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 shrink">
             <button
               type="button"
-              onClick={() => setView("client")}
-              className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 border border-violet-500/40 px-3.5 py-2.5 rounded-2xl text-xs font-bold text-white transition-all cursor-pointer shadow-sm active:scale-95"
-              title="Regresar al panel de administración"
+              onClick={() => {
+                if (setView) setView("client");
+                else window.location.hash = "#client";
+              }}
+              className="p-1.5 sm:px-3 sm:py-2 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-violet-300 hover:text-white text-xs font-bold transition-all cursor-pointer active:scale-95 flex items-center gap-1.5 shrink-0"
+              title="Volver al panel principal"
             >
-              <ArrowLeft size={16} className="text-violet-300" />
-              <span>Volver al Panel</span>
+              <ArrowLeft size={16} />
+              <span className="hidden sm:inline">Volver</span>
             </button>
-          )}
-          <button
-            type="button"
-            data-testid="pos-pin-btn"
-            onClick={() => setShowPinModal(true)}
-            className="flex items-center gap-2 bg-violet-600/30 hover:bg-violet-600/50 border border-violet-500/40 px-3.5 py-2.5 rounded-2xl text-xs font-bold transition-all cursor-pointer shadow-sm active:scale-95"
-            title="Cambiar cajero activo con PIN táctil de 4 dígitos"
-          >
-            <KeyRound size={16} className="text-violet-300" />
-            <div className="text-left">
-              <span className="text-[9px] text-slate-400 uppercase font-black block">Cajero Activo</span>
-              <span className="text-xs font-bold text-white">{activeCashier ? activeCashier.name : "Cambiar PIN"}</span>
-            </div>
-          </button>
-          <div className="flex items-center gap-3 bg-black/40 border border-violet-800/30 p-3 rounded-2xl">
-            <Cpu className="text-violet-400" size={20} />
-            <div className="text-left">
-              <span className="text-[9px] text-slate-500 uppercase font-black block">Preset Activo</span>
-              <span className="text-xs font-bold text-violet-400">{businessPreset}</span>
+
+            <div className="min-w-0">
+              <div className="flex items-center gap-1 sm:gap-1.5 min-w-0">
+                <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse shrink-0"></span>
+                <h1 className="text-xs sm:text-base font-black tracking-tight bg-gradient-to-r from-white via-violet-200 to-indigo-200 bg-clip-text text-transparent truncate">
+                  Axis Nitro POS
+                </h1>
+                <span className="text-[9px] font-black uppercase px-1.5 py-0.5 rounded bg-violet-600/30 text-violet-300 border border-violet-500/30 hidden md:inline-block shrink-0">
+                  100% Offline
+                </span>
+              </div>
+              <p className="text-[10px] text-slate-400 truncate max-w-[120px] xs:max-w-[160px] sm:max-w-xs">
+                {merchantInfo?.company || "Bodegón & Market Gourmet Caracas"}
+              </p>
             </div>
           </div>
+
+          {/* Quick Actions: BCV Badge, Cashier Switcher, Z-Report */}
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+            
+            {/* BCV Live Badge */}
+            <div className="hidden md:flex items-center gap-1.5 bg-black/40 border border-amber-500/30 px-2.5 py-1.5 rounded-xl text-[11px] font-mono text-amber-300">
+              <span className="text-[9px] uppercase font-bold text-slate-400">BCV:</span>
+              <span className="font-black">Bs. {bcvRate.toFixed(2)}</span>
+            </div>
+
+            {/* Zero-Hardware Camera Scanner Button */}
+            <button
+              type="button"
+              onClick={() => setShowBarcodeScanner(true)}
+              aria-label="Escanear con cámara"
+              className="p-1.5 sm:px-3 sm:py-2 rounded-xl bg-violet-600/30 hover:bg-violet-600/50 border border-violet-500/40 text-violet-200 text-xs font-bold transition-all cursor-pointer active:scale-95 flex items-center gap-1.5 shrink-0"
+              title="Abrir lector óptico con cámara"
+            >
+              <Camera size={15} className="text-amber-400" />
+              <span className="hidden md:inline">Escanear</span>
+            </button>
+
+            {/* Cashier PIN Switcher */}
+            <button
+              type="button"
+              data-testid="pos-pin-btn"
+              onClick={() => setShowPinModal(true)}
+              className="px-2 py-1.5 sm:px-3 sm:py-2 rounded-xl bg-slate-900 border border-violet-500/30 text-xs font-bold transition-all cursor-pointer active:scale-95 flex items-center gap-1 sm:gap-1.5 shrink-0"
+              title="Cambiar cajero con PIN de 4 dígitos"
+            >
+              <KeyRound size={14} className="text-violet-400" />
+              <div className="text-left text-[11px]">
+                <span className="text-slate-200 font-bold max-w-[65px] sm:max-w-[110px] truncate block">
+                  {activeCashier ? activeCashier.name.split(" ")[0] : "Cajero"}
+                </span>
+              </div>
+            </button>
+
+            {/* Cierre Z / Arqueo */}
+            <button
+              type="button"
+              onClick={() => setShowBlindCountModal(true)}
+              className="p-1.5 sm:px-2.5 sm:py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 text-xs font-bold transition-all cursor-pointer active:scale-95 flex items-center gap-1 shrink-0"
+              title="Realizar Cierre de Caja (Z) y Arqueo Ciego"
+            >
+              <ShieldAlert size={14} />
+              <span className="hidden lg:inline text-[11px]">Cierre Z</span>
+            </button>
+          </div>
+
         </div>
-      </div>
+      </header>
 
-      {/* Grid: Toggles & Interactive Testing (Left) | POS Modules & Flags (Right) */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      {/* ========================================================= */}
+      {/* MAIN LAYOUT: CATALOG (LEFT) + CART & PAYMENTS (RIGHT)      */}
+      {/* ========================================================= */}
+      <main className="max-w-7xl mx-auto px-3 sm:px-6 pt-4 grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
         
-        {/* Left column: Preset Testing & Controls */}
-        <div className="lg:col-span-4 space-y-6 bg-slate-900/50 border border-violet-900/25 p-5 rounded-3xl">
-          <div className="flex items-center gap-2 mb-2">
-            <Sliders className="text-violet-400 w-4 h-4" />
-            <h3 className="font-bold text-sm text-slate-200">Panel de Control de Módulos Operativos</h3>
-          </div>
+        {/* ======================================================= */}
+        {/* LEFT COLUMN: CATALOG SEARCH & PRODUCT GRID              */}
+        {/* ======================================================= */}
+        <section className="lg:col-span-7 xl:col-span-8 space-y-4">
           
-          <p className="text-[10px] text-slate-400 leading-relaxed">
-            Activa o desactiva las características en tiempo real para observar la inyección dinámica de componentes en la vista del cajero.
-          </p>
-
-          <div className="space-y-3 pt-2">
-            {Object.keys(demoFeatures).map((key) => {
-              const name = key as keyof typeof demoFeatures;
-              const isEnabled = demoFeatures[name];
-              return (
+          {/* Search Bar + Barcode Input */}
+          <div className="bg-slate-900/80 backdrop-blur-md p-3 sm:p-4 rounded-2xl border border-violet-900/30 shadow-md space-y-3">
+            <div className="relative flex items-center">
+              <Search size={18} className="absolute left-3.5 text-violet-400 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Buscar por nombre, marca o código de barras (Enter para agregar)..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && filteredProducts.length > 0) {
+                    e.preventDefault();
+                    addToCart(filteredProducts[0]);
+                    setSearchQuery("");
+                  }
+                }}
+                className="w-full bg-black/60 border border-violet-800/40 rounded-xl pl-10 pr-10 py-2.5 text-xs sm:text-sm font-semibold text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all"
+              />
+              {searchQuery && (
                 <button
-                  key={name}
-                  onClick={() => setDemoFeatures(prev => ({ ...prev, [name]: !prev[name] }))}
-                  className="flex items-center justify-between w-full p-3 rounded-xl border border-violet-950 bg-black/30 hover:bg-black/50 transition-all text-left cursor-pointer group"
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 text-slate-400 hover:text-white p-1"
                 >
-                  <div>
-                    <span className="text-[11px] font-bold text-slate-300 capitalize block">
-                      {name.replace("_", " ")}
+                  <X size={16} />
+                </button>
+              )}
+            </div>
+
+            {/* Category Filter Pills */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 hide-scrollbar">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-bold whitespace-nowrap transition-all cursor-pointer border ${
+                    selectedCategory === cat
+                      ? "bg-violet-600 text-white border-violet-500 shadow-md shadow-violet-600/30 scale-[1.02]"
+                      : "bg-slate-950/70 text-slate-400 hover:text-white border-slate-800 hover:bg-slate-900"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Product Grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-3.5">
+            {filteredProducts.map((p: any) => {
+              const inCartItem = cartMap.get(p.id);
+              const priceBs = (p.priceUSD || 0) * bcvRate;
+              const hasStock = p.stock === undefined || p.stock > 0;
+
+              return (
+                <div
+                  key={p.id}
+                  onClick={() => hasStock && addToCart(p)}
+                  className={`relative p-3 rounded-2xl border transition-all flex flex-col justify-between group active:scale-95 ${
+                    hasStock
+                      ? "bg-slate-900/70 hover:bg-slate-900 border-violet-950 hover:border-violet-600/50 cursor-pointer shadow-sm hover:shadow-lg hover:shadow-violet-950/50"
+                      : "bg-slate-950/50 border-slate-900 opacity-50 cursor-not-allowed"
+                  }`}
+                >
+                  {/* Cart count badge */}
+                  {inCartItem && (
+                    <span className="absolute -top-1.5 -right-1.5 h-6 w-6 rounded-full bg-emerald-500 text-slate-950 font-black text-xs flex items-center justify-center shadow-md animate-scale-in z-10">
+                      {inCartItem.qty}
                     </span>
-                    <span className="text-[9px] text-slate-500">
-                      FeatureFlag name="{name}"
+                  )}
+
+                  {/* Image or Icon */}
+                  <div className="w-full h-24 sm:h-28 rounded-xl bg-slate-950 overflow-hidden flex items-center justify-center relative mb-2 border border-white/5">
+                    {p.imgUrl || p.image ? (
+                      <img 
+                        src={p.imgUrl || p.image} 
+                        alt={p.name} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                        loading="lazy"
+                        onError={(e: any) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <Package size={32} className="text-violet-500/40" />
+                    )}
+                    <span className="absolute bottom-1 left-1 text-[9px] font-mono px-1.5 py-0.2 rounded bg-black/75 text-slate-400">
+                      {p.category || "General"}
                     </span>
                   </div>
-                  {isEnabled ? (
-                    <ToggleRight className="text-emerald-400 w-8 h-8 transition-transform group-active:scale-95" />
-                  ) : (
-                    <ToggleLeft className="text-slate-600 w-8 h-8 transition-transform group-active:scale-95" />
-                  )}
-                </button>
+
+                  {/* Info */}
+                  <div>
+                    <h3 className="text-xs sm:text-sm font-bold text-white group-hover:text-violet-300 line-clamp-2 leading-tight">
+                      {p.name}
+                    </h3>
+                    {p.barcode && (
+                      <span className="text-[9px] font-mono text-slate-500 block truncate mt-0.5">
+                        {p.barcode}
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Price & Stock */}
+                  <div className="mt-2.5 pt-2 border-t border-white/5 flex items-end justify-between">
+                    <div>
+                      <span className="text-sm sm:text-base font-black text-emerald-400 block font-mono">
+                        {formatUSD(p.priceUSD || 0)}
+                      </span>
+                      <span className="text-[10px] font-mono text-slate-400 block font-semibold">
+                        Bs. {priceBs.toFixed(2)}
+                      </span>
+                    </div>
+
+                    <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded font-bold ${
+                      hasStock 
+                        ? (p.stock && p.stock < 5 ? "bg-amber-950/50 text-amber-400" : "bg-emerald-950/40 text-emerald-400")
+                        : "bg-red-950/50 text-red-400"
+                    }`}>
+                      {hasStock ? `${p.stock ?? '∞'} u.` : "Agotado"}
+                    </span>
+                  </div>
+                </div>
               );
             })}
           </div>
 
-          <div className="bg-violet-950/20 border border-violet-900/50 rounded-2xl p-4 text-left">
-            <span className="text-[9px] font-black uppercase text-violet-400 flex items-center gap-1.5 mb-1.5">
-              <Layers size={12} /> Nota de Ingeniería
-            </span>
-            <p className="text-[10px] text-slate-400 leading-relaxed">
-              Las flags modifican de forma inmediata la estructura del DOM evitando montar nodos inútiles mediante lógica cortocircuito (Short-circuit Evaluation).
-            </p>
-          </div>
-        </div>
-
-        {/* Right column: POS Cashier Panel */}
-        <div className="lg:col-span-8 space-y-6">
-          
-          {/* Main cashier console */}
-          <div className="bg-black/40 border border-violet-900/30 rounded-[2rem] p-6 space-y-6 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/5 rounded-full blur-2xl pointer-events-none"></div>
-
-            <div className="flex justify-between items-center border-b border-violet-950 pb-4">
-              <h4 className="font-black text-sm text-slate-200 uppercase tracking-wider flex items-center gap-2">
-                <Database size={16} className="text-violet-400" /> Venta en Proceso
-              </h4>
-              <span className="text-[10px] text-slate-500 font-mono">Terminal ID: AXIS-POS-1002</span>
+          {filteredProducts.length === 0 && (
+            <div className="bg-slate-900/40 border border-dashed border-violet-900/30 rounded-2xl p-10 text-center space-y-2">
+              <Search size={32} className="mx-auto text-violet-500/40" />
+              <p className="text-sm font-bold text-slate-400">No se encontraron productos con ese término.</p>
+              <button
+                type="button"
+                onClick={() => { setSearchQuery(""); setSelectedCategory("Todos"); }}
+                className="px-3 py-1.5 rounded-lg bg-violet-600/30 hover:bg-violet-600/50 text-violet-300 text-xs font-bold transition-all"
+              >
+                Limpiar Filtros
+              </button>
             </div>
+          )}
 
-            {/* Product card */}
-            <div className="bg-slate-900/80 border border-violet-900/20 p-4 rounded-2xl flex justify-between items-center gap-3">
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">Artículo Seleccionado</p>
-                  <button
-                    type="button"
-                    onClick={() => setShowBarcodeScanner(true)}
-                    className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-violet-600/30 hover:bg-violet-600/50 border border-violet-500/40 text-violet-200 text-[10px] font-bold transition-all cursor-pointer shadow-sm active:scale-95"
-                    title="Escanear con cámara del teléfono"
-                  >
-                    <Camera size={12} className="text-amber-400" />
-                    <span>Escanear Cámara</span>
-                  </button>
-                </div>
-                <p className="text-lg font-black text-white mt-0.5 truncate">{selectedProduct.name}</p>
-                <p className="text-xs text-violet-300 font-bold mt-1">Precio Base: {formatUSD(basePrice)}</p>
+          {/* Collapsible Feature Flags Drawer */}
+          <div className="bg-slate-900/40 border border-violet-900/25 rounded-2xl p-3.5 space-y-2.5">
+            <button
+              type="button"
+              onClick={() => setShowFeatureDrawer(!showFeatureDrawer)}
+              className="w-full flex items-center justify-between text-xs font-bold text-slate-400 hover:text-white transition-colors cursor-pointer"
+            >
+              <div className="flex items-center gap-2">
+                <Sliders size={14} className="text-violet-400" />
+                <span>Módulos de Negocio Activos (Preset: {businessPreset})</span>
               </div>
-              <div className="text-right shrink-0">
-                <p className="text-2xl font-black text-white">{formatUSD(basePrice)}</p>
-                <p className="text-[9px] text-slate-500">En stock: {selectedProduct.stock} u.</p>
-              </div>
-            </div>
+              {showFeatureDrawer ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+            </button>
 
-            {/* Visual injection of Flag-Dependent modules */}
-            <div className="space-y-4">
-              <p className="text-[10px] font-black uppercase text-violet-400 tracking-wider">
-                Módulos de Negocio Dinámicos
-              </p>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                
-                {/* 1. Module Escandallos (Añadir Mililitros) */}
-                {demoFeatures.escandallos && (
-                  <div className="bg-gradient-to-r from-violet-900/30 to-violet-950/20 border border-violet-800/40 p-4 rounded-2xl flex flex-col justify-between gap-3 animate-fade-in">
-                    <div className="flex items-center gap-2">
-                      <Flame className="text-amber-500 w-4 h-4" />
-                      <span className="text-xs font-black text-slate-200">Módulo de Escandallos (Fluidos)</span>
-                    </div>
-                    <button 
-                      onClick={() => showToast("Simulado: Se añadieron +100ml de cerveza de barril al cálculo de receta.", "success")}
-                      className="w-full bg-amber-500 hover:bg-amber-400 text-black text-xs font-black py-2.5 rounded-xl cursor-pointer transition-colors border-none flex items-center justify-center gap-1.5"
+            {showFeatureDrawer && (
+              <div className="pt-2 border-t border-white/5 grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs animate-fade-in">
+                {Object.keys(demoFeatures).map((key) => {
+                  const name = key as keyof typeof demoFeatures;
+                  const isEnabled = demoFeatures[name];
+                  return (
+                    <div 
+                      key={name}
+                      onClick={() => setDemoFeatures(prev => ({ ...prev, [name]: !prev[name] }))}
+                      className="p-2 rounded-xl bg-black/40 border border-violet-950 flex items-center justify-between cursor-pointer hover:border-violet-700/50"
                     >
-                      <PlusCircle size={14} /> Añadir Mililitros
-                    </button>
-                  </div>
-                )}
-
-                {/* 2. Module Serial Tracking */}
-                {demoFeatures.serial_tracking && (
-                  <div className="bg-gradient-to-r from-violet-900/30 to-violet-950/20 border border-violet-800/40 p-4 rounded-2xl flex flex-col justify-between gap-2 animate-fade-in">
-                    <div className="flex items-center gap-2">
-                      <Binary className="text-violet-400 w-4 h-4" />
-                      <span className="text-xs font-black text-slate-200">Registro de Lote / Serial</span>
+                      <span className="text-[11px] font-bold text-slate-300 capitalize">{name.replace("_", " ")}</span>
+                      <span className={`text-[10px] font-black px-1.5 py-0.5 rounded ${isEnabled ? "bg-emerald-500/20 text-emerald-400" : "bg-slate-800 text-slate-500"}`}>
+                        {isEnabled ? "ACTIVO" : "OFF"}
+                      </span>
                     </div>
-                    <input 
-                      type="text" 
-                      placeholder="Escriba Serial o Lote..." 
-                      className="bg-black/50 border border-violet-900/50 rounded-lg p-2 text-xs font-mono text-violet-300 placeholder-slate-600 focus:outline-none"
-                    />
-                  </div>
-                )}
-
-                {/* 3. Module Room Management */}
-                {demoFeatures.room_management && (
-                  <div className="bg-gradient-to-r from-violet-900/30 to-violet-950/20 border border-violet-800/40 p-4 rounded-2xl flex flex-col justify-between gap-2 animate-fade-in">
-                    <div className="flex items-center gap-2">
-                      <TableProperties className="text-[#3B82F6] w-4 h-4" />
-                      <span className="text-xs font-black text-slate-200">Distribución de Espacios</span>
-                    </div>
-                    <select className="bg-black/50 border border-violet-900/50 rounded-lg p-2 text-xs font-bold text-slate-300 focus:outline-none cursor-pointer">
-                      <option value="barra">Barra Central</option>
-                      <option value="mesa1">Mesa N° 1</option>
-                      <option value="mesa2">Mesa N° 2</option>
-                      <option value="terraza">Terraza VIP</option>
-                    </select>
-                  </div>
-                )}
-
-                {/* 4. Module Weight Scale */}
-                {demoFeatures.weight_scale && (
-                  <div className="bg-gradient-to-r from-violet-900/30 to-violet-950/20 border border-violet-800/40 p-4 rounded-2xl flex flex-col justify-between gap-2 animate-fade-in">
-                    <div className="flex items-center gap-2">
-                      <Scale className="text-emerald-400 w-4 h-4" />
-                      <span className="text-xs font-black text-slate-200">Balanza Electrónica</span>
-                    </div>
-                    <div className="bg-black/60 border border-violet-900/30 rounded-xl p-2.5 text-center">
-                      <span className="font-mono text-base font-black text-emerald-400 animate-pulse">0.456 kg</span>
-                      <span className="text-[8px] text-slate-500 block uppercase font-bold mt-0.5">Sincronizado vía IoT Edge</span>
-                    </div>
-                  </div>
-                )}
-
-                {/* 5. Module Booking System */}
-                {demoFeatures.booking_system && (
-                  <div className="bg-gradient-to-r from-violet-900/30 to-violet-950/20 border border-violet-800/40 p-4 rounded-2xl flex flex-col justify-between gap-2 animate-fade-in">
-                    <div className="flex items-center gap-2">
-                      <Calendar className="text-[#F59E0B] w-4 h-4" />
-                      <span className="text-xs font-black text-slate-200">Agendar Cita / Reserva</span>
-                    </div>
-                    <input 
-                      type="datetime-local" 
-                      className="bg-black/50 border border-violet-900/50 rounded-lg p-2 text-xs text-slate-300 focus:outline-none cursor-pointer"
-                    />
-                  </div>
-                )}
-
+                  );
+                })}
               </div>
-              
-              {/* If no flags are enabled, show simple feedback */}
-              {!demoFeatures.escandallos && !demoFeatures.serial_tracking && !demoFeatures.room_management && !demoFeatures.weight_scale && !demoFeatures.booking_system && (
-                <div className="border border-dashed border-violet-900/20 bg-violet-950/5 rounded-2xl p-6 text-center text-slate-500 text-xs font-bold">
-                  Ningún módulo adicional inyectado para este Preset. El POS opera en modo puro estándar.
-                </div>
+            )}
+          </div>
+
+        </section>
+
+        {/* ======================================================= */}
+        {/* RIGHT COLUMN: MULTI-ITEM CART & SPEED CHECKOUT          */}
+        {/* (Visible as side panel on desktop, bottom sheet on mobile)*/}
+        {/* ======================================================= */}
+        <aside className="hidden lg:block lg:col-span-5 xl:col-span-4 sticky top-20 space-y-4">
+          <CartPanel 
+            cart={cart}
+            totalItemCount={totalItemCount}
+            cartSubtotalUSD={cartSubtotalUSD}
+            applyIva={applyIva}
+            setApplyIva={setApplyIva}
+            ivaUSD={ivaUSD}
+            igtfUSD={igtfUSD}
+            effectivePointsToBurn={effectivePointsToBurn}
+            maxPointsAllowed={maxPointsAllowed}
+            setAxisPointsToBurn={setAxisPointsToBurn}
+            pointsDiscountUSD={pointsDiscountUSD}
+            totalDueUSD={totalDueUSD}
+            totalDueBs={totalDueBs}
+            bcvRate={bcvRate}
+            paymentMethod={paymentMethod}
+            setPaymentMethod={setPaymentMethod}
+            quickCashUSD={quickCashUSD}
+            setQuickCashUSD={setQuickCashUSD}
+            customerPhone={customerPhone}
+            setCustomerPhone={setCustomerPhone}
+            customerName={customerName}
+            setCustomerName={setCustomerName}
+            paymentReference={paymentReference}
+            setPaymentReference={setPaymentReference}
+            handlePasteClipboard={handlePasteClipboard}
+            updateCartQty={updateCartQty}
+            removeFromCart={removeFromCart}
+            clearCart={clearCart}
+            handleConfirmSale={handleConfirmSale}
+            setShowChangeCalculator={setShowChangeCalculator}
+            formatUSD={formatUSD}
+            merchantInfo={merchantInfo}
+          />
+        </aside>
+
+      </main>
+
+      {/* ========================================================= */}
+      {/* MOBILE STICKY FLOATING CART BAR (Samsung S25 Ultra Optimized) */}
+      {/* ========================================================= */}
+      <div className="lg:hidden fixed bottom-3 left-3 right-3 z-30 pointer-events-auto safe-pb pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        <div className="bg-slate-900/95 backdrop-blur-2xl border border-violet-500/40 rounded-2xl p-3 shadow-[0_10px_35px_rgba(0,0,0,0.7)] flex items-center justify-between gap-3">
+          <div 
+            onClick={() => setShowMobileCartDrawer(true)}
+            className="flex items-center gap-2.5 cursor-pointer flex-1 min-w-0"
+          >
+            <div className="relative p-2.5 rounded-xl bg-violet-600/30 text-violet-300 border border-violet-500/40 shrink-0">
+              <ShoppingCart size={18} />
+              {totalItemCount > 0 && (
+                <span className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-emerald-500 text-slate-950 font-black text-[10px] flex items-center justify-center">
+                  {totalItemCount}
+                </span>
               )}
             </div>
 
-            {/* Unaltered Financial Core block */}
-            <div className="bg-slate-900/90 border border-violet-900/40 p-5 rounded-2xl space-y-4">
-              <div className="flex items-center gap-2 text-emerald-400">
-                <CheckCircle2 size={16} />
-                <h5 className="font-black text-xs uppercase tracking-wider">Núcleo Financiero Protegido (Axis Core)</h5>
+            <div className="min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="text-sm font-black text-white font-mono">{formatUSD(totalDueUSD)}</span>
+                <span className="text-[11px] font-mono text-emerald-400 font-bold">(Bs. {totalDueBs.toFixed(2)})</span>
               </div>
-
-              <div className="grid grid-cols-2 gap-4 text-xs font-medium border-b border-violet-950 pb-3">
-                <div className="space-y-1">
-                  <p className="text-slate-500">Base Imponible:</p>
-                  <p className="text-white font-bold">{formatUSD(basePrice)}</p>
-                </div>
-                <div className="space-y-1 text-right">
-                  <p className="text-slate-500">Tasa Flat Rate Operativa (2%):</p>
-                  <p className="text-red-400 font-bold">-{formatUSD(flatRateFee)}</p>
-                </div>
-              </div>
-
-              {/* Accumulation/Redemption Slider */}
-              <div className="space-y-2">
-                <div className="flex justify-between text-xs font-bold">
-                  <span className="text-violet-300">Canjear Axis Points (Máx 50%)</span>
-                  <span className="text-slate-400">Límite: {maxPointsAllowed} AP</span>
-                </div>
-                <input 
-                  type="range"
-                  min="0"
-                  max={maxPointsAllowed}
-                  step="50"
-                  value={effectivePointsToBurn}
-                  onChange={(e) => setAxisPointsToBurn(Math.min(parseInt(e.target.value) || 0, maxPointsAllowed))}
-                  className="w-full accent-violet-500"
-                />
-                <div className="flex justify-between text-[11px] font-black text-violet-400">
-                  <span>{effectivePointsToBurn} Axis Points</span>
-                  <span>Descuento: -{formatUSD(pointsDiscount)}</span>
-                </div>
-              </div>
-
-              {/* Payment selector */}
-              <div>
-                <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest block mb-1.5">Método de Cobro</label>
-                <select 
-                  value={paymentMethod} 
-                  onChange={(e) => setPaymentMethod(e.target.value)} 
-                  className="w-full bg-black/60 border border-violet-900/50 rounded-xl p-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-violet-500 cursor-pointer font-bold"
-                >
-                  <option value="cash_usd">Efectivo (USD)</option>
-                  <option value="cash_bs">Pago Móvil (Bs)</option>
-                  <option value="hybrid">Ghost Trap (Pago Mixto)</option>
-                </select>
-              </div>
-
-              {/* Ghost Trap split details */}
-              {ghostTrapSplit && (
-                <div className="bg-violet-950/20 border border-violet-900/30 p-3 rounded-xl space-y-1.5 font-mono text-[10px] text-slate-300">
-                  <p className="text-amber-400 font-black flex items-center gap-1.5">
-                    <Sliders size={12} /> PROTOCOLO GHOST TRAP ACTIVADO
-                  </p>
-                  <p>&gt; Puntos a debitar: {ghostTrapSplit.pointsBurned} AP (equivale a {formatUSD(ghostTrapSplit.pointsUSD)})</p>
-                  <p>&gt; Balance Cash faltante: {formatUSD(ghostTrapSplit.cashUSD)}</p>
-                  <p>&gt; Tasa de conversión BCV: {rates?.USD || 36.45} Bs/USD</p>
-                  <p>&gt; Pago en Bs requerido: {ghostTrapSplit.cashBs.toFixed(2)} Bs.</p>
-                </div>
-              )}
-
-              {/* Asistente Táctil de Vueltos Automáticos (Quick Cash Assistant) */}
-              <div className="bg-slate-900/60 border border-violet-800/30 p-3.5 rounded-2xl space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-black uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
-                    <Coins size={13} className="text-amber-400" /> Vueltos Automáticos en Caja
-                  </span>
-                  {quickCashUSD !== null && (
-                    <button 
-                      type="button" 
-                      onClick={() => setQuickCashUSD(null)}
-                      className="text-[10px] text-slate-400 hover:text-amber-300 font-bold cursor-pointer"
-                    >
-                      Limpiar
-                    </button>
-                  )}
-                </div>
-                
-                {/* Denomination Pills */}
-                <div className="flex flex-wrap gap-1.5">
-                  {[5, 10, 20, 50, 100].map((denom) => (
-                    <button
-                      key={denom}
-                      type="button"
-                      onClick={() => {
-                        playCashDrawerSound();
-                        setQuickCashUSD(denom);
-                      }}
-                      className={`px-2.5 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer border ${
-                        quickCashUSD === denom
-                          ? "bg-amber-400 text-slate-950 border-amber-300 shadow-md shadow-amber-400/20"
-                          : "bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700 hover:bg-slate-900"
-                      }`}
-                    >
-                      ${denom}
-                    </button>
-                  ))}
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      playCashDrawerSound();
-                      setQuickCashUSD(totalDueUSD);
-                    }}
-                    className="px-2.5 py-1.5 rounded-xl text-xs font-black bg-emerald-950/60 border border-emerald-500/40 text-emerald-400 hover:bg-emerald-900/60 transition-all cursor-pointer"
-                  >
-                    Monto Exacto
-                  </button>
-                </div>
-
-                {/* Math Result Box */}
-                {quickCashUSD !== null && (
-                  <div className={`p-2.5 rounded-xl border font-mono text-xs flex items-center justify-between animate-in fade-in duration-150 ${
-                    quickCashUSD >= totalDueUSD 
-                      ? "bg-emerald-950/40 border-emerald-500/40 text-emerald-300"
-                      : "bg-amber-950/40 border-amber-500/40 text-amber-300"
-                  }`}>
-                    <div>
-                      <span className="text-[9px] uppercase tracking-wider block text-slate-400 font-bold">
-                        {quickCashUSD >= totalDueUSD ? "Vuelto a Entregar:" : "Monto Faltante:"}
-                      </span>
-                      <span className="text-sm font-black">
-                        {quickCashUSD >= totalDueUSD 
-                          ? `$${(quickCashUSD - totalDueUSD).toFixed(2)} USD`
-                          : `$${(totalDueUSD - quickCashUSD).toFixed(2)} USD`}
-                      </span>
-                    </div>
-                    <div className="text-right">
-                      <span className="text-[9px] uppercase tracking-wider block text-slate-400 font-bold">Equivalente BCV:</span>
-                      <span className="text-xs font-bold text-white">
-                        {quickCashUSD >= totalDueUSD
-                          ? `Bs. ${((quickCashUSD - totalDueUSD) * (rates?.USD || 36.45)).toFixed(2)}`
-                          : `Bs. ${((totalDueUSD - quickCashUSD) * (rates?.USD || 36.45)).toFixed(2)}`}
-                      </span>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Totals */}
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 pt-3 border-t border-violet-950 font-black">
-                <div>
-                  <p className="text-[10px] text-slate-500 uppercase">Monto Total a Recibir</p>
-                  <p className="text-2xl text-white">{formatUSD(totalDueUSD)}</p>
-                </div>
-                
-                <div className="flex items-center gap-2 w-full sm:w-auto">
-                  <button
-                    onClick={() => setShowChangeCalculator(true)}
-                    className="flex-1 sm:flex-initial bg-violet-900/60 hover:bg-violet-800 text-violet-200 hover:text-white font-bold px-4 py-3.5 rounded-xl text-xs transition-all border border-violet-700/50 cursor-pointer flex items-center justify-center gap-1.5"
-                    title="Calcular Vueltos en $ y Bs"
-                  >
-                    <Calculator size={16} className="text-amber-400" />
-                    Vuelto Mixto
-                  </button>
-
-                  <button 
-                    onClick={handleChargeSubmit}
-                    className="flex-1 sm:flex-initial bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white font-black px-6 py-3.5 rounded-xl text-xs hover:scale-[1.02] active:scale-95 transition-all shadow-[0_5px_15px_rgba(16,185,129,0.3)] cursor-pointer border-none uppercase tracking-wider text-center"
-                  >
-                    Confirmar Cobro
-                  </button>
-                </div>
-              </div>
-
+              <span className="text-[10px] text-slate-400 block truncate">
+                {cart.length === 0 ? "Carrito vacío (toca para ver)" : `${totalItemCount} items • Toca para cobrar`}
+              </span>
             </div>
-
           </div>
 
+          <button
+            type="button"
+            disabled={cart.length === 0}
+            onClick={() => {
+              if (cart.length > 0) setShowMobileCartDrawer(true);
+            }}
+            className="px-4 py-2.5 rounded-xl font-black text-xs text-slate-950 bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-300 hover:to-teal-300 disabled:opacity-40 disabled:cursor-not-allowed shadow-md shadow-emerald-500/25 active:scale-95 transition-all cursor-pointer border border-emerald-300 shrink-0"
+          >
+            Cobrar Caja
+          </button>
         </div>
-
       </div>
 
-      {/* Modal de Calculadora de Vueltos Mixtos */}
+      {/* ========================================================= */}
+      {/* MOBILE FULL DRAWER MODAL FOR CART (Samsung S25 Ultra)      */}
+      {/* ========================================================= */}
+      {showMobileCartDrawer && (
+        <div className="lg:hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex flex-col justify-end animate-in fade-in duration-200">
+          <div className="bg-slate-900 border-t border-violet-500/40 rounded-t-[2rem] max-h-[90vh] flex flex-col overflow-hidden shadow-2xl safe-pb pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+            {/* Drawer Header */}
+            <div className="p-4 border-b border-white/10 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ShoppingCart size={18} className="text-violet-400" />
+                <h3 className="text-base font-black text-white">Carrito & Cobro ({totalItemCount} items)</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowMobileCartDrawer(false)}
+                className="p-1.5 rounded-full bg-white/10 text-slate-300 hover:text-white"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Scrollable Drawer Content */}
+            <div className="overflow-y-auto p-4 flex-1">
+              <CartPanel 
+                cart={cart}
+                totalItemCount={totalItemCount}
+                cartSubtotalUSD={cartSubtotalUSD}
+                applyIva={applyIva}
+                setApplyIva={setApplyIva}
+                ivaUSD={ivaUSD}
+                igtfUSD={igtfUSD}
+                effectivePointsToBurn={effectivePointsToBurn}
+                maxPointsAllowed={maxPointsAllowed}
+                setAxisPointsToBurn={setAxisPointsToBurn}
+                pointsDiscountUSD={pointsDiscountUSD}
+                totalDueUSD={totalDueUSD}
+                totalDueBs={totalDueBs}
+                bcvRate={bcvRate}
+                paymentMethod={paymentMethod}
+                setPaymentMethod={setPaymentMethod}
+                quickCashUSD={quickCashUSD}
+                setQuickCashUSD={setQuickCashUSD}
+                customerPhone={customerPhone}
+                setCustomerPhone={setCustomerPhone}
+                customerName={customerName}
+                setCustomerName={setCustomerName}
+                paymentReference={paymentReference}
+                setPaymentReference={setPaymentReference}
+                handlePasteClipboard={handlePasteClipboard}
+                updateCartQty={updateCartQty}
+                removeFromCart={removeFromCart}
+                clearCart={clearCart}
+                handleConfirmSale={handleConfirmSale}
+                setShowChangeCalculator={setShowChangeCalculator}
+                formatUSD={formatUSD}
+                merchantInfo={merchantInfo}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================= */}
+      {/* MODALS: RECEIPT, PIN, BLIND COUNT, SCANNER, CALCULATOR    */}
+      {/* ========================================================= */}
+      
+      {/* Receipt Thermal & WhatsApp Modal */}
+      {activeReceiptTx && (
+        <ReceiptModal
+          tx={activeReceiptTx}
+          product={{ name: activeReceiptTx.productName, clientName: activeReceiptTx.clientName }}
+          onClose={() => setActiveReceiptTx(null)}
+          formatUSD={formatUSD}
+          showToast={showToast}
+          currentUser={activeCashier || currentUser}
+        />
+      )}
+
+      {/* Cashier PIN Switcher Modal */}
+      {showPinModal && (
+        <QuickCashierPinModal
+          vendedores={db?.vendedores || []}
+          currentUser={activeCashier}
+          onSelectCashier={(vendedor) => {
+            setActiveCashier(vendedor);
+            setShowPinModal(false);
+            showToast(`Cajero activo: ${vendedor.name}`, "success");
+          }}
+          onClose={() => setShowPinModal(false)}
+          showToast={showToast}
+        />
+      )}
+
+      {/* Blind Cash Count & Z-Report Modal */}
+      {showBlindCountModal && (
+        <BlindCashCountModal
+          isOpen={showBlindCountModal}
+          onClose={() => setShowBlindCountModal(false)}
+          onConfirm={(auditData) => {
+            if (processBlindCashCount) {
+              processBlindCashCount({
+                vendedorId: activeCashier?.id || currentUser?.id,
+                clientId: activeMerchantId,
+                terminalName: "POS Terminal Mostrador",
+                ...auditData
+              });
+            }
+            setShowBlindCountModal(false);
+            playCashDrawerSound();
+            showToast("Cierre de caja (Z) registrado con éxito.", "success");
+          }}
+          bcvRate={bcvRate}
+          terminalName="POS Terminal Mostrador"
+          cashierName={activeCashier?.name || "Cajero Mostrador"}
+        />
+      )}
+
+      {/* Zero Hardware Optical Barcode Scanner (Camera) */}
+      {showBarcodeScanner && (
+        <ZeroHardwareBarcodeScanner
+          products={storeProducts}
+          onScan={(scannedCodeOrName) => {
+            const found = storeProducts.find(
+              (p: any) => p.name === scannedCodeOrName || p.barcode === scannedCodeOrName || p.id === scannedCodeOrName
+            );
+            if (found) {
+              addToCart(found);
+              showToast(`Escaneado: ${found.name}`, "success");
+            } else {
+              showToast(`Código no coincide con inventario: ${scannedCodeOrName}`, "warning");
+            }
+            setShowBarcodeScanner(false);
+          }}
+          onClose={() => setShowBarcodeScanner(false)}
+        />
+      )}
+
+      {/* Smart Change Calculator Modal */}
       {showChangeCalculator && (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-[99999] flex items-center justify-center p-4 animate-fade-in">
           <SmartChangeCalculator
             totalDueUSD={totalDueUSD}
-            bcvRate={rates?.USD || 36.45}
+            bcvRate={bcvRate}
             onClose={() => setShowChangeCalculator(false)}
             onApplyChange={(chUSD, chVES) => {
               showToast(`Vuelto registrado: $${chUSD.toFixed(2)} USD (Bs. ${chVES.toFixed(2)})`, "success");
@@ -539,59 +875,417 @@ export function AxisNitroPOS() {
         </div>
       )}
 
-      {/* Modal de PIN Rápido de Cajero */}
-      {showPinModal && (
-        <QuickCashierPinModal
-          vendedores={db?.vendedores || []}
-          currentUser={activeCashier || { name: "Cajero Principal", role: "vendedor" }}
-          onSelectCashier={(vendedor) => {
-            setActiveCashier(vendedor);
-            showToast(`Cajero activo: ${vendedor.name}`, "success");
-          }}
-          onClose={() => setShowPinModal(false)}
-          showToast={showToast}
-        />
+    </div>
+  );
+}
+
+// ===============================================================
+// REUSABLE CART & CHECKOUT PANEL COMPONENT (Used in desktop & mobile)
+// ===============================================================
+interface CartPanelProps {
+  cart: CartItem[];
+  totalItemCount: number;
+  cartSubtotalUSD: number;
+  applyIva: boolean;
+  setApplyIva: (val: boolean) => void;
+  ivaUSD: number;
+  igtfUSD: number;
+  effectivePointsToBurn: number;
+  maxPointsAllowed: number;
+  setAxisPointsToBurn: (val: number) => void;
+  pointsDiscountUSD: number;
+  totalDueUSD: number;
+  totalDueBs: number;
+  bcvRate: number;
+  paymentMethod: string;
+  setPaymentMethod: (val: string) => void;
+  quickCashUSD: number | null;
+  setQuickCashUSD: (val: number | null) => void;
+  customerPhone: string;
+  setCustomerPhone: (val: string) => void;
+  customerName: string;
+  setCustomerName: (val: string) => void;
+  paymentReference: string;
+  setPaymentReference: (val: string) => void;
+  handlePasteClipboard: () => void;
+  updateCartQty: (productId: string, delta: number) => void;
+  removeFromCart: (productId: string) => void;
+  clearCart: () => void;
+  handleConfirmSale: () => void;
+  setShowChangeCalculator: (val: boolean) => void;
+  formatUSD: (val: number) => string;
+  merchantInfo: any;
+}
+
+function CartPanel({
+  cart,
+  totalItemCount,
+  cartSubtotalUSD,
+  applyIva,
+  setApplyIva,
+  ivaUSD,
+  igtfUSD,
+  effectivePointsToBurn,
+  maxPointsAllowed,
+  setAxisPointsToBurn,
+  pointsDiscountUSD,
+  totalDueUSD,
+  totalDueBs,
+  bcvRate,
+  paymentMethod,
+  setPaymentMethod,
+  quickCashUSD,
+  setQuickCashUSD,
+  customerPhone,
+  setCustomerPhone,
+  customerName,
+  setCustomerName,
+  paymentReference,
+  setPaymentReference,
+  handlePasteClipboard,
+  updateCartQty,
+  removeFromCart,
+  clearCart,
+  handleConfirmSale,
+  setShowChangeCalculator,
+  formatUSD,
+  merchantInfo
+}: CartPanelProps) {
+  return (
+    <div className="bg-slate-900/90 backdrop-blur-xl border border-violet-900/40 rounded-3xl p-4 sm:p-5 shadow-2xl space-y-4">
+      
+      {/* Header Carrito */}
+      <div className="flex items-center justify-between pb-3 border-b border-white/10">
+        <div className="flex items-center gap-2">
+          <ShoppingCart size={18} className="text-violet-400" />
+          <h2 className="text-sm font-black text-white uppercase tracking-wider">
+            Ticket de Venta
+          </h2>
+          <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-violet-600/30 text-violet-300 font-mono">
+            {totalItemCount} u.
+          </span>
+        </div>
+
+        {cart.length > 0 && (
+          <button
+            type="button"
+            onClick={clearCart}
+            className="text-[10px] font-bold text-red-400 hover:text-red-300 transition-colors flex items-center gap-1 cursor-pointer"
+            title="Vaciar todos los productos del carrito"
+          >
+            <Trash2 size={12} />
+            <span>Vaciar</span>
+          </button>
+        )}
+      </div>
+
+      {/* Cart Items List */}
+      <div className="space-y-2 max-h-56 sm:max-h-64 overflow-y-auto pr-1">
+        {cart.map((item) => {
+          const itemTotal = (item.product.priceUSD || 0) * item.qty;
+          return (
+            <div 
+              key={item.product.id}
+              className="p-2.5 rounded-xl bg-black/40 border border-white/5 flex items-center justify-between gap-2"
+            >
+              <div className="min-w-0 flex-1">
+                <h4 className="text-xs font-bold text-slate-200 truncate">{item.product.name}</h4>
+                <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400 mt-0.5">
+                  <span>{formatUSD(item.product.priceUSD || 0)} c/u</span>
+                  <span>•</span>
+                  <span className="text-emerald-400 font-bold">{formatUSD(itemTotal)}</span>
+                </div>
+              </div>
+
+              {/* Quantity Controls (Minimum 44x44px Touch Targets) */}
+              <div className="flex items-center gap-1 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => updateCartQty(item.product.id, -1)}
+                  className="min-h-[44px] min-w-[44px] h-11 w-11 rounded-xl bg-white/10 hover:bg-white/20 text-white flex items-center justify-center font-black active:scale-90 cursor-pointer"
+                  title="Restar unidad"
+                >
+                  <Minus size={15} />
+                </button>
+                <span className="min-w-[24px] text-center text-xs font-black font-mono text-white px-0.5">
+                  {item.qty}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => updateCartQty(item.product.id, 1)}
+                  className="min-h-[44px] min-w-[44px] h-11 w-11 rounded-xl bg-violet-600 hover:bg-violet-500 text-white flex items-center justify-center font-black active:scale-90 cursor-pointer"
+                  title="Sumar unidad"
+                >
+                  <Plus size={15} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => removeFromCart(item.product.id)}
+                  className="min-h-[44px] min-w-[44px] h-11 w-11 rounded-xl flex items-center justify-center text-slate-500 hover:text-red-400 hover:bg-red-500/10 active:scale-90 cursor-pointer ml-0.5"
+                  title="Eliminar producto"
+                >
+                  <Trash2 size={15} />
+                </button>
+              </div>
+            </div>
+          );
+        })}
+
+        {cart.length === 0 && (
+          <div className="p-8 text-center text-slate-500 space-y-1">
+            <ShoppingCart size={28} className="mx-auto text-slate-600 opacity-50" />
+            <p className="text-xs font-bold">Carrito vacío</p>
+            <p className="text-[10px] text-slate-600">Toca productos o escanea código de barras</p>
+          </div>
+        )}
+      </div>
+
+      {/* Financial Summary & Tax Controls */}
+      <div className="bg-slate-950/80 p-3.5 rounded-2xl border border-white/5 space-y-2 text-xs font-medium">
+        <div className="flex justify-between text-slate-400 text-xs">
+          <span>Subtotal</span>
+          <span className="font-mono text-white font-bold">{formatUSD(cartSubtotalUSD)}</span>
+        </div>
+
+        {/* SENIAT Fiscal Checkbox */}
+        <label className="flex items-center justify-between text-[11px] cursor-pointer py-1 border-t border-white/5">
+          <div className="flex items-center gap-1.5 text-slate-300 font-bold">
+            <input 
+              type="checkbox" 
+              checked={applyIva} 
+              onChange={(e) => setApplyIva(e.target.checked)}
+              className="w-3.5 h-3.5 rounded accent-violet-600 cursor-pointer"
+            />
+            <span>Factura Fiscal (IVA 16%)</span>
+          </div>
+          {applyIva && <span className="font-mono text-amber-400">+{formatUSD(ivaUSD)}</span>}
+        </label>
+
+        {igtfUSD > 0 && (
+          <div className="flex justify-between text-[11px] text-red-400 font-mono">
+            <span>IGTF Divisas (3%)</span>
+            <span>+{formatUSD(igtfUSD)}</span>
+          </div>
+        )}
+
+        {/* Axis Points Redemption */}
+        {maxPointsAllowed > 0 && (
+          <div className="pt-1.5 border-t border-white/5 space-y-1">
+            <div className="flex justify-between text-[10px] font-bold">
+              <span className="text-violet-300">Puntos Axis Points</span>
+              <span className="text-slate-400">Máx: {maxPointsAllowed} AP</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max={maxPointsAllowed}
+              step="50"
+              value={effectivePointsToBurn}
+              onChange={(e) => setAxisPointsToBurn(parseInt(e.target.value) || 0)}
+              className="w-full accent-violet-500 h-1.5"
+            />
+            {pointsDiscountUSD > 0 && (
+              <div className="flex justify-between text-[10px] text-violet-400 font-black">
+                <span>{effectivePointsToBurn} AP quemados</span>
+                <span>-{formatUSD(pointsDiscountUSD)}</span>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Total Highlight */}
+        <div className="pt-2 border-t border-white/10 flex items-baseline justify-between">
+          <div>
+            <span className="text-[10px] font-black uppercase text-slate-400 block tracking-wider">Total a Cobrar</span>
+            <span className="text-xl sm:text-2xl font-black text-white font-mono">{formatUSD(totalDueUSD)}</span>
+          </div>
+          <div className="text-right">
+            <span className="text-[10px] text-slate-400 block">Tasa BCV:</span>
+            <span className="text-sm sm:text-base font-black text-emerald-400 font-mono">
+              Bs. {totalDueBs.toFixed(2)}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Payment Method Selector */}
+      <div className="space-y-1.5">
+        <label className="text-[10px] font-black uppercase tracking-wider text-slate-400 block">
+          Forma de Pago
+        </label>
+        <div className="grid grid-cols-2 gap-1.5">
+          {[
+            { id: "cash_usd", label: "💵 Efectivo $" },
+            { id: "cash_bs", label: "📱 Pago Móvil Bs" },
+            { id: "pos_integrated", label: "💳 Débito / Tarjeta" },
+            { id: "zelle", label: "⚡ Zelle" },
+            { id: "vale_credit", label: "🎫 Vale / Fiado" },
+            { id: "split_currency", label: "🔀 Pago Mixto" }
+          ].map((m) => (
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => {
+                setPaymentMethod(m.id);
+                setQuickCashUSD(null);
+              }}
+              className={`p-2 rounded-xl text-[11px] font-bold text-center transition-all cursor-pointer border ${
+                paymentMethod === m.id
+                  ? "bg-violet-600 text-white border-violet-400 shadow-sm"
+                  : "bg-black/40 text-slate-300 border-white/5 hover:bg-black/60"
+              }`}
+            >
+              {m.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Payment Details Section */}
+      {/* 1. EFECTIVO USD: Calculadora rápida de vueltos */}
+      {paymentMethod === "cash_usd" && (
+        <div className="bg-emerald-950/30 border border-emerald-500/30 p-3 rounded-2xl space-y-2 animate-fade-in">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-black uppercase text-emerald-300 flex items-center gap-1">
+              <Coins size={12} className="text-amber-400" /> Billetes Recibidos
+            </span>
+            {quickCashUSD !== null && (
+              <button 
+                type="button" 
+                onClick={() => setQuickCashUSD(null)}
+                className="text-[10px] text-slate-400 hover:text-white"
+              >
+                Limpiar
+              </button>
+            )}
+          </div>
+
+          <div className="flex flex-wrap gap-1.5">
+            <button
+              type="button"
+              onClick={() => {
+                playCashDrawerSound();
+                setQuickCashUSD(totalDueUSD);
+              }}
+              className="min-h-[44px] min-w-[44px] px-3 py-2 rounded-xl text-xs font-black bg-emerald-600 text-white hover:bg-emerald-500 flex items-center justify-center cursor-pointer active:scale-95 transition-all shadow-xs"
+            >
+              Exacto
+            </button>
+            {[1, 5, 10, 20, 50, 100].map((b) => (
+              <button
+                key={b}
+                type="button"
+                onClick={() => {
+                  playCashDrawerSound();
+                  setQuickCashUSD(b);
+                }}
+                className={`min-h-[44px] min-w-[44px] px-3 py-2 rounded-xl text-xs font-black border flex items-center justify-center cursor-pointer active:scale-95 transition-all ${
+                  quickCashUSD === b
+                    ? "bg-amber-400 text-slate-950 border-amber-300 shadow-md shadow-amber-400/30 scale-105"
+                    : "bg-slate-900 text-slate-200 border-white/10 hover:bg-slate-800"
+                }`}
+              >
+                ${b}
+              </button>
+            ))}
+          </div>
+
+          {quickCashUSD !== null && (
+            <div className={`p-2 rounded-xl border text-xs font-mono flex items-center justify-between ${
+              quickCashUSD >= totalDueUSD ? "bg-emerald-950/60 border-emerald-500/50 text-emerald-300" : "bg-red-950/60 border-red-500/50 text-red-300"
+            }`}>
+              <div>
+                <span className="text-[9px] uppercase font-bold block text-slate-400">
+                  {quickCashUSD >= totalDueUSD ? "Vuelto a Entregar:" : "Faltante:"}
+                </span>
+                <span className="text-sm font-black">
+                  {quickCashUSD >= totalDueUSD ? `$${(quickCashUSD - totalDueUSD).toFixed(2)} USD` : `$${(totalDueUSD - quickCashUSD).toFixed(2)} USD`}
+                </span>
+              </div>
+              <div className="text-right">
+                <span className="text-[9px] uppercase font-bold block text-slate-400">En Bolívares:</span>
+                <span className="text-xs font-bold text-white">
+                  Bs. {Math.abs((quickCashUSD - totalDueUSD) * bcvRate).toFixed(2)}
+                </span>
+              </div>
+            </div>
+          )}
+        </div>
       )}
 
-      {/* Modal de Recibo Térmico & WhatsApp Smart Receipt */}
-      {activeReceiptTx && (
-        <ReceiptModal
-          tx={activeReceiptTx}
-          product={selectedProduct}
-          onClose={() => setActiveReceiptTx(null)}
-          formatUSD={formatUSD}
-          showToast={showToast}
-          currentUser={activeCashier || kfsUser || { name: "Cajero Principal", role: "vendedor" }}
-        />
+      {/* 2. PAGO MÓVIL: Datos bancarios del comercio & Pegar Ref */}
+      {paymentMethod === "cash_bs" && (
+        <div className="bg-slate-950/70 border border-violet-800/30 p-3 rounded-2xl space-y-2 animate-fade-in text-xs">
+          <div className="text-[11px] font-mono text-slate-300 space-y-0.5">
+            <p>Banco: <strong className="text-white">{merchantInfo?.paymentMethods?.pagoMovil?.bank || "Banesco (0134)"}</strong></p>
+            <p>Teléfono: <strong className="text-white">{merchantInfo?.paymentMethods?.pagoMovil?.phone || "0412-5551234"}</strong></p>
+            <p>RIF: <strong className="text-white">{merchantInfo?.paymentMethods?.pagoMovil?.idCard || "J-408192841"}</strong></p>
+          </div>
+
+          <div className="flex items-center gap-1.5 pt-1">
+            <input
+              type="text"
+              placeholder="Referencia (4 a 12 dígitos)..."
+              value={paymentReference}
+              onChange={(e) => setPaymentReference(e.target.value)}
+              className="flex-1 bg-black/50 border border-white/10 rounded-xl px-2.5 py-1.5 text-xs font-mono text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
+            />
+            <button
+              type="button"
+              onClick={handlePasteClipboard}
+              className="px-2.5 py-1.5 bg-violet-600 hover:bg-violet-500 text-white rounded-xl text-[10px] font-bold active:scale-95 shrink-0"
+              title="Pegar referencia del portapapeles"
+            >
+              Pegar
+            </button>
+          </div>
+        </div>
       )}
 
-      {/* Modal de Escáner Zero-Hardware con Cámara */}
-      {showBarcodeScanner && (
-        <ZeroHardwareBarcodeScanner
-          products={db?.products || []}
-          onScan={(scannedName) => {
-            const matched = (db?.products || []).find((p: any) => p.name === scannedName);
-            if (matched) {
-              setSelectedProduct({
-                name: matched.name,
-                priceUSD: matched.priceUSD || matched.price || 1.50,
-                stock: matched.stock || 30
-              });
-            } else {
-              setSelectedProduct({
-                name: scannedName,
-                priceUSD: 2.50,
-                stock: 50
-              });
-            }
-            showToast(`¡Código escaneado! Producto cargado al POS.`, "success");
-            setShowBarcodeScanner(false);
-          }}
-          onClose={() => setShowBarcodeScanner(false)}
+      {/* Customer Info (Phone & Name for WhatsApp Receipt & Loyalty) */}
+      <div className="grid grid-cols-2 gap-2 text-xs">
+        <input
+          type="tel"
+          placeholder="WhatsApp (0414...)"
+          value={customerPhone}
+          onChange={(e) => setCustomerPhone(e.target.value)}
+          className="bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500 font-mono"
         />
-      )}
+        <input
+          type="text"
+          placeholder="Nombre Cliente"
+          value={customerName}
+          onChange={(e) => setCustomerName(e.target.value)}
+          className="bg-black/40 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-violet-500"
+        />
+      </div>
+
+      {/* Action Buttons: Confirm & Smart Vueltos */}
+      <div className="pt-2 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setShowChangeCalculator(true)}
+          className="p-3 bg-white/5 hover:bg-white/15 border border-white/10 text-amber-300 rounded-xl text-xs font-bold transition-all cursor-pointer active:scale-95 shrink-0"
+          title="Calculadora avanzada de vueltos mixtos en dólares y bolívares"
+        >
+          <Calculator size={16} />
+        </button>
+
+        <button
+          type="button"
+          disabled={cart.length === 0}
+          onClick={handleConfirmSale}
+          className="flex-1 py-3.5 rounded-xl font-black text-xs sm:text-sm text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400 hover:from-emerald-300 hover:to-teal-200 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-emerald-500/30 active:scale-95 transition-all cursor-pointer border border-emerald-300 uppercase tracking-wider flex items-center justify-center gap-2"
+        >
+          <span>Cobrar {formatUSD(totalDueUSD)}</span>
+          <span className="text-[10px] font-mono font-black opacity-85 px-1 py-0.5 rounded bg-emerald-600/30">
+            Bs. {totalDueBs.toFixed(2)}
+          </span>
+        </button>
+      </div>
 
     </div>
   );
 }
+
 export default AxisNitroPOS;

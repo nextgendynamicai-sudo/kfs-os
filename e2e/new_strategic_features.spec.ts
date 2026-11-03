@@ -31,7 +31,7 @@ test.describe('KFS OS - Suite de Pruebas: 5 Nuevas Funcionalidades Estratégicas
     await expect(posHeader).toBeVisible({ timeout: 15000 });
 
     // Verificar que el botón de cobro está presente
-    const chargeBtn = page.getByText(/Confirmar Cobro/i).first();
+    const chargeBtn = page.locator('button:has-text("Cobrar"):visible, button:has-text("Cobrar Caja"):visible').first();
     await expect(chargeBtn).toBeVisible();
   });
 

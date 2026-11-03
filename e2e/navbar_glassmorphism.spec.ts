@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test';
 
 test.describe('KFS OS - Glassmorphism Navbar & Million-Dollar Clean Brand Verification', () => {
   test('Navbar renders translucent glassmorphism with AXIS NITRO branding and commercial clean buttons on public view', async ({ page }) => {
-    await page.goto('http://localhost:3000/#login');
+    await page.goto('/#login');
     await page.waitForLoadState('networkidle');
 
     // Verify brand typography within navbar

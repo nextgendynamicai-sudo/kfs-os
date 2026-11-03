@@ -16,6 +16,12 @@ export function PwaUpdater() {
           msg.includes("Unexpected token") ||
           msg.includes("Failed to fetch dynamically imported module")
         ) {
+          // If offline, do NOT wipe cache and do NOT reload to avoid offline white-screen crash loop
+          if (typeof navigator !== "undefined" && !navigator.onLine) {
+            console.warn("[PWA] Chunk error detectado mientras está offline. Omitiendo borrado de caché para evitar bucle de pantalla blanca.");
+            return;
+          }
+
           console.warn("[PWA] Chunk de código obsoleto detectado. Actualizando caché...");
           if ("caches" in window) {
             caches.keys().then((names) => {
@@ -28,6 +34,7 @@ export function PwaUpdater() {
       window.addEventListener("error", handleChunkError);
 
       if ("serviceWorker" in navigator) {
+        const hadController = Boolean(navigator.serviceWorker.controller);
         navigator.serviceWorker.register("/sw.js").then((registration) => {
           if (registration.waiting) {
             setWaitingWorker(registration.waiting);
@@ -49,6 +56,7 @@ export function PwaUpdater() {
 
         let refreshing = false;
         navigator.serviceWorker.addEventListener("controllerchange", () => {
+          if (!hadController) return; // Do not reload on initial installation
           if (!refreshing) {
             refreshing = true;
             window.location.reload();

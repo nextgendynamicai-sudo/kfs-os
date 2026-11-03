@@ -5,8 +5,10 @@ import { KFS_BRAND } from "../config/brandConfig";
 import { Camera, Palette, Truck, Globe, Copy, Check, ExternalLink, QrCode, Store, CreditCard } from "lucide-react";
 import { compressImage, resolveThemeColor } from "../lib/utils";
 import { QRCodeSVG } from "qrcode.react";
+import { useKFS } from "../context/KFSContext";
 
 export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: any, updateStoreSettings: any }) => {
+  const { showToast } = useKFS() as any;
   const [copied, setCopied] = useState(false);
   const [showQr, setShowQr] = useState(false);
 
@@ -35,6 +37,7 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
 
   const handleSave = () => {
     updateStoreSettings(client.id, settings);
+    if (showToast) showToast("Configuración de tienda guardada exitosamente", "success");
   };
 
   const handleProfilePicUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,8 +46,9 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
       try {
         const base64 = await compressImage(file, 200, 0.5);
         setSettings((prev: any) => ({ ...prev, profilePicUrl: base64 }));
+        if (showToast) showToast("Foto de perfil actualizada", "success");
       } catch (err) {
-        alert("Error al comprimir/subir imagen");
+        if (showToast) showToast("Error al comprimir/subir imagen", "error");
       }
     }
   };
@@ -55,8 +59,9 @@ export const StorefrontCustomizer = ({ client, updateStoreSettings }: { client: 
       try {
         const base64 = await compressImage(file, 600, 0.5);
         setSettings((prev: any) => ({ ...prev, coverPhotoUrl: base64 }));
+        if (showToast) showToast("Banner de portada actualizado", "success");
       } catch (err) {
-        alert("Error al comprimir/subir imagen");
+        if (showToast) showToast("Error al comprimir/subir imagen", "error");
       }
     }
   };

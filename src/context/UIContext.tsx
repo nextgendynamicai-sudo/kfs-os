@@ -40,6 +40,9 @@ export const UIProvider = ({ children }: { children: ReactNode }) => {
       if (hash && hash !== "landing") {
         return hash;
       }
+      if (searchParams.get("demo") === "true") {
+        return "client";
+      }
       if (role || ref) {
         return "login";
       }
@@ -57,7 +60,7 @@ export const UIProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const [toast, setToast] = useState<ToastState>({ show: false, message: "", type: "success" });
-  const [networkState, setNetworkState] = useState<"online" | "offline" | "syncing" | "mesh">("online");
+  const [networkState, setNetworkState] = useState<"online" | "offline" | "syncing" | "mesh">(() => typeof navigator !== 'undefined' ? (navigator.onLine ? "online" : "offline") : "online");
   const [ghostTrapLocked, setGhostTrapLocked] = useState(false);
 
   const showToast = React.useCallback((message: string, type: "success" | "error" | "info" | "warning" = "success", action?: ToastAction) => {

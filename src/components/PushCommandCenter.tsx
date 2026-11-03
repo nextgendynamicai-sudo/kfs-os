@@ -5,7 +5,7 @@ import { ImageUploadWidget } from "./ImageUploadWidget";
 import { useKFS } from "../context/KFSContext";
 
 export function PushCommandCenter({ currentUser }: any) {
-  const { sendNotification } = useKFS();
+  const { sendNotification, showToast } = useKFS() as any;
   const [roles, setRoles] = useState<Record<string, boolean>>({
     todos: false,
     clientes: false,
@@ -39,13 +39,13 @@ export function PushCommandCenter({ currentUser }: any) {
 
   const handleSend = async () => {
     if (!title || !message) {
-      alert("Título y Mensaje son obligatorios.");
+      if (showToast) showToast("Título y Mensaje son obligatorios.", "error");
       return;
     }
 
     const selectedRoles = Object.entries(roles).filter(([k, v]) => v && k !== 'todos').map(([k]) => k);
     if (selectedRoles.length === 0) {
-      alert("Selecciona al menos una audiencia.");
+      if (showToast) showToast("Selecciona al menos una audiencia.", "warning");
       return;
     }
 
@@ -85,14 +85,14 @@ export function PushCommandCenter({ currentUser }: any) {
         console.warn("[Push] Supabase functions no está disponible en este entorno. Fallback a PWA interna activa.");
       }
 
-      alert("Notificaciones enviadas exitosamente!");
+      if (showToast) showToast("¡Notificaciones enviadas exitosamente!", "success");
       setTitle("");
       setMessage("");
       setImageUrl("");
       setDestinationValue("");
     } catch (error) {
       console.error(error);
-      alert("Error crítico. Las notificaciones internas fueron enviadas, pero falló el Push Nativo.");
+      if (showToast) showToast("Notificaciones internas enviadas; Push nativo no disponible en este entorno.", "info");
     } finally {
       setIsSending(false);
     }

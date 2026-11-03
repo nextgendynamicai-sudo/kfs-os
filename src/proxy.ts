@@ -20,7 +20,7 @@ const RESERVED_SUBDOMAINS = new Set([
   'admin'
 ]);
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const url = request.nextUrl.clone();
   const hostname = request.headers.get('host') || '';
 
@@ -104,9 +104,11 @@ export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
+export const middleware = proxy;
+export default proxy;
+
 export const config = {
   matcher: [
     '/((?!api|_next/static|_next/image|favicon.ico|.*\\..*).*)',
   ],
 };
-

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import {
   Shield, Lock, ChevronRight, ChevronLeft, Smartphone, Mail,
@@ -162,6 +162,10 @@ export const LoginView = ({
   const [activeTab, setActiveTab] = useState<string>(() => {
     if (typeof window !== "undefined") {
       const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.get("demo") === "true") {
+        return "login";
+      }
+
       const urlRole = searchParams.get("role");
       const hash = window.location.hash.replace("#", "").trim();
 
@@ -205,16 +209,34 @@ export const LoginView = ({
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const [faqSearch, setFaqSearch] = useState("");
 
-  // Lectura segura de la tasa oficial BCV del contexto central
+  // Lectura segura de la tasa oficial BCV y funciones de Demo del contexto central
   let bcvRate: string | null = null;
+  let loadDemoCommerce: any = null;
   try {
     const kfsCtx = useKFS();
     if (kfsCtx?.rates?.USD) {
       bcvRate = kfsCtx.rates.USD.toFixed(2);
     }
+    if (kfsCtx?.loadDemoCommerce) {
+      loadDemoCommerce = kfsCtx.loadDemoCommerce;
+    }
   } catch (_) {
     // Fallback silencioso si se monta fuera del Provider
   }
+
+  // Auto-ingreso al Modo Demo cuando se accede con ?demo=true
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.get("demo") === "true") {
+        if (loadDemoCommerce) {
+          loadDemoCommerce();
+        } else if (handleLogin) {
+          handleLogin("dueño", "000");
+        }
+      }
+    }
+  }, [loadDemoCommerce, handleLogin]);
 
   const isPhoneIdentifier = /^[+0-9\s-]+$/.test(identifier.trim()) && identifier.trim().length > 3;
 
@@ -394,6 +416,39 @@ export const LoginView = ({
                   <p className="text-xs text-slate-500 mt-1 font-medium">
                     Acceso inteligente y unificado para clientes, comercios y equipo
                   </p>
+                </div>
+
+                {/* ACCESO DIRECTO AL MODO DEMO COMERCIO (100% OFFLINE) */}
+                <div className="bg-gradient-to-r from-violet-600 via-indigo-600 to-fuchsia-600 p-[1.5px] rounded-2xl shadow-xl shadow-violet-500/20 animate-fade-in">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (loadDemoCommerce) {
+                        loadDemoCommerce("dueño");
+                      } else {
+                        handleLogin("dueño", "000");
+                      }
+                    }}
+                    className="w-full bg-slate-950/90 hover:bg-slate-900 text-white p-3.5 rounded-[14.5px] flex items-center justify-between transition-all group backdrop-blur-md border-none cursor-pointer text-left"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-violet-500/20 border border-violet-400/40 flex items-center justify-center text-violet-300 group-hover:scale-110 transition-transform">
+                        <Sparkles size={20} className="animate-pulse text-amber-300" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-black text-xs text-white tracking-wide uppercase">MODO DEMO COMERCIO</span>
+                          <span className="px-1.5 py-0.5 text-[9px] font-black bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 rounded-full">
+                            100% OFFLINE
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-300 font-medium">
+                          Bodegón & Market Caracas • Catálogo, POS, Vales y Métricas
+                        </p>
+                      </div>
+                    </div>
+                    <ChevronRight size={18} className="text-violet-400 group-hover:translate-x-1 transition-transform" />
+                  </button>
                 </div>
 
                 {/* Selector de rol opcional/avanzado si se activó */}

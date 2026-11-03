@@ -50,7 +50,7 @@ export const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
 
       <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 max-w-lg w-full relative z-10 shadow-2xl flex flex-col items-center text-center">
         <KreatekLogo className="h-16 sm:h-20 w-auto mb-6" />
-        <h2 className="text-3xl font-black mb-2 text-violet-600">Setup Inicial</h2>
+        <h2 className="text-3xl font-black mb-2 text-violet-300">Setup Inicial</h2>
         <p className="text-gray-300 mb-8 font-light">Vamos a preparar tu ecosistema {currentUser.company} para la nueva era digital en 3 simples pasos.</p>
 
         <div className="flex gap-2 mb-8">
@@ -74,7 +74,7 @@ export const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
                 </div>
               )}
             </label>
-            <button disabled={!kycDoc} onClick={() => setStep(2)} className="w-full bg-violet-600 text-violet-900 py-4 rounded-xl font-black mt-6 shadow-lg shadow-violet-600/20 hover:scale-[1.02] disabled:opacity-50 transition-transform cursor-pointer">Siguiente Paso →</button>
+            <button disabled={!kycDoc} onClick={() => setStep(2)} className="w-full bg-violet-600 text-white py-4 rounded-xl font-black mt-6 shadow-lg shadow-violet-600/20 hover:scale-[1.02] disabled:opacity-50 transition-transform cursor-pointer">Siguiente Paso →</button>
           </div>
         )}
 
@@ -96,7 +96,7 @@ export const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
                 </div>
               )}
             </label>
-            <button onClick={saveOnboardingProduct} className="w-full bg-violet-600 text-violet-900 py-4 rounded-xl font-black mt-6 shadow-lg shadow-violet-600/20 hover:scale-[1.02] transition-transform cursor-pointer">Guardar y Continuar →</button>
+            <button onClick={saveOnboardingProduct} className="w-full bg-violet-600 text-white py-4 rounded-xl font-black mt-6 shadow-lg shadow-violet-600/20 hover:scale-[1.02] transition-transform cursor-pointer">Guardar y Continuar →</button>
           </div>
         )}
 
@@ -107,7 +107,7 @@ export const OnboardingWizard = ({ currentUser, finishOnboarding }: any) => {
             </div>
             <h3 className="text-xl font-bold">3. ¡Todo Listo!</h3>
             <p className="text-sm text-gray-400 mb-6">El sistema base de datos, el POS y la tienda online están desplegados y 100% enlazados en tiempo real.</p>
-            <button onClick={() => finishOnboarding(currentUser.id, kycDoc)} className="w-full bg-violet-600 text-violet-900 py-4 rounded-xl font-black shadow-lg shadow-violet-600/20 hover:scale-[1.02] transition-transform cursor-pointer">Ir a mi Panel de Control</button>
+            <button onClick={() => finishOnboarding(currentUser.id, kycDoc)} className="w-full bg-violet-600 text-white py-4 rounded-xl font-black shadow-lg shadow-violet-600/20 hover:scale-[1.02] transition-transform cursor-pointer">Ir a mi Panel de Control</button>
           </div>
         )}
       </div>

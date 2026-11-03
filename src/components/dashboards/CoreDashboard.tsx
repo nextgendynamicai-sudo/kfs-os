@@ -16,6 +16,8 @@ import { RegisterRiderForm } from "../RegisterRiderForm";
 import { RecruitmentWidget } from "../RecruitmentWidget";
 import { ScannerView } from "../ScannerView";
 import { SystemBackupRestoreModal } from "../SystemBackupRestoreModal";
+import { CURRENT_WIPE_VERSION, initialDB } from "../../config/initialDB";
+import { setIndexedDBValue } from "../../lib/indexedDB";
 
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { QRCodeSVG } from "qrcode.react";
@@ -156,59 +158,66 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
   const pendingRiders = db.riders?.filter((r: any) => r.status === 'pending') || [];
 
   const handleWipeDatabase = async () => {
-    if (confirm("🚨 ¿ESTÁS SEGURO? Esta acción borrará permanentemente todos los comercios, promotoras, transacciones, y restablecerá todo a $0.00 en Supabase y localmente.")) {
-      const cleared = {
-        promotoras: [],
-        clients: [],
-        vendedores: [],
-        products: [],
-        transactions: [],
-        orders: [],
-        expenses: [],
-        crm: [],
-        vales: [],
-        posTerminals: [],
-        zReports: [],
-        buyers: [],
-        customers: [],
-        kreatekCore: {
-          totalTransactions: 0,
-          earningsEUR: 0,
-          netEarningsEUR: 0,
-          adBudgetEUR: 0,
-          wipeVersion: 4,
-          team: []
-        },
-        ghostLogs: [],
-        notifications: [],
-        auditLogs: [],
-        supportTickets: [],
-        candidates: [],
-        unlockedContacts: [],
-        riders: [],
-        topups: [],
-        coupons: []
-      };
-      setDb(cleared);
-      localStorage.setItem("kfs_os_db_prod", JSON.stringify(cleared));
+    const confirmation = prompt("🚨 ATENCIÓN REGLA 1 (INMUNE): Esta acción reinicializará la base de datos al estado base oficial. Para autorizar esta operación, escribe exactamente 'RESET-CONFIRMAR':");
+    if (confirmation !== "RESET-CONFIRMAR") {
+      showToast("Operación cancelada. La integridad de datos de producción está protegida.", "info");
+      return;
+    }
 
-      if (isSupabaseConfigured) {
-        try {
-          const { supabase } = await import("../../context/supabase");
-          const syncId = "kfs-general-db-prod";
-          const { error } = await supabase.from("kfs_store_states").upsert({
-            id: syncId,
-            db_state: cleared,
-            updated_at: new Date().toISOString()
-          });
-          if (error) throw error;
-          showToast("Base de datos borrada a 0 en Supabase y local.", "success");
-        } catch (err) {
-          showToast("Error al sincronizar con Supabase", "error");
-        }
-      } else {
-        showToast("Base de datos local borrada a 0.", "success");
+    const cleared = {
+      promotoras: [],
+      clients: [initialDB.clients[0]], // Garantizar que la cuenta oficial de soporte y tienda core persisten siempre
+      vendedores: [],
+      products: [...initialDB.products], // Preservar catálogo digital base
+      transactions: [],
+      orders: [],
+      expenses: [],
+      crm: [],
+      vales: [],
+      posTerminals: [],
+      zReports: [],
+      buyers: [],
+      customers: [],
+      kreatekCore: {
+        totalTransactions: 0,
+        earningsEUR: 0,
+        netEarningsEUR: 0,
+        adBudgetEUR: 0,
+        wipeVersion: CURRENT_WIPE_VERSION,
+        team: initialDB.kreatekCore.team || []
+      },
+      ghostLogs: [],
+      notifications: [...initialDB.notifications],
+      auditLogs: [],
+      supportTickets: [],
+      candidates: [],
+      unlockedContacts: [],
+      riders: [],
+      topups: [],
+      coupons: []
+    };
+    setDb(cleared);
+    try {
+      localStorage.setItem("kfs_os_db_prod", JSON.stringify(cleared));
+      await setIndexedDBValue("kfs_os_db_prod", cleared);
+    } catch (_) {}
+
+    if (isSupabaseConfigured) {
+      try {
+        const { supabase } = await import("../../context/supabase");
+        const syncId = "kfs-general-db-prod";
+        const { error } = await supabase.from("kfs_store_states").upsert({
+          id: syncId,
+          db_state: cleared,
+          updated_at: new Date().toISOString()
+        });
+        if (error) throw error;
+        showToast("Estado reinicializado con baseline oficial en Supabase y local.", "success");
+      } catch (err) {
+        showToast("Error al sincronizar con Supabase", "error");
       }
+    } else {
+      showToast("Base de datos local reinicializada con baseline oficial.", "success");
     }
   };
 
@@ -913,12 +922,32 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
         {activeTab === "rewards" && (
           <div className="space-y-6 animate-fade-in">
+            <div className="flex items-center justify-between pb-1">
+              <button
+                type="button"
+                onClick={() => setActiveTab("panel")}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-all border border-slate-700 cursor-pointer shadow-sm active:scale-95"
+              >
+                <ChevronLeft size={16} />
+                <span>← Volver al Panel / Explorar</span>
+              </button>
+            </div>
             <ArchitectRewardsManager />
           </div>
         )}
 
         {activeTab === "db_manager" && (
           <div className="space-y-6 animate-fade-in">
+            <div className="flex items-center justify-between pb-1">
+              <button
+                type="button"
+                onClick={() => setActiveTab("panel")}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-all border border-slate-700 cursor-pointer shadow-sm active:scale-95"
+              >
+                <ChevronLeft size={16} />
+                <span>← Volver al Panel / Explorar</span>
+              </button>
+            </div>
             <DatabaseManagerWidget />
           </div>
         )}
@@ -1865,6 +1894,16 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
         {activeTab === "kyc" && (
           <div className="space-y-8 flex flex-col">
+            <div className="flex items-center justify-between pb-1">
+              <button
+                type="button"
+                onClick={() => setActiveTab("panel")}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-all border border-slate-700 cursor-pointer shadow-sm active:scale-95"
+              >
+                <ChevronLeft size={16} />
+                <span>← Volver al Panel / Explorar</span>
+              </button>
+            </div>
             <div className="bg-white shadow-xl shadow-violet-200/50 border border-violet-100 rounded-[2rem] p-8">
               <h3 className="text-xl font-black mb-6 text-violet-950 flex items-center gap-2"><FileText className="text-violet-600" /> Bóveda KYC (Know Your Customer)</h3>
               <div className="overflow-x-auto rounded-xl border border-violet-100">
@@ -2216,6 +2255,16 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
         {activeTab === "vista_dios" && (
           <div className="space-y-8 flex flex-col animate-fade-in">
+            <div className="flex items-center justify-between pb-1">
+              <button
+                type="button"
+                onClick={() => setActiveTab("panel")}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-all border border-slate-700 cursor-pointer shadow-sm active:scale-95"
+              >
+                <ChevronLeft size={16} />
+                <span>← Volver al Panel / Explorar</span>
+              </button>
+            </div>
             <div className="bg-gradient-to-r from-slate-900 to-violet-950 rounded-[2rem] p-8 shadow-2xl text-white border border-violet-800">
               <h3 className="text-2xl font-black mb-4 flex items-center gap-2 text-white"><Eye className="text-violet-400" /> Vista de Dios (Read-Only)</h3>
               <p className="text-sm text-violet-200 mb-8">Acceso directo a la capa de datos. Todo el ecosistema unificado.</p>
@@ -2314,16 +2363,28 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
 
         {activeTab === "db_manager" && (
-          <DatabaseManagerWidget 
-            db={db}
-            deleteClient={deleteClient}
-            deleteCustomer={deleteCustomer}
-            deletePromotora={deletePromotora}
-            deleteVendedor={deleteVendedor}
-            rejectRider={rejectRider}
-            showToast={showToast}
-            setActiveTab={setActiveTab}
-          />
+          <div className="space-y-6 animate-fade-in">
+            <div className="flex items-center justify-between pb-1">
+              <button
+                type="button"
+                onClick={() => setActiveTab("panel")}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-all border border-slate-700 cursor-pointer shadow-sm active:scale-95"
+              >
+                <ChevronLeft size={16} />
+                <span>← Volver al Panel / Explorar</span>
+              </button>
+            </div>
+            <DatabaseManagerWidget 
+              db={db}
+              deleteClient={deleteClient}
+              deleteCustomer={deleteCustomer}
+              deletePromotora={deletePromotora}
+              deleteVendedor={deleteVendedor}
+              rejectRider={rejectRider}
+              showToast={showToast}
+              setActiveTab={setActiveTab}
+            />
+          </div>
         )}
 
         {activeTab === "axis_nitro_pos" && (
@@ -2464,6 +2525,16 @@ export const CoreDashboard = ({ db, setDb, approvePromotora, rejectPromotora, se
 
         {activeTab === "sales_landing" && (
           <div className="animate-fade-in relative z-10 pb-20">
+            <div className="flex items-center justify-between pb-3">
+              <button
+                type="button"
+                onClick={() => setActiveTab("panel")}
+                className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-all border border-slate-700 cursor-pointer shadow-sm active:scale-95"
+              >
+                <ChevronLeft size={16} />
+                <span>← Volver al Panel / Explorar</span>
+              </button>
+            </div>
             <SalesLandingWidget />
           </div>
         )}

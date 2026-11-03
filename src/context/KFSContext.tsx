@@ -24,6 +24,16 @@ import { VENEZUELAN_PRODUCTS_CATALOG } from "../config/products";
 import { MOCK_BCV_RATES } from "../config/rates";
 
 import { initialDB, CURRENT_WIPE_VERSION } from "../config/initialDB";
+import {
+  DEMO_COMMERCE_ID,
+  DEMO_COMMERCE_CLIENT,
+  DEMO_COMMERCE_PRODUCTS,
+  DEMO_COMMERCE_VENDEDORES,
+  DEMO_COMMERCE_VALES,
+  DEMO_COMMERCE_RIDERS,
+  DEMO_COMMERCE_TRANSACTIONS,
+  DEMO_COMMERCE_CUSTOMERS
+} from "../config/demoCommerceDB";
 
 import { Tenant, TenantBranding, TenantSettings } from "../types/tenant";
 import { CommerceSubscription } from "../types/core";
@@ -164,6 +174,8 @@ interface KFSContextType {
   deleteCoupon: (couponId: string) => void;
   toggleCouponActive: (couponId: string) => void;
   logFiscalAction: (clientId: string, cashierId: string, cashierName: string, command: string, details: string) => void;
+  loadDemoCommerce: (targetPersona?: "dueño" | "vendedor" | "rider" | "customer") => void;
+  resetDemoCommerceData: () => void;
   // Multi-Tenant Hub Core
   allTenants: Tenant[];
   activeTenant: Tenant;
@@ -180,15 +192,27 @@ interface KFSContextType {
 const upgradeToNewBaseline = (oldDb: any, baselineDb: any) => {
   if (!oldDb) return baselineDb;
 
+  const deletedKeys = new Set(oldDb.kreatekCore?.deletedKeys || []);
   const mergeAdditive = (oldArr: any[], baseArr: any[]) => {
     const map = new Map();
-    // 1. Agregar todos los defaults de fábrica
+    const getItemKey = (item: any) => {
+      if (!item) return null;
+      return item.id || item.timestamp || item.barcode || (typeof item === "object" ? JSON.stringify(item) : String(item));
+    };
+
+    // 1. Agregar defaults de fábrica que no hayan sido eliminados explícitamente por el usuario
     (baseArr || []).forEach(item => {
-      if (item && item.id) map.set(item.id, item);
+      const key = getItemKey(item);
+      if (key && !deletedKeys.has(key) && !(item.id && deletedKeys.has(item.id))) {
+        map.set(key, item);
+      }
     });
     // 2. Sobrescribir/Mantener con los datos persistidos de usuarios
     (oldArr || []).forEach(item => {
-      if (item && item.id) map.set(item.id, item);
+      const key = getItemKey(item);
+      if (key && !deletedKeys.has(key) && !(item.id && deletedKeys.has(item.id))) {
+        map.set(key, item);
+      }
     });
     return Array.from(map.values());
   };
@@ -220,7 +244,11 @@ const upgradeToNewBaseline = (oldDb: any, baselineDb: any) => {
     coupons: mergeAdditive(oldDb.coupons, baselineDb.coupons),
     rewardTasks: mergeAdditive(oldDb.rewardTasks || [], baselineDb.rewardTasks || []),
     rewardSubmissions: mergeAdditive(oldDb.rewardSubmissions || [], baselineDb.rewardSubmissions || []),
-    kfsNetworkLedger: mergeAdditive(oldDb.kfsNetworkLedger, baselineDb.kfsNetworkLedger)
+    kfsNetworkLedger: mergeAdditive(oldDb.kfsNetworkLedger, baselineDb.kfsNetworkLedger),
+    topups: mergeAdditive(oldDb.topups, baselineDb.topups),
+    fiscalLogs: mergeAdditive(oldDb.fiscalLogs, baselineDb.fiscalLogs),
+    crm: mergeAdditive(oldDb.crm, baselineDb.crm),
+    notifications: mergeAdditive(oldDb.notifications, baselineDb.notifications)
   };
 };
 
@@ -492,6 +520,27 @@ const mergeIncomingDb = (localDb: any, remoteDb: any, currentUser: any) => {
   return mergedDb;
 };
 
+const safeTriggerVersionReload = (remoteVersion: number): boolean => {
+  if (typeof window === "undefined") return false;
+  try {
+    const lastAttemptedVersion = sessionStorage.getItem("kfs_reload_attempted_version");
+    const lastReloadTimestamp = parseInt(sessionStorage.getItem("kfs_reload_attempted_at") || "0", 10);
+    const now = Date.now();
+    if (lastAttemptedVersion === String(remoteVersion) && (now - lastReloadTimestamp) < 60000) {
+      console.warn(`[KFS Version Guard] Recarga para versión remota ${remoteVersion} ya ejecutada recientemente. Evitando bucle infinito.`);
+      return false;
+    }
+    sessionStorage.setItem("kfs_reload_attempted_version", String(remoteVersion));
+    sessionStorage.setItem("kfs_reload_attempted_at", String(now));
+    console.log(`[KFS Version Guard] Versión remota más reciente detectada (${remoteVersion} > ${CURRENT_WIPE_VERSION}). Recargando para actualizar bundle...`);
+    window.location.reload();
+    return true;
+  } catch (e) {
+    console.warn("[KFS Version Guard] Error accediendo a sessionStorage para reload guard", e);
+    return false;
+  }
+};
+
 const KFSContext = createContext<KFSContextType | undefined>(undefined);
 
 export function KFSProvider({ children }: { children: React.ReactNode }) {
@@ -507,6 +556,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const [currentUser, setCurrentUser] = useState<any>(null);
   const currentUserRef = useRef(currentUser);
   const hasRestoredRef = useRef(false);
+  const isOfflineSafeFallbackRef = useRef(false);
   useEffect(() => {
     currentUserRef.current = currentUser;
     if (!hasRestoredRef.current) return;
@@ -620,6 +670,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   const isRemoteUpdate = useRef(false);
   const p2pChannelRef = useRef<any>(null);
   const lastRemoteUpdatedAtRef = useRef<string | null>(null);
+  const isRiderSimTickRef = useRef(false);
+  const lastRiderSimPersistRef = useRef(0);
+  const riderSimDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     if (typeof window !== "undefined" && "BroadcastChannel" in window) {
@@ -821,6 +874,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
           return r;
         });
         if (updated) {
+          isRiderSimTickRef.current = true;
           return { ...prev, riders: newRiders };
         }
         return prev;
@@ -840,7 +894,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       
       const getDbPromise = getIndexedDBValue("kfs_os_db_prod");
       const dbTimeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("IndexedDB load timeout")), 1500)
+        setTimeout(() => reject(new Error("IndexedDB load timeout")), 8000)
       );
 
       Promise.race([getDbPromise, dbTimeoutPromise])
@@ -886,13 +940,43 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
               if (!parsed.clients.some((c: any) => c.id === "kfs-express") && !deletedKeys.includes("kfs-express")) {
                 parsed.clients.push(initialDB.clients[0]);
               }
-              // Ensure default digital products exist
+              // Ensure demo-comercio-kfs exists
+              if (!parsed.clients.some((c: any) => c.id === DEMO_COMMERCE_ID) && !deletedKeys.includes(DEMO_COMMERCE_ID)) {
+                parsed.clients.push(DEMO_COMMERCE_CLIENT);
+              }
+              // Ensure default digital and demo products exist
               if (!parsed.products) parsed.products = [];
               initialDB.products.forEach((dp: any) => {
                 if (!parsed.products.some((p: any) => p.id === dp.id) && !deletedKeys.includes(dp.clientId)) {
                   parsed.products.push(dp);
                 }
               });
+              // Ensure demo sellers exist
+              if (!parsed.vendedores) parsed.vendedores = [];
+              DEMO_COMMERCE_VENDEDORES.forEach((v: any) => {
+                if (!parsed.vendedores.some((existingV: any) => existingV.id === v.id)) {
+                  parsed.vendedores.push(v);
+                }
+              });
+              // Ensure demo vales exist
+              if (!parsed.vales) parsed.vales = [];
+              DEMO_COMMERCE_VALES.forEach((val: any) => {
+                if (!parsed.vales.some((existingVal: any) => existingVal.id === val.id)) {
+                  parsed.vales.push(val);
+                }
+              });
+              // Ensure demo riders exist
+              if (!parsed.riders) parsed.riders = [];
+              DEMO_COMMERCE_RIDERS.forEach((r: any) => {
+                if (!parsed.riders.some((existingR: any) => existingR.id === r.id)) {
+                  parsed.riders.push(r);
+                }
+              });
+              // Ensure demo transactions exist
+              if (!parsed.transactions) parsed.transactions = [];
+              if (!parsed.transactions.some((t: any) => t.clientId === DEMO_COMMERCE_ID)) {
+                parsed.transactions.push(...DEMO_COMMERCE_TRANSACTIONS);
+              }
               setDb(parsed);
             }
           }
@@ -917,8 +1001,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                   const remote = data.db_state;
                   const remoteVersion = remote.kreatekCore?.wipeVersion || 0;
                   if (remoteVersion > CURRENT_WIPE_VERSION) {
-                    console.log("[Supabase Cloud] Versión de la nube es más reciente. Recargando...");
-                    if (typeof window !== "undefined") window.location.reload();
+                    console.log("[Supabase Cloud] Versión de la nube es más reciente. Evaluando recarga segura...");
+                    const reloaded = safeTriggerVersionReload(remoteVersion);
+                    if (!reloaded) {
+                      setDb((prevDb: any) => mergeIncomingDb(prevDb, remote, currentUserRef.current));
+                    }
                   } else if (remoteVersion < CURRENT_WIPE_VERSION) {
                     setDb((prevDb: any) => {
                       if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION) return prevDb;
@@ -966,8 +1053,12 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                         const remote = payload.new.db_state;
                         const remoteVersion = remote.kreatekCore?.wipeVersion || 0;
                         if (remoteVersion > CURRENT_WIPE_VERSION) {
-                          console.log("[Supabase Realtime] Versión de la nube es más reciente. Recargando...");
-                          if (typeof window !== "undefined") window.location.reload();
+                          console.log("[Supabase Realtime] Versión de la nube es más reciente. Evaluando recarga segura...");
+                          const reloaded = safeTriggerVersionReload(remoteVersion);
+                          if (!reloaded) {
+                            isRemoteUpdate.current = true;
+                            setDb((prevDb: any) => mergeIncomingDb(prevDb, remote, currentUserRef.current));
+                          }
                         } else if (remoteVersion < CURRENT_WIPE_VERSION) {
                           setDb((prevDb: any) => {
                             if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION) return prevDb;
@@ -1027,8 +1118,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                             const remote = fullData.db_state;
                             const remoteVersion = remote.kreatekCore?.wipeVersion || 0;
                             if (remoteVersion > CURRENT_WIPE_VERSION) {
-                              console.log("[Supabase Polling Fallback] Versión de la nube es más reciente. Recargando...");
-                              if (typeof window !== "undefined") window.location.reload();
+                              console.log("[Supabase Polling Fallback] Versión de la nube es más reciente. Evaluando recarga segura...");
+                              const reloaded = safeTriggerVersionReload(remoteVersion);
+                              if (!reloaded) {
+                                setDb((prevDb: any) => mergeIncomingDb(prevDb, remote, currentUserRef.current));
+                              }
                             } else if (remoteVersion < CURRENT_WIPE_VERSION) {
                               setDb((prevDb: any) => {
                                 if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION) return prevDb;
@@ -1049,6 +1143,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                               });
                             }
                           }
+                        }).catch((err: any) => {
+                          console.warn("[Supabase Polling Fallback] Error al descargar db_state:", err);
                         });
                       }
                     }).catch(() => {});
@@ -1062,16 +1158,36 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         })
         .catch((err) => {
           console.error("Failed to read IndexedDB", err);
+          let recoveredDb = null;
+          try {
+            const savedLocal = typeof window !== "undefined" ? localStorage.getItem("kfs_os_db_prod") : null;
+            if (savedLocal) {
+              recoveredDb = JSON.parse(savedLocal);
+            }
+          } catch (e) {
+            console.error("Failed to parse LocalStorage emergency recovery", e);
+          }
+
+          if (recoveredDb) {
+            console.log(`[${KFS_BRAND.productAcronym} Storage] Recuperación de emergencia exitosa desde LocalStorage.`);
+            setDb(recoveredDb);
+            isOfflineSafeFallbackRef.current = false;
+          } else {
+            console.warn(`[${KFS_BRAND.productAcronym} Storage] Fallo crítico al leer IndexedDB y LocalStorage. Activando offlineSafeFallback para proteger datos existentes.`);
+            isOfflineSafeFallbackRef.current = true;
+          }
           setIsDataLoaded(true);
           setIsBooting(false);
         });
     } catch (error) {
       console.warn("Entorno restringido detectado. Activando memoria volátil.");
+      isOfflineSafeFallbackRef.current = true;
       setIsDataLoaded(true);
       setIsBooting(false);
     }
 
     if (typeof window !== "undefined" && "serviceWorker" in navigator) {
+      const hadController = Boolean(navigator.serviceWorker.controller);
       navigator.serviceWorker.register("/sw.js").then((reg) => {
         // Check for updates on mount
         reg.update();
@@ -1098,6 +1214,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
 
       let refreshing = false;
       navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (!hadController) return; // Do not reload on initial installation
         if (!refreshing) {
           refreshing = true;
           window.location.reload();
@@ -1243,26 +1360,62 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   };
   useEffect(() => {
     if (!isClient || !isDataLoaded) return;
-    
-    setIndexedDBValue("kfs_os_db_prod", db)
-      .then(() => {
-        if (networkState === "mesh" && p2pChannelRef.current) {
-          p2pChannelRef.current.postMessage({ type: "db-sync", db });
-        }
-      })
-      .catch((err) => {
-        console.warn(`[${KFS_BRAND.productAcronym} IndexedDB] Error al persistir base de datos offline`, err);
-      });
-    
-    if (isRemoteUpdate.current) {
-      // Skip cloud push for remote updates to prevent infinite loop
-      isRemoteUpdate.current = false;
+    if (isOfflineSafeFallbackRef.current) {
+      console.warn(`[${KFS_BRAND.productAcronym} Storage] Modo emergencia seguro activo: persistencia en IndexedDB suspendida para proteger datos existentes.`);
       return;
     }
-    
-    if (isSupabaseConfigured && networkState === "online") {
-      forceDirectCloudSync(db);
+
+    const persistDatabase = (targetDb: any) => {
+      setIndexedDBValue("kfs_os_db_prod", targetDb)
+        .then(() => {
+          if (networkState === "mesh" && p2pChannelRef.current) {
+            p2pChannelRef.current.postMessage({ type: "db-sync", db: targetDb });
+          }
+        })
+        .catch((err) => {
+          console.warn(`[${KFS_BRAND.productAcronym} IndexedDB] Error al persistir base de datos offline`, err);
+        });
+      
+      if (isRemoteUpdate.current) {
+        // Skip cloud push for remote updates to prevent infinite loop
+        isRemoteUpdate.current = false;
+        return;
+      }
+      
+      if (isSupabaseConfigured && networkState === "online") {
+        forceDirectCloudSync(targetDb);
+      }
+    };
+
+    const isRiderTick = isRiderSimTickRef.current;
+    if (isRiderTick) {
+      isRiderSimTickRef.current = false;
+      const now = Date.now();
+      const RIDER_PERSIST_THROTTLE_MS = 20000; // Throttle persistence during high-frequency rider simulation
+      if (now - lastRiderSimPersistRef.current < RIDER_PERSIST_THROTTLE_MS) {
+        // Trailing debounce: persist 5 seconds after simulation ticks pause
+        if (riderSimDebounceRef.current) clearTimeout(riderSimDebounceRef.current);
+        riderSimDebounceRef.current = setTimeout(() => {
+          lastRiderSimPersistRef.current = Date.now();
+          persistDatabase(db);
+        }, 5000);
+        return;
+      }
+      lastRiderSimPersistRef.current = now;
     }
+
+    // Direct user action or throttle window elapsed: clear pending debounce and persist immediately
+    if (riderSimDebounceRef.current) {
+      clearTimeout(riderSimDebounceRef.current);
+      riderSimDebounceRef.current = null;
+    }
+    persistDatabase(db);
+
+    return () => {
+      if (riderSimDebounceRef.current) {
+        clearTimeout(riderSimDebounceRef.current);
+      }
+    };
   }, [db, isClient, networkState, isDataLoaded]);
 
   const formatUSD = (val: number) => new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(val);
@@ -1318,34 +1471,19 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         demoUser = list.find((p: any) => (p.email && p.email.toLowerCase() === safeEmail)) || list[0];
       }
       if (targetRole === "dueño") {
-        let list = db.clients || [];
-        if (list.length === 0) {
-          const newUser = { id: "demo-client", company: "Comercio Demo S.A.", email: safeEmail || "comercio@demo.com", password: "000", isOnboarded: true, walletBalanceUSD: 1000, salesUSD: 0 };
-          setDb((prev: any) => ({ ...prev, clients: [newUser] }));
-          list = [newUser];
-        }
-        demoUser = list.find((c: any) => (c.email && c.email.toLowerCase() === safeEmail)) || list[0];
+        const list = db.clients || [];
+        demoUser = list.find((c: any) => c.id === DEMO_COMMERCE_ID) || list.find((c: any) => (c.email && c.email.toLowerCase() === safeEmail)) || list[0] || DEMO_COMMERCE_CLIENT;
       }
       if (targetRole === "vendedor") {
-        let list = db.vendedores || [];
-        if (list.length === 0) {
-          const newUser = { id: "demo-vendedor", name: "Vendedor Demo", email: safeEmail || "vendedor@demo.com", password: "000", clientId: "kfs-express" };
-          setDb((prev: any) => ({ ...prev, vendedores: [newUser] }));
-          list = [newUser];
-        }
-        demoUser = list.find((v: any) => (v.email && v.email.toLowerCase() === safeEmail)) || list[0];
+        const list = db.vendedores || [];
+        demoUser = list.find((v: any) => v.clientId === DEMO_COMMERCE_ID) || list.find((v: any) => (v.email && v.email.toLowerCase() === safeEmail)) || list[0] || DEMO_COMMERCE_VENDEDORES[0];
         if (demoUser && !demoUser.clientId) {
-          demoUser = { ...demoUser, clientId: "kfs-express" };
+          demoUser = { ...demoUser, clientId: DEMO_COMMERCE_ID, merchantId: DEMO_COMMERCE_ID };
         }
       }
       if (targetRole === "rider") {
-        let list = db.riders || [];
-        if (list.length === 0) {
-          const newUser = { id: "demo-rider", name: "Delivery Demo", email: safeEmail || "rider@demo.com", password: "000", status: "approved" };
-          setDb((prev: any) => ({ ...prev, riders: [newUser] }));
-          list = [newUser];
-        }
-        demoUser = list.find((r: any) => (r.email && r.email.toLowerCase() === safeEmail)) || list[0];
+        const list = db.riders || [];
+        demoUser = list.find((r: any) => r.id === "rider-demo-1") || list.find((r: any) => (r.email && r.email.toLowerCase() === safeEmail)) || list[0] || DEMO_COMMERCE_RIDERS[0];
       }
       if (targetRole === "customer") {
         let list = db.customers || [];
@@ -1593,7 +1731,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
               ? list.map((x: any, i: number) => i === idx ? { ...x, ...foundUser } : x)
               : [...list, foundUser];
             
-            let newDb = { ...prevDb, [collectionKey]: updatedList };
+            const newDb = { ...prevDb, [collectionKey]: updatedList };
 
             // Merge SQL Relational Data directly into memory
             if (relationalData) {
@@ -5162,12 +5300,70 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     showToast("Entrega rechazada", "error");
   };
 
+  const loadDemoCommerce = useCallback((targetPersona: "dueño" | "vendedor" | "rider" | "customer" = "dueño") => {
+    if (targetPersona === "dueño") {
+      const demoClient = db.clients?.find((c: any) => c.id === DEMO_COMMERCE_ID) || DEMO_COMMERCE_CLIENT;
+      setCurrentUser({ ...demoClient, role: "dueño", isDemoUser: true });
+      const currentHash = typeof window !== "undefined" ? window.location.hash.replace("#", "").trim() : "";
+      if (currentHash === "axis_nitro_pos" || currentHash === "nitro_pos") {
+        setView("axis_nitro_pos");
+      } else {
+        setView("client");
+      }
+      showToast("🏪 Modo Demo Comercio: Bodegón & Market Gourmet Caracas activo (100% Offline).", "success");
+    } else if (targetPersona === "vendedor") {
+      const demoVendedor = db.vendedores?.find((v: any) => v.clientId === DEMO_COMMERCE_ID) || DEMO_COMMERCE_VENDEDORES[0];
+      setCurrentUser({ ...demoVendedor, role: "vendedor", clientId: DEMO_COMMERCE_ID, merchantId: DEMO_COMMERCE_ID, isDemoUser: true });
+      setView("vendedor");
+      showToast("🛒 Modo Demo Cajero: Punto de Venta activo (Caja 1 Mostrador).", "success");
+    } else if (targetPersona === "rider") {
+      const demoRider = db.riders?.find((r: any) => r.id === "rider-demo-1") || DEMO_COMMERCE_RIDERS[0];
+      setCurrentUser({ ...demoRider, role: "rider", isDemoUser: true });
+      setView("rider");
+      showToast("🛵 Modo Demo Delivery: Panel de Repartidor con GPS activo.", "success");
+    } else if (targetPersona === "customer") {
+      const demoCust = db.customers?.find((c: any) => c.id === "cust-demo-1") || DEMO_COMMERCE_CUSTOMERS[0];
+      setCurrentUser({ ...demoCust, role: "customer", isDemoUser: true });
+      setView("customer");
+      showToast("📱 Modo Demo Cliente: Billetera y Marketplace activados.", "success");
+    }
+  }, [db, setCurrentUser, setView, showToast]);
+
+  const resetDemoCommerceData = useCallback(() => {
+    setDb((prev: any) => {
+      const otherClients = (prev.clients || []).filter((c: any) => c.id !== DEMO_COMMERCE_ID);
+      const otherProducts = (prev.products || []).filter((p: any) => p.clientId !== DEMO_COMMERCE_ID);
+      const otherVendedores = (prev.vendedores || []).filter((v: any) => v.clientId !== DEMO_COMMERCE_ID);
+      const otherVales = (prev.vales || []).filter((v: any) => v.clientId !== DEMO_COMMERCE_ID);
+      const otherTxs = (prev.transactions || []).filter((t: any) => t.clientId !== DEMO_COMMERCE_ID);
+      const otherOrders = (prev.orders || []).filter((o: any) => o.clientId !== DEMO_COMMERCE_ID);
+      const otherRiders = (prev.riders || []).filter((r: any) => r.id !== "rider-demo-1");
+      const otherCusts = (prev.customers || []).filter((c: any) => !c.id?.startsWith("cust-demo-"));
+
+      const newDb = {
+        ...prev,
+        clients: [...otherClients, DEMO_COMMERCE_CLIENT],
+        products: [...otherProducts, ...DEMO_COMMERCE_PRODUCTS],
+        vendedores: [...otherVendedores, ...DEMO_COMMERCE_VENDEDORES],
+        vales: [...otherVales, ...DEMO_COMMERCE_VALES],
+        transactions: [...otherTxs, ...DEMO_COMMERCE_TRANSACTIONS],
+        orders: [...otherOrders, ...DEMO_COMMERCE_TRANSACTIONS.filter((t: any) => t.shippingStatus)],
+        riders: [...otherRiders, ...DEMO_COMMERCE_RIDERS],
+        customers: [...otherCusts, ...DEMO_COMMERCE_CUSTOMERS]
+      };
+      setIndexedDBValue("kfs_os_db_prod", newDb);
+      return newDb;
+    });
+    showToast("🔄 Datos de demostración restaurados a su estado inicial impecable.", "success");
+  }, [setDb, showToast]);
+
   const contextValue = useMemo(() => ({
     isClient, isBooting, view, setView, currentUser, setCurrentUser, updateUserAvatar,
     toast, showToast, rates, updateBcvRates, db, setDb, formatUSD, formatEUR,
     handleLogin, logout, registerClient, registerFreeUser, registerCommerceWithOffer, upgradeToPremium, registerPromotora, registerVendedor, approvePromotora, rejectPromotora, settlePromotoraEarnings,
     addProduct, editProduct, addExpense, processPurchase, submitOnlineOrder, approveOrder, rejectOrder, dispatchOrder, generateZReport, processBlindCashCount,
     originalUser, impersonateClient, stopImpersonating,
+    loadDemoCommerce, resetDemoCommerceData,
     networkState, setNetworkState, smsConciliator, registerCrmExpress,
     ghostTrapLocked, setGhostTrapLocked, createVale, payVale, processPayroll, registerPosTerminal, deletePosTerminal,
     queryGlobalBarcode, toggleLoyaltyProgram, triggerGhostTrap, updateStoreSettings, updatePaymentMethods, toggleProductFeatured,
@@ -5181,6 +5377,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     tenantProducts, tenantTransactions, tenantVales, tenantVendedores, tenantPOSTerminals, resolveTenantInfo
   }), [
     isClient, isBooting, view, currentUser, toast, rates, db, originalUser, networkState, ghostTrapLocked, isDataLoaded,
+    loadDemoCommerce, resetDemoCommerceData,
     allTenants, activeTenant, activeTenantId, switchTenant, tenantProducts, tenantTransactions, tenantVales, tenantVendedores, tenantPOSTerminals, resolveTenantInfo
   ]);
 

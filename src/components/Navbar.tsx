@@ -10,7 +10,8 @@ import {
   ShoppingBag, 
   Store, 
   LogOut,
-  Search 
+  Search,
+  SlidersHorizontal
 } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { KreatekLogo } from "./KreatekLogo";
@@ -36,6 +37,7 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
   const [isSyncing, setIsSyncing] = useState(false);
   const [theme, setTheme] = useState<"light" | "dark">("light");
   const [showNotifDrawer, setShowNotifDrawer] = useState(false);
+  const [showMobileSecondary, setShowMobileSecondary] = useState(false);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -147,43 +149,43 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
       )}
 
       {/* Barra de Navegación Principal en Cristal Translúcido (Glassmorphism de Élite) */}
-      <nav className="flex flex-row justify-between items-center px-4 sm:px-6 py-2.5 sm:py-3 border-b border-slate-200/70 dark:border-white/10 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl sticky top-0 z-40 shadow-xs transition-all duration-300 gap-3 w-full">
+      <nav className="flex flex-row justify-between items-center px-2.5 sm:px-6 py-2 sm:py-3 border-b border-slate-200/70 dark:border-white/10 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl sticky top-0 z-40 shadow-xs transition-all duration-300 gap-1.5 sm:gap-3 w-full max-w-[100vw] overflow-x-clip relative box-border">
         
         {/* ========================================================= */}
         {/* IZQUIERDA: BOTÓN VOLVER + LOGO FUSIONADO + BRANDING ELEGANTE */}
         {/* ========================================================= */}
-        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-3 shrink-0 min-w-0">
           {showBack && (
             <button
               onClick={handleBack}
-              className="flex items-center gap-1 px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-xs text-slate-700 dark:text-slate-200 font-bold transition-all cursor-pointer mr-1 shadow-xs"
+              className="flex items-center gap-1 px-2 sm:px-3 py-1.5 rounded-xl border border-slate-200 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-xs text-slate-700 dark:text-slate-200 font-bold transition-all cursor-pointer mr-0.5 sm:mr-1 shadow-xs shrink-0"
               title="Regresar a la pantalla anterior"
             >
               <ChevronLeft size={16} />
-              <span className="hidden xs:inline">Atrás</span>
+              <span className="hidden sm:inline">Atrás</span>
             </button>
           )}
 
           {/* Logo fusionado de forma limpia sin caja blanca tosca */}
           <div 
             onClick={() => { if (!currentUser) setView("landing"); }}
-            className="flex items-center gap-2.5 sm:gap-3 cursor-pointer select-none group"
+            className="flex items-center gap-2 sm:gap-3 cursor-pointer select-none group min-w-0"
             title="AXIS NITRO KFS OS 8.0"
           >
-            <div className="relative flex items-center justify-center p-1.5 rounded-xl bg-white/80 dark:bg-white/10 border border-violet-100 dark:border-white/15 shadow-xs group-hover:bg-white/95 group-hover:scale-105 transition-all duration-300">
-              <KreatekLogo className="h-8 sm:h-9 w-auto drop-shadow-sm filter" />
+            <div className="relative flex items-center justify-center p-1 sm:p-1.5 rounded-xl bg-white/80 dark:bg-white/10 border border-violet-100 dark:border-white/15 shadow-xs group-hover:bg-white/95 group-hover:scale-105 transition-all duration-300 shrink-0">
+              <KreatekLogo className="h-7 sm:h-9 w-auto drop-shadow-sm filter" />
             </div>
             
-            <div className="flex flex-col">
-              <div className="flex items-center gap-1.5 sm:gap-2">
-                <span className="text-sm sm:text-base font-black tracking-tight bg-gradient-to-r from-slate-900 via-violet-950 to-indigo-950 dark:from-white dark:via-violet-200 dark:to-indigo-200 bg-clip-text text-transparent">
+            <div className="flex flex-col min-w-0">
+              <div className="flex items-center gap-1 sm:gap-2">
+                <span className="text-xs sm:text-base font-black tracking-tight bg-gradient-to-r from-slate-900 via-violet-950 to-indigo-950 dark:from-white dark:via-violet-200 dark:to-indigo-200 bg-clip-text text-transparent truncate">
                   AXIS NITRO
                 </span>
-                <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-950/60 text-violet-700 dark:text-violet-300 border border-violet-200/80 dark:border-violet-800/60 shadow-xs">
+                <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-wider px-1.5 sm:px-2 py-0.5 rounded-full bg-violet-100 dark:bg-violet-950/60 text-violet-700 dark:text-violet-300 border border-violet-200/80 dark:border-violet-800/60 shadow-xs shrink-0">
                   OS 8.0
                 </span>
               </div>
-              <span className="text-[9px] font-bold tracking-wider text-slate-500 dark:text-slate-400 font-mono">
+              <span className="hidden sm:inline text-[9px] font-bold tracking-wider text-slate-500 dark:text-slate-400 font-mono">
                 FINTECH PLATFORM
               </span>
             </div>
@@ -271,11 +273,24 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
             /* Herramientas avanzadas con diseño Glassmorphism refinado */
             /* ------------------------------------------------------- */
             <>
+              {/* Controles Secundarios en Móvil: Botón de Herramientas Rápidas (Samsung S25 Ultra 412x915) */}
+              <button
+                type="button"
+                onClick={() => setShowMobileSecondary(prev => !prev)}
+                className="sm:hidden flex items-center justify-center p-1.5 rounded-xl border border-slate-200/80 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 transition-all cursor-pointer h-8 w-8 bg-white/70 dark:bg-slate-900/70 shadow-xs relative shrink-0"
+                title="Herramientas y conexión"
+              >
+                <SlidersHorizontal size={14} className="text-violet-600 dark:text-violet-400" />
+                <span className="absolute -top-0.5 -right-0.5 flex h-2 w-2">
+                  <span className={`relative inline-flex rounded-full h-2 w-2 ${net.color}`}></span>
+                </span>
+              </button>
+
               {/* Telemetría y Sincronización de Red P2P / Nube */}
               <button
                 onClick={cycleNetworkState}
                 disabled={isSyncing}
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border bg-white/70 dark:bg-slate-900/70 backdrop-blur-sm transition-all hover:bg-slate-100 dark:hover:bg-slate-800 ${net.border} cursor-pointer group disabled:opacity-50 shadow-xs`}
+                className={`hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full border bg-white/70 dark:bg-slate-900/70 backdrop-blur-sm transition-all hover:bg-slate-100 dark:hover:bg-slate-800 ${net.border} cursor-pointer group disabled:opacity-50 shadow-xs shrink-0`}
                 title="Gestor de Conexión de Contingencia y Sincronización"
               >
                 <span className="relative flex h-2 w-2">
@@ -289,7 +304,7 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
 
               {/* Indicador de Nube Supabase */}
               <span 
-                className={`hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border text-[10px] font-black font-mono tracking-wider bg-white/70 dark:bg-slate-900/70 shadow-xs ${
+                className={`hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-full border text-[10px] font-black font-mono tracking-wider bg-white/70 dark:bg-slate-900/70 shadow-xs shrink-0 ${
                   isSupabaseConfigured 
                     ? "border-emerald-500/30 text-emerald-600 dark:text-emerald-400 bg-emerald-50/50 dark:bg-emerald-950/20" 
                     : "border-slate-200 dark:border-white/10 text-slate-500 dark:text-slate-400"
@@ -319,7 +334,7 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
                     showToast("Enlace de descarga copiado al portapapeles.", "success");
                   }
                 }}
-                className="hidden sm:flex items-center justify-center p-2 rounded-xl border border-violet-200 dark:border-violet-800/50 hover:bg-violet-50 dark:hover:bg-violet-900/30 text-violet-700 dark:text-violet-300 transition-all cursor-pointer h-8 px-2.5 gap-1.5 bg-violet-50/60 dark:bg-violet-950/30 text-[11px] font-bold shadow-xs"
+                className="hidden sm:flex items-center justify-center p-2 rounded-xl border border-violet-200 dark:border-violet-800/50 hover:bg-violet-50 dark:hover:bg-violet-900/30 text-violet-700 dark:text-violet-300 transition-all cursor-pointer h-8 px-2.5 gap-1.5 bg-violet-50/60 dark:bg-violet-950/30 text-[11px] font-bold shadow-xs shrink-0"
                 title="Compartir enlace de descarga de la aplicación móvil"
               >
                 <span>🔗 App</span>
@@ -328,7 +343,7 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
               {/* Botón Buscador / Comandos Rápidos (Ctrl+K) */}
               <button
                 onClick={() => window.dispatchEvent(new CustomEvent("open-command-palette"))}
-                className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 transition-all cursor-pointer h-8 bg-white/70 dark:bg-slate-900/70 shadow-xs"
+                className="hidden sm:flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl border border-slate-200/80 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 transition-all cursor-pointer h-8 bg-white/70 dark:bg-slate-900/70 shadow-xs shrink-0"
                 title="Búsqueda rápida y comandos (Ctrl + K)"
               >
                 <Search size={14} className="text-violet-600 dark:text-violet-400" />
@@ -339,7 +354,7 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
               {/* Selector de Modo Claro / Oscuro */}
               <button
                 onClick={toggleTheme}
-                className="flex items-center justify-center p-2 rounded-xl border border-slate-200/80 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all cursor-pointer h-8 w-8 bg-white/70 dark:bg-slate-900/70 shadow-xs"
+                className="hidden sm:flex items-center justify-center p-2 rounded-xl border border-slate-200/80 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 transition-all cursor-pointer h-8 w-8 bg-white/70 dark:bg-slate-900/70 shadow-xs shrink-0"
                 title={theme === "light" ? "Cambiar a Modo Oscuro" : "Cambiar a Modo Claro"}
               >
                 {theme === "light" ? <Moon size={14} /> : <Sun size={14} />}
@@ -348,7 +363,7 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
               {/* Campana de Notificaciones Interactiva */}
               <button
                 onClick={() => setShowNotifDrawer(prev => !prev)}
-                className="relative flex items-center justify-center p-2 rounded-xl border border-violet-200 dark:border-violet-800/50 hover:bg-violet-50 dark:hover:bg-violet-900/40 text-violet-700 dark:text-violet-300 transition-all cursor-pointer h-8 w-8 bg-violet-50/50 dark:bg-violet-950/40 shadow-xs"
+                className="relative flex items-center justify-center p-2 rounded-xl border border-violet-200 dark:border-violet-800/50 hover:bg-violet-50 dark:hover:bg-violet-900/40 text-violet-700 dark:text-violet-300 transition-all cursor-pointer h-8 w-8 bg-violet-50/50 dark:bg-violet-950/40 shadow-xs shrink-0"
                 title="Ver centro de notificaciones"
               >
                 <Bell size={14} className={db.notifications?.length > 0 ? "animate-pulse text-amber-500" : ""} />
@@ -362,7 +377,7 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
               {/* Foto de Perfil / Cambio de Avatar */}
               {currentUser.role !== "marketplace" && (
                 <label 
-                  className="relative w-8 h-8 rounded-full border-2 border-violet-500/40 cursor-pointer overflow-hidden flex items-center justify-center bg-violet-100 dark:bg-white/10 hover:border-violet-600 transition-all shadow-xs group" 
+                  className="relative w-8 h-8 rounded-full border-2 border-violet-500/40 cursor-pointer overflow-hidden flex items-center justify-center bg-violet-100 dark:bg-white/10 hover:border-violet-600 transition-all shadow-xs group shrink-0" 
                   title="Toca tu foto para actualizar tu imagen de perfil"
                 >
                   <input
@@ -416,15 +431,102 @@ export const Navbar = ({ title, showBack = false, onBack }: { title?: string, sh
               {/* Botón Salir / Logout */}
               <button
                 onClick={logout}
-                className="text-xs font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 hover:bg-rose-100 dark:hover:bg-rose-950/50 transition-colors cursor-pointer bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 px-2.5 sm:px-3 py-1.5 rounded-xl flex items-center gap-1 shadow-xs"
+                className="text-xs font-bold text-rose-600 dark:text-rose-400 hover:text-rose-700 hover:bg-rose-100 dark:hover:bg-rose-950/50 transition-colors cursor-pointer bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 px-2 sm:px-3 py-1.5 rounded-xl flex items-center gap-1 shadow-xs shrink-0"
                 title="Cerrar Sesión y salir del sistema"
               >
                 <LogOut size={13} />
-                <span className="hidden xs:inline">Salir</span>
+                <span className="hidden sm:inline">Salir</span>
               </button>
             </>
           )}
         </div>
+
+        {/* Menú Desplegable Móvil para Controles Secundarios (<640px) */}
+        {showMobileSecondary && (
+          <div className="sm:hidden absolute top-full right-3 mt-2 w-72 p-3 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border border-slate-200 dark:border-white/10 rounded-2xl shadow-2xl z-50 animate-fade-in flex flex-col gap-2">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-white/10">
+              <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">Controles Rápidos</span>
+              <button
+                type="button"
+                onClick={() => setShowMobileSecondary(false)}
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 text-xs"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Network State */}
+            <div className="flex items-center justify-between p-2 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10">
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Conexión</span>
+              <button
+                type="button"
+                onClick={cycleNetworkState}
+                disabled={isSyncing}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[10px] font-black font-mono ${net.border}`}
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${net.color}`}></span>
+                  <span className={`relative inline-flex rounded-full h-2 w-2 ${net.color}`}></span>
+                </span>
+                <span>{isSyncing ? "SINCRONIZANDO..." : net.label}</span>
+              </button>
+            </div>
+
+            {/* Search */}
+            <button
+              type="button"
+              onClick={() => {
+                setShowMobileSecondary(false);
+                window.dispatchEvent(new CustomEvent("open-command-palette"));
+              }}
+              className="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200/60 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-200 cursor-pointer"
+            >
+              <span className="flex items-center gap-2">
+                <Search size={14} className="text-violet-600 dark:text-violet-400" />
+                Buscar / Comandos
+              </span>
+              <kbd className="bg-slate-200/80 dark:bg-white/10 px-1.5 py-0.5 rounded text-[9px] font-mono">⌘K</kbd>
+            </button>
+
+            {/* Theme */}
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="flex items-center justify-between px-3 py-2 rounded-xl bg-slate-50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 border border-slate-200/60 dark:border-white/10 text-xs font-bold text-slate-700 dark:text-slate-200 cursor-pointer"
+            >
+              <span className="flex items-center gap-2">
+                {theme === "light" ? <Moon size={14} className="text-violet-600" /> : <Sun size={14} className="text-amber-400" />}
+                {theme === "light" ? "Modo Oscuro" : "Modo Claro"}
+              </span>
+              <span className="text-[10px] text-slate-500 uppercase font-mono">{theme}</span>
+            </button>
+
+            {/* Share APK */}
+            <button
+              type="button"
+              onClick={async () => {
+                setShowMobileSecondary(false);
+                const shareUrl = `${window.location.origin}/download-apk`;
+                if (navigator.share) {
+                  try {
+                    await navigator.share({
+                      title: "KFS-OS APK",
+                      text: "Descarga la aplicación oficial de KFS-OS en tu dispositivo móvil",
+                      url: shareUrl
+                    });
+                    showToast("Enlace compartido con éxito", "success");
+                  } catch (e) {}
+                } else {
+                  navigator.clipboard.writeText(shareUrl);
+                  showToast("Enlace de descarga copiado al portapapeles.", "success");
+                }
+              }}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl bg-violet-50 dark:bg-violet-950/30 hover:bg-violet-100 dark:hover:bg-violet-900/40 border border-violet-200 dark:border-violet-800/40 text-xs font-bold text-violet-700 dark:text-violet-300 cursor-pointer"
+            >
+              <span>🔗 Descargar / Compartir APK</span>
+            </button>
+          </div>
+        )}
 
         {/* Drawer Lateral del Centro de Notificaciones */}
         {showNotifDrawer && (
