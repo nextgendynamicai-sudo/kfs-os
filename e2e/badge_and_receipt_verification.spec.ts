@@ -35,6 +35,9 @@ test.describe('Cart Badge & Receipt Layout Precision Verification', () => {
 
     // Second product still has NO badge
     await expect(secondCardBadge).toHaveCount(0);
+
+    // Save screenshot of POS grid
+    await page.screenshot({ path: 'test-results/pos_badge_single_product_verified.png' });
   });
 
   test('Receipt modal displays full product names and completely visible TOTAL CANCELADO', async ({ page }) => {
@@ -54,7 +57,7 @@ test.describe('Cart Badge & Receipt Layout Precision Verification', () => {
     }
 
     // Now click the checkout confirm button
-    const cobrarBtn = page.locator('[data-testid="pos-cobrar-btn"]').first();
+    const cobrarBtn = page.locator('[data-testid="pos-cobrar-btn"]:visible');
     await expect(cobrarBtn).toBeVisible({ timeout: 5000 });
     await cobrarBtn.click();
 
@@ -65,6 +68,9 @@ test.describe('Cart Badge & Receipt Layout Precision Verification', () => {
     // Verify that "TOTAL CANCELADO" box has dollar total
     const totalBox = page.locator('div:has-text("TOTAL CANCELADO")').last();
     await expect(totalBox).toBeVisible();
+
+    // Take screenshot of the receipt modal
+    await page.screenshot({ path: 'test-results/receipt_modal_verified.png' });
 
     // Check action buttons exist
     const whatsappBtn = page.locator('a:has-text("WhatsApp")');
