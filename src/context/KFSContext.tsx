@@ -5320,6 +5320,21 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   };
 
   const loadDemoCommerce = useCallback((targetPersona: "dueño" | "vendedor" | "rider" | "customer" = "dueño") => {
+    setDb((prev: any) => {
+      const hasClient = (prev.clients || []).some((c: any) => c.id === DEMO_COMMERCE_ID);
+      if (!hasClient) {
+        return {
+          ...prev,
+          clients: [...(prev.clients || []), DEMO_COMMERCE_CLIENT],
+          products: [...(prev.products || []), ...DEMO_COMMERCE_PRODUCTS],
+          vendedores: [...(prev.vendedores || []), ...DEMO_COMMERCE_VENDEDORES],
+          riders: [...(prev.riders || []), ...DEMO_COMMERCE_RIDERS],
+          customers: [...(prev.customers || []), ...DEMO_COMMERCE_CUSTOMERS]
+        };
+      }
+      return prev;
+    });
+
     if (targetPersona === "dueño") {
       const demoClient = db.clients?.find((c: any) => c.id === DEMO_COMMERCE_ID) || DEMO_COMMERCE_CLIENT;
       setCurrentUser({ ...demoClient, role: "dueño", isDemoUser: true });

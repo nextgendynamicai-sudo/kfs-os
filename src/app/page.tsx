@@ -309,9 +309,13 @@ export default function Home() {
 
   let isUserValid = true;
   if (currentUser) {
-    if (currentUser.role === "dueño" && db.clients?.length > 0 && !db.clients.some((c: any) => c.id === currentUser.id)) isUserValid = false;
-    if (currentUser.role === "rider" && db.riders?.length > 0 && !db.riders.some((r: any) => r.id === currentUser.id)) isUserValid = false;
-    if (currentUser.role === "vendedor" && db.vendedores?.length > 0 && !db.vendedores.some((v: any) => v.id === currentUser.id)) isUserValid = false;
+    if (currentUser.isDemoUser) {
+      isUserValid = true;
+    } else {
+      if (currentUser.role === "dueño" && db.clients?.length > 0 && !db.clients.some((c: any) => c.id === currentUser.id)) isUserValid = false;
+      if (currentUser.role === "rider" && db.riders?.length > 0 && !db.riders.some((r: any) => r.id === currentUser.id)) isUserValid = false;
+      if (currentUser.role === "vendedor" && db.vendedores?.length > 0 && !db.vendedores.some((v: any) => v.id === currentUser.id)) isUserValid = false;
+    }
   }
 
   const updatePwaStatus = async (status: boolean) => {

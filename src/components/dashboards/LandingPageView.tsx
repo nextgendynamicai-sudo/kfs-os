@@ -154,6 +154,7 @@ export const LandingPageView = ({ setView }: any) => {
                 } else if (handleLogin) {
                   handleLogin("dueño", "000");
                 }
+                setView("client");
               }}
               className="bg-emerald-600 hover:bg-emerald-700 text-white px-7 py-4 rounded-xl font-black text-lg transition-all cursor-pointer flex items-center justify-center gap-2 shadow-xl shadow-emerald-600/30 border-none hover:scale-105 active:scale-95"
               title="Probar Demo Bodegón & Market Caracas inmediatamente"
