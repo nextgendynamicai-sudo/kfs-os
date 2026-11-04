@@ -202,6 +202,9 @@ export async function POST(request: Request) {
       const exists = db.transactions.some((t: any) => getItemKey(t) === key);
       if (!exists) {
         db.transactions.push(payload);
+        if (db.transactions.length > 2000) {
+          db.transactions = db.transactions.slice(-2000);
+        }
         // Si la transacción incluye items vendidos, descontar stock en la nube
         if (Array.isArray(payload.items)) {
           payload.items.forEach((it: any) => {
@@ -272,6 +275,10 @@ export async function POST(request: Request) {
       } else {
         db.riders.push(payload);
       }
+    } else if (action === 'BATCH' && payload?.type && Array.isArray(payload?.items)) {
+      const col = payload.type;
+      if (!db[col]) db[col] = [];
+      db[col] = mergeAdditiveArray(db[col], payload.items);
     }
 
     serverUpdatedAt = new Date().toISOString();
