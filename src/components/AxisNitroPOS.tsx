@@ -27,17 +27,25 @@ export interface CartItem {
   qty: number;
 }
 
-export function AxisNitroPOS() {
+export interface AxisNitroPOSProps {
+  setView?: (view: string) => void;
+  initialMerchantId?: string;
+  presetMetadata?: any;
+}
+
+export function AxisNitroPOS({ setView: setViewProp, initialMerchantId }: AxisNitroPOSProps = {}) {
   const { 
     db, 
     formatUSD, 
     rates, 
     showToast, 
     processPurchase, 
-    setView, 
+    setView: contextSetView, 
     currentUser, 
     processBlindCashCount 
   } = useKFS() as any;
+
+  const setView = setViewProp || contextSetView;
 
   const { businessPreset, presetMetadata } = usePreset();
 

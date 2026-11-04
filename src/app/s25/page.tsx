@@ -166,7 +166,10 @@ export default function S25UltraOfflinePage() {
       <main className="flex-1">
         {activeTab === "pos" && (
           <div className="w-full">
-            <AxisNitroPOS />
+            <AxisNitroPOS setView={(v: string) => {
+              if (v === "client" || v === "dueño") setActiveTab("dueño");
+              else if (v === "rider") setActiveTab("rider");
+            }} />
           </div>
         )}
 
@@ -176,6 +179,11 @@ export default function S25UltraOfflinePage() {
               db={db}
               setDb={setDb}
               currentUser={currentUser || { role: "dueño", company: "Bodegón Gourmet Caracas", id: "demo-comercio-kfs" }}
+              setView={(v: string) => {
+                if (v === "pos" || v === "caja") setActiveTab("pos");
+                else if (v === "rider") setActiveTab("rider");
+                else setActiveTab("dueño");
+              }}
               addProduct={addProduct}
               addExpense={addExpense}
               processPurchase={processPurchase}
