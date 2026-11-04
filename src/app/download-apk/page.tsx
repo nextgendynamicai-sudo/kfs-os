@@ -189,6 +189,35 @@ export default function DownloadApkPage() {
           </div>
         </div>
 
+        {/* S25 Ultra Offline Edition Banner */}
+        <div className="bg-gradient-to-r from-violet-950/60 via-slate-900/80 to-indigo-950/60 border border-violet-500/40 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-black uppercase tracking-wider">
+                  Edición Offline Separada
+                </span>
+                <span className="text-xs font-bold text-violet-300 font-mono">
+                  Samsung S25 Ultra
+                </span>
+              </div>
+              <h3 className="text-base font-black text-white">
+                Demostración Comercial Standalone (Sin Conexión)
+              </h3>
+              <p className="text-xs text-slate-300 max-w-xl leading-relaxed">
+                Entorno aislado con dataset comercial precargado (Bodegón Gourmet Caracas), escáner por cámara sin hardware, emisor de tickets y consola de roles para demostraciones presenciales.
+              </p>
+            </div>
+
+            <a
+              href="/s25"
+              className="px-5 py-3 rounded-xl bg-violet-600 hover:bg-violet-500 text-white text-xs font-black transition-all shadow-lg shadow-violet-600/30 flex items-center gap-2 whitespace-nowrap cursor-pointer no-underline"
+            >
+              <Smartphone size={16} /> Abrir S25 Ultra Offline
+            </a>
+          </div>
+        </div>
+
         {/* Share and Security Footer */}
         <div className="flex flex-col sm:flex-row justify-between items-center bg-black/40 border border-white/5 p-4 rounded-2xl gap-4">
           <div className="flex items-center gap-2 text-xs text-emerald-400 font-bold">

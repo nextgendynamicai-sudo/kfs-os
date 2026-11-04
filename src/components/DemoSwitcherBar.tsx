@@ -2,9 +2,10 @@
 
 import React, { useState } from "react";
 import { useKFS } from "../context/KFSContext";
+import { isS25UltraOfflineMode, deactivateS25UltraOfflineMode } from "../lib/deviceMode";
 import {
-  Sparkles, Store, ShoppingCart, Truck, Smartphone,
-  RotateCcw, X, ChevronUp, ChevronDown, CheckCircle2, Shield, Minus
+  Store, ShoppingCart, Truck, Smartphone,
+  RotateCcw, X, ChevronUp, ChevronDown, CheckCircle2, Shield, Minus, Globe
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -21,9 +22,10 @@ export function DemoSwitcherBar() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMinimized, setIsMinimized] = useState(true);
 
-  // Solo mostrar si el usuario actual es de demostración o está en demo commerce
+  // Solo mostrar si el usuario está en modo offline S25 Ultra O si tiene activa la sesión de demo
   const isDemoActive = Boolean(
-    currentUser && (
+    isS25UltraOfflineMode() ||
+    (currentUser && (
       currentUser.id === "demo-comercio-kfs" ||
       currentUser.isDemoUser ||
       currentUser.clientId === "demo-comercio-kfs" ||
@@ -32,26 +34,34 @@ export function DemoSwitcherBar() {
       currentUser.email === "carlos@demo.com" ||
       currentUser.email === "maria@demo.com" ||
       currentUser.email === "rider@demo.com"
-    )
+    ))
   );
 
   if (!isDemoActive) return null;
 
+  const handleExitToWeb = () => {
+    deactivateS25UltraOfflineMode();
+    if (logout) logout();
+    if (typeof window !== "undefined") {
+      window.location.href = "/";
+    }
+  };
+
   if (isMinimized) {
     return (
-      <aside aria-label="Consola de demostración minimizada" className="fixed bottom-24 right-3 z-[9999] pointer-events-auto">
+      <aside aria-label="Consola S25 Ultra Offline minimizada" className="fixed bottom-24 right-3 z-[9999] pointer-events-auto">
         <button
           type="button"
           onClick={() => setIsMinimized(false)}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-950/95 backdrop-blur-xl border border-violet-500/50 text-white text-[11px] font-bold shadow-[0_6px_25px_rgba(139,92,246,0.45)] active:scale-95 cursor-pointer hover:border-violet-400 transition-all"
-          title="Abrir panel de control de demostración"
+          title="Abrir consola S25 Ultra Offline"
         >
           <span className="flex h-2 w-2 relative">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
           <span className="bg-gradient-to-r from-violet-300 via-white to-indigo-300 bg-clip-text text-transparent font-black tracking-wide">
-            DEMO
+            S25 OFFLINE
           </span>
           <ChevronUp size={13} className="text-violet-300" />
         </button>
@@ -60,7 +70,7 @@ export function DemoSwitcherBar() {
   }
 
   return (
-    <aside aria-label="Consola de demostración" className="fixed bottom-24 sm:bottom-4 left-1/2 -translate-x-1/2 z-[9999] w-[95%] max-w-lg pointer-events-auto">
+    <aside aria-label="Consola Samsung S25 Ultra Offline" className="fixed bottom-24 sm:bottom-4 left-1/2 -translate-x-1/2 z-[9999] w-[95%] max-w-lg pointer-events-auto">
       <div className="bg-slate-950/95 backdrop-blur-xl border border-violet-500/40 rounded-2xl shadow-[0_10px_35px_rgba(139,92,246,0.35)] p-2 text-white overflow-hidden transition-all duration-300">
         {/* Cabecera / Pill de Control */}
         <div className="flex items-center justify-between px-3 py-1.5">
@@ -69,12 +79,17 @@ export function DemoSwitcherBar() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
             </span>
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs font-black tracking-wider uppercase bg-gradient-to-r from-violet-300 via-white to-indigo-300 bg-clip-text text-transparent">
-                KFS OS DEMO
-              </span>
-              <span className="text-[10px] font-bold px-1.5 py-0.2 bg-violet-500/20 text-violet-300 border border-violet-500/30 rounded-md">
-                100% OFFLINE
+            <div className="flex flex-col">
+              <div className="flex items-center gap-1.5">
+                <span className="text-[11px] font-black uppercase tracking-wider bg-gradient-to-r from-violet-300 via-purple-200 to-indigo-300 bg-clip-text text-transparent">
+                  S25 Ultra · Edición Offline
+                </span>
+                <span className="px-1.5 py-0.2 text-[8px] font-bold rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                  STANDALONE
+                </span>
+              </div>
+              <span className="text-[9px] text-slate-400 font-mono">
+                Bodegón Gourmet Caracas (100% Sin Conexión)
               </span>
             </div>
           </div>
@@ -82,10 +97,10 @@ export function DemoSwitcherBar() {
           <div className="flex items-center gap-1">
             <button
               onClick={() => setIsExpanded(!isExpanded)}
-              className="p-1 rounded-lg bg-white/5 hover:bg-white/10 text-violet-300 transition-colors flex items-center gap-1 text-[11px] font-semibold px-2"
-              title="Cambiar perspectiva de demostración"
+              className="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-slate-300 transition-colors cursor-pointer flex items-center gap-1 text-[10px] font-bold"
+              title={isExpanded ? "Contraer roles" : "Cambiar rol del sistema"}
             >
-              <span>{isExpanded ? "Ocultar" : "Cambiar Rol"}</span>
+              <span>Roles</span>
               {isExpanded ? <ChevronDown size={14} /> : <ChevronUp size={14} />}
             </button>
             <button
@@ -96,9 +111,9 @@ export function DemoSwitcherBar() {
               <Minus size={14} />
             </button>
             <button
-              onClick={() => logout()}
+              onClick={handleExitToWeb}
               className="p-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 transition-colors cursor-pointer"
-              title="Salir del modo demostración"
+              title="Salir al Modo Web Producción"
             >
               <X size={14} />
             </button>
@@ -167,35 +182,40 @@ export function DemoSwitcherBar() {
                   <span className="text-[8px] opacity-70">Delivery</span>
                 </button>
 
-                {/* Cliente / Marketplace */}
+                {/* Cliente */}
                 <button
                   onClick={() => {
-                    setView("marketplace");
+                    loadDemoCommerce?.("customer");
                     setIsExpanded(false);
                   }}
                   className={`flex flex-col items-center justify-center p-2 rounded-xl text-center transition-all ${
-                    view === "marketplace"
+                    view === "customer"
                       ? "bg-violet-600 text-white font-bold shadow-md shadow-violet-600/30"
                       : "bg-white/5 hover:bg-white/10 text-slate-300"
                   }`}
                 >
                   <Smartphone size={18} className="mb-1" />
-                  <span className="text-[10px] font-bold leading-tight">Catálogo</span>
-                  <span className="text-[8px] opacity-70">Cliente Web</span>
+                  <span className="text-[10px] font-bold leading-tight">Cliente</span>
+                  <span className="text-[8px] opacity-70">App Rewards</span>
                 </button>
               </div>
 
-              {/* Botón de Restaurar Demo a estado limpio */}
-              <div className="pt-1 px-1">
+              {/* Botones de Utilidad */}
+              <div className="flex items-center justify-between gap-2 px-1 pt-1 border-t border-white/5 text-[10px]">
                 <button
-                  onClick={() => {
-                    resetDemoCommerceData?.();
-                    setIsExpanded(false);
-                  }}
-                  className="w-full py-2 px-3 rounded-xl bg-white/5 hover:bg-white/10 text-amber-300 border border-amber-500/20 text-xs font-bold flex items-center justify-center gap-2 transition-colors cursor-pointer"
+                  onClick={() => resetDemoCommerceData?.()}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 font-medium transition-colors cursor-pointer"
                 >
-                  <RotateCcw size={14} className="text-amber-400" />
-                  <span>Restablecer Datos de Demostración a Estado Inicial</span>
+                  <RotateCcw size={12} />
+                  <span>Reiniciar Datos Demo</span>
+                </button>
+
+                <button
+                  onClick={handleExitToWeb}
+                  className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 font-medium transition-colors cursor-pointer"
+                >
+                  <Globe size={12} />
+                  <span>Salir a Modo Web Producción</span>
                 </button>
               </div>
             </motion.div>

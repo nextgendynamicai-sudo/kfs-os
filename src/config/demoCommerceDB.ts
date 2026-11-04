@@ -668,3 +668,82 @@ export const DEMO_COMMERCE_BLIND_AUDIT = {
   discrepancyUSD: 0.00,
   status: "CUADRADO_PERFECTO"
 };
+
+// Generador del dataset completo y enriquecido exclusivo para la Edición Offline Samsung Galaxy S25 Ultra / APK
+export function getS25OfflineDatabase(baseDb?: any) {
+  const base = baseDb || {
+    clients: [],
+    vendedores: [],
+    products: [],
+    transactions: [],
+    orders: [],
+    expenses: [],
+    crm: [],
+    vales: [],
+    posTerminals: [],
+    zReports: [],
+    blindAudits: [],
+    buyers: [],
+    customers: [],
+    kreatekCore: {
+      totalTransactions: 0,
+      earningsEUR: 0,
+      netEarningsEUR: 0,
+      adBudgetEUR: 0,
+      wipeVersion: 10,
+      deletedKeys: [],
+      team: []
+    },
+    promotoras: [],
+    riders: [],
+    coupons: [],
+    fiscalLogs: [],
+    rewardTasks: [],
+    rewardSubmissions: [],
+    notifications: []
+  };
+
+  return {
+    ...base,
+    clients: [
+      ...(base.clients || []).filter((c: any) => c.id !== DEMO_COMMERCE_ID),
+      DEMO_COMMERCE_CLIENT
+    ],
+    vendedores: [
+      ...(base.vendedores || []).filter((v: any) => v.clientId !== DEMO_COMMERCE_ID),
+      ...DEMO_COMMERCE_VENDEDORES
+    ],
+    products: [
+      ...(base.products || []).filter((p: any) => p.clientId !== DEMO_COMMERCE_ID),
+      ...DEMO_COMMERCE_PRODUCTS
+    ],
+    transactions: [
+      ...(base.transactions || []).filter((t: any) => t.clientId !== DEMO_COMMERCE_ID),
+      ...DEMO_COMMERCE_TRANSACTIONS
+    ],
+    orders: [
+      ...(base.orders || []).filter((o: any) => o.clientId !== DEMO_COMMERCE_ID),
+      ...DEMO_COMMERCE_TRANSACTIONS.filter((t: any) => t.shippingStatus)
+    ],
+    vales: [
+      ...(base.vales || []).filter((v: any) => v.clientId !== DEMO_COMMERCE_ID),
+      ...DEMO_COMMERCE_VALES
+    ],
+    zReports: [
+      ...(base.zReports || []).filter((z: any) => z.clientId !== DEMO_COMMERCE_ID),
+      DEMO_COMMERCE_ZREPORT
+    ],
+    blindAudits: [
+      ...(base.blindAudits || []).filter((b: any) => b.clientId !== DEMO_COMMERCE_ID),
+      DEMO_COMMERCE_BLIND_AUDIT
+    ],
+    customers: [
+      ...(base.customers || []).filter((c: any) => !c.id?.startsWith("cust-demo-")),
+      ...DEMO_COMMERCE_CUSTOMERS
+    ],
+    riders: [
+      ...(base.riders || []).filter((r: any) => r.id !== "rider-demo-1"),
+      ...DEMO_COMMERCE_RIDERS
+    ]
+  };
+}

@@ -347,11 +347,12 @@ export default function Home() {
   }, [currentUser, isUserValid, logout, setView, showToast, setCurrentUser]);
 
   
-  // Auto-iniciar sesión Demo Comercio cuando se navega con ?demo=true
+  // Auto-iniciar sesión S25 Ultra Offline exclusivamente cuando se navega con ?mode=s25 o ?s25=true
   useEffect(() => {
     if (typeof window !== "undefined") {
       const searchParams = new URLSearchParams(window.location.search);
-      if (searchParams.get("demo") === "true" && !currentUser && loadDemoCommerce) {
+      const isS25Param = searchParams.get("mode") === "s25" || searchParams.get("s25") === "true";
+      if (isS25Param && !currentUser && loadDemoCommerce) {
         loadDemoCommerce("dueño");
       }
     }

@@ -1,15 +1,4 @@
 import { KFS_BRAND } from "./brandConfig";
-import {
-  DEMO_COMMERCE_CLIENT,
-  DEMO_COMMERCE_PRODUCTS,
-  DEMO_COMMERCE_VENDEDORES,
-  DEMO_COMMERCE_VALES,
-  DEMO_COMMERCE_RIDERS,
-  DEMO_COMMERCE_TRANSACTIONS,
-  DEMO_COMMERCE_CUSTOMERS,
-  DEMO_COMMERCE_ZREPORT,
-  DEMO_COMMERCE_BLIND_AUDIT
-} from "./demoCommerceDB";
 
 export const CURRENT_WIPE_VERSION = 10;
 
@@ -49,12 +38,9 @@ export const initialDB = {
         layoutType: "grid",
         profilePicUrl: "https://cdn-icons-png.flaticon.com/512/3063/3063822.png"
       }
-    },
-    DEMO_COMMERCE_CLIENT
+    }
   ] as any[],
-  vendedores: [
-    ...DEMO_COMMERCE_VENDEDORES
-  ] as any[],
+  vendedores: [] as any[],
   products: [
     {
       id: "prod_dig_1",
@@ -143,31 +129,18 @@ export const initialDB = {
       clientId: "kfs-express",
       priceUSD: 300,
       description: "Producción completa de 5 pautas publicitarias de alto impacto con equipo profesional (grabación y edición incluidas)."
-    },
-    ...DEMO_COMMERCE_PRODUCTS
+    }
   ] as any[],
-  transactions: [
-    ...DEMO_COMMERCE_TRANSACTIONS
-  ] as any[],
-  orders: [
-    ...DEMO_COMMERCE_TRANSACTIONS.filter((t: any) => t.shippingStatus)
-  ] as any[],
+  transactions: [] as any[],
+  orders: [] as any[],
   expenses: [] as any[],
   crm: [] as any[],
-  vales: [
-    ...DEMO_COMMERCE_VALES
-  ] as any[],
+  vales: [] as any[],
   posTerminals: [] as any[],
-  zReports: [
-    DEMO_COMMERCE_ZREPORT
-  ] as any[],
-  blindAudits: [
-    DEMO_COMMERCE_BLIND_AUDIT
-  ] as any[],
+  zReports: [] as any[],
+  blindAudits: [] as any[],
   buyers: [] as any[],
-  customers: [
-    ...DEMO_COMMERCE_CUSTOMERS
-  ] as any[],
+  customers: [] as any[],
   kreatekCore: {
     totalTransactions: 0,
     earningsEUR: 0,
@@ -194,9 +167,7 @@ export const initialDB = {
     ]
   },
   promotoras: [] as any[],
-  riders: [
-    ...DEMO_COMMERCE_RIDERS
-  ] as any[],
+  riders: [] as any[],
   coupons: [] as any[],
   fiscalLogs: [] as any[],
   rewardTasks: [
