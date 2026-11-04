@@ -13,6 +13,7 @@ export const isSupabaseConfigured = !!(
   !supabaseUrl.includes("dummy-project") && 
   !supabaseUrl.includes("uplgtylqjkxallwtnehj") && 
   !supabaseUrl.includes("poycfdnudyrgtyegvnoa") && 
+  !supabaseUrl.includes("dvrjjaehiugjdsqhuhyo") && 
   !supabaseAnonKey.includes("your-anon-public-key") &&
   !supabaseAnonKey.includes("YOUR_SUPABASE_KEY_HERE")
 );

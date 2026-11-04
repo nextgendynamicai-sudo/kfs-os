@@ -56,6 +56,7 @@ export default function RootLayout({
     <html
       lang="es"
       translate="no"
+      suppressHydrationWarning
       className={`${jakartaSans.variable} ${geistMono.variable} h-full antialiased notranslate`}
     >
       <head>
@@ -120,7 +121,7 @@ export default function RootLayout({
           `
         }} />
       </head>
-      <body className="min-h-full flex flex-col notranslate" translate="no">
+      <body className="min-h-full flex flex-col notranslate" translate="no" suppressHydrationWarning>
         <ErrorBoundary>
           <UIProvider>
             <KFSProvider>

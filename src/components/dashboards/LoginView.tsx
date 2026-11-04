@@ -331,7 +331,7 @@ export const LoginView = ({
             <span className="text-slate-900 font-extrabold tracking-tight">Red KFS Activa</span>
             <span className="text-slate-300">|</span>
             <span className="text-violet-700 font-black">
-              Tasa Oficial BCV: <span className="text-slate-900">{bcvRate ? `Bs. ${bcvRate}` : "En línea"}</span>
+              Tasa Oficial BCV: <span className="text-slate-900" suppressHydrationWarning>{bcvRate ? `Bs. ${bcvRate}` : "En línea"}</span>
             </span>
             <span className="text-slate-300 hidden sm:inline">|</span>
             <span className="hidden sm:inline-flex items-center gap-1 text-[11px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-bold">

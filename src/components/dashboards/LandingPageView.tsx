@@ -80,6 +80,7 @@ const KREATEK_COLORS = {
 // Toast Component
 
 export const LandingPageView = ({ setView }: any) => {
+  const { loadDemoCommerce, handleLogin } = useKFS() as any;
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#fcfaff] via-[#f2e6ff] to-[#d8beff] text-violet-950 font-sans overflow-x-hidden selection:bg-violet-600 selection:text-white">
       {/* Navbar */}
@@ -146,11 +147,24 @@ export const LandingPageView = ({ setView }: any) => {
             <button onClick={() => setView("login")} className="bg-violet-600 text-white px-8 py-4 rounded-xl font-black text-lg hover:scale-105 active:scale-95 transition-all shadow-xl shadow-violet-600/30 cursor-pointer flex items-center justify-center gap-2 border-none">
               <Zap size={20} /> Empezar Ahora
             </button>
+            <button
+              onClick={() => {
+                if (loadDemoCommerce) {
+                  loadDemoCommerce("dueño");
+                } else if (handleLogin) {
+                  handleLogin("dueño", "000");
+                }
+              }}
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-7 py-4 rounded-xl font-black text-lg transition-all cursor-pointer flex items-center justify-center gap-2 shadow-xl shadow-emerald-600/30 border-none hover:scale-105 active:scale-95"
+              title="Probar Demo Bodegón & Market Caracas inmediatamente"
+            >
+              <Sparkles size={20} className="text-amber-300 animate-pulse" /> Probar Demo en Vivo
+            </button>
             <button onClick={() => {
               const el = document.getElementById("pricing");
               el?.scrollIntoView({ behavior: 'smooth' });
-            }} className="bg-white border border-violet-100 shadow-md text-violet-900 px-8 py-4 rounded-xl font-bold text-lg transition-all cursor-pointer flex items-center justify-center gap-2 hover:shadow-lg hover:-translate-y-1">
-              Ver Planes y Precios
+            }} className="bg-white border border-violet-100 shadow-md text-violet-900 px-6 py-4 rounded-xl font-bold text-base transition-all cursor-pointer flex items-center justify-center gap-2 hover:shadow-lg hover:-translate-y-1">
+              Ver Planes
             </button>
           </div>
         </div>
