@@ -10,17 +10,19 @@ export default function RiderPage() {
   const { db, currentUser, confirmDelivery, markAsPickedUp, updateRiderGPS, riderCheckIn, riderCheckOut, logout } = kfs;
 
   return (
-    <AppEnforcer currentUser={currentUser} updatePwaStatus={() => {}}>
-      <RiderDashboard
-        db={db}
-        currentUser={currentUser || { role: "rider", name: "Rider Logístico Axis Nitro", id: "rider_demo" }}
-        confirmDelivery={confirmDelivery}
-        markAsPickedUp={markAsPickedUp}
-        updateRiderGPS={updateRiderGPS}
-        riderCheckIn={riderCheckIn}
-        riderCheckOut={riderCheckOut}
-        logout={logout}
-      />
-    </AppEnforcer>
+    <div suppressHydrationWarning className="min-h-screen">
+      <AppEnforcer currentUser={currentUser} updatePwaStatus={() => {}}>
+        <RiderDashboard
+          db={db}
+          currentUser={currentUser || { role: "rider", name: "Rider Logístico Axis Nitro", id: "rider_demo" }}
+          confirmDelivery={confirmDelivery}
+          markAsPickedUp={markAsPickedUp}
+          updateRiderGPS={updateRiderGPS}
+          riderCheckIn={riderCheckIn}
+          riderCheckOut={riderCheckOut}
+          logout={logout}
+        />
+      </AppEnforcer>
+    </div>
   );
 }

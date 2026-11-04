@@ -48,6 +48,11 @@ export default function S25UltraOfflinePage() {
 
   const [activeTab, setActiveTab] = useState<"pos" | "dueño" | "rider">("pos");
 
+  const [isClient, setIsClient] = useState(false);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
+
   useEffect(() => {
     activateS25UltraOfflineMode();
     if (loadDemoCommerce && (!currentUser || !currentUser.isDemoUser)) {
@@ -63,8 +68,19 @@ export default function S25UltraOfflinePage() {
     }
   };
 
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-4" suppressHydrationWarning>
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-2 border-violet-500 border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-xs font-mono text-violet-300">Cargando S25 Ultra Offline Engine...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex flex-col">
+    <div className="min-h-screen bg-slate-950 text-white flex flex-col" suppressHydrationWarning>
       {/* Barra de Diferenciación Superior: S25 Ultra Offline Edition */}
       <header className="sticky top-0 z-50 bg-slate-900/95 backdrop-blur-xl border-b border-violet-500/30 px-3 py-2">
         <div className="max-w-5xl mx-auto flex items-center justify-between gap-2">

@@ -10,7 +10,8 @@ export default function ComercioPage() {
   const { db, setDb, currentUser, addProduct, addExpense, processPurchase, generateZReport, originalUser, stopImpersonating, registerPosTerminal, deletePosTerminal, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, createCoupon, deleteCoupon, toggleCouponActive, logout, requestTopUp, requestPayout, showToast, formatUSD, formatEUR } = kfs;
 
   return (
-    <AppEnforcer currentUser={currentUser} updatePwaStatus={() => {}}>
+    <div suppressHydrationWarning className="min-h-screen">
+      <AppEnforcer currentUser={currentUser} updatePwaStatus={() => {}}>
       <ClientDashboard
         db={db}
         setDb={setDb}
@@ -38,5 +39,6 @@ export default function ComercioPage() {
         formatEUR={formatEUR}
       />
     </AppEnforcer>
+    </div>
   );
 }
