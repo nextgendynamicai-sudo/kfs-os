@@ -56,7 +56,7 @@ export async function POST(req: Request) {
           .single();
         
         if (dbError || !dbData || !dbData.db_state) {
-          return NextResponse.json({ error: 'Database state not found' }, { status: 404 });
+          return NextResponse.json({ error: 'Database state not found or Supabase unreachable', success: false }, { status: 503 });
         }
 
         const oldUpdatedAt = dbData.updated_at;

@@ -9,7 +9,7 @@ const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabase
 // Binance Pay Webhook
 export async function POST(req: Request) {
   if (!supabase) {
-    return NextResponse.json({ error: 'Supabase no configurado' }, { status: 500 });
+    return NextResponse.json({ error: 'Supabase no configurado o fuera de línea', success: false }, { status: 503 });
   }
 
   try {
@@ -66,7 +66,7 @@ export async function POST(req: Request) {
         .single();
 
       if (storeError || !storeData) {
-        return NextResponse.json({ error: 'Database state not found' }, { status: 404 });
+        return NextResponse.json({ error: 'Database state not found or Supabase unreachable', success: false }, { status: 503 });
       }
 
       const oldUpdatedAt = storeData.updated_at;

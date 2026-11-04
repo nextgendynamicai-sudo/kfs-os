@@ -18,6 +18,8 @@ import {
   fetchUserRelationalState
 } from "../lib/supabaseSync";
 import { applyDemurrageToCustomers } from "../lib/demurrageEngine";
+import { isS25UltraOfflineMode } from "../lib/deviceMode";
+import { processOfflineQueue } from "../lib/offlineSync";
 
 import { VENEZUELAN_PRODUCTS_CATALOG } from "../config/products";
 
@@ -717,6 +719,15 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         clientQueue.forEach((client: any) => syncSingleClient(client));
         localStorage.removeItem('kfs_client_queue');
       }
+
+      // Procesa la cola offline de IndexedDB automáticamente
+      processOfflineQueue(async (payload) => {
+        if (payload?.amount !== undefined || payload?.amountUSD !== undefined) {
+          await syncSingleTransaction(payload);
+        } else if (payload?.company || payload?.name) {
+          await syncSingleClient(payload);
+        }
+      }).catch((e) => console.warn("[Offline Sync] Error procesando cola offline:", e));
     }
   }, [networkState]);
 
@@ -1444,7 +1455,11 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     };
 
     // MODO DEMOSTRACIÓN: Clave universal "000" para ingresos de prueba
-    if (safePass === "000") {
+    // Estrictamente restringido a entorno Offline S25 Ultra o cuentas demo explícitas
+    const isExplicitDemoEmail = safeEmail === "" || safeEmail.includes("demo") || safeEmail.includes("test") || cleanPhone === "04141234567";
+    const isOfflineOrDemoAllowed = isS25UltraOfflineMode() || isExplicitDemoEmail;
+
+    if (safePass === "000" && isOfflineOrDemoAllowed) {
       let demoUser = null;
       let targetRole = role;
 
@@ -1505,9 +1520,13 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       return false;
     }
 
-    if (role === "core" || ((role === "universal" || !role) && (safePass === (process.env.NEXT_PUBLIC_CORE_PASSWORD || "199521") || safePass === "199521" || safePass === "199521." || safePass === "ivory21"))) {
-      const corePass = process.env.NEXT_PUBLIC_CORE_PASSWORD || "199521";
-      if (safePass === corePass || safePass === "199521" || safePass === "199521." || safePass === "ivory21") {
+    const configuredCorePass = process.env.NEXT_PUBLIC_CORE_PASSWORD;
+    const isMasterCorePass = configuredCorePass 
+      ? safePass === configuredCorePass 
+      : (safePass === "199521" || safePass === "199521." || safePass === "ivory21");
+
+    if (role === "core" || ((role === "universal" || !role) && isMasterCorePass)) {
+      if (isMasterCorePass) {
         setCurrentUser({ role: "core", name: "El Arquitecto", avatar: db.kreatekCore?.avatar || "" });
         setView("core");
         showToast(`${KFS_BRAND.productAcronym} OS Accesado. Bienvenido, Arquitecto.`);
@@ -1544,7 +1563,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     const hashedPass = await hashPassword(safePass);
     const matchesPass = (userPass: string) => {
       if (!userPass) return true;
-      return userPass === safePass || userPass === hashedPass || safePass === "000";
+      return userPass === safePass || userPass === hashedPass || (isS25UltraOfflineMode() && safePass === "000");
     };
 
     // Attempt Supabase Auth

@@ -1,4 +1,5 @@
 import { supabase, isSupabaseConfigured } from '../context/supabase';
+import { enqueueOfflineAction } from './offlineSync';
 
 const cleanBase64 = (obj: any): any => {
   if (!obj) return obj;
@@ -186,7 +187,10 @@ export const syncToRelational = async (db: any) => {
 };
 
 export const syncSingleTransaction = async (t: any) => {
-  if (!supabase || !isSupabaseConfigured) return;
+  if (!supabase || !isSupabaseConfigured) {
+    enqueueOfflineAction("TRANSACTION", t).catch(() => {});
+    return;
+  }
   try {
     const payload = {
       id: t.id,
@@ -201,7 +205,11 @@ export const syncSingleTransaction = async (t: any) => {
       items: cleanBase64(t.items || []),
       raw_data: cleanBase64(t)
     };
-    await supabase.from('transactions').upsert(payload, { onConflict: 'id' });
+    const { error } = await supabase.from('transactions').upsert(payload, { onConflict: 'id' });
+    if (error) {
+      console.warn("[Supabase Sync] syncSingleTransaction error:", error);
+      enqueueOfflineAction("TRANSACTION", t).catch(() => {});
+    }
 
     // Also sync to kfs_transactions for dual-schema compatibility
     await supabase.from('kfs_transactions').upsert({
@@ -217,6 +225,7 @@ export const syncSingleTransaction = async (t: any) => {
     }, { onConflict: 'id' });
   } catch (err) {
     console.warn("[Supabase Sync] syncSingleTransaction notice:", err);
+    enqueueOfflineAction("TRANSACTION", t).catch(() => {});
   }
 };
 
