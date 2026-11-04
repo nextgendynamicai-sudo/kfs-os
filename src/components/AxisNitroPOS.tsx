@@ -400,8 +400,13 @@ export function AxisNitroPOS({ setView: setViewProp, initialMerchantId }: AxisNi
             <button
               type="button"
               onClick={() => {
-                if (setView) setView("client");
-                else window.location.hash = "#client";
+                if (typeof window !== "undefined" && window.location.pathname === "/pos") {
+                  window.location.href = "/comercio";
+                } else if (setView) {
+                  setView("client");
+                } else if (typeof window !== "undefined") {
+                  window.location.hash = "#client";
+                }
               }}
               className="p-1.5 sm:px-3 sm:py-2 rounded-xl bg-white/5 hover:bg-white/15 border border-white/10 text-violet-300 hover:text-white text-xs font-bold transition-all cursor-pointer active:scale-95 flex items-center gap-1.5 shrink-0"
               title="Volver al panel principal"

@@ -362,7 +362,7 @@ export default function Home() {
     }
   }, [currentUser, loadDemoCommerce]);
 
-  const validViews = ["landing", "axis_nitro_pos", "nitro_pos", "b2b-onboarding", "login", "marketplace", "customer", "core", "promotora", "client", "vendedor", "rider", "self-checkout-kiosk"];
+  const validViews = ["landing", "rewards", "axis_nitro_pos", "nitro_pos", "b2b-onboarding", "login", "marketplace", "customer", "core", "promotora", "client", "vendedor", "rider", "self-checkout-kiosk"];
   let normalizedView = view === "dueño" ? "client" : (view === "nitro_pos" ? "axis_nitro_pos" : view);
   
   if (!validViews.includes(normalizedView)) {
