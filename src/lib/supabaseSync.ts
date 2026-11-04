@@ -1,6 +1,18 @@
 import { supabase, isSupabaseConfigured } from '../context/supabase';
 import { enqueueOfflineAction } from './offlineSync';
 
+export const pushToCloudSyncHub = async (action: string, payload?: any, db_state?: any) => {
+  if (typeof window === 'undefined') return;
+  try {
+    fetch('/api/kfs/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action, payload, db_state }),
+      keepalive: true
+    }).catch(() => {});
+  } catch (_) {}
+};
+
 const cleanBase64 = (obj: any): any => {
   if (!obj) return obj;
   if (typeof obj === 'string' && obj.startsWith('data:image')) {
@@ -187,6 +199,7 @@ export const syncToRelational = async (db: any) => {
 };
 
 export const syncSingleTransaction = async (t: any) => {
+  pushToCloudSyncHub("TRANSACTION", t);
   if (!supabase || !isSupabaseConfigured) {
     enqueueOfflineAction("TRANSACTION", t).catch(() => {});
     return;
@@ -281,6 +294,7 @@ export const appendUserToStoreState = async (
 };
 
 export const syncSingleClient = async (c: any) => {
+  pushToCloudSyncHub("CLIENT", c);
   if (!supabase || !isSupabaseConfigured) return;
   try {
     const payload = {
@@ -326,6 +340,7 @@ export const syncSingleClient = async (c: any) => {
 };
 
 export const syncSingleCustomer = async (c: any) => {
+  pushToCloudSyncHub("CUSTOMER", c);
   if (!supabase || !isSupabaseConfigured) return;
   try {
     const payload = {
@@ -363,6 +378,7 @@ export const syncSingleCustomer = async (c: any) => {
 };
 
 export const syncSingleProduct = async (p: any) => {
+  pushToCloudSyncHub("PRODUCT", p);
   if (!supabase || !isSupabaseConfigured) return;
   try {
     const payload = {
@@ -401,6 +417,7 @@ export const syncSingleProduct = async (p: any) => {
 };
 
 export const syncSinglePromotora = async (p: any) => {
+  pushToCloudSyncHub("PROMOTORA", p);
   if (!supabase || !isSupabaseConfigured) return;
   try {
     const payload = {
@@ -437,6 +454,7 @@ export const syncSinglePromotora = async (p: any) => {
 };
 
 export const syncSingleRider = async (r: any) => {
+  pushToCloudSyncHub("RIDER", r);
   if (!supabase || !isSupabaseConfigured) return;
   try {
     const payload = {
@@ -474,20 +492,36 @@ export const syncSingleRider = async (r: any) => {
   }
 };
 
+export const syncSingleExpense = async (e: any) => {
+  pushToCloudSyncHub("EXPENSE", e);
+};
+
+export const syncSingleVale = async (v: any) => {
+  pushToCloudSyncHub("VALE", v);
+};
+
+export const syncSingleZReport = async (z: any) => {
+  pushToCloudSyncHub("Z_REPORT", z);
+};
+
 export const forceDirectCloudSync = async (database: any) => {
-  if (!supabase || !isSupabaseConfigured || !database) return;
+  if (!database) return;
+  const compressed = {
+    ...database,
+    transactions: database.transactions?.slice(-50) || [],
+    auditLogs: database.auditLogs?.slice(-50) || [],
+    zReports: database.zReports?.slice(-50) || [],
+    ghostLogs: database.ghostLogs?.slice(-50) || [],
+    orders: database.orders?.slice(-50) || [],
+    expenses: database.expenses?.slice(-50) || []
+  };
+
+  // Always push full state snapshot to the universal Cloud Sync Hub
+  pushToCloudSyncHub("FULL_SYNC", undefined, compressed);
+
+  if (!supabase || !isSupabaseConfigured) return;
   const syncId = "kfs-general-db-prod";
   try {
-    const compressed = {
-      ...database,
-      transactions: database.transactions?.slice(-50) || [],
-      auditLogs: database.auditLogs?.slice(-50) || [],
-      zReports: database.zReports?.slice(-50) || [],
-      ghostLogs: database.ghostLogs?.slice(-50) || [],
-      orders: database.orders?.slice(-50) || [],
-      expenses: database.expenses?.slice(-50) || []
-    };
-    
     await supabase.from('kfs_store_states').upsert({
       id: syncId,
       db_state: compressed,

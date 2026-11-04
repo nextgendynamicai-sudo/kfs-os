@@ -14,6 +14,9 @@ import {
   syncSingleProduct,
   syncSinglePromotora,
   syncSingleRider,
+  syncSingleExpense,
+  syncSingleVale,
+  syncSingleZReport,
   forceDirectCloudSync,
   fetchUserRelationalState
 } from "../lib/supabaseSync";
@@ -735,6 +738,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let channel: any = null;
     let pollingInterval: any = null;
+    let cloudHubInterval: any = null;
+    let removeVisibilityListeners: (() => void) | null = null;
     setIsClient(true);
     
     if (typeof window !== "undefined") {
@@ -992,180 +997,173 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
             }
           }
 
-          if (isSupabaseConfigured && navigator.onLine) {
-            const syncId = "kfs-general-db-prod";
-            
-            const supabasePromise = supabase
-              .from("kfs_store_states")
-              .select("db_state, updated_at")
-              .eq( "id", syncId)
-              .single();
+          const hydrateUniversalCloud = async () => {
+            if (typeof window !== "undefined" && navigator.onLine) {
+              try {
+                const cloudRes = await fetch("/api/kfs/sync", { cache: "no-store" });
+                if (cloudRes.ok) {
+                  const cloudData = await cloudRes.json();
+                  if (cloudData && cloudData.db_state) {
+                    lastRemoteUpdatedAtRef.current = cloudData.updated_at;
+                    const remote = cloudData.db_state;
+                    const remoteVersion = remote.kreatekCore?.wipeVersion || 0;
+                    if (remoteVersion > CURRENT_WIPE_VERSION) {
+                      const reloaded = safeTriggerVersionReload(remoteVersion);
+                      if (!reloaded) {
+                        setDb((prevDb: any) => mergeIncomingDb(prevDb, remote, currentUserRef.current));
+                      }
+                    } else if (remoteVersion < CURRENT_WIPE_VERSION) {
+                      setDb((prevDb: any) => {
+                        if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION) return prevDb;
+                        const upgradedDb = upgradeToNewBaseline(prevDb, initialDB);
+                        localStorage.setItem("kfs_os_db_prod", JSON.stringify(upgradedDb));
+                        return upgradedDb;
+                      });
+                    } else {
+                      setDb((prevDb: any) => {
+                        const merged = mergeIncomingDb(prevDb, remote, currentUserRef.current);
+                        console.log("[Universal Cloud Hub] Base de datos hidratada exitosamente desde Cloud Hub.");
+                        return merged;
+                      });
+                    }
+                  }
+                }
+              } catch (e) {
+                console.warn("[Universal Cloud Hub] Initial fetch notice:", e);
+              }
+            }
+          };
 
-            const timeoutPromise = new Promise((_, reject) =>
-              setTimeout(() => reject(new Error("Supabase initial sync timeout")), 2500)
-            );
-
-            Promise.race([supabasePromise, timeoutPromise])
-              .then(({ data, error }: any) => {
-                if (data && data.db_state) {
+          const setupUniversalCloudPoller = () => {
+            // Delta-polling every 3.5s (efficient: returns ~40 bytes if up to date)
+            cloudHubInterval = setInterval(async () => {
+              if (typeof window === "undefined" || !navigator.onLine) return;
+              try {
+                const since = lastRemoteUpdatedAtRef.current || "";
+                const res = await fetch(`/api/kfs/sync?since=${encodeURIComponent(since)}`, {
+                  cache: "no-store"
+                });
+                if (!res.ok) return;
+                const data = await res.json();
+                if (data.status === "updated" && data.db_state) {
                   lastRemoteUpdatedAtRef.current = data.updated_at;
                   const remote = data.db_state;
                   const remoteVersion = remote.kreatekCore?.wipeVersion || 0;
                   if (remoteVersion > CURRENT_WIPE_VERSION) {
-                    console.log("[Supabase Cloud] Versión de la nube es más reciente. Evaluando recarga segura...");
                     const reloaded = safeTriggerVersionReload(remoteVersion);
                     if (!reloaded) {
+                      isRemoteUpdate.current = true;
                       setDb((prevDb: any) => mergeIncomingDb(prevDb, remote, currentUserRef.current));
                     }
                   } else if (remoteVersion < CURRENT_WIPE_VERSION) {
                     setDb((prevDb: any) => {
                       if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION) return prevDb;
-                      console.log("[Supabase Cloud] Versión de BD antigua detectada. Forzando actualización con preservación de datos.");
                       const upgradedDb = upgradeToNewBaseline(prevDb, initialDB);
                       localStorage.setItem("kfs_os_db_prod", JSON.stringify(upgradedDb));
-                      // We don't log out the user, we just upgraded the database structurally
                       return upgradedDb;
                     });
                   } else {
+                    isRemoteUpdate.current = true;
                     setDb((prevDb: any) => {
-                      return mergeIncomingDb(prevDb, remote, currentUserRef.current);
+                      const merged = mergeIncomingDb(prevDb, remote, currentUserRef.current);
+                      if (JSON.stringify(prevDb) !== JSON.stringify(merged)) {
+                        console.log("[Universal Cloud Sync] Sincronización en tiempo real multidispositivo completada.");
+                        return merged;
+                      }
+                      return prevDb;
                     });
-                    console.log("[Supabase Cloud] Base de datos restaurada desde la nube y fusionada con estado local.");
                   }
-                } else if (error && error.code === 'PGRST116') {
-                  setDb((prevDb: any) => {
-                    console.log("[Supabase Cloud] Fila no encontrada (BD vacía o borrada). Restaurando nube con estado local.");
-                    supabase.from("kfs_store_states").upsert({ id: syncId, db_state: prevDb, updated_at: new Date().toISOString() }).then(() => {});
-                    return prevDb;
-                  });
+                } else if (data.status === "up_to_date" && data.updated_at) {
+                  lastRemoteUpdatedAtRef.current = data.updated_at;
                 }
-              })
-              .catch((err: any) => {
-                console.log("Supabase initial sync bypass:", err);
-                if (err && (err.code === 'PGRST116' || (err.message && err.message.includes('0 rows')))) {
-                  setDb((prevDb: any) => {
-                    console.log("[Supabase Cloud] Fila no encontrada en catch (BD vacía o borrada). Restaurando nube con estado local.");
-                    supabase.from("kfs_store_states").upsert({ id: syncId, db_state: prevDb, updated_at: new Date().toISOString() }).then(() => {});
-                    return prevDb;
-                  });
-                }
-              })
-              .finally(() => {
-                setIsDataLoaded(true);
-                setIsBooting(false);
-                
-                // Subscribe to real-time updates
-                if (isSupabaseConfigured) {
-                  channel = supabase.channel('public:kfs_store_states');
-                  channel
-                    .on('postgres_changes', { event: '*', schema: 'public', table: 'kfs_store_states', filter: `id=eq.${syncId}` }, (payload: any) => {
-                      if (payload.new && payload.new.db_state) {
-                        lastRemoteUpdatedAtRef.current = payload.new.updated_at;
-                        const remote = payload.new.db_state;
-                        const remoteVersion = remote.kreatekCore?.wipeVersion || 0;
-                        if (remoteVersion > CURRENT_WIPE_VERSION) {
-                          console.log("[Supabase Realtime] Versión de la nube es más reciente. Evaluando recarga segura...");
-                          const reloaded = safeTriggerVersionReload(remoteVersion);
-                          if (!reloaded) {
-                            isRemoteUpdate.current = true;
-                            setDb((prevDb: any) => mergeIncomingDb(prevDb, remote, currentUserRef.current));
-                          }
-                        } else if (remoteVersion < CURRENT_WIPE_VERSION) {
-                          setDb((prevDb: any) => {
-                            if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION) return prevDb;
-                            console.log("[Supabase Realtime] Versión de BD antigua recibida. Forzando actualización con preservación de datos.");
-                            const upgradedDb = upgradeToNewBaseline(prevDb, initialDB);
-                            localStorage.setItem("kfs_os_db_prod", JSON.stringify(upgradedDb));
-                            return upgradedDb;
-                          });
-                        } else {
-                          isRemoteUpdate.current = true;
-                          setDb((prevDb: any) => {
-                            const merged = mergeIncomingDb(prevDb, remote, currentUserRef.current);
-                            if (JSON.stringify(prevDb) !== JSON.stringify(merged)) {
-                              return merged;
-                            }
-                            return prevDb;
-                          });
-                          console.log("[Supabase Realtime] Estado sincronizado en tiempo real con fusión local.");
-                        }
-                      } else if (payload.eventType === 'DELETE' || !payload.new) {
-                        setDb((prevDb: any) => {
-                          console.log("[Supabase Realtime] Fila eliminada. Restaurando nube con estado local activo.");
-                          supabase.from("kfs_store_states").upsert({ id: syncId, db_state: prevDb, updated_at: new Date().toISOString() }).then(() => {});
-                          return prevDb;
-                        });
-                      }
-                    })
-                    .subscribe();
+              } catch (_) {}
+            }, 3500);
 
-                  // Polling Fallback para Móviles (Garantiza 100% Real-Time si fallan WebSockets)
-                  pollingInterval = setInterval(() => {
-                    supabase.from("kfs_store_states").select("updated_at").eq("id", syncId).single().then(({ data, error }: any) => {
-                      if (error) {
-                        if (error.code === '42501') {
-                          console.error("Supabase RLS Error:", error);
-                        }
-                        if (error.code === 'PGRST116') {
-                          setDb((prevDb: any) => {
-                            console.log("[Supabase Polling Fallback] Fila no encontrada. Restaurando nube con estado local.");
-                            supabase.from("kfs_store_states").upsert({ id: syncId, db_state: prevDb, updated_at: new Date().toISOString() }).then(() => {});
-                            return prevDb;
-                          });
-                        }
-                        return;
-                      }
+            const handleVisibilitySync = () => {
+              if (typeof document !== "undefined" && document.visibilityState === "visible" && navigator.onLine) {
+                const since = lastRemoteUpdatedAtRef.current || "";
+                fetch(`/api/kfs/sync?since=${encodeURIComponent(since)}`, { cache: "no-store" })
+                  .then((r) => r.json())
+                  .then((data) => {
+                    if (data.status === "updated" && data.db_state) {
+                      lastRemoteUpdatedAtRef.current = data.updated_at;
+                      isRemoteUpdate.current = true;
+                      setDb((prevDb: any) => mergeIncomingDb(prevDb, data.db_state, currentUserRef.current));
+                    }
+                  })
+                  .catch(() => {});
+              }
+            };
+            window.addEventListener("focus", handleVisibilitySync);
+            document.addEventListener("visibilitychange", handleVisibilitySync);
+            removeVisibilityListeners = () => {
+              window.removeEventListener("focus", handleVisibilitySync);
+              document.removeEventListener("visibilitychange", handleVisibilitySync);
+            };
+          };
 
-                      if (data && data.updated_at) {
-                        if (lastRemoteUpdatedAtRef.current && data.updated_at === lastRemoteUpdatedAtRef.current) {
-                          // No change, skip downloading db_state!
-                          return;
-                        }
+          hydrateUniversalCloud().finally(() => {
+            if (isSupabaseConfigured && navigator.onLine) {
+              const syncId = "kfs-general-db-prod";
+              
+              const supabasePromise = supabase
+                .from("kfs_store_states")
+                .select("db_state, updated_at")
+                .eq("id", syncId)
+                .single();
 
-                        // Remote version changed, let's fetch db_state
-                        supabase.from("kfs_store_states").select("db_state, updated_at").eq("id", syncId).single().then(({ data: fullData }: any) => {
-                          if (fullData && fullData.db_state) {
-                            lastRemoteUpdatedAtRef.current = fullData.updated_at;
-                            const remote = fullData.db_state;
-                            const remoteVersion = remote.kreatekCore?.wipeVersion || 0;
-                            if (remoteVersion > CURRENT_WIPE_VERSION) {
-                              console.log("[Supabase Polling Fallback] Versión de la nube es más reciente. Evaluando recarga segura...");
-                              const reloaded = safeTriggerVersionReload(remoteVersion);
-                              if (!reloaded) {
-                                setDb((prevDb: any) => mergeIncomingDb(prevDb, remote, currentUserRef.current));
-                              }
-                            } else if (remoteVersion < CURRENT_WIPE_VERSION) {
-                              setDb((prevDb: any) => {
-                                if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION) return prevDb;
-                                console.log("[Supabase Polling Fallback] Versión de BD antigua detectada. Forzando actualización con preservación de datos.");
-                                const upgradedDb = upgradeToNewBaseline(prevDb, initialDB);
-                                localStorage.setItem("kfs_os_db_prod", JSON.stringify(upgradedDb));
-                                return upgradedDb;
-                              });
-                            } else {
-                              setDb((prevDb: any) => {
-                                const merged = mergeIncomingDb(prevDb, remote, currentUserRef.current);
-                                if (JSON.stringify(prevDb) !== JSON.stringify(merged)) {
-                                  isRemoteUpdate.current = true;
-                                  console.log("[Supabase Polling Fallback] Data entrante detectada. Sincronizando con fusión local...");
-                                  return merged;
-                                }
-                                return prevDb;
-                              });
-                            }
-                          }
-                        }).catch((err: any) => {
-                          console.warn("[Supabase Polling Fallback] Error al descargar db_state:", err);
-                        });
+              const timeoutPromise = new Promise((_, reject) =>
+                setTimeout(() => reject(new Error("Supabase initial sync timeout")), 2500)
+              );
+
+              Promise.race([supabasePromise, timeoutPromise])
+                .then(({ data, error }: any) => {
+                  if (data && data.db_state) {
+                    lastRemoteUpdatedAtRef.current = data.updated_at;
+                    const remote = data.db_state;
+                    const remoteVersion = remote.kreatekCore?.wipeVersion || 0;
+                    if (remoteVersion > CURRENT_WIPE_VERSION) {
+                      console.log("[Supabase Cloud] Versión de la nube es más reciente. Evaluando recarga segura...");
+                      const reloaded = safeTriggerVersionReload(remoteVersion);
+                      if (!reloaded) {
+                        setDb((prevDb: any) => mergeIncomingDb(prevDb, remote, currentUserRef.current));
                       }
-                    }).catch(() => {});
-                  }, 12000);
-                }
-              });
-          } else {
-            setIsDataLoaded(true);
-            setIsBooting(false);
-          }
+                    } else if (remoteVersion < CURRENT_WIPE_VERSION) {
+                      setDb((prevDb: any) => {
+                        if (prevDb.kreatekCore?.wipeVersion === CURRENT_WIPE_VERSION) return prevDb;
+                        console.log("[Supabase Cloud] Versión de BD antigua detectada. Forzando actualización con preservación de datos.");
+                        const upgradedDb = upgradeToNewBaseline(prevDb, initialDB);
+                        localStorage.setItem("kfs_os_db_prod", JSON.stringify(upgradedDb));
+                        return upgradedDb;
+                      });
+                    } else {
+                      setDb((prevDb: any) => {
+                        return mergeIncomingDb(prevDb, remote, currentUserRef.current);
+                      });
+                      console.log("[Supabase Cloud] Base de datos restaurada desde la nube y fusionada con estado local.");
+                    }
+                  } else if (error && error.code === 'PGRST116') {
+                    setDb((prevDb: any) => {
+                      console.log("[Supabase Cloud] Fila no encontrada. Restaurando nube con estado local.");
+                      supabase.from("kfs_store_states").upsert({ id: syncId, db_state: prevDb, updated_at: new Date().toISOString() }).then(() => {});
+                      return prevDb;
+                    });
+                  }
+                })
+                .catch((err: any) => {
+                  console.log("Supabase initial sync bypass:", err);
+                })
+                .finally(() => {
+                  setIsDataLoaded(true);
+                  setIsBooting(false);
+                  setupUniversalCloudPoller();
+                });
+            } else {
+              setIsDataLoaded(true);
+              setIsBooting(false);
+              setupUniversalCloudPoller();
+            }
+          });
         })
         .catch((err) => {
           console.error("Failed to read IndexedDB", err);
@@ -1283,6 +1281,8 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       clearInterval(bcvInterval);
       if (typeof riderSimInterval !== "undefined") clearInterval(riderSimInterval);
       if (typeof pollingInterval !== "undefined" && pollingInterval) clearInterval(pollingInterval);
+      if (typeof cloudHubInterval !== "undefined" && cloudHubInterval) clearInterval(cloudHubInterval);
+      if (typeof removeVisibilityListeners === "function" && removeVisibilityListeners) removeVisibilityListeners();
       if (typeof channel !== "undefined" && channel) {
         channel.unsubscribe();
       }
@@ -1393,7 +1393,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         return;
       }
       
-      if (isSupabaseConfigured && networkState === "online") {
+      if (networkState === "online") {
         forceDirectCloudSync(targetDb);
       }
     };
@@ -1774,6 +1774,39 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         }
       } catch (cloudErr) {
         console.warn("[handleLogin] Cloud fallback query notice:", cloudErr);
+      }
+    }
+
+    // 2B. Universal Cloud Sync Hub Fallback (Automatic multi-device discovery)
+    if (!foundUser) {
+      try {
+        const cloudRes = await fetch("/api/kfs/sync", { cache: "no-store" });
+        if (cloudRes.ok) {
+          const cloudData = await cloudRes.json();
+          const remoteDb = cloudData?.db_state;
+          if (remoteDb) {
+            if (role !== "universal") {
+              foundUser = findInDb(remoteDb, role, authSuccess);
+            }
+            if (!foundUser) {
+              const allRoles = ["dueño", "customer", "promotora", "rider", "vendedor"];
+              for (const r of allRoles) {
+                if (r === role && role !== "universal") continue;
+                const cand = findInDb(remoteDb, r, authSuccess);
+                if (cand) {
+                  foundUser = cand;
+                  detectedRole = r;
+                  break;
+                }
+              }
+            }
+            if (foundUser) {
+              setDb((prevDb: any) => mergeIncomingDb(prevDb, remoteDb, currentUserRef.current));
+            }
+          }
+        }
+      } catch (err) {
+        console.warn("[handleLogin] Universal Cloud Hub fallback query notice:", err);
       }
     }
 
@@ -3240,7 +3273,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   };
 
   const addExpense = (expenseData: any) => {
-    setDb((prev: any) => ({ ...prev, expenses: [...(prev.expenses || []), { ...expenseData, id: `exp${Date.now()}` }] }));
+    const newExpense = { ...expenseData, id: `exp${Date.now()}` };
+    setDb((prev: any) => ({ ...prev, expenses: [...(prev.expenses || []), newExpense] }));
+    syncSingleExpense(newExpense);
     showToast("Egreso registrado contablemente.");
   };
 
@@ -3988,6 +4023,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
   };
 
   const generateZReport = (vendedorId: string, clientId: string) => {
+    let capturedZReport: any = null;
     setDb((prev: any) => {
       const shiftTxs = (prev.transactions || []).filter((tx: any) => tx.vendedorId === vendedorId && tx.clientId === clientId && !tx.zReported);
       
@@ -4012,6 +4048,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         txCount: shiftTxs.length,
         timestamp: new Date().toISOString()
       };
+      capturedZReport = zReportObj;
 
       const cashierObj = (prev.vendedores || []).find((v: any) => v.id === vendedorId) || (prev.clients || []).find((c: any) => c.id === vendedorId);
       const logObj = {
@@ -4038,6 +4075,9 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
         fiscalLogs: [logObj, ...(prev.fiscalLogs || [])]
       };
     });
+    if (capturedZReport) {
+      syncSingleZReport(capturedZReport);
+    }
   };
 
   const processBlindCashCount = (auditInput: {
@@ -4264,6 +4304,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       ...prev,
       vales: [...(prev.vales || []), newVale]
     }));
+    syncSingleVale(newVale);
     showToast(`Vale emitido con éxito: ${newVale.id}`);
   };
 
