@@ -1,4 +1,4 @@
-const CACHE_NAME = 'kfs-os-v4';
+const CACHE_NAME = 'kfs-os-v5';
 const STATIC_ASSETS = [
   '/',
   '/manifest.json',
@@ -6,7 +6,8 @@ const STATIC_ASSETS = [
   '/icon.png',
   '/apple-icon.png',
   '/offline_preload.html',
-  '/pos'
+  '/pos',
+  '/s25'
 ];
 
 self.addEventListener('install', (event) => {
