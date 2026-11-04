@@ -95,7 +95,7 @@ const KREATEK_COLORS = {
 
 // Toast Component
 
-export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showToast, formatUSD, formatEUR, logout, approveOrder, rejectOrder, dispatchOrder, paySubscription, requestPayout, requestTopUp }: any) => {
+export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense, showToast, formatUSD, formatEUR, logout, approveOrder, rejectOrder, dispatchOrder, paySubscription, requestPayout, requestTopUp, setView: propSetView }: any) => {
   const { finishOnboarding } = useKFS();
   const { businessPreset } = usePreset();
   const clientInfo = db.clients?.find((c: any) => c.id === currentUser?.id) || currentUser || {};
@@ -126,7 +126,8 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
   const [showCancelModal, setShowCancelModal] = useState(false);
   const [cancelReason, setCancelReason] = useState("");
   const [payValeModal, setPayValeModal] = useState<{ vale: any; amount: string } | null>(null);
-  const { setView, editProduct, createTicket, fundWallet, processMonthlyBilling, requestSubscriptionCancellation, createVale, payVale, processPayroll, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating, registerPosTerminal, deletePosTerminal, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, toggleBusinessOpen, updateBusinessConfig, createCoupon, deleteCoupon, toggleCouponActive, processPurchase, processBlindCashCount, setCurrentUser } = useKFS() as any;
+  const { setView: kfsSetView, editProduct, createTicket, fundWallet, processMonthlyBilling, requestSubscriptionCancellation, createVale, payVale, processPayroll, queryGlobalBarcode, smsConciliator, rates, toggleLoyaltyProgram, updateStoreSettings, updatePaymentMethods, toggleProductFeatured, stopImpersonating, registerPosTerminal, deletePosTerminal, assignRiderToBusiness, removeRiderFromBusiness, assignDeliveryToOrder, toggleBusinessOpen, updateBusinessConfig, createCoupon, deleteCoupon, toggleCouponActive, processPurchase, processBlindCashCount, setCurrentUser } = useKFS() as any;
+  const setView = propSetView || kfsSetView;
   const [deliveryRadiusKm, setDeliveryRadiusKm] = useState(clientInfo?.deliveryRadiusKm || 5);
 
   // Estados para Experiencia Intuitiva y Rápida
@@ -960,6 +961,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                     {filteredCounterProducts.slice(0, 12).map((p: any) => (
                       <div
                         key={p.id}
+                        data-testid={`counter-product-${p.id}`}
                         onClick={() => setCheckoutProduct(p)}
                         className="p-3 bg-white/5 hover:bg-white/15 border border-white/10 hover:border-emerald-400/50 rounded-2xl cursor-pointer transition-all flex flex-col justify-between group active:scale-95"
                       >
@@ -2460,6 +2462,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
                       <span className="font-black text-emerald-600 text-base font-mono">${(p.priceUSD || 0).toFixed(2)} USD</span>
                       <div className="flex items-center gap-1.5">
                         <button 
+                          data-testid={`inventory-product-${p.id}`}
                           onClick={() => setCheckoutProduct(p)}
                           className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs rounded-lg transition-colors cursor-pointer border-none shadow-sm flex items-center gap-1"
                           title="Cobrar este producto de inmediato en caja"

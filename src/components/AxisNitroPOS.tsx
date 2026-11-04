@@ -516,6 +516,7 @@ export function AxisNitroPOS() {
               return (
                 <div
                   key={p.id}
+                  data-testid={`pos-product-${p.id}`}
                   onClick={() => hasStock && addToCart(p)}
                   className={`relative p-3 rounded-2xl border transition-all flex flex-col justify-between group active:scale-95 ${
                     hasStock

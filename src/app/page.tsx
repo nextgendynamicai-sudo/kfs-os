@@ -571,9 +571,9 @@ export default function Home() {
                 formatUSD={formatUSD}
                 formatEUR={formatEUR}
                 currentUser={currentUser}
+                setView={setView}
                 logout={logout}
                 approveSubscription={approveSubscription}
-                setView={setView}
               />
             </AppEnforcer>
           )}
@@ -584,6 +584,7 @@ export default function Home() {
                 db={db}
                 setDb={setDb}
                 currentUser={currentUser}
+                setView={setView}
                 registerClient={registerClient}
                 upgradeToPremium={upgradeToPremium}
                 settlePromotoraEarnings={settlePromotoraEarnings}
@@ -602,6 +603,7 @@ export default function Home() {
                 db={db}
                 setDb={setDb}
                 currentUser={currentUser}
+                setView={setView}
                 addProduct={addProduct}
                 addExpense={addExpense}
                 showToast={showToast}
@@ -623,6 +625,7 @@ export default function Home() {
                 db={db}
                 setDb={setDb}
                 currentUser={currentUser}
+                setView={setView}
                 addProduct={addProduct}
                 processPurchase={processPurchase}
                 showToast={showToast}
@@ -640,6 +643,7 @@ export default function Home() {
               <RiderDashboard
                 db={db}
                 currentUser={currentUser}
+                setView={setView}
                 logout={logout}
               />
             </AppEnforcer>
