@@ -778,7 +778,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
               </div>
             </div>
 
-            <div className="sticky bottom-0 -mx-6 -mb-6 sm:-mx-8 sm:-mb-8 p-3.5 sm:p-5 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-white/10 flex flex-col sm:flex-row gap-2.5 z-30 shadow-[0_-10px_25px_rgba(0,0,0,0.1)]">
+            <div className="sticky bottom-0 -mx-6 -mb-6 sm:-mx-8 sm:-mb-8 p-3.5 sm:p-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-t border-slate-200 dark:border-white/10 flex flex-col sm:flex-row gap-2.5 z-30 shadow-[0_-10px_25px_rgba(0,0,0,0.1)]">
               <button 
                 type="button" 
                 onClick={onCancel} 

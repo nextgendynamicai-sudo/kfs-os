@@ -3106,7 +3106,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
         )}
 
         {/* FIXED BOTTOM NAVIGATION */}
-        <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-xl border-t border-violet-100 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.08)] safe-pb">
+        <div className="fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-xl border-t border-violet-100 rounded-t-[2rem] shadow-[0_-10px_40px_rgba(0,0,0,0.08)] safe-pb pb-[max(0.5rem,env(safe-area-inset-bottom))]">
           <div className="max-w-5xl mx-auto px-4 py-2 sm:py-3 flex justify-around gap-1 items-center relative">
             <button
               onClick={() => setActiveTab("resumen")}

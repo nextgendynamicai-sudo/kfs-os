@@ -434,9 +434,9 @@ export function AxisNitroPOS({ setView: setViewProp, initialMerchantId }: AxisNi
           {/* Quick Actions: BCV Badge, Cashier Switcher, Z-Report */}
           <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             
-            {/* BCV Live Badge */}
-            <div className="hidden md:flex items-center gap-1.5 bg-black/40 border border-amber-500/30 px-2.5 py-1.5 rounded-xl text-[11px] font-mono text-amber-300">
-              <span className="text-[9px] uppercase font-bold text-slate-400">BCV:</span>
+            {/* BCV Live Badge - visible across all mobile & desktop viewports */}
+            <div className="flex items-center gap-1 sm:gap-1.5 bg-black/60 border border-amber-500/40 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-xl text-[10px] sm:text-[11px] font-mono text-amber-300 shrink-0">
+              <span className="text-[8px] sm:text-[9px] uppercase font-bold text-amber-400/80">BCV:</span>
               <span className="font-black">Bs. {bcvRate.toFixed(2)}</span>
             </div>
 
