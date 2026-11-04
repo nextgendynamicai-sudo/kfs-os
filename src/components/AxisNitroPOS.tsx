@@ -735,6 +735,7 @@ export function AxisNitroPOS() {
 
           <button
             type="button"
+            data-testid="mobile-open-cart-btn"
             disabled={cart.length === 0}
             onClick={() => {
               if (cart.length > 0) setShowMobileCartDrawer(true);
@@ -1296,6 +1297,7 @@ function CartPanel({
 
         <button
           type="button"
+          data-testid="pos-cobrar-btn"
           disabled={cart.length === 0}
           onClick={handleConfirmSale}
           className="flex-1 py-3.5 rounded-xl font-black text-xs sm:text-sm text-slate-950 bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-400 hover:from-emerald-300 hover:to-teal-200 disabled:opacity-40 disabled:cursor-not-allowed shadow-lg shadow-emerald-500/30 active:scale-95 transition-all cursor-pointer border border-emerald-300 uppercase tracking-wider flex items-center justify-center gap-2"
