@@ -460,9 +460,10 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
     const existingBarcodes = new Set((myProducts || []).map((p: any) => p.barcode).filter(Boolean));
     const existingNames = new Set((myProducts || []).map((p: any) => p.name?.toLowerCase().trim()).filter(Boolean));
 
-    STARTER_VENEZUELAN_PRODUCTS.forEach((prod) => {
+    STARTER_VENEZUELAN_PRODUCTS.forEach((prod, idx) => {
       if (!existingBarcodes.has(prod.barcode) && !existingNames.has(prod.name.toLowerCase().trim())) {
         addProduct({
+          id: prod.id || ("starter_" + (prod.barcode || idx) + "_" + Date.now() + "_" + idx),
           name: prod.name,
           priceUSD: prod.priceUSD,
           costUSD: prod.costUSD,

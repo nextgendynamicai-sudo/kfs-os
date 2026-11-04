@@ -3232,7 +3232,7 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
     const newProduct = { 
       ...productData, 
       image: finalImageUrl, 
-      id: productData.id || `prod${Date.now()}` 
+      id: productData.id || ("prod_" + (productData.barcode || Math.random().toString(36).slice(2, 7)) + "_" + Date.now() + "_" + Math.floor(Math.random() * 10000)) 
     };
     setDb((prev: any) => ({ ...prev, products: [...prev.products, newProduct] }));
     syncSingleProduct(newProduct);

@@ -62,8 +62,20 @@ export function AxisNitroPOS() {
   const [selectedCategory, setSelectedCategory] = useState("Todos");
 
   // Multi-Item Cart
+  const getProductKey = (p: any): string => {
+    if (!p) return "";
+    return String(p.id || p.barcode || p.name || "");
+  };
+
   const [cart, setCart] = useState<CartItem[]>([]);
-  const cartMap = useMemo(() => new Map(cart.map(i => [i.product.id, i])), [cart]);
+  const cartMap = useMemo(() => {
+    const map = new Map<string, CartItem>();
+    cart.forEach(i => {
+      const key = getProductKey(i.product);
+      if (key) map.set(key, i);
+    });
+    return map;
+  }, [cart]);
 
   // Checkout Options
   const [paymentMethod, setPaymentMethod] = useState("cash_usd");
@@ -106,11 +118,20 @@ export function AxisNitroPOS() {
     };
   }, [db?.clients, activeMerchantId]);
 
-  // Catalog products
+  // Catalog products (with guaranteed unique IDs to prevent badge bleed)
   const storeProducts = useMemo(() => {
-    const list = (db?.products || []).filter((p: any) => p.clientId === activeMerchantId);
-    if (list.length > 0) return list;
-    return DEMO_COMMERCE_PRODUCTS;
+    const rawList = (db?.products || []).filter((p: any) => p.clientId === activeMerchantId);
+    const sourceList = rawList.length > 0 ? rawList : DEMO_COMMERCE_PRODUCTS;
+
+    const seenIds = new Set<string>();
+    return sourceList.map((p: any, idx: number) => {
+      let uniqueId = p.id;
+      if (!uniqueId || seenIds.has(uniqueId)) {
+        uniqueId = p.barcode ? `prod_${p.barcode}` : `prod_${idx}_${p.name ? p.name.replace(/\s+/g, '_') : 'sku'}`;
+      }
+      seenIds.add(uniqueId);
+      return uniqueId !== p.id ? { ...p, id: uniqueId } : p;
+    });
   }, [db?.products, activeMerchantId]);
 
   // Categories list
@@ -148,8 +169,9 @@ export function AxisNitroPOS() {
     }
     playScannerBeep();
 
+    const targetKey = getProductKey(product);
     setCart(prev => {
-      const idx = prev.findIndex(item => item.product.id === product.id);
+      const idx = prev.findIndex(item => getProductKey(item.product) === targetKey);
       if (idx !== -1) {
         const updated = [...prev];
         const newQty = updated[idx].qty + 1;
@@ -167,7 +189,7 @@ export function AxisNitroPOS() {
   const updateCartQty = (productId: string, delta: number) => {
     setCart(prev => {
       return prev.map(item => {
-        if (item.product.id === productId) {
+        if (getProductKey(item.product) === productId || item.product.id === productId) {
           const newQty = item.qty + delta;
           if (newQty <= 0) return null;
           if (item.product.stock !== undefined && newQty > item.product.stock) {
@@ -182,7 +204,7 @@ export function AxisNitroPOS() {
   };
 
   const removeFromCart = (productId: string) => {
-    setCart(prev => prev.filter(item => item.product.id !== productId));
+    setCart(prev => prev.filter(item => getProductKey(item.product) !== productId && item.product.id !== productId));
   };
 
   const clearCart = () => {
@@ -509,13 +531,13 @@ export function AxisNitroPOS() {
           {/* Product Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-2.5 sm:gap-3.5">
             {filteredProducts.map((p: any) => {
-              const inCartItem = cartMap.get(p.id);
+              const inCartItem = cartMap.get(getProductKey(p));
               const priceBs = (p.priceUSD || 0) * bcvRate;
               const hasStock = p.stock === undefined || p.stock > 0;
 
               return (
                 <div
-                  key={p.id}
+                  key={getProductKey(p)}
                   data-testid={`pos-product-${p.id}`}
                   onClick={() => hasStock && addToCart(p)}
                   className={`relative p-3 rounded-2xl border transition-all flex flex-col justify-between group active:scale-95 ${
