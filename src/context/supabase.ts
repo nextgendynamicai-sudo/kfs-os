@@ -11,6 +11,8 @@ export const isSupabaseConfigured = !!(
   supabaseUrl.startsWith("http") &&
   !supabaseUrl.includes("your-project-id") && 
   !supabaseUrl.includes("dummy-project") && 
+  !supabaseUrl.includes("uplgtylqjkxallwtnehj") && 
+  !supabaseUrl.includes("poycfdnudyrgtyegvnoa") && 
   !supabaseAnonKey.includes("your-anon-public-key") &&
   !supabaseAnonKey.includes("YOUR_SUPABASE_KEY_HERE")
 );
@@ -48,16 +50,36 @@ export const supabase = isSupabaseConfigured
           return chain;
         }
       }),
+      channel: () => {
+        const ch: any = {
+          on: () => ch,
+          subscribe: () => ({ unsubscribe: () => {} }),
+          unsubscribe: () => {}
+        };
+        return ch;
+      },
+      removeChannel: () => Promise.resolve(),
+      storage: {
+        from: (bucket: string) => ({
+          upload: (path: string, _file: any) => {
+            console.log(`[Supabase Mock Storage] Guardando archivo en ${bucket}/${path}`);
+            return Promise.resolve({ data: { path }, error: null });
+          },
+          getPublicUrl: (_path: string) => ({
+            data: { publicUrl: "" }
+          })
+        })
+      },
       auth: {
-        signInWithPassword: ({ email, password }: any) => {
+        signInWithPassword: ({ email }: any) => {
           console.log(`[Supabase Mock Auth] Login simulado para ${email}`);
           return Promise.resolve({ data: { user: { id: "mock-user-123", email } }, error: null });
         },
-        signUp: ({ email, password }: any) => {
+        signUp: ({ email }: any) => {
           console.log(`[Supabase Mock Auth] Registro simulado para ${email}`);
           return Promise.resolve({ data: { user: { id: "mock-user-123", email } }, error: null });
         },
-        onAuthStateChange: (callback: any) => {
+        onAuthStateChange: (_callback: any) => {
           return { data: { subscription: { unsubscribe: () => {} } } };
         }
       }
