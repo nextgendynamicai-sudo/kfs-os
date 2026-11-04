@@ -7,6 +7,7 @@ import { useKFS } from "../context/KFSContext";
 import { playCashDrawerSound, announcePaymentVoice } from "../lib/utils";
 import { motion } from "framer-motion";
 import { ModalPortal } from "./ModalPortal";
+import { X } from "lucide-react";
 
 export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap, showToast, currentUser }: any) => {
   const [isPrinting, setIsPrinting] = useState(true);
@@ -55,6 +56,15 @@ export const ReceiptModal = ({ tx, product, onClose, formatUSD, triggerGhostTrap
         
         {/* Physical Printer Bezel Box */}
         <div className="w-full bg-[#1A1F2C] rounded-t-[2.5rem] border border-violet-100 p-5 shadow-2xl relative flex flex-col items-center gap-2">
+          {/* Close button */}
+          <button
+            type="button"
+            onClick={onClose}
+            className="absolute right-5 top-5 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white/70 hover:text-white transition-all cursor-pointer border-none z-20"
+            title="Cerrar Recibo"
+          >
+            <X size={18} />
+          </button>
           {/* Status Telemetry Light */}
           <div className="absolute left-6 top-6 flex items-center gap-1.5 bg-white px-2 py-1 rounded-full border border-green-500/30">
             <span className="relative flex h-1.5 w-1.5">

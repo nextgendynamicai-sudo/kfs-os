@@ -772,6 +772,7 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
                 Cancelar
               </button>
               <button 
+                data-testid="checkout-confirm-btn"
                 disabled={(paymentMethod === 'split_currency' && ((parseFloat(splitAmount1) || 0) <= 0 || (parseFloat(splitAmount1) || 0) > total)) || (applyIva && !validateRif(customerRif))}
                 onClick={handleConfirm} 
                 className="w-full sm:w-2/3 py-3.5 rounded-xl font-black text-slate-950 bg-gradient-to-r from-emerald-400 to-teal-400 hover:from-emerald-300 hover:to-teal-300 shadow-lg shadow-emerald-500/25 active:scale-95 transition-all cursor-pointer disabled:opacity-50 disabled:bg-gray-400 disabled:cursor-not-allowed border border-emerald-300 flex items-center justify-center gap-2 text-xs sm:text-sm tracking-wide"
