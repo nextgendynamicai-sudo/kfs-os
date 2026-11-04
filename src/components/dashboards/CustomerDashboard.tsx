@@ -1,6 +1,6 @@
 "use client";
 
-import { KFS_BRAND } from "../../config/brandConfig";
+import { KFS_BRAND, getAppBaseUrl } from "../../config/brandConfig";
 import { Toast } from "../Toast";
 import { CvViewerModal } from "../CvViewerModal";
 import { SMSConciliatorSimulator } from "../SMSConciliatorSimulator";
@@ -370,7 +370,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
               <div className="bg-violet-50 border border-violet-100 p-5 rounded-[1.5rem] flex flex-col sm:flex-row items-center gap-5">
                 <div className="w-28 h-28 bg-white rounded-xl p-1.5 border border-violet-200 shadow-sm flex-shrink-0">
                   <img
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent('https://kfs-os.vercel.app?role=customer&ref=' + currentUser.id)}`}
+                    src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(getAppBaseUrl() + '?role=customer&ref=' + currentUser.id)}`}
                     alt="QR Referido"
                     className="w-full h-full object-contain rounded-lg"
                     loading="lazy"
@@ -387,7 +387,7 @@ export const CustomerDashboard = ({ db, currentUser, logout, setView }: any) => 
                   <div className="flex items-center justify-center sm:justify-start gap-2 flex-wrap">
                     <span className="font-mono bg-white border border-violet-200 px-2 py-1 rounded-lg text-violet-700 text-xs">ID: {currentUser.id}</span>
                     <button
-                      onClick={() => { navigator.clipboard.writeText('https://kfs-os.vercel.app?role=customer&ref=' + currentUser.id); showToast('📋 Enlace copiado.', 'success'); }}
+                      onClick={() => { navigator.clipboard.writeText(getAppBaseUrl() + '?role=customer&ref=' + currentUser.id); showToast('📋 Enlace copiado.', 'success'); }}
                       className="text-[10px] font-black text-white bg-emerald-600 hover:bg-emerald-500 px-3 py-1.5 rounded-lg cursor-pointer transition-colors"
                     >
                       📋 Copiar Enlace

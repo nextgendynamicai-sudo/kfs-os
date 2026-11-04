@@ -9,7 +9,7 @@ export const ReferralLinksWidget = ({ userId, showToast }: { userId: string, sho
     if (typeof window !== "undefined") {
       return window.location.origin + window.location.pathname;
     }
-    return "https://kfs-os.vercel.app/";
+    return "https://axisnitro.store/";
   };
 
   const links = [

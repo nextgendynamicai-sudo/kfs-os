@@ -263,7 +263,7 @@ export default function NitroHubSetup() {
             <label className="block text-[10px] font-black uppercase tracking-widest text-slate-400 ml-1">Enlace de tu Tienda (Slug)</label>
             <div className="flex rounded-xl overflow-hidden border border-slate-800 bg-slate-950/80 focus-within:ring-1 focus-within:ring-violet-500 transition-all">
               <span className="inline-flex items-center px-4 border-r border-slate-800/80 bg-slate-900 text-slate-500 text-xs font-mono select-none">
-                kfs-os.vercel.app/nitro/
+                axisnitro.store/nitro/
               </span>
               <input 
                 type="text" 
@@ -317,7 +317,7 @@ export default function NitroHubSetup() {
                       rel="noopener noreferrer" 
                       className="inline-flex items-center gap-1.5 text-sm font-black text-violet-400 hover:underline break-all"
                     >
-                      <Link2 size={14} /> kfs-os.vercel.app/nitro/{slug}
+                      <Link2 size={14} /> axisnitro.store/nitro/{slug}
                     </a>
                   </div>
 

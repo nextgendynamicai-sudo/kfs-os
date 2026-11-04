@@ -113,7 +113,7 @@ export const PromotoraDashboard = ({ db, setDb, currentUser, registerClient, upg
 
   const [activeManual, setActiveManual] = useState<string | null>(null);
   const [showPayoutModal, setShowPayoutModal] = useState(false);
-  const [hostUrl, setHostUrl] = useState("https://kfs-os.vercel.app");
+  const [hostUrl, setHostUrl] = useState("https://axisnitro.store");
   useEffect(() => {
     if (typeof window !== "undefined") {
       setHostUrl(window.location.origin);

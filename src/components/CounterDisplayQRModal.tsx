@@ -2,7 +2,7 @@
 
 import React, { useRef } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import { KFS_BRAND } from "../config/brandConfig";
+import { KFS_BRAND, getAppBaseUrl } from "../config/brandConfig";
 import { ModalPortal } from "./ModalPortal";
 import { Printer, Download, X, QrCode, Sparkles, ShieldCheck, Smartphone, Gift } from "lucide-react";
 
@@ -16,7 +16,7 @@ export const CounterDisplayQRModal: React.FC<CounterDisplayQRModalProps> = ({ cl
 
   const storeName = client?.company || client?.name || "Mi Comercio KFS";
   const storeId = client?.id || "comercio_demo";
-  const storeUrl = `https://kfs-os.vercel.app/card/${storeId}`;
+  const storeUrl = `${getAppBaseUrl()}/card/${storeId}`;
 
   const handlePrint = () => {
     window.print();

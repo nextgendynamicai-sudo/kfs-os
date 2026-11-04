@@ -7,9 +7,12 @@ export const KFS_BRAND = {
   holding: "Kreatek",
   
   // Producto (El CGOS)
-  productName: "Kreatek Flow Systems",
+  productName: "Axis Nitro OS",
   productAcronym: "KFS",
   productCategory: "CGOS", // Commercial Growth Operating System
+  
+  domain: "axisnitro.store",
+  baseUrl: "https://axisnitro.store",
   
   // Módulos del Producto
   modules: {
@@ -24,4 +27,11 @@ export const KFS_BRAND = {
     currency: "Axis Points", // Antes: Axis Points / Puntos
     rewardCenter: "Centro de Recompensas Axis"
   }
+};
+
+export const getAppBaseUrl = (): string => {
+  if (typeof window !== "undefined" && window.location?.origin) {
+    return window.location.origin;
+  }
+  return KFS_BRAND.baseUrl;
 };

@@ -28,6 +28,19 @@ export const ReceiptModal = ({
     try {
       playCashDrawerSound();
     } catch (_) {}
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handleFinishSale();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = prevOverflow;
+    };
   }, [tx]);
 
   if (!tx) return null;

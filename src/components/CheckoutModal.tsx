@@ -1,7 +1,7 @@
 "use client";
 
 import { KFS_BRAND } from "../config/brandConfig";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CreditCard, QrCode, Shield, X } from "lucide-react";
 import { useKFS } from "../context/KFSContext";
 import { compressImage } from "../lib/utils";
@@ -76,6 +76,21 @@ export const CheckoutModal = ({ product, onConfirm, onCancel, formatUSD, isOnlin
   const [isProcessingPos, setIsProcessingPos] = useState(false);
   const [posStep, setPosStep] = useState(0);
   const [receivedCashUSD, setReceivedCashUSD] = useState<string>("");
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && onCancel && !isProcessingPos) {
+        onCancel();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [onCancel, isProcessingPos]);
 
   const handlePasteClipboard = async () => {
     try {

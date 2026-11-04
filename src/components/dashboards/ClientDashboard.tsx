@@ -1,6 +1,6 @@
 "use client";
 
-import { KFS_BRAND } from "../../config/brandConfig";
+import { KFS_BRAND, getAppBaseUrl } from "../../config/brandConfig";
 import { Toast } from "../Toast";
 import { PhoneInput } from "../PhoneInput";
 import { CvViewerModal } from "../CvViewerModal";
@@ -1214,7 +1214,7 @@ export const ClientDashboard = ({ db, setDb, currentUser, addProduct, addExpense
               </div>
               <div className="w-32 h-32 bg-white border border-violet-200 rounded-xl flex items-center justify-center flex-shrink-0 text-center relative p-3 shadow-sm">
                 <div className="text-center w-full h-full">
-                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent('https://kfs-os.vercel.app/#landing?ref=' + currentUser.id)}`} alt="Tu QR" className="w-full h-full object-contain rounded-lg" />
+                  <img src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(getAppBaseUrl() + '/#landing?ref=' + currentUser.id)}`} alt="Tu QR" className="w-full h-full object-contain rounded-lg" />
                 </div>
               </div>
             </div>
