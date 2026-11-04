@@ -30,13 +30,13 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: `${KFS_BRAND.productAcronym} OS`,
-  description: "Business Operating System by Kreatek.",
+  title: "Axis Nitro OS - Sistema Comercial POS",
+  description: "Axis Nitro OS - Sistema Operativo Comercial POS, Facturación y Control Digital.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: `${KFS_BRAND.productAcronym} OS`,
+    title: "Axis Nitro",
   },
   icons: {
     icon: "/kfs-logo.png",

@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "KFS OS",
-  "short_name": "KFS OS",
-  "description": "Sistema Operativo Kreatek Flow Systems POS",
+  "name": "Axis Nitro OS",
+  "short_name": "Axis Nitro",
+  "description": "Sistema Operativo Comercial POS, Facturación y Control Digital",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
