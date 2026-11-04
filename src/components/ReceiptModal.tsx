@@ -72,8 +72,43 @@ export const ReceiptModal = ({
 
   return (
     <ModalPortal>
+      <style dangerouslySetInnerHTML={{ __html: `
+        @media print {
+          body {
+            background: white !important;
+            margin: 0 !important;
+            padding: 0 !important;
+          }
+          .no-print, header, nav, aside, button {
+            display: none !important;
+          }
+          .receipt-modal-backdrop {
+            background: transparent !important;
+            position: static !important;
+            padding: 0 !important;
+            inset: auto !important;
+            display: block !important;
+          }
+          .receipt-paper-printable {
+            position: static !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            clip-path: none !important;
+            box-shadow: none !important;
+            border: none !important;
+            background: white !important;
+            color: black !important;
+            padding: 0 !important;
+            margin: 0 auto !important;
+          }
+          @page {
+            margin: 3mm;
+            size: auto;
+          }
+        }
+      `}} />
       <div 
-        className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[99999] flex items-center justify-center p-2 sm:p-4 overflow-y-auto animate-fade-in"
+        className="receipt-modal-backdrop fixed inset-0 bg-slate-950/85 backdrop-blur-md z-[99999] flex items-center justify-center p-2 sm:p-4 overflow-y-auto animate-fade-in"
         suppressHydrationWarning
       >
         <motion.div 
@@ -86,7 +121,7 @@ export const ReceiptModal = ({
           {/* ========================================================= */}
           {/* CABECERA: BISEL DE IMPRESORA TÉRMICA & TELEMETRÍA         */}
           {/* ========================================================= */}
-          <div className="w-full bg-[#161B26] text-white rounded-t-3xl border-t border-x border-white/10 px-4 py-3 shadow-xl relative flex items-center justify-between gap-2">
+          <div className="no-print w-full bg-[#161B26] text-white rounded-t-3xl border-t border-x border-white/10 px-4 py-3 shadow-xl relative flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -137,7 +172,7 @@ export const ReceiptModal = ({
           </div>
 
           {/* Ranura de salida del papel (Efecto físico realista) */}
-          <div className="w-full bg-[#0D1117] h-3 border-x border-b border-black flex justify-center items-center shadow-inner relative overflow-hidden">
+          <div className="no-print w-full bg-[#0D1117] h-3 border-x border-b border-black flex justify-center items-center shadow-inner relative overflow-hidden">
             <div className="w-36 h-0.5 bg-emerald-500/40 animate-pulse"></div>
           </div>
 
@@ -145,7 +180,7 @@ export const ReceiptModal = ({
           {/* TICKET DE PAPEL TÉRMICO (100% VISIBLE Y SIN TRUNCAMIENTOS)*/}
           {/* ========================================================= */}
           <div 
-            className={`w-[96%] bg-[#FCFCFD] text-slate-900 shadow-2xl relative transition-all duration-300 ease-out border-x border-slate-300 ${
+            className={`receipt-paper-printable w-[96%] bg-[#FCFCFD] text-slate-900 shadow-2xl relative transition-all duration-300 ease-out border-x border-slate-300 ${
               isTorn ? "translate-y-4 rotate-1 opacity-0 scale-95" : "opacity-100"
             }`}
             style={{
@@ -353,7 +388,7 @@ export const ReceiptModal = ({
           {/* ========================================================= */}
           {/* PANEL DE ACCIONES Y HARDWARE (SEPARADO Y NÍTIDO)          */}
           {/* ========================================================= */}
-          <div className="w-full bg-[#151924] text-white rounded-2xl border border-white/10 p-4 shadow-2xl flex flex-col gap-3 mt-3 z-10">
+          <div className="no-print w-full bg-[#151924] text-white rounded-2xl border border-white/10 p-4 shadow-2xl flex flex-col gap-3 mt-3 z-10">
             {/* Fila de Utilidades de Hardware */}
             <div className="grid grid-cols-3 gap-2">
               <button 
