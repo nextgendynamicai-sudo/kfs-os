@@ -138,7 +138,17 @@ function mergeAdditiveArray(existingArr: any[] = [], incomingArr: any[] = []) {
 async function tryPushToSupabase(dbState: any) {
   const supabaseUrl = cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_URL);
   const supabaseKey = cleanEnv(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
-  if (!supabaseUrl || !supabaseKey || !supabaseUrl.startsWith('http')) return;
+  if (
+    !supabaseUrl ||
+    !supabaseKey ||
+    !supabaseUrl.startsWith('http') ||
+    supabaseUrl.includes('[SENSITIVE]') ||
+    supabaseUrl.includes('uplgtylqjkxallwtnehj') ||
+    supabaseUrl.includes('poycfdnudyrgtyegvnoa') ||
+    supabaseUrl.includes('dvrjjaehiugjdsqhuhyo')
+  ) {
+    return;
+  }
 
   try {
     const controller = new AbortController();
