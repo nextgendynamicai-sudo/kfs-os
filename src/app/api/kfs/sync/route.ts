@@ -1,4 +1,7 @@
 import { NextResponse } from 'next/server';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 import { initialDB, CURRENT_WIPE_VERSION } from '@/config/initialDB';
 import {
   DEMO_COMMERCE_ID,
@@ -72,9 +75,43 @@ function getInitialCloudDb() {
   return base;
 }
 
+const TMP_STATE_PATH = path.join(os.tmpdir(), 'kfs_cloud_hub_state.json');
+
+function countEntities(db: any): number {
+  if (!db) return 0;
+  return (
+    (db.clients?.length || 0) +
+    (db.customers?.length || 0) +
+    (db.products?.length || 0) +
+    (db.transactions?.length || 0) +
+    (db.riders?.length || 0) +
+    (db.promotoras?.length || 0)
+  );
+}
+
+function persistDiskSnapshot(db: any, updatedAt: string) {
+  try {
+    fs.promises
+      .writeFile(TMP_STATE_PATH, JSON.stringify({ updated_at: updatedAt, db_state: db }), 'utf8')
+      .catch(() => {});
+  } catch (_) {}
+}
+
 function ensureCloudDb() {
   if (!serverCloudDb) {
-    serverCloudDb = getInitialCloudDb();
+    const baseline = getInitialCloudDb();
+    try {
+      if (fs.existsSync(TMP_STATE_PATH)) {
+        const raw = fs.readFileSync(TMP_STATE_PATH, 'utf8');
+        const parsed = JSON.parse(raw);
+        if (parsed && parsed.db_state) {
+          serverCloudDb = parsed.db_state;
+          serverUpdatedAt = parsed.updated_at || new Date().toISOString();
+          return serverCloudDb;
+        }
+      }
+    } catch (_) {}
+    serverCloudDb = baseline;
     serverUpdatedAt = new Date().toISOString();
   }
   return serverCloudDb;
@@ -139,7 +176,8 @@ export async function GET(request: Request) {
       {
         status: 'up_to_date',
         updated_at: serverUpdatedAt,
-        server_time: new Date().toISOString()
+        server_time: new Date().toISOString(),
+        c: countEntities(db)
       },
       {
         headers: {
@@ -154,6 +192,7 @@ export async function GET(request: Request) {
     {
       status: 'updated',
       updated_at: serverUpdatedAt,
+      c: countEntities(db),
       db_state: db
     },
     {
@@ -282,6 +321,7 @@ export async function POST(request: Request) {
     }
 
     serverUpdatedAt = new Date().toISOString();
+    persistDiskSnapshot(db, serverUpdatedAt);
     tryPushToSupabase(db);
 
     return NextResponse.json({

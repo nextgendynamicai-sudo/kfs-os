@@ -1022,7 +1022,19 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                     } else {
                       setDb((prevDb: any) => {
                         const merged = mergeIncomingDb(prevDb, remote, currentUserRef.current);
-                        console.log("[Universal Cloud Hub] Base de datos hidratada exitosamente desde Cloud Hub.");
+                        const localHasMore =
+                          (prevDb.clients?.length || 0) > (remote.clients?.length || 0) ||
+                          (prevDb.transactions?.length || 0) > (remote.transactions?.length || 0) ||
+                          (prevDb.customers?.length || 0) > (remote.customers?.length || 0) ||
+                          (prevDb.products?.length || 0) > (remote.products?.length || 0) ||
+                          (prevDb.riders?.length || 0) > (remote.riders?.length || 0) ||
+                          (prevDb.promotoras?.length || 0) > (remote.promotoras?.length || 0);
+                        if (localHasMore) {
+                          console.log("[Universal Cloud Hub] Cold-start remoto detectado. Auto-curando la nube con datos locales...");
+                          forceDirectCloudSync(merged);
+                        } else {
+                          console.log("[Universal Cloud Hub] Base de datos hidratada exitosamente desde Cloud Hub.");
+                        }
                         return merged;
                       });
                     }
@@ -1066,6 +1078,16 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
                     isRemoteUpdate.current = true;
                     setDb((prevDb: any) => {
                       const merged = mergeIncomingDb(prevDb, remote, currentUserRef.current);
+                      const localHasMore =
+                        (prevDb.clients?.length || 0) > (remote.clients?.length || 0) ||
+                        (prevDb.transactions?.length || 0) > (remote.transactions?.length || 0) ||
+                        (prevDb.customers?.length || 0) > (remote.customers?.length || 0) ||
+                        (prevDb.products?.length || 0) > (remote.products?.length || 0) ||
+                        (prevDb.riders?.length || 0) > (remote.riders?.length || 0) ||
+                        (prevDb.promotoras?.length || 0) > (remote.promotoras?.length || 0);
+                      if (localHasMore) {
+                        forceDirectCloudSync(merged);
+                      }
                       if (JSON.stringify(prevDb) !== JSON.stringify(merged)) {
                         console.log("[Universal Cloud Sync] Sincronización en tiempo real multidispositivo completada.");
                         return merged;
@@ -1487,18 +1509,18 @@ export function KFSProvider({ children }: { children: React.ReactNode }) {
       }
       if (targetRole === "dueño") {
         const list = db.clients || [];
-        demoUser = list.find((c: any) => c.id === DEMO_COMMERCE_ID) || list.find((c: any) => (c.email && c.email.toLowerCase() === safeEmail)) || list[0] || DEMO_COMMERCE_CLIENT;
+        demoUser = list.find((c: any) => c.id === DEMO_COMMERCE_ID) || (safeEmail ? list.find((c: any) => (c.email && c.email.toLowerCase() === safeEmail) && (!c.password || c.password === "000")) : null) || DEMO_COMMERCE_CLIENT;
       }
       if (targetRole === "vendedor") {
         const list = db.vendedores || [];
-        demoUser = list.find((v: any) => v.clientId === DEMO_COMMERCE_ID) || list.find((v: any) => (v.email && v.email.toLowerCase() === safeEmail)) || list[0] || DEMO_COMMERCE_VENDEDORES[0];
+        demoUser = list.find((v: any) => v.clientId === DEMO_COMMERCE_ID) || (safeEmail ? list.find((v: any) => (v.email && v.email.toLowerCase() === safeEmail) && (!v.password || v.password === "000")) : null) || DEMO_COMMERCE_VENDEDORES[0];
         if (demoUser && !demoUser.clientId) {
           demoUser = { ...demoUser, clientId: DEMO_COMMERCE_ID, merchantId: DEMO_COMMERCE_ID };
         }
       }
       if (targetRole === "rider") {
         const list = db.riders || [];
-        demoUser = list.find((r: any) => r.id === "rider-demo-1") || list.find((r: any) => (r.email && r.email.toLowerCase() === safeEmail)) || list[0] || DEMO_COMMERCE_RIDERS[0];
+        demoUser = list.find((r: any) => r.id === "rider-demo-1") || (safeEmail ? list.find((r: any) => (r.email && r.email.toLowerCase() === safeEmail) && (!r.password || r.password === "000")) : null) || DEMO_COMMERCE_RIDERS[0];
       }
       if (targetRole === "customer") {
         let list = db.customers || [];
